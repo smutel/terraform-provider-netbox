@@ -1,0 +1,52 @@
+resource "netbox_tenancy_tenant" "tenant_test" {
+  name            = "Test_Tenant"
+  slug            = "Test_Tenant"
+  description     = "Tenant created by terraform"
+  comments        = "Some test comments"
+  tenant_group_id = netbox_tenancy_tenant_group.tenant_group_test.id
+  tags            = ["tag1", "tag3"]
+}
+
+resource "netbox_tenancy_tenant_group" "tenant_group_test" {
+  name = "Test_TenantGroup"
+  slug = "Test_TenantGroup"
+}
+
+data "netbox_dcim_site" "site_test" {
+  slug = "pa3"
+}
+
+resource "netbox_ipam_vlan_group" "vlan_group_test" {
+  name = "Test_VlanGroup"
+  slug = "Test_VlanGroup"
+  site_id = data.netbox_dcim_site.site_test.id
+}
+
+data "netbox_ipam_role" "vlan_role_production" {
+  slug = "production"
+}
+
+data "netbox_ipam_role" "vlan_role_backup" {
+  slug = "backup"
+}
+
+resource "netbox_ipam_vlan" "vlan_test" {
+  vlan_id = 100
+  name = "Test_Vlan"
+  site_id = netbox_ipam_vlan_group.vlan_group_test.site_id
+  description = "VLAN created by terraform"
+  vlan_group_id = netbox_ipam_vlan_group.vlan_group_test.id
+  tenant_id = netbox_tenancy_tenant.tenant_test.id
+  role_id = data.netbox_ipam_role.vlan_role_production.id
+  tags = ["tag1"]
+}
+
+resource "netbox_ipam_prefix" "prefix_test" {
+  prefix = "192.168.56.0/24"
+  vlan_id = netbox_ipam_vlan.vlan_test.id
+  description = "Prefix created by terraform"
+  site_id = netbox_ipam_vlan_group.vlan_group_test.site_id
+  role_id = data.netbox_ipam_role.vlan_role_production.id
+  tags = ["tag1"]
+  status = "container"
+}

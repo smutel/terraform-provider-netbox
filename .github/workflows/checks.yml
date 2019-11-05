@@ -1,0 +1,44 @@
+---
+name: checks
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: [ '1.13.x', '1.14.x' ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.0.0
+
+      - name: Lint
+        uses: reviewdog/action-golangci-lint@v1.6.0
+        with:
+          github_token: ${{ secrets.github_token }}
+          golangci_lint_flags: "--config=.golangci.yml"
+
+      - name: Setup env
+        run: |
+          echo "::set-env name=GOPATH::$(dirname $GITHUB_WORKSPACE)"
+          echo "::add-path::$(dirname $GITHUB_WORKSPACE)/bin"
+          mkdir -p "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel"
+          ln -sf "$GITHUB_WORKSPACE/" "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
+        shell: bash
+
+      - name: Go installation
+        uses: actions/setup-go@v1.1.2
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Build
+        run: |
+          cd "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
+          make build
+        shell: bash
