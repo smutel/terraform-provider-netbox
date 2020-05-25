@@ -20,7 +20,7 @@ build:
 
 build-all: clean
 	@echo "==> Building terraform-provider-netbox"
-	@for GOOS in darwin linux windows; do for GOARCH in 386 amd64; do env GOOS=$${GOOS} GOARCH=$${GOARCH} env VERSION=${VERSION} go build -mod=vendor -o terraform-provider-netbox-v${VERSION} . && tar zcvf terraform-provider-netbox-v${VERSION}.$${GOOS}-$${GOARCH}.tar.gz terraform-provider-netbox_v${VERSION} && rm terraform-provider-netbox-v${VERSION}; done; done
+	@for GOOS in darwin linux windows; do for GOARCH in 386 amd64; do env GOOS=$${GOOS} GOARCH=$${GOARCH} env VERSION=${VERSION} go build -mod=vendor -o terraform-provider-netbox_v${VERSION} . && tar zcvf terraform-provider-netbox-v${VERSION}.$${GOOS}-$${GOARCH}.tar.gz terraform-provider-netbox_v${VERSION} && rm terraform-provider-netbox_v${VERSION}; done; done
 	@for file in *.tar.gz; do echo "$$(sha256sum $${file})" >> sha256sums.txt; done
 
 localinstall:
