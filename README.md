@@ -1,7 +1,7 @@
 # terraform-provider-netbox
 
 [![GoDoc](http://godoc.org/github.com/smutel/terraform-provider-netbox?status.svg)](http://godoc.org/github.com/smutel/terraform-provider-netbox)
-[![Build Status](https://github.com/smutel/terraform-provider-netbox/workflows/ci/badge.svg?branch=master)](https://github.com/smutel/terraform-provider-netbox/actions)
+[![Build Status](https://github.com/smutel/terraform-provider-netbox/workflows/checks/badge.svg?branch=master)](https://github.com/smutel/terraform-provider-netbox/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/smutel/terraform-provider-netbox)](https://goreportcard.com/report/github.com/smutel/terraform-provider-netbox)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
