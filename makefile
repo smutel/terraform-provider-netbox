@@ -18,12 +18,10 @@ build:
 	@echo "==> Building terraform-provider-netbox"
 	@go build -mod=vendor -o terraform-provider-netbox .
 
-build-tarball: clean
+build-all: clean
 	@echo "==> Building terraform-provider-netbox"
-	@mkdir -p builds
-	@for GOOS in darwin linux windows; do for GOARCH in 386 amd64; do env GOOS=$${GOOS} GOARCH=$${GOARCH} env VERSION=${VERSION} go build -mod=vendor -o builds/terraform-provider-netbox-$${GOOS}-$${GOARCH}-v${VERSION} .; done; done
-	@cd builds && for file in *; do echo "$$(sha256sum $${file})" >> ../terraform-provider-netbox_SHA256SUM; done
-	@cd builds && tar czf ../terraform-provider-netbox-v${VERSION}.tar.gz terraform*
+	@for GOOS in darwin linux windows; do for GOARCH in 386 amd64; do env GOOS=$${GOOS} GOARCH=$${GOARCH} env VERSION=${VERSION} go build -mod=vendor -o terraform-provider-netbox-v${VERSION} . && tar zcvf terraform-provider-netbox-v${VERSION}.$${GOOS}-$${GOARCH}.tar.gz terraform-provider-netbox-v${VERSION} && rm terraform-provider-netbox-v${VERSION}; done; done
+	@for file in *.tar.gz; do echo "$$(sha256sum $${file})" >> sha256sums.txt; done
 
 localinstall:
 	@echo "==> Creating folder terraform.d/plugins/linux_amd64"
@@ -38,6 +36,5 @@ check:
 clean:
 	@echo "==> Cleaning terraform-provider-netbox"
 	@rm -f terraform-provider-netbox
-	@rm -rf builds
-	@rm -f terraform-provider-netbox_SHA256SUM
-	@rm -f terraform-provider-netbox-*.tar.gz
+	@rm -rf *.tar.gz
+	@rm -f sha256sums.txt

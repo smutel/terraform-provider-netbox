@@ -1,0 +1,32 @@
+{
+  "types":[
+    {
+      "type":"enh",
+      "section":"Enhancements"
+    },
+    {
+      "type":"feat",
+      "section":"Features"
+    },
+    {
+      "type":"fix",
+      "section":"Bug Fixes"
+    },
+    {
+      "type":"test",
+      "section":"Tests"
+    },
+    {
+      "type":"build",
+      "section":"Build System"
+    },
+    {
+      "type":"ci",
+      "hidden":true
+    },
+    {
+      "type":"git",
+      "hidden":true
+    }
+  ]
+}
