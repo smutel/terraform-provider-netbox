@@ -211,7 +211,7 @@ github.com/mitchellh/go-wordwrap
 github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.1
 github.com/mitchellh/reflectwalk
-# github.com/netbox-community/go-netbox v0.0.0-20200507032154-fbb6900a912a
+# github.com/netbox-community/go-netbox v0.0.0-20200527232624-eea85738db88
 ## explicit
 github.com/netbox-community/go-netbox/netbox/client
 github.com/netbox-community/go-netbox/netbox/client/circuits
