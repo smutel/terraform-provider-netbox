@@ -1,8 +1,6 @@
 package netbox
 
 import (
-	//"log"
-	//"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -22,26 +20,6 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 		Exists: resourceNetboxIpamPrefixExists,
 
 		Schema: map[string]*schema.Schema{
-			"prefix": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: validation.IsCIDRNetwork(0, 256),
-			},
-			"status": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "active",
-				ValidateFunc: validation.StringInSlice([]string{"container", "active",
-					"reserved", "deprecated"}, false),
-			},
-			"vrf_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"role_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -52,7 +30,34 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 				Optional: true,
 				Default:  nil,
 			},
+			"prefix": {
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.IsCIDRNetwork(0, 256),
+			},
+			"role_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"site_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"status": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "active",
+				ValidateFunc: validation.StringInSlice([]string{"container", "active",
+					"reserved", "deprecated"}, false),
+			},
+			"tags": {
+				Type: schema.TypeSet,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
+			"tenant_id": {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
@@ -60,15 +65,8 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
-			"tenant_id": {
+			"vrf_id": {
 				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"tags": {
-				Type: schema.TypeSet,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 				Optional: true,
 			},
 		},
@@ -79,53 +77,53 @@ func resourceNetboxIpamPrefixCreate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	prefixPrefix := d.Get("prefix").(string)
-	prefixStatus := d.Get("status").(string)
-	prefixVrfID := int64(d.Get("vrf_id").(int))
-	prefixRoleID := int64(d.Get("role_id").(int))
-	prefixDescription := d.Get("description").(string)
-	prefixIsPool := d.Get("is_pool").(bool)
-	prefixSiteID := int64(d.Get("site_id").(int))
-	prefixVlanID := int64(d.Get("vlan_id").(int))
-	prefixTenantID := int64(d.Get("tenant_id").(int))
-	prefixTags := d.Get("tags").(*schema.Set).List()
+	description := d.Get("description").(string)
+	isPool := d.Get("is_pool").(bool)
+	prefix := d.Get("prefix").(string)
+	roleID := int64(d.Get("role_id").(int))
+	siteID := int64(d.Get("site_id").(int))
+	status := d.Get("status").(string)
+	tags := d.Get("tags").(*schema.Set).List()
+	tenantID := int64(d.Get("tenant_id").(int))
+	vlanID := int64(d.Get("vlan_id").(int))
+	vrfID := int64(d.Get("vrf_id").(int))
 
-	newPrefix := &models.WritablePrefix{
-		Prefix:      &prefixPrefix,
-		Status:      prefixStatus,
-		Tags:        expandToStringSlice(prefixTags),
-		Description: prefixDescription,
-		IsPool:      prefixIsPool,
+	newResource := &models.WritablePrefix{
+		Description: description,
+		IsPool:      isPool,
+		Prefix:      &prefix,
+		Status:      status,
+		Tags:        expandToStringSlice(tags),
 	}
 
-	if prefixVrfID != 0 {
-		newPrefix.Vrf = &prefixVrfID
+	if roleID != 0 {
+		newResource.Role = &roleID
 	}
 
-	if prefixRoleID != 0 {
-		newPrefix.Role = &prefixRoleID
+	if siteID != 0 {
+		newResource.Site = &siteID
 	}
 
-	if prefixSiteID != 0 {
-		newPrefix.Site = &prefixSiteID
+	if tenantID != 0 {
+		newResource.Tenant = &tenantID
 	}
 
-	if prefixVlanID != 0 {
-		newPrefix.Vlan = &prefixVlanID
+	if vlanID != 0 {
+		newResource.Vlan = &vlanID
 	}
 
-	if prefixTenantID != 0 {
-		newPrefix.Tenant = &prefixTenantID
+	if vrfID != 0 {
+		newResource.Vrf = &vrfID
 	}
 
-	p := ipam.NewIpamPrefixesCreateParams().WithData(newPrefix)
+	resource := ipam.NewIpamPrefixesCreateParams().WithData(newResource)
 
-	prefixCreated, err := client.Ipam.IpamPrefixesCreate(p, nil)
+	resourceCreated, err := client.Ipam.IpamPrefixesCreate(resource, nil)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(strconv.FormatInt(prefixCreated.Payload.ID, 10))
+	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
 	return resourceNetboxIpamPrefixRead(d, m)
 }
@@ -134,81 +132,87 @@ func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	prefixID := d.Id()
-	params := ipam.NewIpamPrefixesListParams().WithIDIn(&prefixID)
-	prefixs, err := client.Ipam.IpamPrefixesList(params, nil)
+	resourceID := d.Id()
+	params := ipam.NewIpamPrefixesListParams().WithID(&resourceID)
+	resources, err := client.Ipam.IpamPrefixesList(params, nil)
 	if err != nil {
 		return err
 	}
 
-	for _, prefix := range prefixs.Payload.Results {
-		if strconv.FormatInt(prefix.ID, 10) == d.Id() {
-			if err = d.Set("prefix", prefix.Prefix); err != nil {
+	for _, resource := range resources.Payload.Results {
+		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			if err = d.Set("description", resource.Description); err != nil {
 				return err
 			}
 
-			if err = d.Set("status", *prefix.Status.Value); err != nil {
+			if err = d.Set("is_pool", resource.IsPool); err != nil {
 				return err
 			}
 
-			if err = d.Set("description", prefix.Description); err != nil {
+			if err = d.Set("prefix", resource.Prefix); err != nil {
 				return err
 			}
 
-			if err = d.Set("tags", prefix.Tags); err != nil {
-				return err
-			}
-
-			if err = d.Set("is_pool", prefix.IsPool); err != nil {
-				return err
-			}
-
-			if prefix.Vrf == nil {
-				if err = d.Set("vrf_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("vrf_id", prefix.Vrf.ID); err != nil {
-					return err
-				}
-			}
-
-			if prefix.Role == nil {
+			if resource.Role == nil {
 				if err = d.Set("role_id", nil); err != nil {
 					return err
 				}
 			} else {
-				if err = d.Set("role_id", prefix.Role.ID); err != nil {
+				if err = d.Set("role_id", resource.Role.ID); err != nil {
 					return err
 				}
 			}
 
-			if prefix.Site == nil {
+			if resource.Site == nil {
 				if err = d.Set("site_id", nil); err != nil {
 					return err
 				}
 			} else {
-				if err = d.Set("site_id", prefix.Site.ID); err != nil {
+				if err = d.Set("site_id", resource.Site.ID); err != nil {
 					return err
 				}
 			}
 
-			if prefix.Vlan == nil {
-				if err = d.Set("vlan_id", nil); err != nil {
+			if resource.Status == nil {
+				if err = d.Set("status", nil); err != nil {
 					return err
 				}
 			} else {
-				if err = d.Set("vlan_id", prefix.Vlan.ID); err != nil {
+				if err = d.Set("status", resource.Status.Value); err != nil {
 					return err
 				}
 			}
 
-			if prefix.Tenant == nil {
+			if err = d.Set("tags", resource.Tags); err != nil {
+				return err
+			}
+
+			if resource.Tenant == nil {
 				if err = d.Set("tenant_id", nil); err != nil {
 					return err
 				}
 			} else {
-				if err = d.Set("tenant_id", prefix.Tenant.ID); err != nil {
+				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
+					return err
+				}
+			}
+
+			if resource.Vlan == nil {
+				if err = d.Set("vlan_id", nil); err != nil {
+					return err
+				}
+			} else {
+				if err = d.Set("vlan_id", resource.Vlan.ID); err != nil {
+					return err
+				}
+			}
+
+			if resource.Vrf == nil {
+				if err = d.Set("vrf_id", nil); err != nil {
+					return err
+				}
+			} else {
+				if err = d.Set("vrf_id", resource.Vrf.ID); err != nil {
 					return err
 				}
 			}
@@ -224,70 +228,70 @@ func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
-	updatedParams := &models.WritablePrefix{}
-
-	prefixPrefix := d.Get("prefix").(string)
-	updatedParams.Prefix = &prefixPrefix
-
-	prefixTags := d.Get("tags").(*schema.Set).List()
-	updatedParams.Tags = expandToStringSlice(prefixTags)
-
-	updatedParams.IsPool = d.Get("is_pool").(bool)
-
-	if d.HasChange("status") {
-		updatedParams.Status = d.Get("status").(string)
-	}
+	params := &models.WritablePrefix{}
 
 	if d.HasChange("description") {
 		description := d.Get("description").(string)
-		updatedParams.Description = description
+		params.Description = description
 	}
 
-	if d.HasChange("vrf_id") {
-		vrfID := int64(d.Get("vrf_id").(int))
-		if vrfID != 0 {
-			updatedParams.Vrf = &vrfID
-		}
-	}
+	params.IsPool = d.Get("is_pool").(bool)
+
+	prefix := d.Get("prefix").(string)
+	params.Prefix = &prefix
 
 	if d.HasChange("role_id") {
-		prefixRoleID := int64(d.Get("role_id").(int))
-		if prefixRoleID != 0 {
-			updatedParams.Role = &prefixRoleID
+		roleID := int64(d.Get("role_id").(int))
+		if roleID != 0 {
+			params.Role = &roleID
 		}
 	}
 
 	if d.HasChange("site_id") {
 		siteID := int64(d.Get("site_id").(int))
 		if siteID != 0 {
-			updatedParams.Site = &siteID
+			params.Site = &siteID
+		}
+	}
+
+	if d.HasChange("status") {
+		params.Status = d.Get("status").(string)
+	}
+
+	tags := d.Get("tags").(*schema.Set).List()
+	params.Tags = expandToStringSlice(tags)
+
+	if d.HasChange("tenant_id") {
+		tenantID := int64(d.Get("tenant_id").(int))
+		if tenantID != 0 {
+			params.Tenant = &tenantID
 		}
 	}
 
 	if d.HasChange("vlan_id") {
 		vlanID := int64(d.Get("vlan_id").(int))
 		if vlanID != 0 {
-			updatedParams.Vlan = &vlanID
+			params.Vlan = &vlanID
 		}
 	}
 
-	if d.HasChange("tenant_id") {
-		prefixTenantID := int64(d.Get("tenant_id").(int))
-		if prefixTenantID != 0 {
-			updatedParams.Tenant = &prefixTenantID
+	if d.HasChange("vrf_id") {
+		vrfID := int64(d.Get("vrf_id").(int))
+		if vrfID != 0 {
+			params.Vrf = &vrfID
 		}
 	}
 
-	p := ipam.NewIpamPrefixesPartialUpdateParams().WithData(updatedParams)
+	resource := ipam.NewIpamPrefixesPartialUpdateParams().WithData(params)
 
-	tenantID, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert tenant ID into int64")
+		return pkgerrors.New("Unable to convert ID into int64")
 	}
 
-	p.SetID(tenantID)
+	resource.SetID(resourceID)
 
-	_, err = client.Ipam.IpamPrefixesPartialUpdate(p, nil)
+	_, err = client.Ipam.IpamPrefixesPartialUpdate(resource, nil)
 	if err != nil {
 		return err
 	}
@@ -308,13 +312,13 @@ func resourceNetboxIpamPrefixDelete(d *schema.ResourceData,
 		return nil
 	}
 
-	prefixID, err := strconv.ParseInt(d.Id(), 10, 64)
+	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert prefix group ID into int64")
+		return pkgerrors.New("Unable to convert ID into int64")
 	}
 
-	p := ipam.NewIpamPrefixesDeleteParams().WithID(prefixID)
-	if _, err := client.Ipam.IpamPrefixesDelete(p, nil); err != nil {
+	resource := ipam.NewIpamPrefixesDeleteParams().WithID(id)
+	if _, err := client.Ipam.IpamPrefixesDelete(resource, nil); err != nil {
 		return err
 	}
 
@@ -324,20 +328,20 @@ func resourceNetboxIpamPrefixDelete(d *schema.ResourceData,
 func resourceNetboxIpamPrefixExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
 	client := m.(*netboxclient.NetBox)
-	prefixExist := false
+	resourceExist := false
 
-	prefixID := d.Id()
-	params := ipam.NewIpamPrefixesListParams().WithIDIn(&prefixID)
-	prefixs, err := client.Ipam.IpamPrefixesList(params, nil)
+	resourceID := d.Id()
+	params := ipam.NewIpamPrefixesListParams().WithID(&resourceID)
+	resources, err := client.Ipam.IpamPrefixesList(params, nil)
 	if err != nil {
-		return prefixExist, err
+		return resourceExist, err
 	}
 
-	for _, prefix := range prefixs.Payload.Results {
-		if strconv.FormatInt(prefix.ID, 10) == d.Id() {
-			prefixExist = true
+	for _, resource := range resources.Payload.Results {
+		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			resourceExist = true
 		}
 	}
 
-	return prefixExist, nil
+	return resourceExist, nil
 }

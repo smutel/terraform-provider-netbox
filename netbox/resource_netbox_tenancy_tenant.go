@@ -21,6 +21,21 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 		Exists: resourceNetboxTenancyTenantExists,
 
 		Schema: map[string]*schema.Schema{
+			"comments": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "",
+			},
+			"description": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringLenBetween(1, 100),
+			},
+			"tenant_group_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  0,
+			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
@@ -32,21 +47,6 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
-			},
-			"tenant_group_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
-			},
-			"description": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-			},
-			"comments": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "",
 			},
 			"tags": {
 				Type: schema.TypeSet,
@@ -63,33 +63,33 @@ func resourceNetboxTenancyTenantCreate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	tenantName := d.Get("name").(string)
-	tenantSlug := d.Get("slug").(string)
-	tenantDescription := d.Get("description").(string)
-	tenantComments := d.Get("comments").(string)
-	tenantGroupID := int64(d.Get("tenant_group_id").(int))
-	tenantTags := d.Get("tags").(*schema.Set).List()
+	comments := d.Get("comments").(string)
+	description := d.Get("description").(string)
+	groupID := int64(d.Get("tenant_group_id").(int))
+	name := d.Get("name").(string)
+	slug := d.Get("slug").(string)
+	tags := d.Get("tags").(*schema.Set).List()
 
-	newTenant := &models.WritableTenant{
-		Name:        &tenantName,
-		Slug:        &tenantSlug,
-		Description: tenantDescription,
-		Comments:    tenantComments,
-		Tags:        expandToStringSlice(tenantTags),
+	newResource := &models.WritableTenant{
+		Comments:    comments,
+		Description: description,
+		Name:        &name,
+		Slug:        &slug,
+		Tags:        expandToStringSlice(tags),
 	}
 
-	if tenantGroupID != 0 {
-		newTenant.Group = &tenantGroupID
+	if groupID != 0 {
+		newResource.Group = &groupID
 	}
 
-	p := tenancy.NewTenancyTenantsCreateParams().WithData(newTenant)
+	resource := tenancy.NewTenancyTenantsCreateParams().WithData(newResource)
 
-	tenantCreated, err := client.Tenancy.TenancyTenantsCreate(p, nil)
+	resourceCreated, err := client.Tenancy.TenancyTenantsCreate(resource, nil)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(strconv.FormatInt(tenantCreated.Payload.ID, 10))
+	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
 	return resourceNetboxTenancyTenantRead(d, m)
 }
@@ -98,43 +98,43 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	tenantID := d.Id()
-	params := tenancy.NewTenancyTenantsListParams().WithIDIn(&tenantID)
-	tenants, err := client.Tenancy.TenancyTenantsList(params, nil)
+	resourceID := d.Id()
+	params := tenancy.NewTenancyTenantsListParams().WithID(&resourceID)
+	resources, err := client.Tenancy.TenancyTenantsList(params, nil)
 	if err != nil {
 		return err
 	}
 
-	for _, tenant := range tenants.Payload.Results {
-		if strconv.FormatInt(tenant.ID, 10) == d.Id() {
-			if err = d.Set("name", tenant.Name); err != nil {
+	for _, resource := range resources.Payload.Results {
+		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			if err = d.Set("comments", resource.Comments); err != nil {
 				return err
 			}
 
-			if err = d.Set("slug", tenant.Slug); err != nil {
+			if err = d.Set("description", resource.Description); err != nil {
 				return err
 			}
 
-			if err = d.Set("description", tenant.Description); err != nil {
-				return err
-			}
-
-			if err = d.Set("comments", tenant.Comments); err != nil {
-				return err
-			}
-
-			if err = d.Set("tags", tenant.Tags); err != nil {
-				return err
-			}
-
-			if tenant.Group == nil {
+			if resource.Group == nil {
 				if err = d.Set("tenant_group_id", 0); err != nil {
 					return err
 				}
 			} else {
-				if err = d.Set("tenant_group_id", tenant.Group.ID); err != nil {
+				if err = d.Set("tenant_group_id", resource.Group.ID); err != nil {
 					return err
 				}
+			}
+
+			if err = d.Set("name", resource.Name); err != nil {
+				return err
+			}
+
+			if err = d.Set("slug", resource.Slug); err != nil {
+				return err
+			}
+
+			if err = d.Set("tags", resource.Tags); err != nil {
+				return err
 			}
 
 			return nil
@@ -148,42 +148,42 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 func resourceNetboxTenancyTenantUpdate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
-	updatedParams := &models.WritableTenant{}
-
-	name := d.Get("name").(string)
-	updatedParams.Name = &name
-
-	slug := d.Get("slug").(string)
-	updatedParams.Slug = &slug
-
-	if d.HasChange("description") {
-		description := d.Get("description").(string)
-		updatedParams.Description = description
-	}
+	params := &models.WritableTenant{}
 
 	if d.HasChange("comments") {
 		comments := d.Get("comments").(string)
-		updatedParams.Comments = comments
+		params.Comments = comments
+	}
+
+	if d.HasChange("description") {
+		description := d.Get("description").(string)
+		params.Description = description
 	}
 
 	if d.HasChange("tenant_group_id") {
-		tenantGroupID := int64(d.Get("tenant_group_id").(int))
-		updatedParams.Group = &tenantGroupID
+		groupID := int64(d.Get("tenant_group_id").(int))
+		params.Group = &groupID
 	}
 
-	tenantTags := d.Get("tags").(*schema.Set).List()
-	updatedParams.Tags = expandToStringSlice(tenantTags)
+	name := d.Get("name").(string)
+	params.Name = &name
 
-	p := tenancy.NewTenancyTenantsPartialUpdateParams().WithData(updatedParams)
+	slug := d.Get("slug").(string)
+	params.Slug = &slug
 
-	tenantID, err := strconv.ParseInt(d.Id(), 10, 64)
+	tags := d.Get("tags").(*schema.Set).List()
+	params.Tags = expandToStringSlice(tags)
+
+	resource := tenancy.NewTenancyTenantsPartialUpdateParams().WithData(params)
+
+	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert tenant ID into int64")
+		return pkgerrors.New("Unable to convert ID into int64")
 	}
 
-	p.SetID(tenantID)
+	resource.SetID(resourceID)
 
-	_, err = client.Tenancy.TenancyTenantsPartialUpdate(p, nil)
+	_, err = client.Tenancy.TenancyTenantsPartialUpdate(resource, nil)
 	if err != nil {
 		return err
 	}
@@ -204,12 +204,12 @@ func resourceNetboxTenancyTenantDelete(d *schema.ResourceData,
 		return nil
 	}
 
-	tenantID, err := strconv.ParseInt(d.Id(), 10, 64)
+	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert tenant ID into int64")
+		return pkgerrors.New("Unable to convert ID into int64")
 	}
 
-	p := tenancy.NewTenancyTenantsDeleteParams().WithID(tenantID)
+	p := tenancy.NewTenancyTenantsDeleteParams().WithID(id)
 	if _, err := client.Tenancy.TenancyTenantsDelete(p, nil); err != nil {
 		return err
 	}
@@ -221,20 +221,20 @@ func resourceNetboxTenancyTenantExists(d *schema.ResourceData,
 	m interface{}) (b bool,
 	e error) {
 	client := m.(*netboxclient.NetBox)
-	tenantExist := false
+	resourceExist := false
 
-	tenantID := d.Id()
-	params := tenancy.NewTenancyTenantsListParams().WithIDIn(&tenantID)
-	tenants, err := client.Tenancy.TenancyTenantsList(params, nil)
+	resourceID := d.Id()
+	params := tenancy.NewTenancyTenantsListParams().WithID(&resourceID)
+	resources, err := client.Tenancy.TenancyTenantsList(params, nil)
 	if err != nil {
-		return tenantExist, err
+		return resourceExist, err
 	}
 
-	for _, tenant := range tenants.Payload.Results {
-		if strconv.FormatInt(tenant.ID, 10) == d.Id() {
-			tenantExist = true
+	for _, resource := range resources.Payload.Results {
+		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			resourceExist = true
 		}
 	}
 
-	return tenantExist, nil
+	return resourceExist, nil
 }

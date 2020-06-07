@@ -41,22 +41,23 @@ func resourceNetboxTenancyTenantGroupCreate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	tenantGroupName := d.Get("name").(string)
-	tenantGroupSlug := d.Get("slug").(string)
+	groupName := d.Get("name").(string)
+	groupSlug := d.Get("slug").(string)
 
-	newTenantGroup := &models.TenantGroup{
-		Name: &tenantGroupName,
-		Slug: &tenantGroupSlug,
+	newResource := &models.WritableTenantGroup{
+		Name: &groupName,
+		Slug: &groupSlug,
 	}
 
-	p := tenancy.NewTenancyTenantGroupsCreateParams().WithData(newTenantGroup)
+	resource := tenancy.NewTenancyTenantGroupsCreateParams().WithData(newResource)
 
-	tenantGroupCreated, err := client.Tenancy.TenancyTenantGroupsCreate(p, nil)
+	resourceCreated, err := client.Tenancy.TenancyTenantGroupsCreate(resource, nil)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(strconv.FormatInt(tenantGroupCreated.Payload.ID, 10))
+	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+
 	return resourceNetboxTenancyTenantGroupRead(d, m)
 }
 
@@ -64,20 +65,20 @@ func resourceNetboxTenancyTenantGroupRead(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	tenantGroupID := d.Id()
-	params := tenancy.NewTenancyTenantGroupsListParams().WithID(&tenantGroupID)
-	tenantGroups, err := client.Tenancy.TenancyTenantGroupsList(params, nil)
+	resourceID := d.Id()
+	params := tenancy.NewTenancyTenantGroupsListParams().WithID(&resourceID)
+	resources, err := client.Tenancy.TenancyTenantGroupsList(params, nil)
 	if err != nil {
 		return err
 	}
 
-	for _, tenantGroup := range tenantGroups.Payload.Results {
-		if strconv.FormatInt(tenantGroup.ID, 10) == d.Id() {
-			if err = d.Set("name", tenantGroup.Name); err != nil {
+	for _, resource := range resources.Payload.Results {
+		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			if err = d.Set("name", resource.Name); err != nil {
 				return err
 			}
 
-			if err = d.Set("slug", tenantGroup.Slug); err != nil {
+			if err = d.Set("slug", resource.Slug); err != nil {
 				return err
 			}
 
@@ -86,31 +87,36 @@ func resourceNetboxTenancyTenantGroupRead(d *schema.ResourceData,
 	}
 
 	d.SetId("")
+
 	return nil
 }
 
 func resourceNetboxTenancyTenantGroupUpdate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
-	updatedParams := &models.TenantGroup{}
+	params := &models.WritableTenantGroup{}
 
-	name := d.Get("name").(string)
-	updatedParams.Name = &name
-
-	slug := d.Get("slug").(string)
-	updatedParams.Slug = &slug
-
-	p := tenancy.NewTenancyTenantGroupsPartialUpdateParams().WithData(
-		updatedParams)
-
-	tenantID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return pkgerrors.New("Unable to convert tenant ID into int64")
+	if d.HasChange("name") {
+		name := d.Get("name").(string)
+		params.Name = &name
 	}
 
-	p.SetID(tenantID)
+	if d.HasChange("slug") {
+		slug := d.Get("slug").(string)
+		params.Slug = &slug
+	}
 
-	_, err = client.Tenancy.TenancyTenantGroupsPartialUpdate(p, nil)
+	resource := tenancy.NewTenancyTenantGroupsPartialUpdateParams().WithData(
+		params)
+
+	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
+	if err != nil {
+		return pkgerrors.New("Unable to convert ID into int64")
+	}
+
+	resource.SetID(resourceID)
+
+	_, err = client.Tenancy.TenancyTenantGroupsPartialUpdate(resource, nil)
 	if err != nil {
 		return err
 	}
@@ -131,13 +137,13 @@ func resourceNetboxTenancyTenantGroupDelete(d *schema.ResourceData,
 		return nil
 	}
 
-	tenantGroupID, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
 		return pkgerrors.New("Unable to convert tenant ID into int64")
 	}
 
-	p := tenancy.NewTenancyTenantGroupsDeleteParams().WithID(tenantGroupID)
-	if _, err := client.Tenancy.TenancyTenantGroupsDelete(p, nil); err != nil {
+	resource := tenancy.NewTenancyTenantGroupsDeleteParams().WithID(resourceID)
+	if _, err := client.Tenancy.TenancyTenantGroupsDelete(resource, nil); err != nil {
 		return err
 	}
 
@@ -148,20 +154,20 @@ func resourceNetboxTenancyTenantGroupExists(d *schema.ResourceData,
 	m interface{}) (b bool,
 	e error) {
 	client := m.(*netboxclient.NetBox)
-	tenantGroupExist := false
+	resourceExist := false
 
-	tenantGroupID := d.Id()
-	params := tenancy.NewTenancyTenantGroupsListParams().WithID(&tenantGroupID)
-	tenantGroups, err := client.Tenancy.TenancyTenantGroupsList(params, nil)
+	resourceID := d.Id()
+	params := tenancy.NewTenancyTenantGroupsListParams().WithID(&resourceID)
+	resources, err := client.Tenancy.TenancyTenantGroupsList(params, nil)
 	if err != nil {
-		return tenantGroupExist, err
+		return resourceExist, err
 	}
 
-	for _, tenantGroup := range tenantGroups.Payload.Results {
-		if strconv.FormatInt(tenantGroup.ID, 10) == d.Id() {
-			tenantGroupExist = true
+	for _, resource := range resources.Payload.Results {
+		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			resourceExist = true
 		}
 	}
 
-	return tenantGroupExist, nil
+	return resourceExist, nil
 }
