@@ -38,14 +38,16 @@ func Provider() *schema.Provider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"netbox_dcim_site":            dataNetboxDcimSite(),
+			"netbox_ipam_ip_addresses":    dataNetboxIpamIPAddresses(),
 			"netbox_ipam_role":            dataNetboxIpamRole(),
-			"netbox_ipam_vlan_group":      dataNetboxIpamVlanGroup(),
 			"netbox_ipam_vlan":            dataNetboxIpamVlan(),
-			"netbox_tenancy_tenant_group": dataNetboxTenancyTenantGroup(),
+			"netbox_ipam_vlan_group":      dataNetboxIpamVlanGroup(),
 			"netbox_tenancy_tenant":       dataNetboxTenancyTenant(),
+			"netbox_tenancy_tenant_group": dataNetboxTenancyTenantGroup(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"netbox_ipam_prefix":          resourceNetboxIpamPrefix(),
+			"netbox_ipam_ip_addresses":    resourceNetboxIpamIPAddresses(),
 			"netbox_ipam_vlan":            resourceNetboxIpamVlan(),
 			"netbox_ipam_vlan_group":      resourceNetboxIpamVlanGroup(),
 			"netbox_tenancy_tenant":       resourceNetboxTenancyTenant(),
