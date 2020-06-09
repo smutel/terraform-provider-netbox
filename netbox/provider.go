@@ -31,8 +31,7 @@ func Provider() *schema.Provider {
 			"scheme": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     "https",
-				DefaultFunc: schema.EnvDefaultFunc("NETBOX_SCHEME", ""),
+				DefaultFunc: schema.EnvDefaultFunc("NETBOX_SCHEME", "https"),
 				Description: "Sheme used to reach netbox application.",
 			},
 		},
