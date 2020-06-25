@@ -30,17 +30,17 @@ func dataNetboxTenancyTenant() *schema.Resource {
 func dataNetboxTenancyTenantRead(d *schema.ResourceData, m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	tenantSlug := d.Get("slug").(string)
+	slug := d.Get("slug").(string)
 
-	p := tenancy.NewTenancyTenantsListParams().WithSlug(&tenantSlug)
+	p := tenancy.NewTenancyTenantsListParams().WithSlug(&slug)
 
-	tenantsList, err := client.Tenancy.TenancyTenantsList(p, nil)
+	list, err := client.Tenancy.TenancyTenantsList(p, nil)
 	if err != nil {
 		return err
 	}
 
-	if *tenantsList.Payload.Count == 1 {
-		d.SetId(strconv.FormatInt(tenantsList.Payload.Results[0].ID, 10))
+	if *list.Payload.Count == 1 {
+		d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
 	} else {
 		return pkgerrors.New("Data results for netbox_tenancy_tenant returns 0 " +
 			"or more than one result.")

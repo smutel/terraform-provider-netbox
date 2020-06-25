@@ -29,23 +29,23 @@ func dataNetboxIpamVlan() *schema.Resource {
 func dataNetboxIpamVlanRead(d *schema.ResourceData, m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	vlanVid := int64(d.Get("vlan_id").(int))
-	vlanVidStr := strconv.FormatInt(vlanVid, 10)
-	vlanGroupID := int64(d.Get("vlan_group_id").(int))
-	vlanGroupIDStr := strconv.FormatInt(vlanGroupID, 10)
+	id := int64(d.Get("vlan_id").(int))
+	idStr := strconv.FormatInt(id, 10)
+	groupID := int64(d.Get("vlan_group_id").(int))
+	groupIDStr := strconv.FormatInt(groupID, 10)
 
-	p := ipam.NewIpamVlansListParams().WithVid(&vlanVidStr)
-	if vlanGroupID != 0 {
-		p.SetGroupID(&vlanGroupIDStr)
+	p := ipam.NewIpamVlansListParams().WithVid(&idStr)
+	if id != 0 {
+		p.SetGroupID(&groupIDStr)
 	}
 
-	vlanGroupsList, err := client.Ipam.IpamVlansList(p, nil)
+	list, err := client.Ipam.IpamVlansList(p, nil)
 	if err != nil {
 		return err
 	}
 
-	if *vlanGroupsList.Payload.Count == 1 {
-		d.SetId(strconv.FormatInt(vlanGroupsList.Payload.Results[0].ID, 10))
+	if *list.Payload.Count == 1 {
+		d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
 	} else {
 		return pkgerrors.New("Data results for netbox_ipam_vlan returns 0 or " +
 			"more than one result.")

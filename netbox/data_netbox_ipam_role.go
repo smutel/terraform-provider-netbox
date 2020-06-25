@@ -30,17 +30,17 @@ func dataNetboxIpamRole() *schema.Resource {
 func dataNetboxIpamRoleRead(d *schema.ResourceData, m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	roleSlug := d.Get("slug").(string)
+	slug := d.Get("slug").(string)
 
-	p := ipam.NewIpamRolesListParams().WithSlug(&roleSlug)
+	p := ipam.NewIpamRolesListParams().WithSlug(&slug)
 
-	rolesList, err := client.Ipam.IpamRolesList(p, nil)
+	list, err := client.Ipam.IpamRolesList(p, nil)
 	if err != nil {
 		return err
 	}
 
-	if *rolesList.Payload.Count == 1 {
-		d.SetId(strconv.FormatInt(rolesList.Payload.Results[0].ID, 10))
+	if *list.Payload.Count == 1 {
+		d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
 	} else {
 		return pkgerrors.New("Data results for netbox_ipam_role returns 0 or " +
 			"more than one result.")
