@@ -46,7 +46,7 @@ cp terraform-provider-netbox ~/.terraform.d/plugins/linux_amd64
 ## Using the provider
 
 The definition of the provider is optional.  
-All the paramters could be setup by environment variables.  
+All the parameters could be setup by environment variables.  
 
 ```hcl
 provider netbox {
@@ -84,6 +84,7 @@ $ export NETBOX_SCHEME="http"
 $ cd examples
 $ terraform init & terraform apply
 ```
-## Known bugs which can impact this provider
+## Known bugs in external project which can impact this provider
 
-N/A
+* [Issue 85 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/85)
+* [Issue 54 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/54)
