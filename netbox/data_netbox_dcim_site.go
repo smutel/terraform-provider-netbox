@@ -30,17 +30,17 @@ func dataNetboxDcimSite() *schema.Resource {
 func dataNetboxDcimSiteRead(d *schema.ResourceData, m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	siteSlug := d.Get("slug").(string)
+	slug := d.Get("slug").(string)
 
-	p := dcim.NewDcimSitesListParams().WithSlug(&siteSlug)
+	p := dcim.NewDcimSitesListParams().WithSlug(&slug)
 
-	sitesList, err := client.Dcim.DcimSitesList(p, nil)
+	list, err := client.Dcim.DcimSitesList(p, nil)
 	if err != nil {
 		return err
 	}
 
-	if *sitesList.Payload.Count == 1 {
-		d.SetId(strconv.FormatInt(sitesList.Payload.Results[0].ID, 10))
+	if *list.Payload.Count == 1 {
+		d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
 	} else {
 		return pkgerrors.New("Data results for netbox_dcim_site returns 0 or " +
 			"more than one result.")

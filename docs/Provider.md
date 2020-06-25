@@ -6,18 +6,19 @@ Table of Contents
    * [Netbox Provider](#netbox-provider)
       * [Data Sources](#data-sources)
          * [netbox_dcim_site](#netbox_dcim_site)
+         * [netbox_ipam_ip_addresses](#netbox_ipam_ip_addresses)
          * [netbox_ipam_role](#netbox_ipam_role)
-         * [netbox_ipam_vlan_group](#netbox_ipam_vlan_group)
          * [netbox_ipam_vlan](#netbox_ipam_vlan)
-         * [netbox_tenancy_tenant_group](#netbox_tenancy_tenant_group)
+         * [netbox_ipam_vlan_group](#netbox_ipam_vlan_group)
          * [netbox_tenancy_tenant](#netbox_tenancy_tenant)
+         * [netbox_tenancy_tenant_group](#netbox_tenancy_tenant_group)
       * [Resources](#resources)
-         * [netbox_ipam_prefix](#netbox_ipam_prefix)
+         * [netbox_ipam_ip_addresses](#netbox_ipam_ip_addresses-1)
+         * [netbox_ipam_prefix](#netbox_ipam_prefix-1)
          * [netbox_ipam_vlan](#netbox_ipam_vlan-1)
          * [netbox_ipam_vlan_group](#netbox_ipam_vlan_group-1)
          * [netbox_tenancy_tenant](#netbox_tenancy_tenant-1)
          * [netbox_tenancy_tenant_group](#netbox_tenancy_tenant_group-1)
-   * [Table of Contents](#table-of-contents)
 
 ## Data Sources
 
@@ -41,7 +42,29 @@ The following arguments are supported:
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this dcim site.
+* ``id`` - The id (ref in Netbox) of this object.
+
+### netbox_ipam_ip_addresses
+
+Get info about ipam IP addresses in the netbox provider.
+
+__**Example Usage**__
+
+```hcl
+data "netbox_ipam_ip_addresses" "ipaddress_test" {
+  address = "192.168.56.1/24"
+}
+```
+
+__**Argument Reference**__
+
+The following arguments are supported:
+* ``address`` - (Required) The address (with mask) of the ipam IP address.
+
+__**Attributes Reference**__
+
+In addition to the above arguments, the following attributes are exported:
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_ipam_role
 
@@ -63,7 +86,7 @@ The following arguments are supported:
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this ipam role.
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_ipam_vlan_group
 
@@ -87,7 +110,7 @@ The following arguments are supported:
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this ipam vlan groups.
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_ipam_vlan
 
@@ -111,7 +134,7 @@ The following arguments are supported:
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this ipam vlan.
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_tenancy_tenant_group
 
@@ -133,7 +156,7 @@ The following arguments are supported:
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this tenant group.
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_tenancy_tenant
 
@@ -155,9 +178,45 @@ The following arguments are supported:
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this tenant.
+* ``id`` - The id (ref in Netbox) of this object.
 
 ## Resources
+
+### netbox_ipam_ip_addresses
+
+Manages an ipam ip addresses resource within Netbox.
+
+
+__**Example Usage**__
+
+```hcl
+resource "netbox_ipam_ip_addresses" "ip_test" {
+  address = "192.168.56.0/24"
+  description = "IP created by terraform"
+  tags = ["tag1"]
+  status = "active"
+}
+```
+
+__**Argument Reference**__
+
+The following arguments are supported:
+* ``address`` - (Required) The IP address (with mask) used for this object.
+* ``description`` - (Optional) The description of this object.
+* ``dns_name`` - (Optional) The DNS name of this object.
+* ``interface_id`` - (Optional) The ID of the interface where this object is attached to.
+* ``nat_inside_id`` - (Optional) The ID of the NAT inside of this object.
+* ``nat_outside_id`` - (Optional) The ID of the NAT outside of this object.
+* ``role`` - (Optional) The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this object.
+* ``status`` - (Optional) The status among container, active, reserved, deprecated (active by default).
+* ``tags`` - (Optional) Array of tags for this object.
+* ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
+* ``vrf_id`` - (Optional) The ID of the vrf attached to this object.
+
+__**Attributes Reference**__
+
+In addition to the above arguments, the following attributes are exported:
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_ipam_prefix
 
@@ -167,40 +226,35 @@ Manages an ipam prefix resource within Netbox.
 __**Example Usage**__
 
 ```hcl
-resource "netbox_pam_prefix" "prefix_test" {
+resource "netbox_ipam_prefix" "prefix_test" {
   prefix = "192.168.56.0/24"
   vlan_id = netbox_ipam_vlan.vlan_test.id
   description = "Prefix created by terraform"
   site_id = netbox_ipam_vlan_group.vlan_group_test.site_id
   role_id = data.netbox_ipam_roles.vlan_role_production.id
   tags = ["tag1"]
-  status = "Active"
+  status = "active"
 }
 ```
 
 __**Argument Reference**__
 
 The following arguments are supported:
+* ``description`` - (Optional) The description of this object.
+* ``is_pool`` - (Optional) Define if this object is a pool (false by default).
 * ``prefix`` - (Required) The prefix (IP address/mask) used for this object.
-* ``status`` - (Optional) The status among Container, Active, Reserved, Deprecated (Active by default).
-* ``vrf_id`` - (Optional) The ID of the vrf attached to this prefix.
-* ``role_id`` - (Optional) The ID of the role attached to this prefix.
-* ``description`` - (Optional) The description of this prefix.
-* ``is_pool`` - (Optional) Define if this prefix is a pool (false by default).
-* ``site_id`` - (Optional) ID of the site where this prefix is created
-* ``vlan_id`` - (Optional) ID of the vlan where this prefix is attached.
-* ``tenant_id`` - (Optional) ID of the tenant where this prefix is attached.
-* ``custom_field`` - (Optional) List of custom fields.
-** ``name`` - (Required) Name of the custom field.
-** ``kind`` - (Required) Type of custom field among string, bool and int. Custom
-field of type Choice are not available in this provider.
-** ``value`` - (Required) Value for this custom field.
-* ``tags`` - (Optional) Array of tags for this prefix.
+* ``role_id`` - (Optional) The ID of the role attached to this object.
+* ``site_id`` - (Optional) ID of the site where this object is created
+* ``status`` - (Optional) The status among container, active, reserved, deprecated (active by default).
+* ``tags`` - (Optional) Array of tags for this object.
+* ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
+* ``vlan_id`` - (Optional) ID of the vlan where this object is attached.
+* ``vrf_id`` - (Optional) The ID of the vrf attached to this object.
 
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this prefix.
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_ipam_vlan
 
@@ -225,24 +279,20 @@ resource "netbox_ipam_vlan" "vlan_test" {
 __**Argument Reference**__
 
 The following arguments are supported:
-* ``vlan_id`` - (Required) The ID of this vlan.
-* ``status`` - (Optional) The status among Container, Active, Reserved, Deprecated (Active by default).
-* ``site_id`` - (Optional) ID of the site where this vlan is created.
-* ``vlan_group_id`` - (Optional) ID of the group where this vlan belongs to.
-* ``role_id`` - (Optional) The ID of the role attached to this vlan.
-* ``description`` - (Optional) The description of this vlan.
-* ``tenant_id`` - (Optional) ID of the tenant where this vlan is attached.
-* ``custom_field`` - (Optional) List of custom fields.
-** ``name`` - (Required) Name of the custom field.
-** ``kind`` - (Required) Type of custom field among string, bool and int. Custom
-field of type Choice are not available in this provider.
-** ``value`` - (Required) Value for this custom field.
+* ``description`` - (Optional) The description of this object.
+* ``vlan_group_id`` - (Optional) ID of the group where this object belongs to.
+* ``name`` - (Required) The name for this object.
+* ``role_id`` - (Optional) The ID of the role attached to this object.
+* ``site_id`` - (Optional) ID of the site where this object is created.
+* ``status`` - (Optional) The status among container, active, reserved, deprecated (active by default).
 * ``tags`` - (Optional) Array of tags for this vlan.
+* ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
+* ``vlan_id`` - (Required) The ID of this vlan (vlan tag).
 
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this vlan.
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_ipam_vlan_group
 
@@ -262,14 +312,14 @@ resource "netbox_ipam_vlan_group" "vlan_group_test" {
 __**Argument Reference**__
 
 The following arguments are supported:
-* ``name`` - (Required) The name for this vlan group.
-* ``slug`` - (Required) The slug for this vlan group.
-* ``site_id`` - (Optional) ID of the site where this vlan group is created.
+* ``name`` - (Required) The name for this object.
+* ``site_id`` - (Optional) ID of the site where this object is created.
+* ``slug`` - (Required) The slug for this object.
 
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this vlan group.
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_tenancy_tenant
 
@@ -292,22 +342,17 @@ resource "netbox_tenancy_tenant" "tenant_test" {
 __**Argument Reference**__
 
 The following arguments are supported:
-* ``name`` - (Required) The name for this tenant.
-* ``slug`` - (Required) The slug for this tenant.
-* ``description`` - (Optional) The description for this tenant.
-* ``comments`` - (Optional) Comments for this tenant.
-* ``tenant_group_id`` - (Optional) ID of the group where this tenant is located.
-* ``custom_field`` - (Optional) List of custom fields.
-** ``name`` - (Required) Name of the custom field.
-** ``kind`` - (Required) Type of custom field among string, bool and int. Custom
-field of type Choice are not available in this provider.
-** ``value`` - (Required) Value for this custom field.
+* ``comments`` - (Optional) Comments for this object.
+* ``description`` - (Optional) The description for this object.
+* ``tenant_group_id`` - (Optional) ID of the group where this object is located.
+* ``name`` - (Required) The name for this object.
+* ``slug`` - (Required) The slug for this object.
 * ``tags`` - (Optional) Array of tags for this tenant.
 
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this tenant.
+* ``id`` - The id (ref in Netbox) of this object.
 
 ### netbox_tenancy_tenant_group
 
@@ -326,10 +371,10 @@ resource "netbox_tenancy_tenant_group" "tenant_group_test" {
 __**Argument Reference**__
 
 The following arguments are supported:
-* ``name`` - (Required) The name for this tenant group.
-* ``slug`` - (Required) The slug for this tenant group.
+* ``name`` - (Required) The name for this object.
+* ``slug`` - (Required) The slug for this object.
 
 __**Attributes Reference**__
 
 In addition to the above arguments, the following attributes are exported:
-* ``id`` - The id of this tenant group.
+* ``id`` - The id (ref in Netbox) of this object.

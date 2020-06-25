@@ -50,3 +50,9 @@ resource "netbox_ipam_prefix" "prefix_test" {
   tags = ["tag1"]
   status = "container"
 }
+
+resource "netbox_ipam_ip_addresses" "ip_test" {
+  address = "192.168.56.1/24"
+  status = "active"
+  tenant_id = netbox_tenancy_tenant.tenant_test.id
+}

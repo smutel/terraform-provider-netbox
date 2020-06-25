@@ -34,22 +34,22 @@ func dataNetboxIpamVlanGroup() *schema.Resource {
 func dataNetboxIpamVlanGroupRead(d *schema.ResourceData, m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	vlanGroupSlug := d.Get("slug").(string)
-	vlanSiteID := d.Get("site_id").(int)
-	vlanSiteIDStr := strconv.FormatInt(int64(vlanSiteID), 10)
+	slug := d.Get("slug").(string)
+	siteID := d.Get("site_id").(int)
+	siteIDStr := strconv.FormatInt(int64(siteID), 10)
 
-	p := ipam.NewIpamVlanGroupsListParams().WithSlug(&vlanGroupSlug)
-	if vlanSiteID != 0 {
-		p.SetSiteID(&vlanSiteIDStr)
+	p := ipam.NewIpamVlanGroupsListParams().WithSlug(&slug)
+	if siteID != 0 {
+		p.SetSiteID(&siteIDStr)
 	}
 
-	vlanGroupsList, err := client.Ipam.IpamVlanGroupsList(p, nil)
+	list, err := client.Ipam.IpamVlanGroupsList(p, nil)
 	if err != nil {
 		return err
 	}
 
-	if *vlanGroupsList.Payload.Count == 1 {
-		d.SetId(strconv.FormatInt(vlanGroupsList.Payload.Results[0].ID, 10))
+	if *list.Payload.Count == 1 {
+		d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
 	} else {
 		return pkgerrors.New("Data results for netbox_ipam_vlan_group returns 0 " +
 			"or more than one result.")

@@ -32,17 +32,17 @@ func dataNetboxTenancyTenantGroupRead(d *schema.ResourceData,
 
 	client := m.(*netboxclient.NetBox)
 
-	tenantGroupSlug := d.Get("slug").(string)
+	slug := d.Get("slug").(string)
 
-	p := tenancy.NewTenancyTenantGroupsListParams().WithSlug(&tenantGroupSlug)
+	p := tenancy.NewTenancyTenantGroupsListParams().WithSlug(&slug)
 
-	tenantGroupsList, err := client.Tenancy.TenancyTenantGroupsList(p, nil)
+	list, err := client.Tenancy.TenancyTenantGroupsList(p, nil)
 	if err != nil {
 		return err
 	}
 
-	if *tenantGroupsList.Payload.Count == 1 {
-		d.SetId(strconv.FormatInt(tenantGroupsList.Payload.Results[0].ID, 10))
+	if *list.Payload.Count == 1 {
+		d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
 	} else {
 		return pkgerrors.New("Data results for netbox_tenancy_tenant_group " +
 			"returns 0 or more than one result.")

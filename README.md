@@ -1,9 +1,9 @@
 # terraform-provider-netbox
 
-[![GoDoc](http://godoc.org/github.com/smutel/terraform-provider-netbox?status.svg)](http://godoc.org/github.com/smutel/terraform-provider-netbox)
-[![Build Status](https://github.com/smutel/terraform-provider-netbox/workflows/checks/badge.svg?branch=master)](https://github.com/smutel/terraform-provider-netbox/actions)
-[![Go Report Card](https://goreportcard.com/badge/github.com/smutel/terraform-provider-netbox)](https://goreportcard.com/report/github.com/smutel/terraform-provider-netbox)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![Lisence](https://img.shields.io/badge/license-ISC-informational?style=flat-square)](https://github.com/smutel/terraform-provider-netbox/blob/master/LICENSE)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-informational.svg?style=flat-square&logo=git)](https://conventionalcommits.org)
+[![Build Status](https://img.shields.io/github/workflow/status/smutel/terraform-provider-netbox/checks/master?style=flat-square&logo=github-actions)](https://github.com/smutel/terraform-provider-netbox/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/smutel/terraform-provider-netbox?style=flat-square)](https://goreportcard.com/report/github.com/smutel/terraform-provider-netbox)
 
 Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 
@@ -46,7 +46,7 @@ cp terraform-provider-netbox ~/.terraform.d/plugins/linux_amd64
 ## Using the provider
 
 The definition of the provider is optional.  
-All the paramters could be setup by environment variables.  
+All the parameters could be setup by environment variables.  
 
 ```hcl
 provider netbox {
@@ -84,6 +84,7 @@ $ export NETBOX_SCHEME="http"
 $ cd examples
 $ terraform init & terraform apply
 ```
-## Known bugs which can impact this provider
+## Known bugs in external project which can impact this provider
 
-N/A
+* [Issue 85 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/85)
+* [Issue 54 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/54)

@@ -1,8 +1,6 @@
 package netbox
 
 import (
-	//"log"
-	//"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -22,14 +20,27 @@ func resourceNetboxIpamVlan() *schema.Resource {
 		Exists: resourceNetboxIpamVlanExists,
 
 		Schema: map[string]*schema.Schema{
-			"vlan_id": {
+			"description": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringLenBetween(1, 100),
+			},
+			"vlan_group_id": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
+			},
+			"role_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"site_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -38,33 +49,20 @@ func resourceNetboxIpamVlan() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"active", "reserved",
 					"deprecated"}, false),
 			},
-			"site_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"vlan_group_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"role_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"description": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-			},
-			"tenant_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 			"tags": {
 				Type: schema.TypeSet,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 				Optional: true,
+			},
+			"tenant_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"vlan_id": {
+				Type:     schema.TypeInt,
+				Required: true,
 			},
 		},
 	}
@@ -74,48 +72,48 @@ func resourceNetboxIpamVlanCreate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	vlanVid := int64(d.Get("vlan_id").(int))
-	vlanName := d.Get("name").(string)
-	vlanStatus := d.Get("status").(string)
-	vlanSiteID := int64(d.Get("site_id").(int))
-	vlanGroupID := int64(d.Get("vlan_group_id").(int))
-	vlanRoleID := int64(d.Get("role_id").(int))
-	vlanDescription := d.Get("description").(string)
-	vlanTenantID := int64(d.Get("tenant_id").(int))
-	vlanTags := d.Get("tags").(*schema.Set).List()
+	description := d.Get("description").(string)
+	groupID := int64(d.Get("vlan_group_id").(int))
+	name := d.Get("name").(string)
+	roleID := int64(d.Get("role_id").(int))
+	siteID := int64(d.Get("site_id").(int))
+	status := d.Get("status").(string)
+	tags := d.Get("tags").(*schema.Set).List()
+	tenantID := int64(d.Get("tenant_id").(int))
+	vid := int64(d.Get("vlan_id").(int))
 
-	newVlan := &models.WritableVLAN{
-		Vid:         &vlanVid,
-		Name:        &vlanName,
-		Status:      vlanStatus,
-		Tags:        expandToStringSlice(vlanTags),
-		Description: vlanDescription,
+	newResource := &models.WritableVLAN{
+		Description: description,
+		Name:        &name,
+		Status:      status,
+		Tags:        expandToStringSlice(tags),
+		Vid:         &vid,
 	}
 
-	if vlanSiteID != 0 {
-		newVlan.Site = &vlanSiteID
+	if groupID != 0 {
+		newResource.Group = &groupID
 	}
 
-	if vlanGroupID != 0 {
-		newVlan.Group = &vlanGroupID
+	if roleID != 0 {
+		newResource.Role = &roleID
 	}
 
-	if vlanRoleID != 0 {
-		newVlan.Role = &vlanRoleID
+	if siteID != 0 {
+		newResource.Site = &siteID
 	}
 
-	if vlanTenantID != 0 {
-		newVlan.Tenant = &vlanTenantID
+	if tenantID != 0 {
+		newResource.Tenant = &tenantID
 	}
 
-	p := ipam.NewIpamVlansCreateParams().WithData(newVlan)
+	resource := ipam.NewIpamVlansCreateParams().WithData(newResource)
 
-	vlanCreated, err := client.Ipam.IpamVlansCreate(p, nil)
+	resourceCreated, err := client.Ipam.IpamVlansCreate(resource, nil)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(strconv.FormatInt(vlanCreated.Payload.ID, 10))
+	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 	return resourceNetboxIpamVlanRead(d, m)
 }
 
@@ -123,73 +121,79 @@ func resourceNetboxIpamVlanRead(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
 
-	vlanID := d.Id()
-	params := ipam.NewIpamVlansListParams().WithIDIn(&vlanID)
-	vlans, err := client.Ipam.IpamVlansList(params, nil)
+	resourceID := d.Id()
+	params := ipam.NewIpamVlansListParams().WithID(&resourceID)
+	resources, err := client.Ipam.IpamVlansList(params, nil)
 	if err != nil {
 		return err
 	}
 
-	for _, vlan := range vlans.Payload.Results {
-		if strconv.FormatInt(vlan.ID, 10) == d.Id() {
-			if err = d.Set("vlan_id", vlan.Vid); err != nil {
+	for _, resource := range resources.Payload.Results {
+		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			if err = d.Set("description", resource.Description); err != nil {
 				return err
 			}
 
-			if err = d.Set("status", *vlan.Status.Value); err != nil {
-				return err
-			}
-
-			if err = d.Set("name", vlan.Name); err != nil {
-				return err
-			}
-
-			if err = d.Set("description", vlan.Description); err != nil {
-				return err
-			}
-
-			if err = d.Set("tags", vlan.Tags); err != nil {
-				return err
-			}
-
-			if vlan.Site == nil {
-				if err = d.Set("site_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("site_id", vlan.Site.ID); err != nil {
-					return err
-				}
-			}
-
-			if vlan.Group == nil {
+			if resource.Group == nil {
 				if err = d.Set("vlan_group_id", nil); err != nil {
 					return err
 				}
 			} else {
-				if err = d.Set("vlan_group_id", vlan.Group.ID); err != nil {
+				if err = d.Set("vlan_group_id", resource.Group.ID); err != nil {
 					return err
 				}
 			}
 
-			if vlan.Tenant == nil {
-				if err = d.Set("tenant_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("tenant_id", vlan.Tenant.ID); err != nil {
-					return err
-				}
+			if err = d.Set("name", resource.Name); err != nil {
+				return err
 			}
 
-			if vlan.Role == nil {
+			if resource.Role == nil {
 				if err = d.Set("role_id", nil); err != nil {
 					return err
 				}
 			} else {
-				if err = d.Set("role_id", vlan.Role.ID); err != nil {
+				if err = d.Set("role_id", resource.Role.ID); err != nil {
 					return err
 				}
+			}
+
+			if resource.Site == nil {
+				if err = d.Set("site_id", nil); err != nil {
+					return err
+				}
+			} else {
+				if err = d.Set("site_id", resource.Site.ID); err != nil {
+					return err
+				}
+			}
+
+			if resource.Status == nil {
+				if err = d.Set("status", nil); err != nil {
+					return err
+				}
+			} else {
+				if err = d.Set("status", resource.Status.Value); err != nil {
+					return err
+				}
+			}
+
+			if err = d.Set("tags", resource.Tags); err != nil {
+				return err
+			}
+
+			if resource.Tenant == nil {
+				if err = d.Set("tenant_id", nil); err != nil {
+					return err
+				}
+			} else {
+				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
+					return err
+				}
+			}
+
+			if err = d.Set("vlan_id", resource.Vid); err != nil {
+				return err
 			}
 
 			return nil
@@ -203,65 +207,69 @@ func resourceNetboxIpamVlanRead(d *schema.ResourceData,
 func resourceNetboxIpamVlanUpdate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBox)
-	updatedParams := &models.WritableVLAN{}
-
-	vlanVid := int64(d.Get("vlan_id").(int))
-	updatedParams.Vid = &vlanVid
-
-	name := d.Get("name").(string)
-	updatedParams.Name = &name
-
-	vlanTags := d.Get("tags").(*schema.Set).List()
-	updatedParams.Tags = expandToStringSlice(vlanTags)
-
-	if d.HasChange("status") {
-		updatedParams.Status = d.Get("status").(string)
-	}
+	params := &models.WritableVLAN{}
 
 	if d.HasChange("description") {
 		description := d.Get("description").(string)
-		updatedParams.Description = description
+		params.Description = description
+	}
+
+	if d.HasChange("vlan_group_id") {
+		groupID := int64(d.Get("vlan_group_id").(int))
+		if groupID != 0 {
+			params.Group = &groupID
+		}
+	}
+
+	if d.HasChange("name") {
+		name := d.Get("name").(string)
+		params.Name = &name
+	}
+
+	if d.HasChange("role_id") {
+		roleID := int64(d.Get("role_id").(int))
+		if roleID != 0 {
+			params.Role = &roleID
+		}
 	}
 
 	if d.HasChange("site_id") {
 		siteID := int64(d.Get("site_id").(int))
 		if siteID != 0 {
-			updatedParams.Site = &siteID
+			params.Site = &siteID
 		}
 	}
 
-	if d.HasChange("vlan_group_id") {
-		vlanGroupID := int64(d.Get("vlan_group_id").(int))
-		if vlanGroupID != 0 {
-			updatedParams.Group = &vlanGroupID
-		}
+	if d.HasChange("status") {
+		params.Status = d.Get("status").(string)
 	}
+
+	tags := d.Get("tags").(*schema.Set).List()
+	params.Tags = expandToStringSlice(tags)
 
 	if d.HasChange("tenant_id") {
-		vlanTenantID := int64(d.Get("tenant_id").(int))
-		if vlanTenantID != 0 {
-			updatedParams.Tenant = &vlanTenantID
+		tenantID := int64(d.Get("tenant_id").(int))
+		if tenantID != 0 {
+			params.Tenant = &tenantID
 		}
 	}
 
-	if d.HasChange("role_id") {
-		vlanRoleID := int64(d.Get("role_id").(int))
-		if vlanRoleID != 0 {
-			updatedParams.Role = &vlanRoleID
-		}
+	if d.HasChange("vlan_id") {
+		vid := int64(d.Get("vlan_id").(int))
+		params.Vid = &vid
 	}
 
-	p := ipam.NewIpamVlansPartialUpdateParams().WithData(
-		updatedParams)
+	resource := ipam.NewIpamVlansPartialUpdateParams().WithData(
+		params)
 
-	tenantID, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert tenant ID into int64")
+		return pkgerrors.New("Unable to convert ID into int64")
 	}
 
-	p.SetID(tenantID)
+	resource.SetID(resourceID)
 
-	_, err = client.Ipam.IpamVlansPartialUpdate(p, nil)
+	_, err = client.Ipam.IpamVlansPartialUpdate(resource, nil)
 	if err != nil {
 		return err
 	}
@@ -281,13 +289,13 @@ func resourceNetboxIpamVlanDelete(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
-	vlanID, err := strconv.ParseInt(d.Id(), 10, 64)
+	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert vlan group ID into int64")
+		return pkgerrors.New("Unable to convert ID into int64")
 	}
 
-	p := ipam.NewIpamVlansDeleteParams().WithID(vlanID)
-	if _, err := client.Ipam.IpamVlansDelete(p, nil); err != nil {
+	resource := ipam.NewIpamVlansDeleteParams().WithID(id)
+	if _, err := client.Ipam.IpamVlansDelete(resource, nil); err != nil {
 		return err
 	}
 
@@ -297,21 +305,21 @@ func resourceNetboxIpamVlanDelete(d *schema.ResourceData, m interface{}) error {
 func resourceNetboxIpamVlanExists(d *schema.ResourceData, m interface{}) (b bool,
 	e error) {
 	client := m.(*netboxclient.NetBox)
-	vlanExist := false
+	resourceExist := false
 
 	vlanID := d.Id()
-	params := ipam.NewIpamVlansListParams().WithIDIn(&vlanID)
+	params := ipam.NewIpamVlansListParams().WithID(&vlanID)
 	vlans, err := client.Ipam.IpamVlansList(params, nil)
 
 	if err != nil {
-		return vlanExist, err
+		return resourceExist, err
 	}
 
 	for _, vlan := range vlans.Payload.Results {
 		if strconv.FormatInt(vlan.ID, 10) == d.Id() {
-			vlanExist = true
+			resourceExist = true
 		}
 	}
 
-	return vlanExist, nil
+	return resourceExist, nil
 }
