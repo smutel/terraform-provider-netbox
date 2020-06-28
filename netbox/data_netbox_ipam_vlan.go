@@ -35,7 +35,7 @@ func dataNetboxIpamVlanRead(d *schema.ResourceData, m interface{}) error {
 	groupIDStr := strconv.FormatInt(groupID, 10)
 
 	p := ipam.NewIpamVlansListParams().WithVid(&idStr)
-	if id != 0 {
+	if groupID != 0 {
 		p.SetGroupID(&groupIDStr)
 	}
 
