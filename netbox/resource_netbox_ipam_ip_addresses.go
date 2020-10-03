@@ -41,9 +41,16 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 					regexp.MustCompile("^[-a-zA-Z0-9_.]{1,255}$"),
 					"Must be like ^[-a-zA-Z0-9_.]{1,255}$"),
 			},
-			"interface_id": {
+			"object_id": {
 				Type:     schema.TypeInt,
 				Optional: true,
+			},
+			"object_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "",
+				ValidateFunc: validation.StringInSlice([]string{
+					"virtualization.vminterface", "dcim.interface"}, false),
 			},
 			"nat_inside_id": {
 				Type:     schema.TypeInt,
@@ -68,12 +75,21 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"container", "active",
 					"reserved", "deprecated", "dhcp"}, false),
 			},
-			"tags": {
-				Type: schema.TypeSet,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+			"tag": {
+				Type:     schema.TypeSet,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"slug": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
 			},
 			"tenant_id": {
 				Type:     schema.TypeInt,
@@ -89,17 +105,18 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 
 func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	address := d.Get("address").(string)
 	description := d.Get("description").(string)
 	dnsName := d.Get("dns_name").(string)
-	interfaceID := int64(d.Get("interface_id").(int))
+	objectID := int64(d.Get("object_id").(int))
+	interfaceType := d.Get("object_type").(string)
 	natInsideID := int64(d.Get("nat_inside_id").(int))
 	natOutsideID := int64(d.Get("nat_outside_id").(int))
 	role := d.Get("role").(string)
 	status := d.Get("status").(string)
-	tags := d.Get("tags").(*schema.Set).List()
+	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
 	vrfID := int64(d.Get("vrf_id").(int))
 
@@ -109,11 +126,12 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 		DNSName:     dnsName,
 		Role:        role,
 		Status:      status,
-		Tags:        expandToStringSlice(tags),
+		Tags:        convertTagsToNestedTags(tags),
 	}
 
-	if interfaceID != 0 {
-		newResource.Interface = &interfaceID
+	if objectID != 0 {
+		newResource.AssignedObjectID = &objectID
+		newResource.AssignedObjectType = interfaceType
 	}
 
 	if natInsideID != 0 {
@@ -146,7 +164,7 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 
 func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := ipam.NewIpamIPAddressesListParams().WithID(&resourceID)
@@ -169,14 +187,19 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				return err
 			}
 
-			if resource.Interface == nil {
-				if err = d.Set("vrf_id", nil); err != nil {
+			if resource.AssignedObjectID == nil {
+				if err = d.Set("object_id", nil); err != nil {
 					return err
 				}
 			} else {
-				if err = d.Set("interface_id", resource.Interface.ID); err != nil {
+				if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
 					return err
 				}
+			}
+
+			if err = d.Set("object_type",
+				resource.AssignedObjectType); err != nil {
+				return err
 			}
 
 			if resource.NatInside == nil {
@@ -219,7 +242,7 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				}
 			}
 
-			if err = d.Set("tags", resource.Tags); err != nil {
+			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
 				return err
 			}
 
@@ -254,9 +277,10 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 
 func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableIPAddress{}
 
+	// Required parameters
 	address := d.Get("address").(string)
 	params.Address = &address
 
@@ -272,10 +296,14 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 		params.DNSName = d.Get("dns_name").(string)
 	}
 
-	if d.HasChange("interface_id") {
-		interfaceID := int64(d.Get("interface_id").(int))
-		if interfaceID != 0 {
-			params.Interface = &interfaceID
+	if d.HasChange("object_type") {
+		params.AssignedObjectType = d.Get("object_type").(string)
+	}
+
+	if d.HasChange("object_id") {
+		objectID := int64(d.Get("object_id").(int))
+		if objectID != 0 {
+			params.AssignedObjectID = &objectID
 		}
 	}
 
@@ -303,8 +331,8 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 		params.Status = status
 	}
 
-	tags := d.Get("tags").(*schema.Set).List()
-	params.Tags = expandToStringSlice(tags)
+	tags := d.Get("tag").(*schema.Set).List()
+	params.Tags = convertTagsToNestedTags(tags)
 
 	if d.HasChange("tenant_id") {
 		tenantID := int64(d.Get("tenant_id").(int))
@@ -340,7 +368,7 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 
 func resourceNetboxIpamIPAddressesDelete(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxIpamIPAddressesExists(d, m)
 	if err != nil {
@@ -366,7 +394,7 @@ func resourceNetboxIpamIPAddressesDelete(d *schema.ResourceData,
 
 func resourceNetboxIpamIPAddressesExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 	resourceExist := false
 
 	resourceID := d.Id()

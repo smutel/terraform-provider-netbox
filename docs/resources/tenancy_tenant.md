@@ -11,7 +11,11 @@ resource "netbox_tenancy_tenant" "tenant_test" {
   description     = "Tenant created by terraform"
   comments        = "Some test comments"
   tenant_group_id = netbox_tenancy_tenant_group.tenant_group_test.id
-  tags            = ["tag1"]
+  
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
 }
 ```
 
@@ -23,7 +27,9 @@ The following arguments are supported:
 * ``tenant_group_id`` - (Optional) ID of the group where this object is located.
 * ``name`` - (Required) The name for this object.
 * ``slug`` - (Required) The slug for this object.
-* ``tags`` - (Optional) Array of tags for this tenant.
+The ``tag`` block supports:
+* ``name`` - (Required) Name of the existing tag to associate with this resource.
+* ``slug`` - (Required) Slug of the existing tag to associate with this resource.
 
 ## Attributes Reference
 

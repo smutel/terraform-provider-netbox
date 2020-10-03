@@ -48,12 +48,21 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
 			},
-			"tags": {
-				Type: schema.TypeSet,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+			"tag": {
+				Type:     schema.TypeSet,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"slug": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -61,21 +70,21 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 
 func resourceNetboxTenancyTenantCreate(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	comments := d.Get("comments").(string)
 	description := d.Get("description").(string)
 	groupID := int64(d.Get("tenant_group_id").(int))
 	name := d.Get("name").(string)
 	slug := d.Get("slug").(string)
-	tags := d.Get("tags").(*schema.Set).List()
+	tags := d.Get("tag").(*schema.Set).List()
 
 	newResource := &models.WritableTenant{
 		Comments:    comments,
 		Description: description,
 		Name:        &name,
 		Slug:        &slug,
-		Tags:        expandToStringSlice(tags),
+		Tags:        convertTagsToNestedTags(tags),
 	}
 
 	if groupID != 0 {
@@ -96,7 +105,7 @@ func resourceNetboxTenancyTenantCreate(d *schema.ResourceData,
 
 func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := tenancy.NewTenancyTenantsListParams().WithID(&resourceID)
@@ -133,7 +142,7 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 				return err
 			}
 
-			if err = d.Set("tags", resource.Tags); err != nil {
+			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
 				return err
 			}
 
@@ -147,8 +156,15 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 
 func resourceNetboxTenancyTenantUpdate(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableTenant{}
+
+	// Required parameters
+	name := d.Get("name").(string)
+	params.Name = &name
+
+	slug := d.Get("slug").(string)
+	params.Slug = &slug
 
 	if d.HasChange("comments") {
 		comments := d.Get("comments").(string)
@@ -165,14 +181,8 @@ func resourceNetboxTenancyTenantUpdate(d *schema.ResourceData,
 		params.Group = &groupID
 	}
 
-	name := d.Get("name").(string)
-	params.Name = &name
-
-	slug := d.Get("slug").(string)
-	params.Slug = &slug
-
-	tags := d.Get("tags").(*schema.Set).List()
-	params.Tags = expandToStringSlice(tags)
+	tags := d.Get("tag").(*schema.Set).List()
+	params.Tags = convertTagsToNestedTags(tags)
 
 	resource := tenancy.NewTenancyTenantsPartialUpdateParams().WithData(params)
 
@@ -193,7 +203,7 @@ func resourceNetboxTenancyTenantUpdate(d *schema.ResourceData,
 
 func resourceNetboxTenancyTenantDelete(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxTenancyTenantExists(d, m)
 	if err != nil {
@@ -220,7 +230,7 @@ func resourceNetboxTenancyTenantDelete(d *schema.ResourceData,
 func resourceNetboxTenancyTenantExists(d *schema.ResourceData,
 	m interface{}) (b bool,
 	e error) {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 	resourceExist := false
 
 	resourceID := d.Id()

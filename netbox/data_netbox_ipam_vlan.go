@@ -1,12 +1,12 @@
 package netbox
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 	"github.com/netbox-community/go-netbox/netbox/client/ipam"
-	pkgerrors "github.com/pkg/errors"
 )
 
 func dataNetboxIpamVlan() *schema.Resource {
@@ -27,7 +27,7 @@ func dataNetboxIpamVlan() *schema.Resource {
 }
 
 func dataNetboxIpamVlanRead(d *schema.ResourceData, m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	id := int64(d.Get("vlan_id").(int))
 	idStr := strconv.FormatInt(id, 10)
@@ -44,12 +44,15 @@ func dataNetboxIpamVlanRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if *list.Payload.Count == 1 {
-		d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
-	} else {
-		return pkgerrors.New("Data results for netbox_ipam_vlan returns 0 or " +
-			"more than one result.")
+	if *list.Payload.Count < 1 {
+		return fmt.Errorf("Your query returned no results. " +
+			"Please change your search criteria and try again.")
+	} else if *list.Payload.Count > 1 {
+		return fmt.Errorf("Your query returned more than one result. " +
+			"Please try a more specific search criteria.")
 	}
+
+	d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
 
 	return nil
 }

@@ -8,8 +8,12 @@ Manages an ipam ip addresses resource within Netbox.
 resource "netbox_ipam_ip_addresses" "ip_test" {
   address = "192.168.56.0/24"
   description = "IP created by terraform"
-  tags = ["tag1"]
   status = "active"
+  
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
 }
 ```
 
@@ -24,12 +28,13 @@ The following arguments are supported:
 * ``nat_outside_id`` - (Optional) The ID of the NAT outside of this object.
 * ``role`` - (Optional) The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this object.
 * ``status`` - (Optional) The status among container, active, reserved, deprecated (active by default).
-* ``tags`` - (Optional) Array of tags for this object.
 * ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
 * ``vrf_id`` - (Optional) The ID of the vrf attached to this object.
+The ``tag`` block supports:
+* ``name`` - (Required) Name of the existing tag to associate with this resource.
+* ``slug`` - (Required) Slug of the existing tag to associate with this resource.
 
 ## Attributes Reference
 
 In addition to the above arguments, the following attributes are exported:
 * ``id`` - The id (ref in Netbox) of this object.
-

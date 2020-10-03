@@ -49,12 +49,21 @@ func resourceNetboxIpamVlan() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"active", "reserved",
 					"deprecated"}, false),
 			},
-			"tags": {
-				Type: schema.TypeSet,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+			"tag": {
+				Type:     schema.TypeSet,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"slug": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
 			},
 			"tenant_id": {
 				Type:     schema.TypeInt,
@@ -70,7 +79,7 @@ func resourceNetboxIpamVlan() *schema.Resource {
 
 func resourceNetboxIpamVlanCreate(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	description := d.Get("description").(string)
 	groupID := int64(d.Get("vlan_group_id").(int))
@@ -78,7 +87,7 @@ func resourceNetboxIpamVlanCreate(d *schema.ResourceData,
 	roleID := int64(d.Get("role_id").(int))
 	siteID := int64(d.Get("site_id").(int))
 	status := d.Get("status").(string)
-	tags := d.Get("tags").(*schema.Set).List()
+	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
 	vid := int64(d.Get("vlan_id").(int))
 
@@ -86,7 +95,7 @@ func resourceNetboxIpamVlanCreate(d *schema.ResourceData,
 		Description: description,
 		Name:        &name,
 		Status:      status,
-		Tags:        expandToStringSlice(tags),
+		Tags:        convertTagsToNestedTags(tags),
 		Vid:         &vid,
 	}
 
@@ -119,7 +128,7 @@ func resourceNetboxIpamVlanCreate(d *schema.ResourceData,
 
 func resourceNetboxIpamVlanRead(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := ipam.NewIpamVlansListParams().WithID(&resourceID)
@@ -178,7 +187,7 @@ func resourceNetboxIpamVlanRead(d *schema.ResourceData,
 				}
 			}
 
-			if err = d.Set("tags", resource.Tags); err != nil {
+			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
 				return err
 			}
 
@@ -206,8 +215,15 @@ func resourceNetboxIpamVlanRead(d *schema.ResourceData,
 
 func resourceNetboxIpamVlanUpdate(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableVLAN{}
+
+	// Required parameters
+	name := d.Get("name").(string)
+	params.Name = &name
+
+	vid := int64(d.Get("vlan_id").(int))
+	params.Vid = &vid
 
 	if d.HasChange("description") {
 		description := d.Get("description").(string)
@@ -219,11 +235,6 @@ func resourceNetboxIpamVlanUpdate(d *schema.ResourceData,
 		if groupID != 0 {
 			params.Group = &groupID
 		}
-	}
-
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
 	}
 
 	if d.HasChange("role_id") {
@@ -244,19 +255,14 @@ func resourceNetboxIpamVlanUpdate(d *schema.ResourceData,
 		params.Status = d.Get("status").(string)
 	}
 
-	tags := d.Get("tags").(*schema.Set).List()
-	params.Tags = expandToStringSlice(tags)
+	tags := d.Get("tag").(*schema.Set).List()
+	params.Tags = convertTagsToNestedTags(tags)
 
 	if d.HasChange("tenant_id") {
 		tenantID := int64(d.Get("tenant_id").(int))
 		if tenantID != 0 {
 			params.Tenant = &tenantID
 		}
-	}
-
-	if d.HasChange("vlan_id") {
-		vid := int64(d.Get("vlan_id").(int))
-		params.Vid = &vid
 	}
 
 	resource := ipam.NewIpamVlansPartialUpdateParams().WithData(
@@ -278,7 +284,7 @@ func resourceNetboxIpamVlanUpdate(d *schema.ResourceData,
 }
 
 func resourceNetboxIpamVlanDelete(d *schema.ResourceData, m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxIpamVlanExists(d, m)
 	if err != nil {
@@ -304,7 +310,7 @@ func resourceNetboxIpamVlanDelete(d *schema.ResourceData, m interface{}) error {
 
 func resourceNetboxIpamVlanExists(d *schema.ResourceData, m interface{}) (b bool,
 	e error) {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 	resourceExist := false
 
 	vlanID := d.Id()

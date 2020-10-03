@@ -1,5 +1,9 @@
 package netbox
 
+import (
+	"github.com/netbox-community/go-netbox/netbox/models"
+)
+
 func expandToStringSlice(v []interface{}) []string {
 	s := make([]string, len(v))
 	for i, val := range v {
@@ -9,6 +13,36 @@ func expandToStringSlice(v []interface{}) []string {
 	}
 
 	return s
+}
+
+func convertTagsToNestedTags(tags []interface{}) []*models.NestedTag {
+	nestedTags := []*models.NestedTag{}
+
+	for _, tag := range tags {
+		t := tag.(map[string]interface{})
+
+		tagName := t["name"].(string)
+		tagSlug := t["slug"].(string)
+
+		nestedTag := models.NestedTag{Name: &tagName, Slug: &tagSlug}
+		nestedTags = append(nestedTags, &nestedTag)
+	}
+
+	return nestedTags
+}
+
+func convertNestedTagsToTags(tags []*models.NestedTag) []map[string]string {
+	var tfTags []map[string]string
+
+	for _, t := range tags {
+		tag := map[string]string{}
+		tag["name"] = *t.Name
+		tag["slug"] = *t.Slug
+
+		tfTags = append(tfTags, tag)
+	}
+
+	return tfTags
 }
 
 /*
