@@ -19,15 +19,15 @@ build:
 	@go build -mod=vendor -o terraform-provider-netbox .
 
 build-all: clean
-	@echo "==> Building terraform-provider-netbox"
-	@for GOOS in darwin linux windows; do for GOARCH in 386 amd64; do env GOOS=$${GOOS} GOARCH=$${GOARCH} env VERSION=${VERSION} go build -mod=vendor -o terraform-provider-netbox_v${VERSION} . && tar zcf terraform-provider-netbox_v${VERSION}_$${GOOS}_$${GOARCH}.tar.gz terraform-provider-netbox_v${VERSION} && rm terraform-provider-netbox_v${VERSION}; done; done
-	@for file in *.tar.gz; do echo "$$(sha256sum $${file})" >> sha256sums.txt; done
+	@for GOOS in darwin linux windows; do for GOARCH in 386 amd64; do echo "==> Building terraform-provider-netbox ($${GOOS} / $${GOARCH})" && env GOOS=$${GOOS} GOARCH=$${GOARCH} env VERSION=${VERSION} go build -mod=vendor -o terraform-provider-netbox_v${VERSION} . && zip -q terraform-provider-netbox_${VERSION}_$${GOOS}_$${GOARCH}.zip terraform-provider-netbox_v${VERSION} && rm terraform-provider-netbox_v${VERSION}; done; done
+	@for file in *.zip; do echo "$$(sha256sum $${file})" >>  terraform-provider-netbox_${VERSION}_SHA256SUMS; done
+	@gpg --detach-sign terraform-provider-netbox_${VERSION}_SHA256SUMS
 
 localinstall:
-	@echo "==> Creating folder terraform.d/plugins/linux_amd64"
-	@mkdir -p ~/.terraform.d/plugins/linux_amd64
+	@echo "==> Creating folder ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/0.0.1/linux_amd64"
+	@mkdir -p ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/0.0.1/linux_amd64
 	@echo "==> Installing provider in this folder"
-	@cp terraform-provider-netbox ~/.terraform.d/plugins/linux_amd64
+	@cp terraform-provider-netbox ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/0.0.1/linux_amd64/terraform-provider-netbox_v0.0.1
 
 check:
 	@echo "==> Checking terraform-provider-netbox"
@@ -36,5 +36,5 @@ check:
 clean:
 	@echo "==> Cleaning terraform-provider-netbox"
 	@rm -f terraform-provider-netbox
-	@rm -rf *.tar.gz
-	@rm -f sha256sums.txt
+	@rm -rf *.zip
+	@rm -f *SHA256SUMS*

@@ -1,6 +1,7 @@
 package netbox
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 
@@ -8,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 	"github.com/netbox-community/go-netbox/netbox/client/ipam"
-	pkgerrors "github.com/pkg/errors"
 )
 
 func dataNetboxIpamRole() *schema.Resource {
@@ -28,7 +28,7 @@ func dataNetboxIpamRole() *schema.Resource {
 }
 
 func dataNetboxIpamRoleRead(d *schema.ResourceData, m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	slug := d.Get("slug").(string)
 
@@ -39,12 +39,15 @@ func dataNetboxIpamRoleRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if *list.Payload.Count == 1 {
-		d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
-	} else {
-		return pkgerrors.New("Data results for netbox_ipam_role returns 0 or " +
-			"more than one result.")
+	if *list.Payload.Count < 1 {
+		return fmt.Errorf("Your query returned no results. " +
+			"Please change your search criteria and try again.")
+	} else if *list.Payload.Count > 1 {
+		return fmt.Errorf("Your query returned more than one result. " +
+			"Please try a more specific search criteria.")
 	}
+
+	d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
 
 	return nil
 }

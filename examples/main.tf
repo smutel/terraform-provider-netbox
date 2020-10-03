@@ -4,7 +4,16 @@ resource "netbox_tenancy_tenant" "tenant_test" {
   description     = "Tenant created by terraform"
   comments        = "Some test comments"
   tenant_group_id = netbox_tenancy_tenant_group.tenant_group_test.id
-  tags            = ["tag1", "tag3"]
+
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
+
+  tag {
+    name = "tag2"
+    slug = "tag2"
+  }
 }
 
 resource "netbox_tenancy_tenant_group" "tenant_group_test" {
@@ -38,7 +47,16 @@ resource "netbox_ipam_vlan" "vlan_test" {
   vlan_group_id = netbox_ipam_vlan_group.vlan_group_test.id
   tenant_id = netbox_tenancy_tenant.tenant_test.id
   role_id = data.netbox_ipam_role.vlan_role_production.id
-  tags = ["tag1"]
+
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
+
+  tag {
+    name = "tag2"
+    slug = "tag2"
+  }
 }
 
 resource "netbox_ipam_prefix" "prefix_test" {
@@ -47,12 +65,30 @@ resource "netbox_ipam_prefix" "prefix_test" {
   description = "Prefix created by terraform"
   site_id = netbox_ipam_vlan_group.vlan_group_test.site_id
   role_id = data.netbox_ipam_role.vlan_role_production.id
-  tags = ["tag1"]
-  status = "container"
+
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
+
+  tag {
+    name = "tag2"
+    slug = "tag2"
+  }
 }
 
 resource "netbox_ipam_ip_addresses" "ip_test" {
   address = "192.168.56.1/24"
   status = "active"
   tenant_id = netbox_tenancy_tenant.tenant_test.id
+
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
+
+  tag {
+    name = "tag2"
+    slug = "tag2"
+  }
 }

@@ -13,7 +13,11 @@ resource "netbox_ipam_vlan" "vlan_test" {
   vlan_group_id = netbox_ipam_vlan_group.vlan_group_test.id
   tenant_id = netbox_tenancy_tenant.tenant_test.id
   role_id = data.netbox_ipam_roles.vlan_role_production.id
-  tags = ["tag1"]
+  
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
 }
 ```
 
@@ -26,9 +30,11 @@ The following arguments are supported:
 * ``role_id`` - (Optional) The ID of the role attached to this object.
 * ``site_id`` - (Optional) ID of the site where this object is created.
 * ``status`` - (Optional) The status among container, active, reserved, deprecated (active by default).
-* ``tags`` - (Optional) Array of tags for this vlan.
 * ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
 * ``vlan_id`` - (Required) The ID of this vlan (vlan tag).
+The ``tag`` block supports:
+* ``name`` - (Required) Name of the existing tag to associate with this resource.
+* ``slug`` - (Required) Slug of the existing tag to associate with this resource.
 
 ## Attributes Reference
 

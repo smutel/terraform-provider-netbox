@@ -50,12 +50,21 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"container", "active",
 					"reserved", "deprecated"}, false),
 			},
-			"tags": {
-				Type: schema.TypeSet,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+			"tag": {
+				Type:     schema.TypeSet,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"slug": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
 			},
 			"tenant_id": {
 				Type:     schema.TypeInt,
@@ -75,7 +84,7 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 
 func resourceNetboxIpamPrefixCreate(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	description := d.Get("description").(string)
 	isPool := d.Get("is_pool").(bool)
@@ -83,7 +92,7 @@ func resourceNetboxIpamPrefixCreate(d *schema.ResourceData,
 	roleID := int64(d.Get("role_id").(int))
 	siteID := int64(d.Get("site_id").(int))
 	status := d.Get("status").(string)
-	tags := d.Get("tags").(*schema.Set).List()
+	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
 	vlanID := int64(d.Get("vlan_id").(int))
 	vrfID := int64(d.Get("vrf_id").(int))
@@ -93,7 +102,7 @@ func resourceNetboxIpamPrefixCreate(d *schema.ResourceData,
 		IsPool:      isPool,
 		Prefix:      &prefix,
 		Status:      status,
-		Tags:        expandToStringSlice(tags),
+		Tags:        convertTagsToNestedTags(tags),
 	}
 
 	if roleID != 0 {
@@ -130,7 +139,7 @@ func resourceNetboxIpamPrefixCreate(d *schema.ResourceData,
 
 func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := ipam.NewIpamPrefixesListParams().WithID(&resourceID)
@@ -183,7 +192,7 @@ func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 				}
 			}
 
-			if err = d.Set("tags", resource.Tags); err != nil {
+			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
 				return err
 			}
 
@@ -227,8 +236,12 @@ func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 
 func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritablePrefix{}
+
+	// Required parameters
+	prefix := d.Get("prefix").(string)
+	params.Prefix = &prefix
 
 	if d.HasChange("description") {
 		description := d.Get("description").(string)
@@ -236,9 +249,6 @@ func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
 	}
 
 	params.IsPool = d.Get("is_pool").(bool)
-
-	prefix := d.Get("prefix").(string)
-	params.Prefix = &prefix
 
 	if d.HasChange("role_id") {
 		roleID := int64(d.Get("role_id").(int))
@@ -258,8 +268,8 @@ func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
 		params.Status = d.Get("status").(string)
 	}
 
-	tags := d.Get("tags").(*schema.Set).List()
-	params.Tags = expandToStringSlice(tags)
+	tags := d.Get("tag").(*schema.Set).List()
+	params.Tags = convertTagsToNestedTags(tags)
 
 	if d.HasChange("tenant_id") {
 		tenantID := int64(d.Get("tenant_id").(int))
@@ -301,7 +311,7 @@ func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
 
 func resourceNetboxIpamPrefixDelete(d *schema.ResourceData,
 	m interface{}) error {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxIpamPrefixExists(d, m)
 	if err != nil {
@@ -327,7 +337,7 @@ func resourceNetboxIpamPrefixDelete(d *schema.ResourceData,
 
 func resourceNetboxIpamPrefixExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBox)
+	client := m.(*netboxclient.NetBoxAPI)
 	resourceExist := false
 
 	resourceID := d.Id()
