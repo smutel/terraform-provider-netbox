@@ -1,4 +1,4 @@
-# netbox_ipam_ip_addresses Data Source
+# netbox\_ipam\_ip\_addresses Data Source
 
 Get info about ipam IP addresses in the netbox provider.
 

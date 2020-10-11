@@ -1,4 +1,4 @@
-# netbox_tenancy_tenant Resource
+# netbox\_tenancy\_tenant Resource
 
 Manages an tenancy tenant resource within Netbox.
 
