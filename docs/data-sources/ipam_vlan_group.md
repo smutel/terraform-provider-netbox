@@ -1,4 +1,4 @@
-# netbox_ipam_vlan_group Data Source
+# netbox\_ipam\_vlan\_group Data Source
 
 Get info about ipam vlan group in the netbox provider.
 
