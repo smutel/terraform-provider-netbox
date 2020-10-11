@@ -13,6 +13,10 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 * Go 1.13 minimum (to build the provider)
 * Terraform (to use the provider)
 
+## Compatibility with Netbox
+
+Version 0.x.x => Netbox 2.8.x
+
 ## Building the provider
 
 Clone repository to: ``$GOPATH/src/github.com/smutel/terraform-provider-netbox``
@@ -31,6 +35,21 @@ $ make build
 ```
 
 ## Installing the provider
+
+### Automatic installation from Terraform 0.13
+
+```hcl
+terraform {
+  required_providers {
+    netbox = {
+      source = "smutel/netbox"
+      version = "0.2.1"
+    }
+  }
+}
+```
+
+### Manual installation
 
 You can install the provider manually in your global terraform provider folder 
 or you can also use the makefile to install the provider in your local provider folder:
@@ -61,7 +80,7 @@ provider netbox {
 }
 ```
 
-For further information, check this [documentation](docs/Provider.md)
+For further information, check this [documentation](https://registry.terraform.io/providers/smutel/netbox/latest?pollNotifications=true)
 
 ## Contributing to this project
 
