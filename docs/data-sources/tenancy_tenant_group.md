@@ -1,4 +1,4 @@
-# netbox_tenancy_tenant_group Data Source
+# netbox\_tenancy\_tenant\_group Data Source
 
 Get info about tenancy tenant groups in the netbox provider.
 

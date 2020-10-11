@@ -1,4 +1,4 @@
-# netbox_ipam_ip_addresses Resource
+# netbox\_ipam\_ip\_addresses Resource
 
 Manages an ipam ip addresses resource within Netbox.
 

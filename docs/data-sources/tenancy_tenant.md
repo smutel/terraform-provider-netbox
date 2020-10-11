@@ -1,19 +1,19 @@
-# netbox_ipam_role Data Source
+# netbox\_tenancy\_tenant Data Source
 
-Get info about ipam role in the netbox provider.
+Get info about tenancy tenant in the netbox provider.
 
 ## Example Usage
 
 ```hcl
-data "netbox_ipam_role" "role_test" {
-  slug = "TestRole"
+data "netbox_tenancy_tenant" "tenant_test" {
+  slug = "TestTenant"
 }
 ```
 
 ## Argument Reference
 
 The following arguments are supported:
-* ``slug`` - (Required) The slug of the ipam role.
+* ``slug`` - (Required) The slug of the tenant.
 
 ## Attributes Reference
 
