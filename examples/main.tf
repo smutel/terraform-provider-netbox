@@ -2,7 +2,6 @@ resource "netbox_tenancy_tenant" "tenant_test" {
   name            = "Test_Tenant"
   slug            = "Test_Tenant"
   description     = "Tenant created by terraform"
-  comments        = "Some test comments"
   tenant_group_id = netbox_tenancy_tenant_group.tenant_group_test.id
 
   tag {
@@ -90,5 +89,20 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
   tag {
     name = "tag2"
     slug = "tag2"
+  }
+}
+
+resource "netbox_virtualization_vm" "vm_test" {
+  cluster_id = 1
+  name = "test"
+  disk = 10
+  memory = 10
+  platform_id = 1
+  tenant_id = netbox_tenancy_tenant.tenant_test.id
+  role_id = 1
+
+  tag {
+    name = "tag1"
+    slug = "tag1"
   }
 }

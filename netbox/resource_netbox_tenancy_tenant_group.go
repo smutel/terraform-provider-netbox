@@ -1,6 +1,7 @@
 package netbox
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 
@@ -9,7 +10,6 @@ import (
 	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 	"github.com/netbox-community/go-netbox/netbox/client/tenancy"
 	"github.com/netbox-community/go-netbox/netbox/models"
-	pkgerrors "github.com/pkg/errors"
 )
 
 func resourceNetboxTenancyTenantGroup() *schema.Resource {
@@ -110,7 +110,7 @@ func resourceNetboxTenancyTenantGroupUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert ID into int64")
+		return fmt.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
@@ -138,7 +138,7 @@ func resourceNetboxTenancyTenantGroupDelete(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert tenant ID into int64")
+		return fmt.Errorf("Unable to convert tenant ID into int64")
 	}
 
 	resource := tenancy.NewTenancyTenantGroupsDeleteParams().WithID(resourceID)
