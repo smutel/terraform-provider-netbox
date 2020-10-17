@@ -32,6 +32,7 @@ The following arguments are supported:
 * ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
 * ``vlan_id`` - (Optional) ID of the vlan where this object is attached.
 * ``vrf_id`` - (Optional) The ID of the vrf attached to this object.
+
 The ``tag`` block supports:
 * ``name`` - (Required) Name of the existing tag to associate with this resource.
 * ``slug`` - (Required) Slug of the existing tag to associate with this resource.

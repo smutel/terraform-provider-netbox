@@ -32,6 +32,7 @@ The following arguments are supported:
 * ``status`` - (Optional) The status among container, active, reserved, deprecated (active by default).
 * ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
 * ``vlan_id`` - (Required) The ID of this vlan (vlan tag).
+
 The ``tag`` block supports:
 * ``name`` - (Required) Name of the existing tag to associate with this resource.
 * ``slug`` - (Required) Slug of the existing tag to associate with this resource.
