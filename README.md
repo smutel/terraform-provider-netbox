@@ -15,7 +15,8 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 
 ## Compatibility with Netbox
 
-Version 0.x.x => Netbox 2.8.x
+Version 0.x.y => Netbox 2.8  
+Version 1.x.y => Netbox 2.9  
 
 ## Building the provider
 
