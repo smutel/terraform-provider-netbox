@@ -27,6 +27,7 @@ The following arguments are supported:
 * ``tenant_group_id`` - (Optional) ID of the group where this object is located.
 * ``name`` - (Required) The name for this object.
 * ``slug`` - (Required) The slug for this object.
+
 The ``tag`` block supports:
 * ``name`` - (Required) Name of the existing tag to associate with this resource.
 * ``slug`` - (Required) Slug of the existing tag to associate with this resource.

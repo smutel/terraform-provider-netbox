@@ -37,6 +37,13 @@ $ make build
 
 ## Installing the provider
 
+---
+**NOTE**
+
+Before changing the version of the provider, please remove the temporary folder `.terraform` and `~/.terraform.d`.
+
+---
+
 ### Automatic installation from Terraform 0.13
 
 ```hcl
@@ -50,17 +57,22 @@ terraform {
 }
 ```
 
-### Manual installation
+### Manual installation
 
-You can install the provider manually in your global terraform provider folder 
-or you can also use the makefile to install the provider in your local provider folder:
+You can install the provider manually in your global terraform provider folder.
+
+```sh
+$ export NETBOX_PROVIDER_VERSION=1.0.0
+$ mkdir -p ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64
+$ cp terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION} ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64/terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION}
+```
+
+### Manual installation (to test the compiled version = version 0.0.1)
 
 ```bash
 $ make localinstall
-==> Creating folder terraform.d/plugins/linux_amd64
-mkdir -p ~/.terraform.d/plugins/linux_amd64
+==> Creating folder ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/0.0.1/linux_amd64
 ==> Installing provider in this folder
-cp terraform-provider-netbox ~/.terraform.d/plugins/linux_amd64
 ```
 
 ## Using the provider

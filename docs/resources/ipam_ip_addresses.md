@@ -30,6 +30,7 @@ The following arguments are supported:
 * ``status`` - (Optional) The status among container, active, reserved, deprecated (active by default).
 * ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
 * ``vrf_id`` - (Optional) The ID of the vrf attached to this object.
+
 The ``tag`` block supports:
 * ``name`` - (Required) Name of the existing tag to associate with this resource.
 * ``slug`` - (Required) Slug of the existing tag to associate with this resource.
