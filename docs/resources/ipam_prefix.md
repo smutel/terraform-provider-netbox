@@ -11,8 +11,12 @@ resource "netbox_ipam_prefix" "prefix_test" {
   description = "Prefix created by terraform"
   site_id = netbox_ipam_vlan_group.vlan_group_test.site_id
   role_id = data.netbox_ipam_roles.vlan_role_production.id
-  tags = ["tag1"]
   status = "active"
+  
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
 }
 ```
 
@@ -25,10 +29,12 @@ The following arguments are supported:
 * ``role_id`` - (Optional) The ID of the role attached to this object.
 * ``site_id`` - (Optional) ID of the site where this object is created
 * ``status`` - (Optional) The status among container, active, reserved, deprecated (active by default).
-* ``tags`` - (Optional) Array of tags for this object.
 * ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
 * ``vlan_id`` - (Optional) ID of the vlan where this object is attached.
 * ``vrf_id`` - (Optional) The ID of the vrf attached to this object.
+The ``tag`` block supports:
+* ``name`` - (Required) Name of the existing tag to associate with this resource.
+* ``slug`` - (Required) Slug of the existing tag to associate with this resource.
 
 ## Attributes Reference
 

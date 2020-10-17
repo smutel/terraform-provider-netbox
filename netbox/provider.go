@@ -64,6 +64,7 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	defaultScheme := []string{scheme}
 
 	t := runtimeclient.New(url, client.DefaultBasePath, defaultScheme)
-	t.DefaultAuthentication = runtimeclient.APIKeyAuth(authHeaderName, "header", fmt.Sprintf(authHeaderFormat, token))
+	t.DefaultAuthentication = runtimeclient.APIKeyAuth(authHeaderName, "header",
+		fmt.Sprintf(authHeaderFormat, token))
 	return client.New(t, strfmt.Default), nil
 }
