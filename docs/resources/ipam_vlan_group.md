@@ -1,6 +1,6 @@
 # netbox\_ipam\_vlan\_group Resource
 
-Manages an ipam vlan group resource within Netbox.
+Manages a vlan group within Netbox.
 
 
 ## Example Usage
