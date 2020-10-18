@@ -1,6 +1,7 @@
 package netbox
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 
@@ -9,7 +10,6 @@ import (
 	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 	"github.com/netbox-community/go-netbox/netbox/client/tenancy"
 	"github.com/netbox-community/go-netbox/netbox/models"
-	pkgerrors "github.com/pkg/errors"
 )
 
 func resourceNetboxTenancyTenant() *schema.Resource {
@@ -24,7 +24,7 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 			"comments": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "",
+				Default:  " ",
 			},
 			"description": {
 				Type:         schema.TypeString,
@@ -116,7 +116,15 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("comments", resource.Comments); err != nil {
+			var comments string
+
+			if resource.Comments == "" {
+				comments = " "
+			} else {
+				comments = resource.Comments
+			}
+
+			if err = d.Set("comments", comments); err != nil {
 				return err
 			}
 
@@ -188,7 +196,7 @@ func resourceNetboxTenancyTenantUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert ID into int64")
+		return fmt.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
@@ -216,7 +224,7 @@ func resourceNetboxTenancyTenantDelete(d *schema.ResourceData,
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert ID into int64")
+		return fmt.Errorf("Unable to convert ID into int64")
 	}
 
 	p := tenancy.NewTenancyTenantsDeleteParams().WithID(id)

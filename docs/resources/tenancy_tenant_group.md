@@ -1,6 +1,6 @@
 # netbox\_tenancy\_tenant\_group Resource
 
-Manages an tenancy tenant group resource within Netbox.
+Manage a tenant group within Netbox.
 
 ## Example Usage
 

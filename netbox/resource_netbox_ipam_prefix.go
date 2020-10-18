@@ -1,6 +1,7 @@
 package netbox
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -8,7 +9,6 @@ import (
 	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 	"github.com/netbox-community/go-netbox/netbox/client/ipam"
 	"github.com/netbox-community/go-netbox/netbox/models"
-	pkgerrors "github.com/pkg/errors"
 )
 
 func resourceNetboxIpamPrefix() *schema.Resource {
@@ -296,7 +296,7 @@ func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert ID into int64")
+		return fmt.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
@@ -324,7 +324,7 @@ func resourceNetboxIpamPrefixDelete(d *schema.ResourceData,
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return pkgerrors.New("Unable to convert ID into int64")
+		return fmt.Errorf("Unable to convert ID into int64")
 	}
 
 	resource := ipam.NewIpamPrefixesDeleteParams().WithID(id)

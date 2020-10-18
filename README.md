@@ -93,7 +93,7 @@ provider netbox {
 }
 ```
 
-For further information, check this [documentation](https://registry.terraform.io/providers/smutel/netbox/latest?pollNotifications=true)
+For further information, check this [documentation](https://registry.terraform.io/providers/smutel/netbox/latest/docs)
 
 ## Contributing to this project
 
