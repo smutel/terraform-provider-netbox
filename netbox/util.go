@@ -15,6 +15,17 @@ func expandToStringSlice(v []interface{}) []string {
 	return s
 }
 
+func expandToInt64Slice(v []interface{}) []int64 {
+	s := make([]int64, len(v))
+	for i, val := range v {
+		if strVal, ok := val.(int64); ok {
+			s[i] = strVal
+		}
+	}
+
+	return s
+}
+
 func convertTagsToNestedTags(tags []interface{}) []*models.NestedTag {
 	nestedTags := []*models.NestedTag{}
 
