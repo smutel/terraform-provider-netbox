@@ -1,6 +1,6 @@
 # netbox\_ipam\_role Data Source
 
-Get info about ipam role in the netbox provider.
+Get info about ipam role from netbox.
 
 ## Example Usage
 

@@ -1,6 +1,6 @@
 # netbox\_ipam\_ip\_addresses Resource
 
-Manages an ip address within Netbox.
+Manage an ip address within Netbox.
 
 ## Example Usage
 
@@ -23,7 +23,9 @@ The following arguments are supported:
 * ``address`` - (Required) The IP address (with mask) used for this object.
 * ``description`` - (Optional) The description of this object.
 * ``dns_name`` - (Optional) The DNS name of this object.
-* ``interface_id`` - (Optional) The ID of the interface where this object is attached to.
+* ``object_id`` - (Optional) The ID of the object where this object is attached to.
+* ``object_type`` - (Optional) The object type among virtualization.vminterface
+or dcim.interface (virtualization.vminterface by default)
 * ``nat_inside_id`` - (Optional) The ID of the NAT inside of this object.
 * ``nat_outside_id`` - (Optional) The ID of the NAT outside of this object.
 * ``role`` - (Optional) The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this object.

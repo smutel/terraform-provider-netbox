@@ -1,6 +1,6 @@
 # netbox\_ipam\_vlan Data Source
 
-Get info about ipam vlan in the netbox provider.
+Get info about ipam vlan from netbox.
 
 ## Example Usage
 
