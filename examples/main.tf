@@ -80,6 +80,7 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
   address = "192.168.56.1/24"
   status = "active"
   tenant_id = netbox_tenancy_tenant.tenant_test.id
+  object_id = netbox_virtualization_interface.interface_test.id
 
   tag {
     name = "tag1"
@@ -105,4 +106,11 @@ resource "netbox_virtualization_vm" "vm_test" {
     name = "tag1"
     slug = "tag1"
   }
+}
+
+resource "netbox_virtualization_interface" "interface_test" {
+  name = "default"
+  virtualmachine_id = netbox_virtualization_vm.vm_test.id
+  mac_address = "AA:AA:AA:AA:AA:AA"
+  description = "Interface de test"
 }
