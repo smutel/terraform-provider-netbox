@@ -1,6 +1,6 @@
 # netbox\_ipam\_vlan Resource
 
-Manages a vlan within Netbox.
+Manage a vlan within Netbox.
 
 ## Example Usage
 

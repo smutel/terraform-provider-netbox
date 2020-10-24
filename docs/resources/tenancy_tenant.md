@@ -1,6 +1,6 @@
 # netbox\_tenancy\_tenant Resource
 
-Manages a tenant within Netbox.
+Manage a tenant within Netbox.
 
 ## Example Usage
 

@@ -1,6 +1,6 @@
 # netbox\_dcim\_site Data Source
 
-Get info about dcim site in the netbox provider.
+Get info about dcim site from netbox.
 
 ## Example Usage
 

@@ -1,6 +1,6 @@
 # netbox\_virtualization\_vm Resource
 
-Manages a virtual machine resource within Netbox.
+Manage a virtual machine resource within Netbox.
 
 ## Example Usage
 

@@ -1,6 +1,6 @@
 # netbox\_tenancy\_tenant Data Source
 
-Get info about tenancy tenant in the netbox provider.
+Get info about tenancy tenant from netbox.
 
 ## Example Usage
 
