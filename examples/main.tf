@@ -25,8 +25,8 @@ data "netbox_dcim_site" "site_test" {
 }
 
 resource "netbox_ipam_vlan_group" "vlan_group_test" {
-  name = "Test_VlanGroup"
-  slug = "Test_VlanGroup"
+  name    = "Test_VlanGroup"
+  slug    = "Test_VlanGroup"
   site_id = data.netbox_dcim_site.site_test.id
 }
 
@@ -39,13 +39,13 @@ data "netbox_ipam_role" "vlan_role_backup" {
 }
 
 resource "netbox_ipam_vlan" "vlan_test" {
-  vlan_id = 100
-  name = "Test_Vlan"
-  site_id = netbox_ipam_vlan_group.vlan_group_test.site_id
-  description = "VLAN created by terraform"
+  vlan_id       = 100
+  name          = "Test_Vlan"
+  site_id       = netbox_ipam_vlan_group.vlan_group_test.site_id
+  description   = "VLAN created by terraform"
   vlan_group_id = netbox_ipam_vlan_group.vlan_group_test.id
-  tenant_id = netbox_tenancy_tenant.tenant_test.id
-  role_id = data.netbox_ipam_role.vlan_role_production.id
+  tenant_id     = netbox_tenancy_tenant.tenant_test.id
+  role_id       = data.netbox_ipam_role.vlan_role_production.id
 
   tag {
     name = "tag1"
@@ -59,11 +59,11 @@ resource "netbox_ipam_vlan" "vlan_test" {
 }
 
 resource "netbox_ipam_prefix" "prefix_test" {
-  prefix = "192.168.56.0/24"
-  vlan_id = netbox_ipam_vlan.vlan_test.id
+  prefix      = "192.168.56.0/24"
+  vlan_id     = netbox_ipam_vlan.vlan_test.id
   description = "Prefix created by terraform"
-  site_id = netbox_ipam_vlan_group.vlan_group_test.site_id
-  role_id = data.netbox_ipam_role.vlan_role_production.id
+  site_id     = netbox_ipam_vlan_group.vlan_group_test.site_id
+  role_id     = data.netbox_ipam_role.vlan_role_production.id
 
   tag {
     name = "tag1"
@@ -77,10 +77,11 @@ resource "netbox_ipam_prefix" "prefix_test" {
 }
 
 resource "netbox_ipam_ip_addresses" "ip_test" {
-  address = "192.168.56.1/24"
-  status = "active"
-  tenant_id = netbox_tenancy_tenant.tenant_test.id
-  object_id = netbox_virtualization_interface.interface_test.id
+  address     = "192.168.56.1/24"
+  status      = "active"
+  tenant_id   = netbox_tenancy_tenant.tenant_test.id
+  object_id   = netbox_virtualization_interface.interface_test.id
+  object_type = netbox_virtualization_interface.interface_test.type
 
   tag {
     name = "tag1"
@@ -109,8 +110,8 @@ resource "netbox_virtualization_vm" "vm_test" {
 }
 
 resource "netbox_virtualization_interface" "interface_test" {
-  name = "default"
+  name              = "default"
   virtualmachine_id = netbox_virtualization_vm.vm_test.id
-  mac_address = "AA:AA:AA:AA:AA:AA"
-  description = "Interface de test"
+  mac_address       = "AA:AA:AA:AA:AA:AA"
+  description       = "Interface de test"
 }

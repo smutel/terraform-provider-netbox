@@ -48,7 +48,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 			"object_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "",
+				Default:  "virtualization.vminterface",
 				ValidateFunc: validation.StringInSlice([]string{
 					"virtualization.vminterface", "dcim.interface"}, false),
 			},
@@ -111,7 +111,7 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	description := d.Get("description").(string)
 	dnsName := d.Get("dns_name").(string)
 	objectID := int64(d.Get("object_id").(int))
-	interfaceType := d.Get("object_type").(string)
+	objectType := d.Get("object_type").(string)
 	natInsideID := int64(d.Get("nat_inside_id").(int))
 	natOutsideID := int64(d.Get("nat_outside_id").(int))
 	role := d.Get("role").(string)
@@ -131,7 +131,7 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 
 	if objectID != 0 {
 		newResource.AssignedObjectID = &objectID
-		newResource.AssignedObjectType = interfaceType
+		newResource.AssignedObjectType = objectType
 	}
 
 	if natInsideID != 0 {
@@ -197,8 +197,11 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				}
 			}
 
-			if err = d.Set("object_type",
-				resource.AssignedObjectType); err != nil {
+			objectType := resource.AssignedObjectType
+			if objectType == "" {
+				objectType = "virtualization.vminterface"
+			}
+			if err = d.Set("object_type", objectType); err != nil {
 				return err
 			}
 
@@ -296,15 +299,17 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 		params.DNSName = d.Get("dns_name").(string)
 	}
 
-	if d.HasChange("object_type") {
-		params.AssignedObjectType = d.Get("object_type").(string)
-	}
-
-	if d.HasChange("object_id") {
+	if d.HasChange("object_id") || d.HasChange("object_type") {
 		objectID := int64(d.Get("object_id").(int))
-		if objectID != 0 {
-			params.AssignedObjectID = &objectID
+		params.AssignedObjectID = &objectID
+
+		var objectType string
+		if params.AssignedObjectType == "" {
+			objectType = "virtualization.vminterface"
+		} else {
+			objectType = d.Get("object_type").(string)
 		}
+		params.AssignedObjectType = objectType
 	}
 
 	if d.HasChange("nat_inside_id") {
