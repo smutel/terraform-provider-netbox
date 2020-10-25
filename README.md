@@ -51,7 +51,7 @@ terraform {
   required_providers {
     netbox = {
       source = "smutel/netbox"
-      version = "0.2.1"
+      version = "1.1.0"
     }
   }
 }
@@ -61,17 +61,17 @@ terraform {
 
 You can install the provider manually in your global terraform provider folder.
 
-```sh
-$ export NETBOX_PROVIDER_VERSION=1.0.0
+```bash
+$ export NETBOX_PROVIDER_VERSION=1.1.0
 $ mkdir -p ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64
 $ cp terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION} ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64/terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION}
 ```
 
-### Manual installation (to test the compiled version = version 1.0.0)
+### Manual installation (to test the compiled version = version 1.1.0)
 
 ```bash
 $ make localinstall
-==> Creating folder ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/1.0.0/linux_amd64
+==> Creating folder ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/1.1.0/linux_amd64
 ==> Installing provider in this folder
 ```
 
