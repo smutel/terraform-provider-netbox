@@ -24,10 +24,10 @@ build-all: clean
 	@gpg --detach-sign terraform-provider-netbox_${VERSION}_SHA256SUMS
 
 localinstall:
-	@echo "==> Creating folder ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/0.0.1/linux_amd64"
-	@mkdir -p ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/0.0.1/linux_amd64
+	@echo "==> Creating folder ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${VERSION}/linux_amd64"
+	@mkdir -p ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${VERSION}/linux_amd64
 	@echo "==> Installing provider in this folder"
-	@cp terraform-provider-netbox ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/0.0.1/linux_amd64/terraform-provider-netbox_v0.0.1
+	@cp terraform-provider-netbox ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${VERSION}/linux_amd64/terraform-provider-netbox_v${VERSION}
 
 check:
 	@echo "==> Checking terraform-provider-netbox"

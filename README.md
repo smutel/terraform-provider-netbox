@@ -10,7 +10,7 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 ## Requirements
 
 * General developper tools like make, bash, ...
-* Go 1.13 minimum (to build the provider)
+* Go 1.14 minimum (to build the provider)
 * Terraform (to use the provider)
 
 ## Compatibility with Netbox
@@ -67,11 +67,11 @@ $ mkdir -p ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_P
 $ cp terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION} ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64/terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION}
 ```
 
-### Manual installation (to test the compiled version = version 0.0.1)
+### Manual installation (to test the compiled version = version 1.0.0)
 
 ```bash
 $ make localinstall
-==> Creating folder ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/0.0.1/linux_amd64
+==> Creating folder ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/1.0.0/linux_amd64
 ==> Installing provider in this folder
 ```
 
