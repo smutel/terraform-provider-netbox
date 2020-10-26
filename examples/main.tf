@@ -94,8 +94,12 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
   }
 }
 
+data "netbox_virtualization_cluster" "cluster_test" {
+  name = "test"
+}
+
 resource "netbox_virtualization_vm" "vm_test" {
-  cluster_id = 1
+  cluster_id = data.netbox_virtualization_cluster.cluster_test.id
   name = "test"
   disk = 10
   memory = 10
