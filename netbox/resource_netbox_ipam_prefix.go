@@ -23,6 +23,7 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
+				Default:      " ",
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
 			"is_pool": {
@@ -150,7 +151,15 @@ func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("description", resource.Description); err != nil {
+			var description string
+
+			if resource.Description == "" {
+				description = " "
+			} else {
+				description = resource.Description
+			}
+
+			if err = d.Set("description", description); err != nil {
 				return err
 			}
 
