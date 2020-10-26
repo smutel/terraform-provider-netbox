@@ -29,6 +29,7 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
+				Default:      " ",
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
 			"tenant_group_id": {
@@ -128,7 +129,15 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 				return err
 			}
 
-			if err = d.Set("description", resource.Description); err != nil {
+			var description string
+
+			if resource.Description == "" {
+				description = " "
+			} else {
+				description = resource.Description
+			}
+
+			if err = d.Set("description", description); err != nil {
 				return err
 			}
 
