@@ -44,6 +44,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 			"object_id": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				ForceNew: true,
 			},
 			"object_type": {
 				Type:     schema.TypeString,
