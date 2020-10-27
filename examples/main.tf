@@ -98,12 +98,16 @@ data "netbox_virtualization_cluster" "cluster_test" {
   name = "test"
 }
 
+data "netbox_dcim_platform" "platform_test" {
+  slug = "Debian_10"
+}
+
 resource "netbox_virtualization_vm" "vm_test" {
   cluster_id = data.netbox_virtualization_cluster.cluster_test.id
   name = "test"
   disk = 10
   memory = 10
-  platform_id = 1
+  platform_id = data.netbox_dcim_platform.platform_test.id
   tenant_id = netbox_tenancy_tenant.tenant_test.id
   role_id = 1
 

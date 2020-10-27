@@ -37,6 +37,7 @@ func Provider() *schema.Provider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"netbox_dcim_site":              dataNetboxDcimSite(),
+			"netbox_dcim_platform":          dataNetboxDcimPlatform(),
 			"netbox_ipam_ip_addresses":      dataNetboxIpamIPAddresses(),
 			"netbox_ipam_role":              dataNetboxIpamRole(),
 			"netbox_ipam_vlan":              dataNetboxIpamVlan(),
