@@ -82,6 +82,7 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
   tenant_id   = netbox_tenancy_tenant.tenant_test.id
   object_id   = netbox_virtualization_interface.interface_test.id
   object_type = netbox_virtualization_interface.interface_test.type
+  primary_ip4 = true
 
   tag {
     name = "tag1"
@@ -103,13 +104,13 @@ data "netbox_dcim_platform" "platform_test" {
 }
 
 resource "netbox_virtualization_vm" "vm_test" {
-  cluster_id = data.netbox_virtualization_cluster.cluster_test.id
-  name = "test"
-  disk = 10
-  memory = 10
+  cluster_id  = data.netbox_virtualization_cluster.cluster_test.id
+  name        = "test"
+  disk        = 10
+  memory      = 10
   platform_id = data.netbox_dcim_platform.platform_test.id
-  tenant_id = netbox_tenancy_tenant.tenant_test.id
-  role_id = 1
+  tenant_id   = netbox_tenancy_tenant.tenant_test.id
+  role_id     = 1
 
   tag {
     name = "tag1"

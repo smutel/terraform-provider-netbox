@@ -1,8 +1,19 @@
 package netbox
 
 import (
+	"fmt"
+
+	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/netbox-community/go-netbox/netbox/client/virtualization"
 	"github.com/netbox-community/go-netbox/netbox/models"
 )
+
+type InfosForPrimary struct {
+	vm_id             int64
+	vm_name           string
+	vm_cluster_id     int64
+	vm_primary_ip4_id int64
+}
 
 func expandToStringSlice(v []interface{}) []string {
 	s := make([]string, len(v))
@@ -54,6 +65,75 @@ func convertNestedTagsToTags(tags []*models.NestedTag) []map[string]string {
 	}
 
 	return tfTags
+}
+
+func getInfoForPrimary(m interface{}, objectID int64) (InfosForPrimary, error) {
+	client := m.(*netboxclient.NetBoxAPI)
+
+	objectIDStr := fmt.Sprintf("%d", objectID)
+	info := InfosForPrimary{}
+	paramsInterface := virtualization.NewVirtualizationInterfacesListParams().WithID(
+		&objectIDStr)
+	interfaces, err := client.Virtualization.VirtualizationInterfacesList(
+		paramsInterface, nil)
+
+	if err != nil {
+		return info, err
+	}
+
+	for _, i := range interfaces.Payload.Results {
+		if i.ID == objectID {
+			if i.VirtualMachine != nil {
+				vm_id_str := fmt.Sprintf("%d", i.VirtualMachine.ID)
+				paramsVm := virtualization.NewVirtualizationVirtualMachinesListParams().WithID(&vm_id_str)
+				vms, err := client.Virtualization.VirtualizationVirtualMachinesList(paramsVm, nil)
+
+				if err != nil {
+					return info, err
+				}
+
+				if *vms.Payload.Count != 1 {
+					return info, fmt.Errorf("Cannot set an interface as primary when the " +
+						"interface is not attached to a VM.")
+				}
+
+				info.vm_id = i.VirtualMachine.ID
+				info.vm_name = *vms.Payload.Results[0].Name
+				info.vm_cluster_id = vms.Payload.Results[0].Cluster.ID
+
+				if vms.Payload.Results[0].PrimaryIp4 != nil {
+					info.vm_primary_ip4_id = vms.Payload.Results[0].PrimaryIp4.ID
+				} else {
+					info.vm_primary_ip4_id = 0
+				}
+			} else {
+				return info, fmt.Errorf("Cannot set an interface as primary when the " +
+					"interface is not attached to a VM.")
+			}
+		}
+	}
+
+	return info, nil
+}
+
+func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
+	client := m.(*netboxclient.NetBoxAPI)
+
+	if info.vm_name != "" {
+		params := &models.WritableVirtualMachineWithConfigContext{}
+		params.Name = &info.vm_name
+		params.Cluster = &info.vm_cluster_id
+		params.PrimaryIp4 = &id
+		vm := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
+		vm.SetID(info.vm_id)
+		_, err := client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
+			vm, nil)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 /*
