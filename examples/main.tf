@@ -106,3 +106,8 @@ resource "netbox_virtualization_vm" "vm_test" {
     slug = "tag1"
   }
 }
+
+data "netbox_json_dcim_sites_list" "test" {}
+output "dcim_sites_list" {
+  value = jsondecode(data.netbox_json_dcim_sites_list.test.json)
+}
