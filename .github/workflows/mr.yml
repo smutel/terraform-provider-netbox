@@ -1,5 +1,5 @@
 ---
-name: checks
+name: MR
 
 on:
   push:
@@ -13,13 +13,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: [ '1.13.x', '1.14.x' ]
+        go: [ '1.15.x' ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.0.0
+        uses: actions/checkout@v2.3.3
 
       - name: Lint
-        uses: reviewdog/action-golangci-lint@v1.6.0
+        uses: reviewdog/action-golangci-lint@v1.14.0
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
@@ -33,7 +33,7 @@ jobs:
         shell: bash
 
       - name: Go installation
-        uses: actions/setup-go@v1.1.2
+        uses: actions/setup-go@v1.1.3
         with:
           go-version: ${{ matrix.go }}
 

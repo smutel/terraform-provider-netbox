@@ -10,7 +10,7 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 ## Requirements
 
 * General developper tools like make, bash, ...
-* Go 1.13 minimum (to build the provider)
+* Go 1.15 minimum (to build the provider)
 * Terraform (to use the provider)
 
 ## Compatibility with Netbox
