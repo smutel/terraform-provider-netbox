@@ -12,8 +12,6 @@ import (
 	"github.com/netbox-community/go-netbox/netbox/models"
 )
 
-const TYPE string = "virtualization.vminterface"
-
 func resourceNetboxVirtualizationInterface() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceNetboxVirtualizationInterfaceCreate,
@@ -228,7 +226,9 @@ func resourceNetboxVirtualizationInterfaceRead(d *schema.ResourceData,
 				}
 			}
 
-			d.Set("type", TYPE)
+			if err = d.Set("type", VMInterfaceType); err != nil {
+				return err
+			}
 
 			return nil
 		}
