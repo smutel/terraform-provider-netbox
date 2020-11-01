@@ -58,9 +58,9 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 			"object_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "virtualization.vminterface",
+				Default:  VMInterfaceType,
 				ValidateFunc: validation.StringInSlice([]string{
-					"virtualization.vminterface", "dcim.interface"}, false),
+					VMInterfaceType, "dcim.interface"}, false),
 			},
 			"primary_ip4": {
 				Type:     schema.TypeBool,
@@ -122,7 +122,7 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	natOutsideID := int64(d.Get("nat_outside_id").(int))
 	objectID := int64(d.Get("object_id").(int))
 	objectType := d.Get("object_type").(string)
-	primary_ip4 := d.Get("primary_ip4").(bool)
+	primaryIP4 := d.Get("primary_ip4").(bool)
 	role := d.Get("role").(string)
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
@@ -147,8 +147,8 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	}
 
 	var info InfosForPrimary
-	if primary_ip4 && objectID != 0 {
-		if objectType == "virtualization.vminterface" {
+	if primaryIP4 && objectID != 0 {
+		if objectType == VMInterfaceType {
 			var err error
 			info, err = getInfoForPrimary(m, objectID)
 			if err != nil {
@@ -254,14 +254,14 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 
 				var info InfosForPrimary
 				if *resource.AssignedObjectID != 0 {
-					if resource.AssignedObjectType == "virtualization.vminterface" {
+					if resource.AssignedObjectType == VMInterfaceType {
 						var err error
 						info, err = getInfoForPrimary(m, *resource.AssignedObjectID)
 						if err != nil {
 							return err
 						}
 
-						if info.vm_primary_ip4_id == resource.ID {
+						if info.vmPrimaryIP4ID == resource.ID {
 							if err = d.Set("primary_ip4", true); err != nil {
 								return err
 							}
@@ -276,7 +276,7 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 
 			objectType := resource.AssignedObjectType
 			if objectType == "" {
-				objectType = "virtualization.vminterface"
+				objectType = VMInterfaceType
 			}
 			if err = d.Set("object_type", objectType); err != nil {
 				return err
@@ -378,7 +378,7 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 
 		var objectType string
 		if params.AssignedObjectType == "" {
-			objectType = "virtualization.vminterface"
+			objectType = VMInterfaceType
 		} else {
 			objectType = d.Get("object_type").(string)
 		}
@@ -434,7 +434,7 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 	 *     objectType := d.Get("object_type").(string)
 	 *     isPrimary := d.Get("primary_ip4").(bool)
 	 *     if objectID != 0 {
-	 *       if objectType == "virtualization.vminterface" {
+	 *       if objectType == VMInterfaceType {
 	 *         var err error
 	 *         info, err = getInfoForPrimary(m, objectID)
 	 *         if err != nil {
