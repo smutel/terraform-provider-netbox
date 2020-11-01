@@ -1,6 +1,6 @@
 # netbox\_ipam\_prefix Resource
 
-Manages a prefix within Netbox.
+Manage a prefix within Netbox.
 
 ## Example Usage
 

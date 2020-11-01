@@ -23,6 +23,7 @@ func resourceNetboxIpamVlan() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
+				Default:      " ",
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
 			"vlan_group_id": {
@@ -139,7 +140,15 @@ func resourceNetboxIpamVlanRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("description", resource.Description); err != nil {
+			var description string
+
+			if resource.Description == "" {
+				description = " "
+			} else {
+				description = resource.Description
+			}
+
+			if err = d.Set("description", description); err != nil {
 				return err
 			}
 

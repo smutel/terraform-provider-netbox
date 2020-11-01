@@ -31,6 +31,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
+				Default:      " ",
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
 			"dns_name": {
@@ -41,17 +42,6 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 					regexp.MustCompile("^[-a-zA-Z0-9_.]{1,255}$"),
 					"Must be like ^[-a-zA-Z0-9_.]{1,255}$"),
 			},
-			"object_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"object_type": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "",
-				ValidateFunc: validation.StringInSlice([]string{
-					"virtualization.vminterface", "dcim.interface"}, false),
-			},
 			"nat_inside_id": {
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -59,6 +49,24 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 			"nat_outside_id": {
 				Type:     schema.TypeInt,
 				Optional: true,
+			},
+			"object_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				ForceNew: true,
+			},
+			"object_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  VMInterfaceType,
+				ValidateFunc: validation.StringInSlice([]string{
+					VMInterfaceType, "dcim.interface"}, false),
+			},
+			"primary_ip4": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+				ForceNew: true,
 			},
 			"role": {
 				Type:     schema.TypeString,
@@ -110,10 +118,11 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	address := d.Get("address").(string)
 	description := d.Get("description").(string)
 	dnsName := d.Get("dns_name").(string)
-	objectID := int64(d.Get("object_id").(int))
-	interfaceType := d.Get("object_type").(string)
 	natInsideID := int64(d.Get("nat_inside_id").(int))
 	natOutsideID := int64(d.Get("nat_outside_id").(int))
+	objectID := int64(d.Get("object_id").(int))
+	objectType := d.Get("object_type").(string)
+	primaryIP4 := d.Get("primary_ip4").(bool)
 	role := d.Get("role").(string)
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
@@ -129,17 +138,28 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 		Tags:        convertTagsToNestedTags(tags),
 	}
 
-	if objectID != 0 {
-		newResource.AssignedObjectID = &objectID
-		newResource.AssignedObjectType = interfaceType
-	}
-
 	if natInsideID != 0 {
 		newResource.NatInside = &natInsideID
 	}
 
 	if natOutsideID != 0 {
 		newResource.NatOutside = &natOutsideID
+	}
+
+	var info InfosForPrimary
+	if primaryIP4 && objectID != 0 {
+		if objectType == VMInterfaceType {
+			var err error
+			info, err = getInfoForPrimary(m, objectID)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if objectID != 0 {
+		newResource.AssignedObjectID = &objectID
+		newResource.AssignedObjectType = objectType
 	}
 
 	if tenantID != 0 {
@@ -158,6 +178,11 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+
+	err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID)
+	if err != nil {
+		return err
+	}
 
 	return resourceNetboxIpamIPAddressesRead(d, m)
 }
@@ -179,26 +204,18 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				return err
 			}
 
-			if err = d.Set("description", resource.Description); err != nil {
+			var description string
+			if resource.Description == "" {
+				description = " "
+			} else {
+				description = resource.Description
+			}
+
+			if err = d.Set("description", description); err != nil {
 				return err
 			}
 
 			if err = d.Set("dns_name", resource.DNSName); err != nil {
-				return err
-			}
-
-			if resource.AssignedObjectID == nil {
-				if err = d.Set("object_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
-					return err
-				}
-			}
-
-			if err = d.Set("object_type",
-				resource.AssignedObjectType); err != nil {
 				return err
 			}
 
@@ -220,6 +237,49 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				if err = d.Set("nat_outside_id", resource.NatOutside.ID); err != nil {
 					return err
 				}
+			}
+
+			if resource.AssignedObjectID == nil {
+				if err = d.Set("object_id", nil); err != nil {
+					return err
+				}
+
+				if err = d.Set("primary_ip4", false); err != nil {
+					return err
+				}
+			} else {
+				if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
+					return err
+				}
+
+				var info InfosForPrimary
+				if *resource.AssignedObjectID != 0 {
+					if resource.AssignedObjectType == VMInterfaceType {
+						var err error
+						info, err = getInfoForPrimary(m, *resource.AssignedObjectID)
+						if err != nil {
+							return err
+						}
+
+						if info.vmPrimaryIP4ID == resource.ID {
+							if err = d.Set("primary_ip4", true); err != nil {
+								return err
+							}
+						} else {
+							if err = d.Set("primary_ip4", false); err != nil {
+								return err
+							}
+						}
+					}
+				}
+			}
+
+			objectType := resource.AssignedObjectType
+			if objectType == "" {
+				objectType = VMInterfaceType
+			}
+			if err = d.Set("object_type", objectType); err != nil {
+				return err
 			}
 
 			if resource.Role == nil {
@@ -279,6 +339,7 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableIPAddress{}
+	// primary_ip4 := false
 
 	// Required parameters
 	address := d.Get("address").(string)
@@ -296,17 +357,6 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 		params.DNSName = d.Get("dns_name").(string)
 	}
 
-	if d.HasChange("object_type") {
-		params.AssignedObjectType = d.Get("object_type").(string)
-	}
-
-	if d.HasChange("object_id") {
-		objectID := int64(d.Get("object_id").(int))
-		if objectID != 0 {
-			params.AssignedObjectID = &objectID
-		}
-	}
-
 	if d.HasChange("nat_inside_id") {
 		natInsideID := int64(d.Get("nat_inside_id").(int))
 		if natInsideID != 0 {
@@ -319,6 +369,20 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 		if natInsideID != 0 {
 			params.NatInside = &natInsideID
 		}
+	}
+
+	if d.HasChange("object_id") || d.HasChange("object_type") {
+		// primary_ip4 = true
+		objectID := int64(d.Get("object_id").(int))
+		params.AssignedObjectID = &objectID
+
+		var objectType string
+		if params.AssignedObjectType == "" {
+			objectType = VMInterfaceType
+		} else {
+			objectType = d.Get("object_type").(string)
+		}
+		params.AssignedObjectType = objectType
 	}
 
 	if d.HasChange("role") {
@@ -362,6 +426,37 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 	if err != nil {
 		return err
 	}
+
+	/*
+	 *   if primary_ip4 || d.HasChange("primary_ip4") {
+	 *     var info InfosForPrimary
+	 *     objectID := int64(d.Get("object_id").(int))
+	 *     objectType := d.Get("object_type").(string)
+	 *     isPrimary := d.Get("primary_ip4").(bool)
+	 *     if objectID != 0 {
+	 *       if objectType == VMInterfaceType {
+	 *         var err error
+	 *         info, err = getInfoForPrimary(m, objectID)
+	 *         if err != nil {
+	 *           return err
+	 *         }
+	 *       }
+	 *     }
+	 *
+	 *     var ipID int64
+	 *     ipID = 0
+	 *     if isPrimary {
+	 *       ipID, err = strconv.ParseInt(d.Id(), 10, 64)
+	 *       if err != nil {
+	 *         return fmt.Errorf("Unable to convert ID into int64")
+	 *       }
+	 *     }
+	 *     err = updatePrimaryStatus(client, info, ipID)
+	 *     if err != nil {
+	 *       return err
+	 *     }
+	 *   }
+	 */
 
 	return resourceNetboxIpamIPAddressesRead(d, m)
 }
