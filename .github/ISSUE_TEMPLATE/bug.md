@@ -9,8 +9,10 @@ assignees: smutel
 <!--- Ensure that the latest release is affected by this bug -->
 <!--- Complete most of sections below as described -->
 
-### Summary
+## Summary
 <!--- Describe here with one sentance the bug encountered -->
+
+## Version
 
 ### Terraform version
 <!--- Enter below the result of "terraform -v" -->
@@ -23,6 +25,8 @@ assignees: smutel
 ```paste below
 
 ```
+
+## Issue details
 
 ### Affected Data(s) / Resource(s)
 <!--- Give the name of the data(s) or resource(s) affected by this bug -->
@@ -41,6 +45,8 @@ assignees: smutel
 ```paste below
 
 ```
+
+## Behaviors
 
 ### Actual Behavior
 <!-- Describe below the actual behavior -->
