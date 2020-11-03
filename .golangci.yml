@@ -339,3 +339,9 @@ linters:
 
   # Show only new issues created in git patch with set file path.
   #new-from-patch: path/to/patch/file
+
+issues:
+  exclude-rules:
+    - linters:
+        - errcheck
+      text: "Error return value of `d.Set` is not checked"
