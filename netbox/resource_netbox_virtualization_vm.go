@@ -115,7 +115,7 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := int64(d.Get("vcpus").(int))
-    customFields := d.Get("custom_fields").(map[string]interface{})
+        customFields := d.Get("custom_fields").(map[string]interface{})
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:          &clusterID,
