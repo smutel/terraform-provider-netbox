@@ -256,9 +256,9 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				return err
 			}
 
-		    if err = d.Set("custom_fields", resource.CustomFields); err != nil {
-		        return err
-		    }
+		        if err = d.Set("custom_fields", resource.CustomFields); err != nil {
+		                return err
+		        }
 
 			return nil
 		}
