@@ -90,11 +90,11 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Optional: true,
 				Default:  0,
 			},
-            "custom_fields": &schema.Schema{
-                Type:     schema.TypeMap,
-                Optional: true,
-                Elem:     &schema.Schema{Type: schema.TypeString},
-            },
+                        "custom_fields": &schema.Schema{
+                                Type:     schema.TypeMap,
+                                Optional: true,
+                                Elem:     &schema.Schema{Type: schema.TypeString},
+                        },
 		},
 	}
 }
