@@ -16,6 +16,10 @@ resource "netbox_virtualization_vm" "vm_test" {
     name = "tag1"
     slug = "tag1"
   }
+
+  custom_fields {
+    foo = "bar"
+  }
 }
 ```
 
@@ -36,6 +40,7 @@ The following arguments are supported:
 The ``tag`` block supports:
 * ``name`` - (Required) Name of the existing tag to associate with this resource.
 * ``slug`` - (Required) Slug of the existing tag to associate with this resource.
+* ``custom_fields`` - (Optional) Custom Field Keys and Values for this object
 
 ## Attributes Reference
 
