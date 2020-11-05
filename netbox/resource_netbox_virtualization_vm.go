@@ -328,8 +328,8 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	}
 
 	if d.HasChange("custom_fields") {
-        customFields := d.Get("custom_fields").(map[string]interface{})
-        params.CustomFields = &customFields
+                customFields := d.Get("custom_fields").(map[string]interface{})
+                params.CustomFields = &customFields
 	}
 
 	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
