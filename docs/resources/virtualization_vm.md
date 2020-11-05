@@ -17,7 +17,7 @@ resource "netbox_virtualization_vm" "vm_test" {
     slug = "tag1"
   }
 
-  custom_fields {
+  custom_fields = {
     foo = "bar"
   }
 }
