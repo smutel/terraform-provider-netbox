@@ -90,11 +90,13 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Optional: true,
 				Default:  0,
 			},
-                        "custom_fields": &schema.Schema{
-                                Type:     schema.TypeMap,
-                                Optional: true,
-                                Elem:     &schema.Schema{Type: schema.TypeString},
-                        },
+			"custom_fields": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -115,7 +117,7 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := int64(d.Get("vcpus").(int))
-        customFields := d.Get("custom_fields").(map[string]interface{})
+	customFields := d.Get("custom_fields").(map[string]interface{})
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:          &clusterID,
@@ -124,7 +126,6 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 		Name:             &name,
 		Status:           status,
 		Tags:             convertTagsToNestedTags(tags),
-		CustomFields:     customFields,
 	}
 
 	if disk != 0 {
@@ -256,9 +257,27 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				return err
 			}
 
-		        if err = d.Set("custom_fields", resource.CustomFields); err != nil {
-		                return err
-		        }
+			customFields := make(map[string]string)
+			switch t := resource.CustomFields.(type) {
+			case map[string]interface{}:
+				for key, value := range t {
+					var strValue string
+					if value != nil {
+						switch v := value.(type) {
+						case string:
+							strValue = fmt.Sprintf("%v", v)
+						case map[string]interface{}:
+							strValue = fmt.Sprintf("%v", v["value"])
+						}
+					}
+					customFields[key] = strValue
+
+				}
+			}
+
+			if err = d.Set("custom_fields", customFields); err != nil {
+				return err
+			}
 
 			return nil
 		}
@@ -328,8 +347,8 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	}
 
 	if d.HasChange("custom_fields") {
-                customFields := d.Get("custom_fields").(map[string]interface{})
-                params.CustomFields = &customFields
+		customFields := d.Get("custom_fields").(map[string]interface{})
+		params.CustomFields = &customFields
 	}
 
 	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
