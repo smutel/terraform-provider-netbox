@@ -264,7 +264,7 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 					var strValue string
 					if value != nil {
 						switch v := value.(type) {
-						case string:
+						default:
 							strValue = fmt.Sprintf("%v", v)
 						case map[string]interface{}:
 							strValue = fmt.Sprintf("%v", v["value"])
