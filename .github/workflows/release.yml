@@ -33,7 +33,7 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
 
       - name: Generate CHANGELOG for this version
-        run: ./utils/getChangelogRelease CHANGELOG.md $TAG > RELEASE_CHANGELOG.md
+        run: ./utils/getChangelogRelease CHANGELOG.md $TAG > /tmp/RELEASE_CHANGELOG.md
         env:
           TAG: ${{ github.event.release.tag_name }}
 
@@ -41,7 +41,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v2.3.0
         with:
           version: latest
-          args: release --rm-dist --release-notes=RELEASE_CHANGELOG.md
+          args: release --rm-dist --release-notes=/tmp/RELEASE_CHANGELOG.md
         env:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
