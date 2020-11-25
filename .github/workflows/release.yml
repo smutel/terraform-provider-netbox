@@ -15,7 +15,7 @@ jobs:
         go: [ '1.15.x' ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.3
+        uses: actions/checkout@v2.3.4
 
       - name: Unshallow
         run: git fetch --prune --unshallow
@@ -27,16 +27,21 @@ jobs:
 
       - name: Import GPG key
         id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v3.0.1
+        uses: crazy-max/ghaction-import-gpg@v3.0.2
         with:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-      -
-        name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2.2.1
+
+      - name: Generate CHANGELOG for this version
+        run: ./utils/getChangelogRelease CHANGELOG.md $TAG > RELEASE_CHANGELOG.md
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2.3.0
         with:
           version: latest
-          args: release --rm-dist
+          args: release --rm-dist --release-notes=RELEASE_CHANGELOG.md
         env:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

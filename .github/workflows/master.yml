@@ -1,11 +1,10 @@
 ---
-name: PR
+name: Master
 
 on:
   push:
     branches:
       - master
-  pull_request:
 
 jobs:
   LintAndBuild:
