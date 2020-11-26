@@ -1,7 +1,7 @@
 ---
 name: Bug Report
 about: Create a bug report to help us improve this project
-title: "fix: [Main title for your issue here]"
+title: "[Main title for your issue here]"
 labels: bug
 assignees: smutel
 ---
@@ -10,9 +10,15 @@ assignees: smutel
 <!--- Complete most of sections below as described -->
 
 ## Summary
-<!--- Describe here with one sentance the bug encountered -->
+<!--- Describe here with one sentence the bug encountered -->
 
 ## Version
+
+### Netbox version
+<!--- Enter below the version of netbox -->
+```paste below
+
+```
 
 ### Terraform version
 <!--- Enter below the result of "terraform -v" -->

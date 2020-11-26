@@ -1,7 +1,7 @@
 ---
 name: Help Needed
 about: I need some help to use this project
-title: "help: I am not able to do ..."
+title: "[I am not able to do ...]"
 labels: help wanted
 assignees: smutel
 ---
@@ -20,6 +20,12 @@ assignees: smutel
 ### Other important information
 
 ## Version
+
+### Netbox version
+<!--- Enter below the version of netbox -->
+```paste below
+
+```
 
 ### Terraform version
 <!--- Enter below the result of "terraform -v" -->
