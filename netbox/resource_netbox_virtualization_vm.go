@@ -96,6 +96,9 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					return old == new
+				},
 			},
 		},
 	}
@@ -347,8 +350,15 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	}
 
 	if d.HasChange("custom_fields") {
-		customFields := d.Get("custom_fields").(map[string]interface{})
-		params.CustomFields = &customFields
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
+		customFieldsAsString := make(map[string]interface{})
+		for key, _ := range stateCustomFields.(map[string]interface{}) {
+			customFieldsAsString[key] = ""
+		}
+		for key, value := range resourceCustomFields.(map[string]interface{}) {
+			customFieldsAsString[key] = value
+		}
+		params.CustomFields = &customFieldsAsString
 	}
 
 	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
