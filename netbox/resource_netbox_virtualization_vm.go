@@ -97,6 +97,9 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 					Type: schema.TypeString,
 				},
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if k == "custom_fields.%" {
+						return true
+					}
 					return old == new
 				},
 			},
