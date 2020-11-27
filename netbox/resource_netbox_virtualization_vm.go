@@ -96,7 +96,12 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				// terraform default behavior sees a difference between null and an empty string
+				// therefore we override the default, because null in terraform results in empty string in netbox
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					// function is called for each member of map
+					// including additional call on the amount of entries
+					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
 					if k == "custom_fields.%" {
 						return true
 					}
@@ -274,6 +279,8 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				return err
 			}
 
+			// custom_fields have multiple data type returns based on field type
+			// but terraform only supports map[string]string, so we convert all to strings
 			customFields := make(map[string]string)
 			switch t := resource.CustomFields.(type) {
 			case map[string]interface{}:
@@ -363,12 +370,16 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 		params.Vcpus = &vcpus
 	}
 
+	//
 	if d.HasChange("custom_fields") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
 		customFields := make(map[string]interface{})
+		// netbox needs explicit empty string to remove old values
+		// first we fill all existing fields from the state with an empty string
 		for key, _ := range stateCustomFields.(map[string]interface{}) {
 			customFields[key] = ""
 		}
+		// then we override the values that still exist in the terraform code with their respective value
 		for key, value := range resourceCustomFields.(map[string]interface{}) {
 			customFields[key] = value
 
