@@ -123,7 +123,18 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := int64(d.Get("vcpus").(int))
-	customFields := d.Get("custom_fields").(map[string]interface{})
+	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
+	customFields := make(map[string]interface{})
+	for key, value := range resourceCustomFields {
+		customFields[key] = value
+
+		// special handling for booleans, as they are the only parameter not supplied as string to netbox
+		if value == "true" {
+			customFields[key] = 1
+		} else if value == "false" {
+			customFields[key] = 0
+		}
+	}
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:          &clusterID,
@@ -354,14 +365,21 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 
 	if d.HasChange("custom_fields") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
-		customFieldsAsString := make(map[string]interface{})
+		customFields := make(map[string]interface{})
 		for key, _ := range stateCustomFields.(map[string]interface{}) {
-			customFieldsAsString[key] = ""
+			customFields[key] = ""
 		}
 		for key, value := range resourceCustomFields.(map[string]interface{}) {
-			customFieldsAsString[key] = value
+			customFields[key] = value
+
+			// special handling for booleans, as they are the only parameter not supplied as string to netbox
+			if value == "true" {
+				customFields[key] = 1
+			} else if value == "false" {
+				customFields[key] = 0
+			}
 		}
-		params.CustomFields = &customFieldsAsString
+		params.CustomFields = &customFields
 	}
 
 	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
