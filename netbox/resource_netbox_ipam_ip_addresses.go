@@ -37,7 +37,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 			"dns_name": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "",
+				Default:  " ",
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_.]{1,255}$"),
 					"Must be like ^[-a-zA-Z0-9_.]{1,255}$"),
@@ -215,7 +215,14 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				return err
 			}
 
-			if err = d.Set("dns_name", resource.DNSName); err != nil {
+			var dnsName string
+			if resource.DNSName == "" {
+				dnsName = " "
+			} else {
+				dnsName = resource.DNSName
+			}
+
+			if err = d.Set("dns_name", dnsName); err != nil {
 				return err
 			}
 
