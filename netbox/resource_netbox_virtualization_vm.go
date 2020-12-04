@@ -376,7 +376,7 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 		customFields := make(map[string]interface{})
 		// netbox needs explicit empty string to remove old values
 		// first we fill all existing fields from the state with an empty string
-		for key, _ := range stateCustomFields.(map[string]interface{}) {
+		for key := range stateCustomFields.(map[string]interface{}) {
 			customFields[key] = ""
 		}
 		// then we override the values that still exist in the terraform code with their respective value
