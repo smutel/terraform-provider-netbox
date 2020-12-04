@@ -18,7 +18,12 @@ resource "netbox_virtualization_vm" "vm_test" {
   }
 
   custom_fields = {
-    foo = "bar"
+    cf_boolean = "true"
+    cf_date = "2020-12-25"
+    cf_integer = "10"
+    cf_selection = "1"
+    cf_text = "Some text"
+    cf_url = "https://github.com"
   }
 }
 ```
