@@ -230,3 +230,66 @@ func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
  *   return customFieldsAPI
  * }
  */
+
+// custom_fields have multiple data type returns based on field type
+// but terraform only supports map[string]string, so we convert all to strings
+func convertCustomFieldsFromApiToTerraform(customFields interface{}) map[string]string {
+	toReturn := make(map[string]string)
+	switch t := customFields.(type) {
+	case map[string]interface{}:
+		for key, value := range t {
+			var strValue string
+			if value != nil {
+				switch v := value.(type) {
+				default:
+					strValue = fmt.Sprintf("%v", v)
+				case map[string]interface{}:
+					strValue = fmt.Sprintf("%v", v["value"])
+				}
+			}
+			toReturn[key] = strValue
+
+		}
+	}
+
+	return toReturn
+}
+
+func convertCustomFieldsFromTerraformToApiCreate(customFields map[string]interface{}) map[string]interface{} {
+	toReturn := make(map[string]interface{})
+	for key, value := range customFields {
+		toReturn[key] = value
+
+		// special handling for booleans, as they are the only parameter not supplied as string to netbox
+		if value == "true" {
+			toReturn[key] = 1
+		} else if value == "false" {
+			toReturn[key] = 0
+		}
+	}
+
+	return toReturn
+}
+
+// all custom fields need to be submitted to the netbox API for updates
+func convertCustomFieldsFromTerraformToApiUpdate(stateCustomFields, resourceCustomFields interface{}) map[string]interface{} {
+	toReturn := make(map[string]interface{})
+
+	// netbox needs explicit empty string to remove old values
+	// first we fill all existing fields from the state with an empty string
+	for key := range stateCustomFields.(map[string]interface{}) {
+		toReturn[key] = nil
+	}
+	// then we override the values that still exist in the terraform code with their respective value
+	for key, value := range resourceCustomFields.(map[string]interface{}) {
+		toReturn[key] = value
+
+		// special handling for booleans, as they are the only parameter not supplied as string to netbox
+		if value == "true" {
+			toReturn[key] = 1
+		} else if value == "false" {
+			toReturn[key] = 0
+		}
+	}
+	return toReturn
+}

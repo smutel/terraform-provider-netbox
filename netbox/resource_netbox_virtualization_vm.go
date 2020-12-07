@@ -129,17 +129,7 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := int64(d.Get("vcpus").(int))
 	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
-	customFields := make(map[string]interface{})
-	for key, value := range resourceCustomFields {
-		customFields[key] = value
-
-		// special handling for booleans, as they are the only parameter not supplied as string to netbox
-		if value == "true" {
-			customFields[key] = 1
-		} else if value == "false" {
-			customFields[key] = 0
-		}
-	}
+	customFields := convertCustomFieldsFromTerraformToApiCreate(resourceCustomFields)
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:          &clusterID,
@@ -279,25 +269,7 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				return err
 			}
 
-			// custom_fields have multiple data type returns based on field type
-			// but terraform only supports map[string]string, so we convert all to strings
-			customFields := make(map[string]string)
-			switch t := resource.CustomFields.(type) {
-			case map[string]interface{}:
-				for key, value := range t {
-					var strValue string
-					if value != nil {
-						switch v := value.(type) {
-						default:
-							strValue = fmt.Sprintf("%v", v)
-						case map[string]interface{}:
-							strValue = fmt.Sprintf("%v", v["value"])
-						}
-					}
-					customFields[key] = strValue
-
-				}
-			}
+			customFields := convertCustomFieldsFromApiToTerraform(resource.CustomFields)
 
 			if err = d.Set("custom_fields", customFields); err != nil {
 				return err
@@ -373,23 +345,7 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	//
 	if d.HasChange("custom_fields") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
-		customFields := make(map[string]interface{})
-		// netbox needs explicit empty string to remove old values
-		// first we fill all existing fields from the state with an empty string
-		for key := range stateCustomFields.(map[string]interface{}) {
-			customFields[key] = nil
-		}
-		// then we override the values that still exist in the terraform code with their respective value
-		for key, value := range resourceCustomFields.(map[string]interface{}) {
-			customFields[key] = value
-
-			// special handling for booleans, as they are the only parameter not supplied as string to netbox
-			if value == "true" {
-				customFields[key] = 1
-			} else if value == "false" {
-				customFields[key] = 0
-			}
-		}
+		customFields := convertCustomFieldsFromTerraformToApiUpdate(stateCustomFields, resourceCustomFields)
 		params.CustomFields = &customFields
 	}
 
