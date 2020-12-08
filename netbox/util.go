@@ -233,7 +233,7 @@ func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
 
 // custom_fields have multiple data type returns based on field type
 // but terraform only supports map[string]string, so we convert all to strings
-func convertCustomFieldsFromApiToTerraform(customFields interface{}) map[string]string {
+func convertCustomFieldsFromAPIToTerraform(customFields interface{}) map[string]string {
 	toReturn := make(map[string]string)
 	switch t := customFields.(type) {
 	case map[string]interface{}:
@@ -255,7 +255,7 @@ func convertCustomFieldsFromApiToTerraform(customFields interface{}) map[string]
 	return toReturn
 }
 
-func convertCustomFieldsFromTerraformToApiCreate(customFields map[string]interface{}) map[string]interface{} {
+func convertCustomFieldsFromTerraformToAPICreate(customFields map[string]interface{}) map[string]interface{} {
 	toReturn := make(map[string]interface{})
 	for key, value := range customFields {
 		toReturn[key] = value
@@ -272,7 +272,7 @@ func convertCustomFieldsFromTerraformToApiCreate(customFields map[string]interfa
 }
 
 // all custom fields need to be submitted to the netbox API for updates
-func convertCustomFieldsFromTerraformToApiUpdate(stateCustomFields, resourceCustomFields interface{}) map[string]interface{} {
+func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields interface{}) map[string]interface{} {
 	toReturn := make(map[string]interface{})
 
 	// netbox needs explicit empty string to remove old values

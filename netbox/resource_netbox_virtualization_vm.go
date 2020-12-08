@@ -129,7 +129,7 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := int64(d.Get("vcpus").(int))
 	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
-	customFields := convertCustomFieldsFromTerraformToApiCreate(resourceCustomFields)
+	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:          &clusterID,
@@ -269,7 +269,7 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				return err
 			}
 
-			customFields := convertCustomFieldsFromApiToTerraform(resource.CustomFields)
+			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
 
 			if err = d.Set("custom_fields", customFields); err != nil {
 				return err
@@ -345,7 +345,7 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	//
 	if d.HasChange("custom_fields") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
-		customFields := convertCustomFieldsFromTerraformToApiUpdate(stateCustomFields, resourceCustomFields)
+		customFields := convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields)
 		params.CustomFields = &customFields
 	}
 
