@@ -26,6 +26,7 @@ jobs:
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
+          fail_on_error: true
 
       - name: Setup env
         run: |
