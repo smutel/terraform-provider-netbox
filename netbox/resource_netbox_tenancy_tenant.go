@@ -26,6 +26,24 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 				Optional: true,
 				Default:  " ",
 			},
+			"custom_fields": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				// terraform default behavior sees a difference between null and an empty string
+				// therefore we override the default, because null in terraform results in empty string in netbox
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					// function is called for each member of map
+					// including additional call on the amount of entries
+					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
+					if k == "custom_fields.%" {
+						return true
+					}
+					return old == new
+				},
+			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -74,6 +92,8 @@ func resourceNetboxTenancyTenantCreate(d *schema.ResourceData,
 	client := m.(*netboxclient.NetBoxAPI)
 
 	comments := d.Get("comments").(string)
+	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
+	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
 	description := d.Get("description").(string)
 	groupID := int64(d.Get("tenant_group_id").(int))
 	name := d.Get("name").(string)
@@ -81,11 +101,12 @@ func resourceNetboxTenancyTenantCreate(d *schema.ResourceData,
 	tags := d.Get("tag").(*schema.Set).List()
 
 	newResource := &models.WritableTenant{
-		Comments:    comments,
-		Description: description,
-		Name:        &name,
-		Slug:        &slug,
-		Tags:        convertTagsToNestedTags(tags),
+		Comments:     comments,
+		CustomFields: &customFields,
+		Description:  description,
+		Name:         &name,
+		Slug:         &slug,
+		Tags:         convertTagsToNestedTags(tags),
 	}
 
 	if groupID != 0 {
@@ -126,6 +147,12 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("comments", comments); err != nil {
+				return err
+			}
+
+			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
+
+			if err = d.Set("custom_fields", customFields); err != nil {
 				return err
 			}
 
@@ -186,6 +213,12 @@ func resourceNetboxTenancyTenantUpdate(d *schema.ResourceData,
 	if d.HasChange("comments") {
 		comments := d.Get("comments").(string)
 		params.Comments = comments
+	}
+
+	if d.HasChange("custom_fields") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
+		customFields := convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields)
+		params.CustomFields = &customFields
 	}
 
 	if d.HasChange("description") {

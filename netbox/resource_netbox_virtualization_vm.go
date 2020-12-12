@@ -29,6 +29,24 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Optional: true,
 				Default:  " ",
 			},
+			"custom_fields": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				// terraform default behavior sees a difference between null and an empty string
+				// therefore we override the default, because null in terraform results in empty string in netbox
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					// function is called for each member of map
+					// including additional call on the amount of entries
+					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
+					if k == "custom_fields.%" {
+						return true
+					}
+					return old == new
+				},
+			},
 			"disk": {
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -110,10 +128,13 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := int64(d.Get("vcpus").(int))
+	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
+	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:          &clusterID,
 		Comments:         comments,
+		CustomFields:     &customFields,
 		LocalContextData: &localContextData,
 		Name:             &name,
 		Status:           status,
@@ -185,6 +206,12 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("comments", comments); err != nil {
+				return err
+			}
+
+			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
+
+			if err = d.Set("custom_fields", customFields); err != nil {
 				return err
 			}
 
@@ -269,6 +296,12 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	if d.HasChange("comments") {
 		comments := d.Get("comments").(string)
 		params.Comments = comments
+	}
+
+	if d.HasChange("custom_fields") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
+		customFields := convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields)
+		params.CustomFields = &customFields
 	}
 
 	if d.HasChange("disk") {

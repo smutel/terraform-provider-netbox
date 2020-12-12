@@ -139,94 +139,65 @@ func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
 	return nil
 }
 
-/*
- * func diffSlices(oldSlice []string, newSlice []string) []string {
- *   var diff []string
- *
- *   for _, x := range oldSlice {
- *     found := false
- *     for _, y := range newSlice {
- *       if x == y {
- *         found = true
- *       }
- *     }
- *
- *     if found == false {
- *       diff = append(diff, x)
- *     }
- *   }
- *
- *   return diff
- * }
- */
+// custom_fields have multiple data type returns based on field type
+// but terraform only supports map[string]string, so we convert all to strings
+func convertCustomFieldsFromAPIToTerraform(customFields interface{}) map[string]string {
+	toReturn := make(map[string]string)
+	switch t := customFields.(type) {
+	case map[string]interface{}:
+		for key, value := range t {
+			var strValue string
+			if value != nil {
+				switch v := value.(type) {
+				default:
+					strValue = fmt.Sprintf("%v", v)
+				case map[string]interface{}:
+					strValue = fmt.Sprintf("%v", v["value"])
+				}
+			}
+			toReturn[key] = strValue
 
-/*
- * func convertCFToAPI(customFields []interface{}) (cf map[string]interface{},
- *   e error) {
- *
- *   customFieldsAPI := make(map[string]interface{})
- *   for _, customFieldRaw := range customFields {
- *     customField := customFieldRaw.(map[string]interface{})
- *     customFieldName := customField["name"].(string)
- *     customFieldType := customField["kind"].(string)
- *     customFieldValue := customField["value"].(string)
- *
- *     if customFieldType == "string" {
- *       customFieldsAPI[customFieldName] = customFieldValue
- *     } else if customFieldType == "int" {
- *       cfIntValue, err := strconv.ParseInt(customFieldValue, 10, 64)
- *       if err != nil {
- *         return nil, err
- *       }
- *       customFieldsAPI[customFieldName] = cfIntValue
- *     } else if customFieldType == "bool" {
- *       cfBoolValue, err := strconv.ParseBool(customFieldValue)
- *       if err != nil {
- *         return nil, err
- *       }
- *       customFieldsAPI[customFieldName] = cfBoolValue
- *     }
- *   }
- *
- *   return customFieldsAPI, nil
- * }
- */
+		}
+	}
 
-/*
- * func convertAPIToCF(customFields interface{}) (cf []map[string]string) {
- *   var cfAPI map[string]string
- *   cfAPISize := 0
- *
- *   for _, v := range customFields.(map[string]interface{}) {
- *     if v != nil {
- *       cfAPISize++
- *     }
- *   }
- *
- *   customFieldsAPI := make([]map[string]string, cfAPISize)
- *
- *   i := 0
- *   for k, v := range customFields.(map[string]interface{}) {
- *     cfAPI = make(map[string]string)
- *     cfAPI["name"] = k
- *
- *     if v != nil {
- *       switch v.(type) {
- *       case json.Number:
- *         cfAPI["value"] = v.(json.Number).String()
- *         cfAPI["kind"] = "int"
- *       case bool:
- *         cfAPI["value"] = strconv.FormatBool(v.(bool))
- *         cfAPI["kind"] = "bool"
- *       default:
- *         cfAPI["value"] = v.(string)
- *         cfAPI["kind"] = "string"
- *       }
- *       customFieldsAPI[i] = cfAPI
- *       i++
- *     }
- *   }
- *
- *   return customFieldsAPI
- * }
- */
+	return toReturn
+}
+
+func convertCustomFieldsFromTerraformToAPICreate(customFields map[string]interface{}) map[string]interface{} {
+	toReturn := make(map[string]interface{})
+	for key, value := range customFields {
+		toReturn[key] = value
+
+		// special handling for booleans, as they are the only parameter not supplied as string to netbox
+		if value == "true" {
+			toReturn[key] = 1
+		} else if value == "false" {
+			toReturn[key] = 0
+		}
+	}
+
+	return toReturn
+}
+
+// all custom fields need to be submitted to the netbox API for updates
+func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields interface{}) map[string]interface{} {
+	toReturn := make(map[string]interface{})
+
+	// netbox needs explicit empty string to remove old values
+	// first we fill all existing fields from the state with an empty string
+	for key := range stateCustomFields.(map[string]interface{}) {
+		toReturn[key] = nil
+	}
+	// then we override the values that still exist in the terraform code with their respective value
+	for key, value := range resourceCustomFields.(map[string]interface{}) {
+		toReturn[key] = value
+
+		// special handling for booleans, as they are the only parameter not supplied as string to netbox
+		if value == "true" {
+			toReturn[key] = 1
+		} else if value == "false" {
+			toReturn[key] = 0
+		}
+	}
+	return toReturn
+}

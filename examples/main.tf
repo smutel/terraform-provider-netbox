@@ -13,6 +13,15 @@ resource "netbox_tenancy_tenant" "tenant_test" {
     name = "tag2"
     slug = "tag2"
   }
+
+  custom_fields = {
+    cf_boolean = "true"
+    cf_date = "2020-12-25"
+    cf_integer = "10"
+    cf_selection = "1"
+    cf_text = "Some text"
+    cf_url = "https://github.com"
+  }
 }
 
 resource "netbox_tenancy_tenant_group" "tenant_group_test" {
@@ -115,6 +124,15 @@ resource "netbox_virtualization_vm" "vm_test" {
   tag {
     name = "tag1"
     slug = "tag1"
+  }
+
+  custom_fields = {
+    cf_boolean = "true"
+    cf_date = "2020-12-25"
+    cf_integer = "10"
+    cf_selection = "1"
+    cf_text = "Some text"
+    cf_url = "https://github.com"
   }
 }
 
