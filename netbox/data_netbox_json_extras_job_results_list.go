@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonExtrasJobResultsList() *schema.Resource {
+func dataNetboxJSONExtrasJobResultsList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonExtrasJobResultsListRead,
+                Read: dataNetboxJSONExtrasJobResultsListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonExtrasJobResultsList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonExtrasJobResultsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasJobResultsListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Extras.ExtrasJobResultsList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonExtrasJobResultsListRead(d *schema.ResourceData, m interface{
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonExtrasJobResultsList")
+        d.SetId("NetboxJSONExtrasJobResultsList")
 
         return nil
 }

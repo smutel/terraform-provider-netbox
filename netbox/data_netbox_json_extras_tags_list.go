@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonExtrasTagsList() *schema.Resource {
+func dataNetboxJSONExtrasTagsList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonExtrasTagsListRead,
+                Read: dataNetboxJSONExtrasTagsListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonExtrasTagsList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonExtrasTagsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasTagsListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Extras.ExtrasTagsList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonExtrasTagsListRead(d *schema.ResourceData, m interface{}) err
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonExtrasTagsList")
+        d.SetId("NetboxJSONExtrasTagsList")
 
         return nil
 }

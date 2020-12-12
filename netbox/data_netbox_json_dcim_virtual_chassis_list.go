@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonDcimVirtualChassisList() *schema.Resource {
+func dataNetboxJSONDcimVirtualChassisList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonDcimVirtualChassisListRead,
+                Read: dataNetboxJSONDcimVirtualChassisListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonDcimVirtualChassisList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonDcimVirtualChassisListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONDcimVirtualChassisListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Dcim.DcimVirtualChassisList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonDcimVirtualChassisListRead(d *schema.ResourceData, m interfac
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonDcimVirtualChassisList")
+        d.SetId("NetboxJSONDcimVirtualChassisList")
 
         return nil
 }

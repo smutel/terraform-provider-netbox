@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonVirtualizationInterfacesList() *schema.Resource {
+func dataNetboxJSONVirtualizationInterfacesList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonVirtualizationInterfacesListRead,
+                Read: dataNetboxJSONVirtualizationInterfacesListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonVirtualizationInterfacesList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonVirtualizationInterfacesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONVirtualizationInterfacesListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Virtualization.VirtualizationInterfacesList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonVirtualizationInterfacesListRead(d *schema.ResourceData, m in
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonVirtualizationInterfacesList")
+        d.SetId("NetboxJSONVirtualizationInterfacesList")
 
         return nil
 }

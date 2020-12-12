@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonUsersUsersList() *schema.Resource {
+func dataNetboxJSONUsersUsersList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonUsersUsersListRead,
+                Read: dataNetboxJSONUsersUsersListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonUsersUsersList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonUsersUsersListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONUsersUsersListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Users.UsersUsersList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonUsersUsersListRead(d *schema.ResourceData, m interface{}) err
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonUsersUsersList")
+        d.SetId("NetboxJSONUsersUsersList")
 
         return nil
 }

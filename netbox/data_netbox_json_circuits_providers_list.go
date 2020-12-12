@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonCircuitsProvidersList() *schema.Resource {
+func dataNetboxJSONCircuitsProvidersList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonCircuitsProvidersListRead,
+                Read: dataNetboxJSONCircuitsProvidersListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonCircuitsProvidersList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonCircuitsProvidersListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONCircuitsProvidersListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Circuits.CircuitsProvidersList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonCircuitsProvidersListRead(d *schema.ResourceData, m interface
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonCircuitsProvidersList")
+        d.SetId("NetboxJSONCircuitsProvidersList")
 
         return nil
 }

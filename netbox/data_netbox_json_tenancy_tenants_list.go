@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonTenancyTenantsList() *schema.Resource {
+func dataNetboxJSONTenancyTenantsList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonTenancyTenantsListRead,
+                Read: dataNetboxJSONTenancyTenantsListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonTenancyTenantsList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonTenancyTenantsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONTenancyTenantsListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Tenancy.TenancyTenantsList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonTenancyTenantsListRead(d *schema.ResourceData, m interface{})
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonTenancyTenantsList")
+        d.SetId("NetboxJSONTenancyTenantsList")
 
         return nil
 }

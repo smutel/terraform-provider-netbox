@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonVirtualizationClusterTypesList() *schema.Resource {
+func dataNetboxJSONVirtualizationClusterTypesList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonVirtualizationClusterTypesListRead,
+                Read: dataNetboxJSONVirtualizationClusterTypesListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonVirtualizationClusterTypesList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonVirtualizationClusterTypesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONVirtualizationClusterTypesListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Virtualization.VirtualizationClusterTypesList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonVirtualizationClusterTypesListRead(d *schema.ResourceData, m 
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonVirtualizationClusterTypesList")
+        d.SetId("NetboxJSONVirtualizationClusterTypesList")
 
         return nil
 }

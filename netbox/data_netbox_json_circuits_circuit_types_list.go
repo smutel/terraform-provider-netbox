@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonCircuitsCircuitTypesList() *schema.Resource {
+func dataNetboxJSONCircuitsCircuitTypesList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonCircuitsCircuitTypesListRead,
+                Read: dataNetboxJSONCircuitsCircuitTypesListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonCircuitsCircuitTypesList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonCircuitsCircuitTypesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONCircuitsCircuitTypesListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Circuits.CircuitsCircuitTypesList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonCircuitsCircuitTypesListRead(d *schema.ResourceData, m interf
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonCircuitsCircuitTypesList")
+        d.SetId("NetboxJSONCircuitsCircuitTypesList")
 
         return nil
 }

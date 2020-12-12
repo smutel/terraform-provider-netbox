@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonSecretsSecretsList() *schema.Resource {
+func dataNetboxJSONSecretsSecretsList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonSecretsSecretsListRead,
+                Read: dataNetboxJSONSecretsSecretsListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonSecretsSecretsList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonSecretsSecretsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONSecretsSecretsListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Secrets.SecretsSecretsList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonSecretsSecretsListRead(d *schema.ResourceData, m interface{})
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonSecretsSecretsList")
+        d.SetId("NetboxJSONSecretsSecretsList")
 
         return nil
 }

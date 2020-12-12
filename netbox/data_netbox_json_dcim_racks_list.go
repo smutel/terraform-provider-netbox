@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonDcimRacksList() *schema.Resource {
+func dataNetboxJSONDcimRacksList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonDcimRacksListRead,
+                Read: dataNetboxJSONDcimRacksListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonDcimRacksList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonDcimRacksListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONDcimRacksListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Dcim.DcimRacksList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonDcimRacksListRead(d *schema.ResourceData, m interface{}) erro
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonDcimRacksList")
+        d.SetId("NetboxJSONDcimRacksList")
 
         return nil
 }

@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonDcimPowerPanelsList() *schema.Resource {
+func dataNetboxJSONDcimPowerPanelsList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonDcimPowerPanelsListRead,
+                Read: dataNetboxJSONDcimPowerPanelsListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonDcimPowerPanelsList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonDcimPowerPanelsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONDcimPowerPanelsListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Dcim.DcimPowerPanelsList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonDcimPowerPanelsListRead(d *schema.ResourceData, m interface{}
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonDcimPowerPanelsList")
+        d.SetId("NetboxJSONDcimPowerPanelsList")
 
         return nil
 }

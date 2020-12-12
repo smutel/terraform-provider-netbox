@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonExtrasExportTemplatesList() *schema.Resource {
+func dataNetboxJSONExtrasExportTemplatesList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonExtrasExportTemplatesListRead,
+                Read: dataNetboxJSONExtrasExportTemplatesListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonExtrasExportTemplatesList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonExtrasExportTemplatesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasExportTemplatesListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Extras.ExtrasExportTemplatesList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonExtrasExportTemplatesListRead(d *schema.ResourceData, m inter
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonExtrasExportTemplatesList")
+        d.SetId("NetboxJSONExtrasExportTemplatesList")
 
         return nil
 }

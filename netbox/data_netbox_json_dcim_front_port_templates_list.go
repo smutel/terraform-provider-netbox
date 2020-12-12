@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonDcimFrontPortTemplatesList() *schema.Resource {
+func dataNetboxJSONDcimFrontPortTemplatesList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonDcimFrontPortTemplatesListRead,
+                Read: dataNetboxJSONDcimFrontPortTemplatesListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonDcimFrontPortTemplatesList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonDcimFrontPortTemplatesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONDcimFrontPortTemplatesListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Dcim.DcimFrontPortTemplatesList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonDcimFrontPortTemplatesListRead(d *schema.ResourceData, m inte
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonDcimFrontPortTemplatesList")
+        d.SetId("NetboxJSONDcimFrontPortTemplatesList")
 
         return nil
 }

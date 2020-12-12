@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonIpamPrefixesList() *schema.Resource {
+func dataNetboxJSONIpamPrefixesList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonIpamPrefixesListRead,
+                Read: dataNetboxJSONIpamPrefixesListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonIpamPrefixesList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonIpamPrefixesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONIpamPrefixesListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Ipam.IpamPrefixesList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonIpamPrefixesListRead(d *schema.ResourceData, m interface{}) e
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonIpamPrefixesList")
+        d.SetId("NetboxJSONIpamPrefixesList")
 
         return nil
 }

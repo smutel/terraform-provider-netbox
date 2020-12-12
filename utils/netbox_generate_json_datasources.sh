@@ -19,9 +19,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJson${SECTION}${ITEM}List() *schema.Resource {
+func dataNetboxJSON${SECTION}${ITEM}List() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJson${SECTION}${ITEM}ListRead,
+                Read: dataNetboxJSON${SECTION}${ITEM}ListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -32,7 +32,7 @@ func dataNetboxJson${SECTION}${ITEM}List() *schema.Resource {
         }
 }
 
-func dataNetboxJson${SECTION}${ITEM}ListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSON${SECTION}${ITEM}ListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.${SECTION}.${SECTION}${ITEM}List(nil, nil)
@@ -43,7 +43,7 @@ func dataNetboxJson${SECTION}${ITEM}ListRead(d *schema.ResourceData, m interface
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJson${SECTION}${ITEM}List")
+        d.SetId("NetboxJSON${SECTION}${ITEM}List")
 
         return nil
 }
@@ -51,7 +51,7 @@ EOF
 
 
 cat << EOF >> provider_update.txt
-"netbox_json_${ENDPOINT}_list": dataNetboxJson${SECTION}${ITEM}List(),
+"netbox_json_${ENDPOINT}_list": dataNetboxJSON${SECTION}${ITEM}List(),
 EOF
 
 

@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonExtrasConfigContextsList() *schema.Resource {
+func dataNetboxJSONExtrasConfigContextsList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonExtrasConfigContextsListRead,
+                Read: dataNetboxJSONExtrasConfigContextsListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonExtrasConfigContextsList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonExtrasConfigContextsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasConfigContextsListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Extras.ExtrasConfigContextsList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonExtrasConfigContextsListRead(d *schema.ResourceData, m interf
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonExtrasConfigContextsList")
+        d.SetId("NetboxJSONExtrasConfigContextsList")
 
         return nil
 }

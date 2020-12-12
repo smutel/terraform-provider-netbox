@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonExtrasGraphsList() *schema.Resource {
+func dataNetboxJSONExtrasGraphsList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonExtrasGraphsListRead,
+                Read: dataNetboxJSONExtrasGraphsListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonExtrasGraphsList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonExtrasGraphsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasGraphsListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Extras.ExtrasGraphsList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonExtrasGraphsListRead(d *schema.ResourceData, m interface{}) e
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonExtrasGraphsList")
+        d.SetId("NetboxJSONExtrasGraphsList")
 
         return nil
 }

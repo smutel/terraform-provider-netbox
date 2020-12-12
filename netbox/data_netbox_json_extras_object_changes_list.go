@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonExtrasObjectChangesList() *schema.Resource {
+func dataNetboxJSONExtrasObjectChangesList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonExtrasObjectChangesListRead,
+                Read: dataNetboxJSONExtrasObjectChangesListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonExtrasObjectChangesList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonExtrasObjectChangesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasObjectChangesListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Extras.ExtrasObjectChangesList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonExtrasObjectChangesListRead(d *schema.ResourceData, m interfa
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonExtrasObjectChangesList")
+        d.SetId("NetboxJSONExtrasObjectChangesList")
 
         return nil
 }

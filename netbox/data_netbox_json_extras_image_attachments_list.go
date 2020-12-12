@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonExtrasImageAttachmentsList() *schema.Resource {
+func dataNetboxJSONExtrasImageAttachmentsList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonExtrasImageAttachmentsListRead,
+                Read: dataNetboxJSONExtrasImageAttachmentsListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonExtrasImageAttachmentsList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonExtrasImageAttachmentsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasImageAttachmentsListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Extras.ExtrasImageAttachmentsList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonExtrasImageAttachmentsListRead(d *schema.ResourceData, m inte
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonExtrasImageAttachmentsList")
+        d.SetId("NetboxJSONExtrasImageAttachmentsList")
 
         return nil
 }

@@ -7,9 +7,9 @@ import (
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 )
 
-func dataNetboxJsonIpamAggregatesList() *schema.Resource {
+func dataNetboxJSONIpamAggregatesList() *schema.Resource {
         return &schema.Resource{
-                Read: dataNetboxJsonIpamAggregatesListRead,
+                Read: dataNetboxJSONIpamAggregatesListRead,
 
                 Schema: map[string]*schema.Schema{
                         "json": {
@@ -20,7 +20,7 @@ func dataNetboxJsonIpamAggregatesList() *schema.Resource {
         }
 }
 
-func dataNetboxJsonIpamAggregatesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONIpamAggregatesListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
         list, err := client.Ipam.IpamAggregatesList(nil, nil)
@@ -31,7 +31,7 @@ func dataNetboxJsonIpamAggregatesListRead(d *schema.ResourceData, m interface{})
         j, _ := json.Marshal(list.Payload.Results)
 
         d.Set("json", string(j))
-        d.SetId("NetboxJsonIpamAggregatesList")
+        d.SetId("NetboxJSONIpamAggregatesList")
 
         return nil
 }
