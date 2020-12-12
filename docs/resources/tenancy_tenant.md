@@ -33,12 +33,12 @@ resource "netbox_tenancy_tenant" "tenant_test" {
 The following arguments are supported:
 * ``comments`` - (Optional) Comments for this object.
 * ``custom_fields`` - (Optional) Custom Field Keys and Values for this object
-** For boolean, use the string value "true" or "false"
-** For data, use the string format "YYYY-MM-DD"
-** For integer, use the value between double quote "10"
-** For selection, use the level id
-** For text, use the string value
-** For URL, use the URL as string
+  * For boolean, use the string value "true" or "false"
+  * For data, use the string format "YYYY-MM-DD"
+  * For integer, use the value between double quote "10"
+  * For selection, use the level id
+  * For text, use the string value
+  * For URL, use the URL as string
 * ``description`` - (Optional) The description for this object.
 * ``tenant_group_id`` - (Optional) ID of the group where this object is located.
 * ``name`` - (Required) The name for this object.
