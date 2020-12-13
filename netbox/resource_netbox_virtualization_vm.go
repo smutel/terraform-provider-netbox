@@ -41,7 +41,7 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 					// function is called for each member of map
 					// including additional call on the amount of entries
 					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
-					if k == "custom_fields.%" {
+					if k == CustomFieldsRegex {
 						return true
 					}
 					return old == new
@@ -118,6 +118,8 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 
 	clusterID := int64(d.Get("cluster_id").(int))
 	comments := d.Get("comments").(string)
+	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
+	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
 	disk := int64(d.Get("disk").(int))
 	localContextData := d.Get("local_context_data").(string)
 	memory := int64(d.Get("memory").(int))
@@ -128,8 +130,6 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := int64(d.Get("vcpus").(int))
-	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
-	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:          &clusterID,

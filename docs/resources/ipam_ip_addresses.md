@@ -14,6 +14,15 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
     name = "tag1"
     slug = "tag1"
   }
+  
+  custom_fields = {
+    cf_boolean = "true"
+    cf_date = "2020-12-25"
+    cf_integer = "10"
+    cf_selection = "1"
+    cf_text = "Some text"
+    cf_url = "https://github.com"
+  }
 }
 ```
 
@@ -21,6 +30,13 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
 
 The following arguments are supported:
 * ``address`` - (Required) The IP address (with mask) used for this object.
+* ``custom_fields`` - (Optional) Custom Field Keys and Values for this object
+  * For boolean, use the string value "true" or "false"
+  * For data, use the string format "YYYY-MM-DD"
+  * For integer, use the value between double quote "10"
+  * For selection, use the level id
+  * For text, use the string value
+  * For URL, use the URL as string
 * ``description`` - (Optional) The description of this object.
 * ``dns_name`` - (Optional) The DNS name of this object.
 * ``nat_inside_id`` - (Optional) The ID of the NAT inside of this object.

@@ -28,6 +28,24 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 					regexp.MustCompile("^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/"+
 						"[0-9]{1,2}$"), "Must be like 192.168.56.1/24"),
 			},
+			"custom_fields": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				// terraform default behavior sees a difference between null and an empty string
+				// therefore we override the default, because null in terraform results in empty string in netbox
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					// function is called for each member of map
+					// including additional call on the amount of entries
+					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
+					if k == CustomFieldsRegex {
+						return true
+					}
+					return old == new
+				},
+			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -116,6 +134,8 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	client := m.(*netboxclient.NetBoxAPI)
 
 	address := d.Get("address").(string)
+	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
+	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
 	description := d.Get("description").(string)
 	dnsName := d.Get("dns_name").(string)
 	natInsideID := int64(d.Get("nat_inside_id").(int))
@@ -130,12 +150,13 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	vrfID := int64(d.Get("vrf_id").(int))
 
 	newResource := &models.WritableIPAddress{
-		Address:     &address,
-		Description: description,
-		DNSName:     dnsName,
-		Role:        role,
-		Status:      status,
-		Tags:        convertTagsToNestedTags(tags),
+		Address:      &address,
+		CustomFields: &customFields,
+		Description:  description,
+		DNSName:      dnsName,
+		Role:         role,
+		Status:       status,
+		Tags:         convertTagsToNestedTags(tags),
 	}
 
 	if natInsideID != 0 {
@@ -201,6 +222,12 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("address", resource.Address); err != nil {
+				return err
+			}
+
+			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
+
+			if err = d.Set("custom_fields", customFields); err != nil {
 				return err
 			}
 
@@ -351,6 +378,12 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 	// Required parameters
 	address := d.Get("address").(string)
 	params.Address = &address
+
+	if d.HasChange("custom_fields") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
+		customFields := convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields)
+		params.CustomFields = &customFields
+	}
 
 	if d.HasChange("description") {
 		if description, exist := d.GetOk("description"); exist {
