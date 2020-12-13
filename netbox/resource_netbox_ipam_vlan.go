@@ -20,6 +20,24 @@ func resourceNetboxIpamVlan() *schema.Resource {
 		Exists: resourceNetboxIpamVlanExists,
 
 		Schema: map[string]*schema.Schema{
+			"custom_fields": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				// terraform default behavior sees a difference between null and an empty string
+				// therefore we override the default, because null in terraform results in empty string in netbox
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					// function is called for each member of map
+					// including additional call on the amount of entries
+					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
+					if k == CustomFieldsRegex {
+						return true
+					}
+					return old == new
+				},
+			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -82,6 +100,8 @@ func resourceNetboxIpamVlanCreate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
+	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
+	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
 	description := d.Get("description").(string)
 	groupID := int64(d.Get("vlan_group_id").(int))
 	name := d.Get("name").(string)
@@ -93,11 +113,12 @@ func resourceNetboxIpamVlanCreate(d *schema.ResourceData,
 	vid := int64(d.Get("vlan_id").(int))
 
 	newResource := &models.WritableVLAN{
-		Description: description,
-		Name:        &name,
-		Status:      status,
-		Tags:        convertTagsToNestedTags(tags),
-		Vid:         &vid,
+		CustomFields: &customFields,
+		Description:  description,
+		Name:         &name,
+		Status:       status,
+		Tags:         convertTagsToNestedTags(tags),
+		Vid:          &vid,
 	}
 
 	if groupID != 0 {
@@ -140,6 +161,12 @@ func resourceNetboxIpamVlanRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
+
+			if err = d.Set("custom_fields", customFields); err != nil {
+				return err
+			}
+
 			var description string
 
 			if resource.Description == "" {
@@ -237,6 +264,12 @@ func resourceNetboxIpamVlanUpdate(d *schema.ResourceData,
 	if d.HasChange("description") {
 		description := d.Get("description").(string)
 		params.Description = description
+	}
+
+	if d.HasChange("custom_fields") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
+		customFields := convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields)
+		params.CustomFields = &customFields
 	}
 
 	if d.HasChange("vlan_group_id") {
