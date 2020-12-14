@@ -38,7 +38,7 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 					// function is called for each member of map
 					// including additional call on the amount of entries
 					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
-					if k == "custom_fields.%" {
+					if k == CustomFieldsRegex {
 						return true
 					}
 					return old == new

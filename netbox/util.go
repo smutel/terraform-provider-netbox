@@ -16,6 +16,7 @@ type InfosForPrimary struct {
 }
 
 const VMInterfaceType string = "virtualization.vminterface"
+const CustomFieldsRegex = "custom_fields.%"
 
 func expandToStringSlice(v []interface{}) []string {
 	s := make([]string, len(v))
@@ -144,6 +145,7 @@ func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
 func convertCustomFieldsFromAPIToTerraform(customFields interface{}) map[string]string {
 	toReturn := make(map[string]string)
 	switch t := customFields.(type) {
+
 	case map[string]interface{}:
 		for key, value := range t {
 			var strValue string
@@ -155,8 +157,8 @@ func convertCustomFieldsFromAPIToTerraform(customFields interface{}) map[string]
 					strValue = fmt.Sprintf("%v", v["value"])
 				}
 			}
-			toReturn[key] = strValue
 
+			toReturn[key] = strValue
 		}
 	}
 
@@ -188,6 +190,7 @@ func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCust
 	for key := range stateCustomFields.(map[string]interface{}) {
 		toReturn[key] = nil
 	}
+
 	// then we override the values that still exist in the terraform code with their respective value
 	for key, value := range resourceCustomFields.(map[string]interface{}) {
 		toReturn[key] = value
@@ -199,5 +202,6 @@ func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCust
 			toReturn[key] = 0
 		}
 	}
+
 	return toReturn
 }
