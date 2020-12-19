@@ -47,6 +47,7 @@ func Provider() *schema.Provider {
 			"netbox_virtualization_cluster": dataNetboxVirtualizationCluster(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
+			"netbox_ipam_aggregate":           resourceNetboxIpamAggregate(),
 			"netbox_ipam_prefix":              resourceNetboxIpamPrefix(),
 			"netbox_ipam_ip_addresses":        resourceNetboxIpamIPAddresses(),
 			"netbox_ipam_vlan":                resourceNetboxIpamVlan(),
