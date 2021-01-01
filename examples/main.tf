@@ -15,12 +15,12 @@ resource "netbox_tenancy_tenant" "tenant_test" {
   }
 
   custom_fields = {
-    cf_boolean = "true"
-    cf_date = "2020-12-25"
-    cf_integer = "10"
+    cf_boolean   = "true"
+    cf_date      = "2020-12-25"
+    cf_integer   = "10"
     cf_selection = "1"
-    cf_text = "Some text"
-    cf_url = "https://github.com"
+    cf_text      = "Some text"
+    cf_url       = "https://github.com"
   }
 }
 
@@ -67,12 +67,12 @@ resource "netbox_ipam_vlan" "vlan_test" {
   }
 
   custom_fields = {
-    cf_boolean = "true"
-    cf_date = "2020-12-25"
-    cf_integer = "10"
+    cf_boolean   = "true"
+    cf_date      = "2020-12-25"
+    cf_integer   = "10"
     cf_selection = "1"
-    cf_text = "Some text"
-    cf_url = "https://github.com"
+    cf_text      = "Some text"
+    cf_url       = "https://github.com"
   }
 }
 
@@ -136,12 +136,12 @@ resource "netbox_virtualization_vm" "vm_test" {
   }
 
   custom_fields = {
-    cf_boolean = "true"
-    cf_date = "2020-12-25"
-    cf_integer = "10"
+    cf_boolean   = "true"
+    cf_date      = "2020-12-25"
+    cf_integer   = "10"
     cf_selection = "1"
-    cf_text = "Some text"
-    cf_url = "https://github.com"
+    cf_text      = "Some text"
+    cf_url       = "https://github.com"
   }
 }
 
@@ -150,4 +150,30 @@ resource "netbox_virtualization_interface" "interface_test" {
   virtualmachine_id = netbox_virtualization_vm.vm_test.id
   mac_address       = "AA:AA:AA:AA:AA:AA"
   description       = "Interface de test"
+}
+
+resource "netbox_ipam_aggregate" "aggregate_test" {
+  prefix      = "192.167.0.0/24"
+  rir_id      = 1
+  date_added  = "2020-12-21"
+  description = "Aggregate created by terraform"
+
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
+
+  tag {
+    name = "tag2"
+    slug = "tag2"
+  }
+
+  custom_fields = {
+    cf_boolean   = "true"
+    cf_date      = "2020-12-25"
+    cf_integer   = "10"
+    cf_selection = "1"
+    cf_text      = "Some text"
+    cf_url       = "https://github.com"
+  }
 }

@@ -36,8 +36,9 @@ func Provider() *schema.Provider {
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"netbox_dcim_site":              dataNetboxDcimSite(),
 			"netbox_dcim_platform":          dataNetboxDcimPlatform(),
+			"netbox_dcim_site":              dataNetboxDcimSite(),
+			"netbox_ipam_aggregate":         dataNetboxIpamAggregate(),
 			"netbox_ipam_ip_addresses":      dataNetboxIpamIPAddresses(),
 			"netbox_ipam_role":              dataNetboxIpamRole(),
 			"netbox_ipam_vlan":              dataNetboxIpamVlan(),
@@ -47,8 +48,9 @@ func Provider() *schema.Provider {
 			"netbox_virtualization_cluster": dataNetboxVirtualizationCluster(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"netbox_ipam_prefix":              resourceNetboxIpamPrefix(),
+			"netbox_ipam_aggregate":           resourceNetboxIpamAggregate(),
 			"netbox_ipam_ip_addresses":        resourceNetboxIpamIPAddresses(),
+			"netbox_ipam_prefix":              resourceNetboxIpamPrefix(),
 			"netbox_ipam_vlan":                resourceNetboxIpamVlan(),
 			"netbox_ipam_vlan_group":          resourceNetboxIpamVlanGroup(),
 			"netbox_tenancy_tenant":           resourceNetboxTenancyTenant(),

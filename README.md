@@ -118,5 +118,6 @@ $ terraform init & terraform apply
 ```
 ## Known bugs in external project which can impact this provider
 
-* [Issue 85 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/85)
-* [Issue 54 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/54)
+* *Closed* - [Issue 85 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/85)
+* *Closed* - [Issue 54 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/54)
+* *Open* - [Issue 115 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/115)
