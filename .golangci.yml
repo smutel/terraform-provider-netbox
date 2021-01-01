@@ -279,7 +279,7 @@ linters:
   #fast: false
 
 
-#issues:
+issues:
   # List of regexps of issue texts to exclude, empty list by default.
   # But independently from this option we use default exclude patterns,
   # it can be disabled by `exclude-use-default: false`. To list all
@@ -288,7 +288,7 @@ linters:
   #  - abcdef
 
   # Excluding configuration per-path, per-linter, per-text and per-source
-  #exclude-rules:
+  exclude-rules:
     # Exclude some linters from running on tests files.
     #- path: _test\.go
     #  linters:
@@ -310,8 +310,9 @@ linters:
     #  text: "SA9003:"
 
     # Exclude lll issues for long lines with go:generate
-    #- linters:
-    #    - lll
+    - linters:
+        - errcheck
+      text: "Error return value of `d.Set` is not checked"
     #  source: "^//go:generate "
 
   # Independently from option `exclude` we use default exclude patterns,
