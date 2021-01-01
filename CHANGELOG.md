@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/smutel/terraform-provider-netbox/compare/v1.1.1...v1.2.0) (2021-01-01)
+
+
+### Features
+
+* Add ability to return json objects of all endpoints ([dceb7f2](https://github.com/smutel/terraform-provider-netbox/commit/dceb7f2c9ccd6b309c65865eba5798d4ca4bedbf))
+* Add custom_fields to IP address resource ([bb962ee](https://github.com/smutel/terraform-provider-netbox/commit/bb962ee52127e611900b03f64f458b81a23d52c1))
+* Add custom_fields to tenant resource ([01a000f](https://github.com/smutel/terraform-provider-netbox/commit/01a000ffa21018ea74ca3e354e17a087d465719f))
+* Add custom_fields to vlan resource ([1315546](https://github.com/smutel/terraform-provider-netbox/commit/13155460a50b2983745ce1a0f448aa6079bd93e4))
+* Add custom_fields to vm resource and update documentation ([0fb146d](https://github.com/smutel/terraform-provider-netbox/commit/0fb146df0b40466c63f795dd5f2c105cc55ee79a))
+* Add data source IPAM aggregate ([f33b8d9](https://github.com/smutel/terraform-provider-netbox/commit/f33b8d9908b0639918632203fe878ee092fa333d))
+* Add resource IPAM aggregate ([cdaa29f](https://github.com/smutel/terraform-provider-netbox/commit/cdaa29f4b9d93a418c47e28ae603288c91d5ce29))
+
 ### [1.1.1](https://github.com/smutel/terraform-provider-netbox/compare/v1.1.0...v1.1.1) (2020-11-25)
 
 
