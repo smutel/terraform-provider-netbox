@@ -38,7 +38,7 @@ jobs:
           TAG: ${{ github.event.release.tag_name }}
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2.3.0
+        uses: goreleaser/goreleaser-action@v2.4.1
         with:
           version: latest
           args: release --rm-dist --release-notes=/tmp/RELEASE_CHANGELOG.md

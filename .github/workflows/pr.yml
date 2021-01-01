@@ -19,6 +19,7 @@ jobs:
           label: "no-conventional-commits"
           close: false
           template: "Thank you for your contribution attempt in this repository!\n\nUnfortunately, this pull request doesn't meet our standards by reason we stated below.\nFor future pull requests, please use conventional commits.\nPlease update the commits in this PR with conventional commits rules."
+          strict: false
 
       - name: Checkout
         uses: actions/checkout@v2.3.4
@@ -27,7 +28,7 @@ jobs:
         run: git fetch --prune --unshallow
 
       - name: Lint
-        uses: reviewdog/action-golangci-lint@v1.14.1
+        uses: reviewdog/action-golangci-lint@v1.15.0
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
