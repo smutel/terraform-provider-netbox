@@ -32,10 +32,12 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
 
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+
       - name: Generate CHANGELOG for this version
-        run: ./utils/getChangelogRelease CHANGELOG.md $TAG > /tmp/RELEASE_CHANGELOG.md
-        env:
-          TAG: ${{ github.event.release.tag_name }}
+        run: ./utils/getChangelogRelease CHANGELOG.md ${{ steps.tag.outputs.tag }} > /tmp/RELEASE_CHANGELOG.md
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2.4.1
