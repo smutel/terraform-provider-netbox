@@ -41,6 +41,7 @@ func Provider() *schema.Provider {
 			"netbox_ipam_aggregate":                               dataNetboxIpamAggregate(),
 			"netbox_ipam_ip_addresses":                            dataNetboxIpamIPAddresses(),
 			"netbox_ipam_role":                                    dataNetboxIpamRole(),
+			"netbox_ipam_service":                                 dataNetboxIpamService(),
 			"netbox_ipam_vlan":                                    dataNetboxIpamVlan(),
 			"netbox_ipam_vlan_group":                              dataNetboxIpamVlanGroup(),
 			"netbox_json_circuits_circuit_terminations_list":      dataNetboxJSONCircuitsCircuitTerminationsList(),

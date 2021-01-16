@@ -45,9 +45,9 @@ func resourceNetboxIpamService() *schema.Resource {
 				ValidateFunc: validation.StringLenBetween(1, 200),
 			},
 			"device_id": {
-				Type:          schema.TypeInt,
-				Optional:      true,
-				ConflictsWith: []string{"virtualmachine_id"},
+				Type:         schema.TypeInt,
+				Optional:     true,
+				ExactlyOneOf: []string{"device_id", "virtualmachine_id"},
 			},
 			"ip_addresses_id": {
 				Type:     schema.TypeList,
@@ -88,9 +88,8 @@ func resourceNetboxIpamService() *schema.Resource {
 				},
 			},
 			"virtualmachine_id": {
-				Type:          schema.TypeInt,
-				Optional:      true,
-				ConflictsWith: []string{"device_id"},
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 		},
 	}
