@@ -2,7 +2,6 @@ package netbox
 
 import (
 	"fmt"
-
 	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 	"github.com/netbox-community/go-netbox/netbox/client/virtualization"
 	"github.com/netbox-community/go-netbox/netbox/models"
@@ -194,6 +193,12 @@ func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCust
 	// then we override the values that still exist in the terraform code with their respective value
 	for key, value := range resourceCustomFields.(map[string]interface{}) {
 		toReturn[key] = value
+		// https://github.com/smutel/terraform-provider-netbox/issues/32
+		// under certain circumstances terraform puts empty string into `resourceCustomFields` when parent block is removed
+		// we simply replace these occurences with `nil` to not negatively affect the boolean field where empty string is equal to false
+		if value == "" {
+			toReturn[key] = nil
+		}
 
 		// special handling for booleans, as they are the only parameter not supplied as string to netbox
 		if value == "true" {
