@@ -21,7 +21,7 @@ jobs:
         run: git fetch --prune --unshallow
 
       - name: Lint
-        uses: reviewdog/action-golangci-lint@v1.15.0
+        uses: reviewdog/action-golangci-lint@v1.17.0
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"

@@ -145,6 +145,29 @@ resource "netbox_virtualization_vm" "vm_test" {
   }
 }
 
+resource "netbox_ipam_service" "service_test" {
+  name              = "SMTP"
+  virtualmachine_id = netbox_virtualization_vm.vm_test.id
+  ip_addresses_id   = [netbox_ipam_ip_addresses.ip_test.id]
+  port              = "22"
+  protocol          = "tcp"
+  description       = "Service created by terraform"
+
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
+
+  custom_fields = {
+    cf_boolean   = "true"
+    cf_date      = "2020-12-25"
+    cf_integer   = "10"
+    cf_selection = "1"
+    cf_text      = "Some text"
+    cf_url       = "https://github.com"
+  }
+}
+
 resource "netbox_virtualization_interface" "interface_test" {
   name              = "default"
   virtualmachine_id = netbox_virtualization_vm.vm_test.id
