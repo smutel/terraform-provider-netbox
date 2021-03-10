@@ -22,6 +22,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("NETBOX_URL", "127.0.0.1:8000"),
 				Description: "URL to reach netbox application.",
 			},
+			"basepath": {
+				Type:        schema.TypeString,
+				Required:    false,
+				DefaultFunc: schema.EnvDefaultFunc("NETBOX_BASEPATH", client.DefaultBasePath),
+				Description: "URL path to the netbox API.",
+			},
 			"token": {
 				Type:        schema.TypeString,
 				Required:    true,
@@ -133,12 +139,13 @@ func Provider() *schema.Provider {
 
 func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	url := d.Get("url").(string)
+	basepath := d.Get("basepath").(string)
 	token := d.Get("token").(string)
 	scheme := d.Get("scheme").(string)
 
 	defaultScheme := []string{scheme}
 
-	t := runtimeclient.New(url, client.DefaultBasePath, defaultScheme)
+	t := runtimeclient.New(url, basepath, defaultScheme)
 	t.DefaultAuthentication = runtimeclient.APIKeyAuth(authHeaderName, "header",
 		fmt.Sprintf(authHeaderFormat, token))
 	return client.New(t, strfmt.Default), nil

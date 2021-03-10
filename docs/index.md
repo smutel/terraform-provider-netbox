@@ -14,6 +14,9 @@ provider netbox {
   # Environment variable NETBOX_URL
   url = "127.0.0.1:8000"
 
+  # Environment variable NETBOX_BASEPATH
+  basepath = "/api"
+
   # Environment variable NETBOX_TOKEN
   token = "c07a2db4adb8b1e7f75e7c4369964e92f7680512"
 
@@ -25,5 +28,6 @@ provider netbox {
 ## Argument Reference
 
 * `url` or `NETBOX_URL` environment variable to define the URL and the port (127.0.0.1:8000 by default)
+* `basepath` or `NETBOX_BASEPATH` environment variable to define the base path (/api)
 * `token` or `NETBOX_TOKEN` environment variable to define the TOKEN to access the application (empty by default)
 * `scheme` or `NETBOX_SCHEME` environment variable to define the SCHEME of the URL (https by default)
