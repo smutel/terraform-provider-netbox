@@ -38,7 +38,13 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("NETBOX_SCHEME", "https"),
-				Description: "Sheme used to reach netbox application.",
+				Description: "Scheme used to reach netbox application.",
+			},
+			"insecure": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("NETBOX_INSECURE", false),
+				Description: "Skip TLS certificate validation.",
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
@@ -142,11 +148,18 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	basepath := d.Get("basepath").(string)
 	token := d.Get("token").(string)
 	scheme := d.Get("scheme").(string)
+	insecure := d.Get("insecure").(bool)
 
 	defaultScheme := []string{scheme}
 
-	t := runtimeclient.New(url, basepath, defaultScheme)
+	var options runtimeclient.TLSClientOptions
+	options.InsecureSkipVerify = insecure
+
+	clientWithTLSOptions, _ := runtimeclient.TLSClient(options)
+
+	t := runtimeclient.NewWithClient(url, basepath, defaultScheme, clientWithTLSOptions)
 	t.DefaultAuthentication = runtimeclient.APIKeyAuth(authHeaderName, "header",
 		fmt.Sprintf(authHeaderFormat, token))
+
 	return client.New(t, strfmt.Default), nil
 }
