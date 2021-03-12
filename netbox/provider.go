@@ -24,7 +24,7 @@ func Provider() *schema.Provider {
 			},
 			"basepath": {
 				Type:        schema.TypeString,
-				Required:    false,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("NETBOX_BASEPATH", client.DefaultBasePath),
 				Description: "URL path to the netbox API.",
 			},
