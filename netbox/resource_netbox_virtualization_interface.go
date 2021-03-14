@@ -19,6 +19,9 @@ func resourceNetboxVirtualizationInterface() *schema.Resource {
 		Update: resourceNetboxVirtualizationInterfaceUpdate,
 		Delete: resourceNetboxVirtualizationInterfaceDelete,
 		Exists: resourceNetboxVirtualizationInterfaceExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"description": {

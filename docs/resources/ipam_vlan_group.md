@@ -23,3 +23,11 @@ The following arguments are supported:
 
 In addition to the above arguments, the following attributes are exported:
 * ``id`` - The id (ref in Netbox) of this object.
+
+## Import
+
+Vlan groups can be imported by `id` e.g.
+
+```
+$ terraform import netbox_ipam_vlan_group.vlan_group_test id
+```

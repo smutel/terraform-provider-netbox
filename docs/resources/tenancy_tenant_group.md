@@ -21,3 +21,11 @@ The following arguments are supported:
 
 In addition to the above arguments, the following attributes are exported:
 * ``id`` - The id (ref in Netbox) of this object.
+
+## Import
+
+Tenant groups can be imported by `id` e.g.
+
+```
+$ terraform import netbox_tenancy_tenant_group.tenant_group_test id
+```

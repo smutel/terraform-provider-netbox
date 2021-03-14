@@ -20,6 +20,9 @@ func resourceNetboxIpamAggregate() *schema.Resource {
 		Update: resourceNetboxIpamAggregateUpdate,
 		Delete: resourceNetboxIpamAggregateDelete,
 		Exists: resourceNetboxIpamAggregateExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"custom_fields": {

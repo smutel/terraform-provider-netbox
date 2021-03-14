@@ -19,6 +19,9 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 		Update: resourceNetboxIpamIPAddressesUpdate,
 		Delete: resourceNetboxIpamIPAddressesDelete,
 		Exists: resourceNetboxIpamIPAddressesExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"address": {

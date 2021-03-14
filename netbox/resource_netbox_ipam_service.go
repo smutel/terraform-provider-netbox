@@ -18,6 +18,9 @@ func resourceNetboxIpamService() *schema.Resource {
 		Update: resourceNetboxIpamServiceUpdate,
 		Delete: resourceNetboxIpamServiceDelete,
 		Exists: resourceNetboxIpamServiceExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"custom_fields": {
