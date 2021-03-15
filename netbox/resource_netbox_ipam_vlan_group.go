@@ -19,6 +19,9 @@ func resourceNetboxIpamVlanGroup() *schema.Resource {
 		Update: resourceNetboxIpamVlanGroupUpdate,
 		Delete: resourceNetboxIpamVlanGroupDelete,
 		Exists: resourceNetboxIpamVlanGroupExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"name": {

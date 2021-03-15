@@ -19,6 +19,9 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 		Update: resourceNetboxTenancyTenantUpdate,
 		Delete: resourceNetboxTenancyTenantDelete,
 		Exists: resourceNetboxTenancyTenantExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"comments": {

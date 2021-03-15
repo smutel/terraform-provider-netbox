@@ -58,3 +58,11 @@ The ``tag`` block supports:
 
 In addition to the above arguments, the following attributes are exported:
 * ``id`` - The id (ref in Netbox) of this object.
+
+## Import
+
+Ip addresses can be imported by `id` e.g.
+
+```
+$ terraform import netbox_ipam_ip_addresses.ip_test id
+```

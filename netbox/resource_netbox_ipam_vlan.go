@@ -18,6 +18,9 @@ func resourceNetboxIpamVlan() *schema.Resource {
 		Update: resourceNetboxIpamVlanUpdate,
 		Delete: resourceNetboxIpamVlanDelete,
 		Exists: resourceNetboxIpamVlanExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"custom_fields": {

@@ -18,6 +18,9 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 		Update: resourceNetboxVirtualizationVMUpdate,
 		Delete: resourceNetboxVirtualizationVMDelete,
 		Exists: resourceNetboxVirtualizationVMExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"cluster_id": {

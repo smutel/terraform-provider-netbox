@@ -18,6 +18,9 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 		Update: resourceNetboxIpamPrefixUpdate,
 		Delete: resourceNetboxIpamPrefixDelete,
 		Exists: resourceNetboxIpamPrefixExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"description": {
