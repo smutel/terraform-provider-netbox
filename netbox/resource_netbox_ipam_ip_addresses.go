@@ -27,9 +27,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 			"address": {
 				Type:     schema.TypeString,
 				Required: true,
-				ValidateFunc: validation.StringMatch(
-					regexp.MustCompile("^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/"+
-						"[0-9]{1,2}$"), "Must be like 192.168.56.1/24"),
+				ValidateFunc: validation.IsCIDR,
 			},
 			"custom_fields": {
 				Type:     schema.TypeMap,
