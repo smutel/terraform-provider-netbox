@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/smutel/terraform-provider-netbox/compare/v1.2.0...v1.3.0) (2021-04-08)
+
+
+### Features
+
+* Add data IPAM service ([69ae53c](https://github.com/smutel/terraform-provider-netbox/commit/69ae53caf7403fa3ca7170dedd6223b3944d083f))
+* Add default importer function to resources ([22c0538](https://github.com/smutel/terraform-provider-netbox/commit/22c0538a12f49b876fbb729ed5b18731d12b362f)), closes [#51](https://github.com/smutel/terraform-provider-netbox/issues/51)
+* Add resource IPAM service ([4e3d637](https://github.com/smutel/terraform-provider-netbox/commit/4e3d6374e368e9260457c639ba8bdb3f8ddb03ca))
+* Add TLS insecure option ([827cdeb](https://github.com/smutel/terraform-provider-netbox/commit/827cdeb4e91901ee4a02ab3feb3260b6ba49e08b))
+* Allow a configurable basepath ([7392901](https://github.com/smutel/terraform-provider-netbox/commit/7392901e99ba49c2e567de9a8023801edbec2f38))
+
+
+### Bug Fixes
+
+* Make basepath really optional ([37957ea](https://github.com/smutel/terraform-provider-netbox/commit/37957eab201ee0aa8aabd3ba6725ba52f63cac05))
+* Workaround for weird terraform behavior to fix boolean custom_fields ([f9fe60c](https://github.com/smutel/terraform-provider-netbox/commit/f9fe60ce9f421ae3234468ef8533e71c0e13a60a))
+
+
+### Enhancements
+
+* Change ValidateFunc for ipam_ip_addresses to allow IPv6 ([cb13d6a](https://github.com/smutel/terraform-provider-netbox/commit/cb13d6a632803e190b30e7158a1f4c43f1174201))
+* Don't commit .terraform.lock.hcl ([77d74b5](https://github.com/smutel/terraform-provider-netbox/commit/77d74b58f592e76148240a0a8f83d88602520883))
+
+
+### Tests
+
+* Add script to load netbox-docker variables ([e167ef6](https://github.com/smutel/terraform-provider-netbox/commit/e167ef6f270aa1bf25d1a31310e8e7b1da0590cb))
+
 ## [1.2.0](https://github.com/smutel/terraform-provider-netbox/compare/v1.1.1...v1.2.0) (2021-01-01)
 
 
