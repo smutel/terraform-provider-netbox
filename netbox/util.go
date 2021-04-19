@@ -210,3 +210,11 @@ func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCust
 
 	return toReturn
 }
+
+// replaces the input with a single whitespace if it is empty
+func hackEmptyString(in string) string {
+	if in == "" {
+		return " "
+	}
+	return in
+}

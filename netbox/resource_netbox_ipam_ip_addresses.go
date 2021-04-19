@@ -209,163 +209,118 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	return resourceNetboxIpamIPAddressesRead(d, m)
 }
 
-func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData, m interface{}) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
-	params := ipam.NewIpamIPAddressesListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamIPAddressesList(params, nil)
+	idNum, err := strconv.ParseInt(resourceID, 10, 64)
+	if err != nil {
+		return fmt.Errorf("invalid resource id: %w", err)
+	}
+
+	ipResp, err := client.Ipam.IpamIPAddressesRead(
+		ipam.NewIpamIPAddressesReadParams().WithID(idNum), nil,
+	)
 	if err != nil {
 		return err
 	}
+	resource := ipResp.Payload
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("address", resource.Address); err != nil {
-				return err
-			}
-
-			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
-
-			if err = d.Set("custom_fields", customFields); err != nil {
-				return err
-			}
-
-			var description string
-			if resource.Description == "" {
-				description = " "
-			} else {
-				description = resource.Description
-			}
-
-			if err = d.Set("description", description); err != nil {
-				return err
-			}
-
-			var dnsName string
-			if resource.DNSName == "" {
-				dnsName = " "
-			} else {
-				dnsName = resource.DNSName
-			}
-
-			if err = d.Set("dns_name", dnsName); err != nil {
-				return err
-			}
-
-			if resource.NatInside == nil {
-				if err = d.Set("nat_inside_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("nat_inside_id", resource.NatInside.ID); err != nil {
-					return err
-				}
-			}
-
-			if resource.NatOutside == nil {
-				if err = d.Set("nat_outside_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("nat_outside_id", resource.NatOutside.ID); err != nil {
-					return err
-				}
-			}
-
-			if resource.AssignedObjectID == nil {
-				if err = d.Set("object_id", nil); err != nil {
-					return err
-				}
-
-				if err = d.Set("primary_ip4", false); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
-					return err
-				}
-
-				var info InfosForPrimary
-				if *resource.AssignedObjectID != 0 {
-					if resource.AssignedObjectType == VMInterfaceType {
-						var err error
-						info, err = getInfoForPrimary(m, *resource.AssignedObjectID)
-						if err != nil {
-							return err
-						}
-
-						if info.vmPrimaryIP4ID == resource.ID {
-							if err = d.Set("primary_ip4", true); err != nil {
-								return err
-							}
-						} else {
-							if err = d.Set("primary_ip4", false); err != nil {
-								return err
-							}
-						}
-					}
-				}
-			}
-
-			objectType := resource.AssignedObjectType
-			if objectType == "" {
-				objectType = VMInterfaceType
-			}
-			if err = d.Set("object_type", objectType); err != nil {
-				return err
-			}
-
-			if resource.Role == nil {
-				if err = d.Set("role", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("role", resource.Role.Value); err != nil {
-					return err
-				}
-			}
-
-			if resource.Status == nil {
-				if err = d.Set("status", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("status", resource.Status.Value); err != nil {
-					return err
-				}
-			}
-
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
-			}
-
-			if resource.Tenant == nil {
-				if err = d.Set("tenant_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
-					return err
-				}
-			}
-
-			if resource.Vrf == nil {
-				if err = d.Set("vrf_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("vrf_id", resource.Vrf.ID); err != nil {
-					return err
-				}
-			}
-
-			return nil
-		}
+	if err = d.Set("address", *resource.Address); err != nil {
+		return err
 	}
 
-	d.SetId("")
+	customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
+	if err = d.Set("custom_fields", customFields); err != nil {
+		return err
+	}
+
+	if err = d.Set("description", hackEmptyString(resource.Description)); err != nil {
+		return err
+	}
+
+	if err = d.Set("dns_name", hackEmptyString(resource.DNSName)); err != nil {
+		return err
+	}
+
+	var natInside *int64
+	if resource.NatInside != nil {
+		natInside = &resource.NatInside.ID
+	}
+	if err = d.Set("nat_inside_id", natInside); err != nil {
+		return err
+	}
+
+	var natOutside *int64
+	if resource.NatOutside != nil {
+		natOutside = &resource.NatOutside.ID
+	}
+	if err = d.Set("nat_outside_id", natOutside); err != nil {
+		return err
+	}
+
+	if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
+		return err
+	}
+
+	var primaryIP4 bool
+	if *resource.AssignedObjectID != 0 {
+		if resource.AssignedObjectType == VMInterfaceType {
+			info, err := getInfoForPrimary(m, *resource.AssignedObjectID)
+			if err != nil {
+				return err
+			}
+
+			primaryIP4 = info.vmPrimaryIP4ID == resource.ID
+		}
+	}
+	if err = d.Set("primary_ip4", primaryIP4); err != nil {
+		return err
+	}
+
+	objectType := resource.AssignedObjectType
+	if objectType == "" {
+		objectType = VMInterfaceType
+	}
+	if err = d.Set("object_type", objectType); err != nil {
+		return err
+	}
+
+	var role *string
+	if resource.Role != nil {
+		role = resource.Role.Value
+	}
+	if err = d.Set("role", role); err != nil {
+		return err
+	}
+
+	var status *string
+	if resource.Status != nil {
+		status = resource.Status.Value
+	}
+	if err = d.Set("status", status); err != nil {
+		return err
+	}
+
+	if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+		return err
+	}
+
+	var tenantID *int64
+	if resource.Tenant != nil {
+		tenantID = &resource.Tenant.ID
+	}
+	if err = d.Set("tenant_id", tenantID); err != nil {
+		return err
+	}
+
+	var vrfID *int64
+	if resource.Vrf != nil {
+		vrfID = &resource.Vrf.ID
+	}
+	if err = d.Set("vrf_id", vrfID); err != nil {
+		return err
+	}
 
 	return nil
 }
