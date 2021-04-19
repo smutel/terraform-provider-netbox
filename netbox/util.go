@@ -3,6 +3,7 @@ package netbox
 import (
 	"errors"
 	"fmt"
+	"net"
 
 	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 	"github.com/netbox-community/go-netbox/netbox/client/virtualization"
@@ -99,7 +100,16 @@ func updatePrimaryStatus(client *netboxclient.NetBoxAPI, addr *models.IPAddress)
 	params := &models.WritableVirtualMachineWithConfigContext{}
 	params.Name = vm.Name
 	params.Cluster = &vm.Cluster.ID
-	params.PrimaryIp4 = &addr.ID
+
+	cidr, _, err := net.ParseCIDR(*addr.Address)
+	if err != nil {
+		return fmt.Errorf("invalid address in model: %w", err)
+	}
+	if cidr.To4() != nil {
+		params.PrimaryIp4 = &addr.ID
+	} else {
+		params.PrimaryIp6 = &addr.ID
+	}
 
 	update := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().
 		WithData(params).

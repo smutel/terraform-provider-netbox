@@ -26,8 +26,8 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"address": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
 				ValidateFunc: validation.IsCIDR,
 			},
 			"custom_fields": {
@@ -83,10 +83,11 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 					VMInterfaceType, "dcim.interface"}, false),
 			},
 			"primary_ip4": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
-				ForceNew: true,
+				Type:       schema.TypeBool,
+				Optional:   true,
+				Default:    false,
+				ForceNew:   true,
+				Deprecated: "Use set_primary instead",
 			},
 			"role": {
 				Type:     schema.TypeString,
@@ -95,6 +96,12 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"loopback",
 					"secondary", "anycast", "vip", "vrrp", "hsrp", "glbp", "carp"},
 					false),
+			},
+			"set_primary": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+				ForceNew: true,
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -151,6 +158,12 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	tenantID := int64(d.Get("tenant_id").(int))
 	vrfID := int64(d.Get("vrf_id").(int))
 
+	// handle legacy flag
+	if primaryIP4 {
+		d.Set("set_primary", true)
+	}
+	setPrimary := d.Get("set_primary").(bool)
+
 	newResource := &models.WritableIPAddress{
 		Address:      &address,
 		CustomFields: &customFields,
@@ -191,7 +204,7 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	if primaryIP4 {
+	if setPrimary {
 		err := updatePrimaryStatus(client, resourceCreated.Payload)
 		if err != nil {
 			return err
@@ -255,7 +268,7 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData, m interface{}) er
 		return err
 	}
 
-	var primaryIP4 bool
+	var setPrimary bool
 	if resource.AssignedObjectID != nil &&
 		*resource.AssignedObjectID != 0 &&
 		resource.AssignedObjectType == VMInterfaceType {
@@ -264,9 +277,21 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData, m interface{}) er
 			return err
 		}
 
-		primaryIP4 = vm.PrimaryIp4 != nil && vm.PrimaryIp4.ID == resource.ID
+		cidr, _, err := net.ParseCIDR(*resource.Address)
+		if err != nil {
+			return err
+		}
+		if cidr.To4() != nil {
+			setPrimary = vm.PrimaryIp4 != nil && vm.PrimaryIp4.ID == resource.ID
+		} else {
+			setPrimary = vm.PrimaryIp6 != nil && vm.PrimaryIp6.ID == resource.ID
+		}
 	}
-	if err = d.Set("primary_ip4", primaryIP4); err != nil {
+	if err = d.Set("set_primary", setPrimary); err != nil {
+		return err
+	}
+	// legacy option
+	if err = d.Set("primary_ip4", setPrimary); err != nil {
 		return err
 	}
 
