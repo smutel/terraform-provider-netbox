@@ -2,6 +2,7 @@ package netbox
 
 import (
 	"fmt"
+	"net"
 	"regexp"
 	"strconv"
 
@@ -168,17 +169,6 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 		newResource.NatOutside = &natOutsideID
 	}
 
-	var info InfosForPrimary
-	if primaryIP4 && objectID != 0 {
-		if objectType == VMInterfaceType {
-			var err error
-			info, err = getInfoForPrimary(m, objectID)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
 	if objectID != 0 {
 		newResource.AssignedObjectID = &objectID
 		newResource.AssignedObjectType = objectType
@@ -201,9 +191,11 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID)
-	if err != nil {
-		return err
+	if primaryIP4 {
+		err := updatePrimaryStatus(client, resourceCreated.Payload)
+		if err != nil {
+			return err
+		}
 	}
 
 	return resourceNetboxIpamIPAddressesRead(d, m)
@@ -264,15 +256,15 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData, m interface{}) er
 	}
 
 	var primaryIP4 bool
-	if *resource.AssignedObjectID != 0 {
-		if resource.AssignedObjectType == VMInterfaceType {
-			info, err := getInfoForPrimary(m, *resource.AssignedObjectID)
-			if err != nil {
-				return err
-			}
-
-			primaryIP4 = info.vmPrimaryIP4ID == resource.ID
+	if resource.AssignedObjectID != nil &&
+		*resource.AssignedObjectID != 0 &&
+		resource.AssignedObjectType == VMInterfaceType {
+		vm, err := getAssociatedVMForInterface(client, *resource.AssignedObjectID)
+		if err != nil {
+			return err
 		}
+
+		primaryIP4 = vm.PrimaryIp4 != nil && vm.PrimaryIp4.ID == resource.ID
 	}
 	if err = d.Set("primary_ip4", primaryIP4); err != nil {
 		return err

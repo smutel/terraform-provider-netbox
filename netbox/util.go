@@ -1,18 +1,13 @@
 package netbox
 
 import (
+	"errors"
 	"fmt"
+
 	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 	"github.com/netbox-community/go-netbox/netbox/client/virtualization"
 	"github.com/netbox-community/go-netbox/netbox/models"
 )
-
-type InfosForPrimary struct {
-	vmID           int64
-	vmName         string
-	vmClusterID    int64
-	vmPrimaryIP4ID int64
-}
 
 const VMInterfaceType string = "virtualization.vminterface"
 const CustomFieldsRegex = "custom_fields.%"
@@ -69,74 +64,48 @@ func convertNestedTagsToTags(tags []*models.NestedTag) []map[string]string {
 	return tfTags
 }
 
-func getInfoForPrimary(m interface{}, objectID int64) (InfosForPrimary, error) {
-	client := m.(*netboxclient.NetBoxAPI)
-
-	objectIDStr := fmt.Sprintf("%d", objectID)
-	info := InfosForPrimary{}
-	paramsInterface := virtualization.NewVirtualizationInterfacesListParams().WithID(
-		&objectIDStr)
-	interfaces, err := client.Virtualization.VirtualizationInterfacesList(
-		paramsInterface, nil)
-
+func getAssociatedVMForInterface(client *netboxclient.NetBoxAPI, interfaceID int64) (*models.VirtualMachineWithConfigContext, error) {
+	ifResp, err := client.Virtualization.VirtualizationInterfacesRead(
+		virtualization.NewVirtualizationInterfacesReadParams().WithID(interfaceID), nil,
+	)
 	if err != nil {
-		return info, err
+		return nil, err
 	}
 
-	for _, i := range interfaces.Payload.Results {
-		if i.ID == objectID {
-			if i.VirtualMachine != nil {
-				vmIDStr := fmt.Sprintf("%d", i.VirtualMachine.ID)
-				paramsVM := virtualization.NewVirtualizationVirtualMachinesListParams().WithID(&vmIDStr)
-				vms, err := client.Virtualization.VirtualizationVirtualMachinesList(
-					paramsVM, nil)
-
-				if err != nil {
-					return info, err
-				}
-
-				if *vms.Payload.Count != 1 {
-					return info, fmt.Errorf("Cannot set an interface as primary when " +
-						"the interface is not attached to a VM.")
-				}
-
-				info.vmID = i.VirtualMachine.ID
-				info.vmName = *vms.Payload.Results[0].Name
-				info.vmClusterID = vms.Payload.Results[0].Cluster.ID
-
-				if vms.Payload.Results[0].PrimaryIp4 != nil {
-					info.vmPrimaryIP4ID = vms.Payload.Results[0].PrimaryIp4.ID
-				} else {
-					info.vmPrimaryIP4ID = 0
-				}
-			} else {
-				return info, fmt.Errorf("Cannot set an interface as primary when the " +
-					"interface is not attached to a VM.")
-			}
-		}
+	intf := ifResp.Payload
+	if intf.VirtualMachine == nil || intf.VirtualMachine.ID == 0 {
+		return nil, errors.New("interface is not assigned to a virtual machine")
 	}
 
-	return info, nil
+	vmResp, err := client.Virtualization.VirtualizationVirtualMachinesRead(
+		virtualization.NewVirtualizationVirtualMachinesReadParams().WithID(intf.VirtualMachine.ID), nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return vmResp.Payload, nil
 }
 
-func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
-	client := m.(*netboxclient.NetBoxAPI)
-
-	if info.vmName != "" {
-		params := &models.WritableVirtualMachineWithConfigContext{}
-		params.Name = &info.vmName
-		params.Cluster = &info.vmClusterID
-		params.PrimaryIp4 = &id
-		vm := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
-		vm.SetID(info.vmID)
-		_, err := client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
-			vm, nil)
-		if err != nil {
-			return err
-		}
+func updatePrimaryStatus(client *netboxclient.NetBoxAPI, addr *models.IPAddress) error {
+	if addr.AssignedObjectType != VMInterfaceType {
+		return errors.New("needs to be assigned to a virtual machine interface to update the primary address")
 	}
 
-	return nil
+	vm, err := getAssociatedVMForInterface(client, *addr.AssignedObjectID)
+	if err != nil {
+		return err
+	}
+
+	params := &models.WritableVirtualMachineWithConfigContext{}
+	params.Name = vm.Name
+	params.Cluster = &vm.Cluster.ID
+	params.PrimaryIp4 = &addr.ID
+
+	update := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().
+		WithData(params).
+		WithID(vm.ID)
+	_, err = client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(update, nil)
+	return err
 }
 
 // custom_fields have multiple data type returns based on field type
