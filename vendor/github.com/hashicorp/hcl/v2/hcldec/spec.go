@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/ext/customdecode"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
 	"github.com/zclconf/go-cty/cty/function"
@@ -61,6 +62,12 @@ type blockSpec interface {
 // from the EvalContext, to declare which variables they need.
 type specNeedingVariables interface {
 	variablesNeeded(content *hcl.BodyContent) []hcl.Traversal
+}
+
+// UnknownBody can be optionally implemented by an hcl.Body instance which may
+// be entirely unknown.
+type UnknownBody interface {
+	Unknown() bool
 }
 
 func (s ObjectSpec) visitSameBodyChildren(cb visitFunc) {
@@ -193,6 +200,14 @@ func (s *AttrSpec) decode(content *hcl.BodyContent, blockLabels []blockLabel, ct
 		return cty.NullVal(s.Type), nil
 	}
 
+	if decodeFn := customdecode.CustomExpressionDecoderForType(s.Type); decodeFn != nil {
+		v, diags := decodeFn(attr.Expr, ctx)
+		if v == cty.NilVal {
+			v = cty.UnknownVal(s.Type)
+		}
+		return v, diags
+	}
+
 	val, diags := attr.Expr.Value(ctx)
 
 	convVal, err := convert.Convert(val, s.Type)
@@ -204,8 +219,10 @@ func (s *AttrSpec) decode(content *hcl.BodyContent, blockLabels []blockLabel, ct
 				"Inappropriate value for attribute %q: %s.",
 				s.Name, err.Error(),
 			),
-			Subject: attr.Expr.StartRange().Ptr(),
-			Context: hcl.RangeBetween(attr.NameRange, attr.Expr.StartRange()).Ptr(),
+			Subject:     attr.Expr.Range().Ptr(),
+			Context:     hcl.RangeBetween(attr.NameRange, attr.Expr.Range()).Ptr(),
+			Expression:  attr.Expr,
+			EvalContext: ctx,
 		})
 		// We'll return an unknown value of the _correct_ type so that the
 		// incomplete result can still be used for some analysis use-cases.
@@ -453,6 +470,15 @@ func (s *BlockListSpec) decode(content *hcl.BodyContent, blockLabels []blockLabe
 
 		val, _, childDiags := decode(childBlock.Body, labelsForBlock(childBlock), ctx, s.Nested, false)
 		diags = append(diags, childDiags...)
+
+		if u, ok := childBlock.Body.(UnknownBody); ok {
+			if u.Unknown() {
+				// If any block Body is unknown, then the entire block value
+				// must be unknown
+				return cty.UnknownVal(s.impliedType()), diags
+			}
+		}
+
 		elems = append(elems, val)
 		sourceRanges = append(sourceRanges, sourceRange(childBlock.Body, labelsForBlock(childBlock), s.Nested))
 	}
@@ -473,53 +499,49 @@ func (s *BlockListSpec) decode(content *hcl.BodyContent, blockLabels []blockLabe
 		})
 	}
 
-	var ret cty.Value
-
 	if len(elems) == 0 {
-		ret = cty.ListValEmpty(s.Nested.impliedType())
-	} else {
-		// Since our target is a list, all of the decoded elements must have the
-		// same type or cty.ListVal will panic below. Different types can arise
-		// if there is an attribute spec of type cty.DynamicPseudoType in the
-		// nested spec; all given values must be convertable to a single type
-		// in order for the result to be considered valid.
-		etys := make([]cty.Type, len(elems))
-		for i, v := range elems {
-			etys[i] = v.Type()
-		}
-		ety, convs := convert.UnifyUnsafe(etys)
-		if ety == cty.NilType {
-			// FIXME: This is a pretty terrible error message.
-			diags = append(diags, &hcl.Diagnostic{
-				Severity: hcl.DiagError,
-				Summary:  fmt.Sprintf("Unconsistent argument types in %s blocks", s.TypeName),
-				Detail:   "Corresponding attributes in all blocks of this type must be the same.",
-				Subject:  &sourceRanges[0],
-			})
-			return cty.DynamicVal, diags
-		}
-		for i, v := range elems {
-			if convs[i] != nil {
-				newV, err := convs[i](v)
-				if err != nil {
-					// FIXME: This is a pretty terrible error message.
-					diags = append(diags, &hcl.Diagnostic{
-						Severity: hcl.DiagError,
-						Summary:  fmt.Sprintf("Unconsistent argument types in %s blocks", s.TypeName),
-						Detail:   fmt.Sprintf("Block with index %d has inconsistent argument types: %s.", i, err),
-						Subject:  &sourceRanges[i],
-					})
-					// Bail early here so we won't panic below in cty.ListVal
-					return cty.DynamicVal, diags
-				}
-				elems[i] = newV
-			}
-		}
-
-		ret = cty.ListVal(elems)
+		return cty.ListValEmpty(s.Nested.impliedType()), diags
 	}
 
-	return ret, diags
+	// Since our target is a list, all of the decoded elements must have the
+	// same type or cty.ListVal will panic below. Different types can arise
+	// if there is an attribute spec of type cty.DynamicPseudoType in the
+	// nested spec; all given values must be convertable to a single type
+	// in order for the result to be considered valid.
+	etys := make([]cty.Type, len(elems))
+	for i, v := range elems {
+		etys[i] = v.Type()
+	}
+	ety, convs := convert.UnifyUnsafe(etys)
+	if ety == cty.NilType {
+		// FIXME: This is a pretty terrible error message.
+		diags = append(diags, &hcl.Diagnostic{
+			Severity: hcl.DiagError,
+			Summary:  fmt.Sprintf("Unconsistent argument types in %s blocks", s.TypeName),
+			Detail:   "Corresponding attributes in all blocks of this type must be the same.",
+			Subject:  &sourceRanges[0],
+		})
+		return cty.DynamicVal, diags
+	}
+	for i, v := range elems {
+		if convs[i] != nil {
+			newV, err := convs[i](v)
+			if err != nil {
+				// FIXME: This is a pretty terrible error message.
+				diags = append(diags, &hcl.Diagnostic{
+					Severity: hcl.DiagError,
+					Summary:  fmt.Sprintf("Unconsistent argument types in %s blocks", s.TypeName),
+					Detail:   fmt.Sprintf("Block with index %d has inconsistent argument types: %s.", i, err),
+					Subject:  &sourceRanges[i],
+				})
+				// Bail early here so we won't panic below in cty.ListVal
+				return cty.DynamicVal, diags
+			}
+			elems[i] = newV
+		}
+	}
+
+	return cty.ListVal(elems), diags
 }
 
 func (s *BlockListSpec) impliedType() cty.Type {
@@ -610,6 +632,15 @@ func (s *BlockTupleSpec) decode(content *hcl.BodyContent, blockLabels []blockLab
 
 		val, _, childDiags := decode(childBlock.Body, labelsForBlock(childBlock), ctx, s.Nested, false)
 		diags = append(diags, childDiags...)
+
+		if u, ok := childBlock.Body.(UnknownBody); ok {
+			if u.Unknown() {
+				// If any block Body is unknown, then the entire block value
+				// must be unknown
+				return cty.UnknownVal(s.impliedType()), diags
+			}
+		}
+
 		elems = append(elems, val)
 		sourceRanges = append(sourceRanges, sourceRange(childBlock.Body, labelsForBlock(childBlock), s.Nested))
 	}
@@ -630,15 +661,11 @@ func (s *BlockTupleSpec) decode(content *hcl.BodyContent, blockLabels []blockLab
 		})
 	}
 
-	var ret cty.Value
-
 	if len(elems) == 0 {
-		ret = cty.EmptyTupleVal
-	} else {
-		ret = cty.TupleVal(elems)
+		return cty.EmptyTupleVal, diags
 	}
 
-	return ret, diags
+	return cty.TupleVal(elems), diags
 }
 
 func (s *BlockTupleSpec) impliedType() cty.Type {
@@ -720,6 +747,7 @@ func (s *BlockSetSpec) decode(content *hcl.BodyContent, blockLabels []blockLabel
 
 	var elems []cty.Value
 	var sourceRanges []hcl.Range
+
 	for _, childBlock := range content.Blocks {
 		if childBlock.Type != s.TypeName {
 			continue
@@ -727,6 +755,15 @@ func (s *BlockSetSpec) decode(content *hcl.BodyContent, blockLabels []blockLabel
 
 		val, _, childDiags := decode(childBlock.Body, labelsForBlock(childBlock), ctx, s.Nested, false)
 		diags = append(diags, childDiags...)
+
+		if u, ok := childBlock.Body.(UnknownBody); ok {
+			if u.Unknown() {
+				// If any block Body is unknown, then the entire block value
+				// must be unknown
+				return cty.UnknownVal(s.impliedType()), diags
+			}
+		}
+
 		elems = append(elems, val)
 		sourceRanges = append(sourceRanges, sourceRange(childBlock.Body, labelsForBlock(childBlock), s.Nested))
 	}
@@ -747,53 +784,49 @@ func (s *BlockSetSpec) decode(content *hcl.BodyContent, blockLabels []blockLabel
 		})
 	}
 
-	var ret cty.Value
-
 	if len(elems) == 0 {
-		ret = cty.SetValEmpty(s.Nested.impliedType())
-	} else {
-		// Since our target is a set, all of the decoded elements must have the
-		// same type or cty.SetVal will panic below. Different types can arise
-		// if there is an attribute spec of type cty.DynamicPseudoType in the
-		// nested spec; all given values must be convertable to a single type
-		// in order for the result to be considered valid.
-		etys := make([]cty.Type, len(elems))
-		for i, v := range elems {
-			etys[i] = v.Type()
-		}
-		ety, convs := convert.UnifyUnsafe(etys)
-		if ety == cty.NilType {
-			// FIXME: This is a pretty terrible error message.
-			diags = append(diags, &hcl.Diagnostic{
-				Severity: hcl.DiagError,
-				Summary:  fmt.Sprintf("Unconsistent argument types in %s blocks", s.TypeName),
-				Detail:   "Corresponding attributes in all blocks of this type must be the same.",
-				Subject:  &sourceRanges[0],
-			})
-			return cty.DynamicVal, diags
-		}
-		for i, v := range elems {
-			if convs[i] != nil {
-				newV, err := convs[i](v)
-				if err != nil {
-					// FIXME: This is a pretty terrible error message.
-					diags = append(diags, &hcl.Diagnostic{
-						Severity: hcl.DiagError,
-						Summary:  fmt.Sprintf("Unconsistent argument types in %s blocks", s.TypeName),
-						Detail:   fmt.Sprintf("Block with index %d has inconsistent argument types: %s.", i, err),
-						Subject:  &sourceRanges[i],
-					})
-					// Bail early here so we won't panic below in cty.ListVal
-					return cty.DynamicVal, diags
-				}
-				elems[i] = newV
-			}
-		}
-
-		ret = cty.SetVal(elems)
+		return cty.SetValEmpty(s.Nested.impliedType()), diags
 	}
 
-	return ret, diags
+	// Since our target is a set, all of the decoded elements must have the
+	// same type or cty.SetVal will panic below. Different types can arise
+	// if there is an attribute spec of type cty.DynamicPseudoType in the
+	// nested spec; all given values must be convertable to a single type
+	// in order for the result to be considered valid.
+	etys := make([]cty.Type, len(elems))
+	for i, v := range elems {
+		etys[i] = v.Type()
+	}
+	ety, convs := convert.UnifyUnsafe(etys)
+	if ety == cty.NilType {
+		// FIXME: This is a pretty terrible error message.
+		diags = append(diags, &hcl.Diagnostic{
+			Severity: hcl.DiagError,
+			Summary:  fmt.Sprintf("Unconsistent argument types in %s blocks", s.TypeName),
+			Detail:   "Corresponding attributes in all blocks of this type must be the same.",
+			Subject:  &sourceRanges[0],
+		})
+		return cty.DynamicVal, diags
+	}
+	for i, v := range elems {
+		if convs[i] != nil {
+			newV, err := convs[i](v)
+			if err != nil {
+				// FIXME: This is a pretty terrible error message.
+				diags = append(diags, &hcl.Diagnostic{
+					Severity: hcl.DiagError,
+					Summary:  fmt.Sprintf("Unconsistent argument types in %s blocks", s.TypeName),
+					Detail:   fmt.Sprintf("Block with index %d has inconsistent argument types: %s.", i, err),
+					Subject:  &sourceRanges[i],
+				})
+				// Bail early here so we won't panic below in cty.ListVal
+				return cty.DynamicVal, diags
+			}
+			elems[i] = newV
+		}
+	}
+
+	return cty.SetVal(elems), diags
 }
 
 func (s *BlockSetSpec) impliedType() cty.Type {
@@ -880,6 +913,14 @@ func (s *BlockMapSpec) decode(content *hcl.BodyContent, blockLabels []blockLabel
 	for _, childBlock := range content.Blocks {
 		if childBlock.Type != s.TypeName {
 			continue
+		}
+
+		if u, ok := childBlock.Body.(UnknownBody); ok {
+			if u.Unknown() {
+				// If any block Body is unknown, then the entire block value
+				// must be unknown
+				return cty.UnknownVal(s.impliedType()), diags
+			}
 		}
 
 		childLabels := labelsForBlock(childBlock)
@@ -1026,6 +1067,14 @@ func (s *BlockObjectSpec) decode(content *hcl.BodyContent, blockLabels []blockLa
 	for _, childBlock := range content.Blocks {
 		if childBlock.Type != s.TypeName {
 			continue
+		}
+
+		if u, ok := childBlock.Body.(UnknownBody); ok {
+			if u.Unknown() {
+				// If any block Body is unknown, then the entire block value
+				// must be unknown
+				return cty.UnknownVal(s.impliedType()), diags
+			}
 		}
 
 		childLabels := labelsForBlock(childBlock)
@@ -1221,16 +1270,29 @@ func (s *BlockAttrsSpec) decode(content *hcl.BodyContent, blockLabels []blockLab
 
 	vals := make(map[string]cty.Value, len(attrs))
 	for name, attr := range attrs {
+		if decodeFn := customdecode.CustomExpressionDecoderForType(s.ElementType); decodeFn != nil {
+			attrVal, attrDiags := decodeFn(attr.Expr, ctx)
+			diags = append(diags, attrDiags...)
+			if attrVal == cty.NilVal {
+				attrVal = cty.UnknownVal(s.ElementType)
+			}
+			vals[name] = attrVal
+			continue
+		}
+
 		attrVal, attrDiags := attr.Expr.Value(ctx)
 		diags = append(diags, attrDiags...)
 
 		attrVal, err := convert.Convert(attrVal, s.ElementType)
 		if err != nil {
 			diags = append(diags, &hcl.Diagnostic{
-				Severity: hcl.DiagError,
-				Summary:  "Invalid attribute value",
-				Detail:   fmt.Sprintf("Invalid value for attribute of %q block: %s.", s.TypeName, err),
-				Subject:  attr.Expr.Range().Ptr(),
+				Severity:    hcl.DiagError,
+				Summary:     "Invalid attribute value",
+				Detail:      fmt.Sprintf("Invalid value for attribute of %q block: %s.", s.TypeName, err),
+				Subject:     attr.Expr.Range().Ptr(),
+				Context:     hcl.RangeBetween(attr.NameRange, attr.Expr.Range()).Ptr(),
+				Expression:  attr.Expr,
+				EvalContext: ctx,
 			})
 			attrVal = cty.UnknownVal(s.ElementType)
 		}
@@ -1538,6 +1600,52 @@ func (s *TransformFuncSpec) impliedType() cty.Type {
 func (s *TransformFuncSpec) sourceRange(content *hcl.BodyContent, blockLabels []blockLabel) hcl.Range {
 	// We'll just pass through our wrapped range here, even though that's
 	// not super-accurate, because there's nothing better to return.
+	return s.Wrapped.sourceRange(content, blockLabels)
+}
+
+// ValidateFuncSpec is a spec that allows for extended
+// developer-defined validation. The validation function receives the
+// result of the wrapped spec.
+//
+// The Subject field of the returned Diagnostic is optional. If not
+// specified, it is automatically populated with the range covered by
+// the wrapped spec.
+//
+type ValidateSpec struct {
+	Wrapped Spec
+	Func    func(value cty.Value) hcl.Diagnostics
+}
+
+func (s *ValidateSpec) visitSameBodyChildren(cb visitFunc) {
+	cb(s.Wrapped)
+}
+
+func (s *ValidateSpec) decode(content *hcl.BodyContent, blockLabels []blockLabel, ctx *hcl.EvalContext) (cty.Value, hcl.Diagnostics) {
+	wrappedVal, diags := s.Wrapped.decode(content, blockLabels, ctx)
+	if diags.HasErrors() {
+		// We won't try to run our function in this case, because it'll probably
+		// generate confusing additional errors that will distract from the
+		// root cause.
+		return cty.UnknownVal(s.impliedType()), diags
+	}
+
+	validateDiags := s.Func(wrappedVal)
+	// Auto-populate the Subject fields if they weren't set.
+	for i := range validateDiags {
+		if validateDiags[i].Subject == nil {
+			validateDiags[i].Subject = s.sourceRange(content, blockLabels).Ptr()
+		}
+	}
+
+	diags = append(diags, validateDiags...)
+	return wrappedVal, diags
+}
+
+func (s *ValidateSpec) impliedType() cty.Type {
+	return s.Wrapped.impliedType()
+}
+
+func (s *ValidateSpec) sourceRange(content *hcl.BodyContent, blockLabels []blockLabel) hcl.Range {
 	return s.Wrapped.sourceRange(content, blockLabels)
 }
 

@@ -14,13 +14,46 @@ resource "netbox_tenancy_tenant" "tenant_test" {
     slug = "tag2"
   }
 
-  custom_fields = {
-    cf_boolean   = "true"
-    cf_date      = "2020-12-25"
-    cf_integer   = "10"
-    cf_selection = "1"
-    cf_text      = "Some text"
-    cf_url       = "https://github.com"
+  custom_field {
+    name = "cf_boolean"
+    type = "boolean"
+    value = "true"
+  }
+
+  custom_field {
+    name = "cf_date"
+    type = "date"
+    value = "2020-12-25"
+  }
+
+  custom_field {
+    name = "cf_text"
+    type = "text"
+    value = "some text"
+  }
+
+  custom_field {
+    name = "cf_integer"
+    type = "integer"
+    value = "10"
+  }
+
+  custom_field {
+    name = "cf_selection"
+    type = "selection"
+    value = "1"
+  }
+
+  custom_field {
+    name = "cf_url"
+    type = "url"
+    value = "https://github.com"
+  }
+
+  custom_field {
+    name = "cf_multiple_selection"
+    type = "multiple"
+    value = "0,1"
   }
 }
 
@@ -36,7 +69,6 @@ data "netbox_dcim_site" "site_test" {
 resource "netbox_ipam_vlan_group" "vlan_group_test" {
   name    = "Test_VlanGroup"
   slug    = "Test_VlanGroup"
-  site_id = data.netbox_dcim_site.site_test.id
 }
 
 data "netbox_ipam_role" "vlan_role_production" {
@@ -50,7 +82,6 @@ data "netbox_ipam_role" "vlan_role_backup" {
 resource "netbox_ipam_vlan" "vlan_test" {
   vlan_id       = 100
   name          = "Test_Vlan"
-  site_id       = netbox_ipam_vlan_group.vlan_group_test.site_id
   description   = "VLAN created by terraform"
   vlan_group_id = netbox_ipam_vlan_group.vlan_group_test.id
   tenant_id     = netbox_tenancy_tenant.tenant_test.id
@@ -66,13 +97,46 @@ resource "netbox_ipam_vlan" "vlan_test" {
     slug = "tag2"
   }
 
-  custom_fields = {
-    cf_boolean   = "true"
-    cf_date      = "2020-12-25"
-    cf_integer   = "10"
-    cf_selection = "1"
-    cf_text      = "Some text"
-    cf_url       = "https://github.com"
+  custom_field {
+    name = "cf_boolean"
+    type = "boolean"
+    value = "true"
+  }
+
+  custom_field {
+    name = "cf_date"
+    type = "date"
+    value = "2020-12-25"
+  }
+
+  custom_field {
+    name = "cf_text"
+    type = "text"
+    value = "some text"
+  }
+
+  custom_field {
+    name = "cf_integer"
+    type = "integer"
+    value = "10"
+  }
+
+  custom_field {
+    name = "cf_selection"
+    type = "selection"
+    value = "1"
+  }
+
+  custom_field {
+    name = "cf_url"
+    type = "url"
+    value = "https://github.com"
+  }
+
+  custom_field {
+    name = "cf_multiple_selection"
+    type = "multiple"
+    value = "0,1"
   }
 }
 
@@ -80,7 +144,6 @@ resource "netbox_ipam_prefix" "prefix_test" {
   prefix      = "192.168.56.0/24"
   vlan_id     = netbox_ipam_vlan.vlan_test.id
   description = "Prefix created by terraform"
-  site_id     = netbox_ipam_vlan_group.vlan_group_test.site_id
   role_id     = data.netbox_ipam_role.vlan_role_production.id
 
   tag {
@@ -111,6 +174,48 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
     name = "tag2"
     slug = "tag2"
   }
+
+  custom_field {
+    name = "cf_boolean"
+    type = "boolean"
+    value = "true"
+  }
+
+  custom_field {
+    name = "cf_date"
+    type = "date"
+    value = "2020-12-25"
+  }
+
+  custom_field {
+    name = "cf_text"
+    type = "text"
+    value = "some text"
+  }
+
+  custom_field {
+    name = "cf_integer"
+    type = "integer"
+    value = "10"
+  }
+
+  custom_field {
+    name = "cf_selection"
+    type = "selection"
+    value = "1"
+  }
+
+  custom_field {
+    name = "cf_url"
+    type = "url"
+    value = "https://github.com"
+  }
+
+  custom_field {
+    name = "cf_multiple_selection"
+    type = "multiple"
+    value = "0,1"
+  }
 }
 
 data "netbox_virtualization_cluster" "cluster_test" {
@@ -135,13 +240,46 @@ resource "netbox_virtualization_vm" "vm_test" {
     slug = "tag1"
   }
 
-  custom_fields = {
-    cf_boolean   = "true"
-    cf_date      = "2020-12-25"
-    cf_integer   = "10"
-    cf_selection = "1"
-    cf_text      = "Some text"
-    cf_url       = "https://github.com"
+  custom_field {
+    name = "cf_boolean"
+    type = "boolean"
+    value = "true"
+  }
+
+  custom_field {
+    name = "cf_date"
+    type = "date"
+    value = "2020-12-25"
+  }
+
+  custom_field {
+    name = "cf_text"
+    type = "text"
+    value = "some text"
+  }
+
+  custom_field {
+    name = "cf_integer"
+    type = "integer"
+    value = "10"
+  }
+
+  custom_field {
+    name = "cf_selection"
+    type = "selection"
+    value = "1"
+  }
+
+  custom_field {
+    name = "cf_url"
+    type = "url"
+    value = "https://github.com"
+  }
+
+  custom_field {
+    name = "cf_multiple_selection"
+    type = "multiple"
+    value = "0,1"
   }
 }
 
@@ -149,7 +287,7 @@ resource "netbox_ipam_service" "service_test" {
   name              = "SMTP"
   virtualmachine_id = netbox_virtualization_vm.vm_test.id
   ip_addresses_id   = [netbox_ipam_ip_addresses.ip_test.id]
-  port              = "22"
+  ports             = ["22"]
   protocol          = "tcp"
   description       = "Service created by terraform"
 
@@ -158,13 +296,46 @@ resource "netbox_ipam_service" "service_test" {
     slug = "tag1"
   }
 
-  custom_fields = {
-    cf_boolean   = "true"
-    cf_date      = "2020-12-25"
-    cf_integer   = "10"
-    cf_selection = "1"
-    cf_text      = "Some text"
-    cf_url       = "https://github.com"
+  custom_field {
+    name = "cf_boolean"
+    type = "boolean"
+    value = "true"
+  }
+
+  custom_field {
+    name = "cf_date"
+    type = "date"
+    value = "2020-12-25"
+  }
+
+  custom_field {
+    name = "cf_text"
+    type = "text"
+    value = "some text"
+  }
+
+  custom_field {
+    name = "cf_integer"
+    type = "integer"
+    value = "10"
+  }
+
+  custom_field {
+    name = "cf_selection"
+    type = "selection"
+    value = "1"
+  }
+
+  custom_field {
+    name = "cf_url"
+    type = "url"
+    value = "https://github.com"
+  }
+
+  custom_field {
+    name = "cf_multiple_selection"
+    type = "multiple"
+    value = "0,1"
   }
 }
 
@@ -191,12 +362,45 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
     slug = "tag2"
   }
 
-  custom_fields = {
-    cf_boolean   = "true"
-    cf_date      = "2020-12-25"
-    cf_integer   = "10"
-    cf_selection = "1"
-    cf_text      = "Some text"
-    cf_url       = "https://github.com"
+  custom_field {
+    name = "cf_boolean"
+    type = "boolean"
+    value = "true"
+  }
+
+  custom_field {
+    name = "cf_date"
+    type = "date"
+    value = "2020-12-25"
+  }
+
+  custom_field {
+    name = "cf_text"
+    type = "text"
+    value = "some text"
+  }
+
+  custom_field {
+    name = "cf_integer"
+    type = "integer"
+    value = "10"
+  }
+
+  custom_field {
+    name = "cf_selection"
+    type = "selection"
+    value = "1"
+  }
+
+  custom_field {
+    name = "cf_url"
+    type = "url"
+    value = "https://github.com"
+  }
+
+  custom_field {
+    name = "cf_multiple_selection"
+    type = "multiple"
+    value = "0,1"
   }
 }

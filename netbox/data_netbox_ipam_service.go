@@ -6,8 +6,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
-	"github.com/netbox-community/go-netbox/netbox/client/ipam"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/ipam"
 )
 
 func dataNetboxIpamService() *schema.Resource {
@@ -51,14 +51,13 @@ func dataNetboxIpamServiceRead(d *schema.ResourceData,
 	deviceID := int64(d.Get("device_id").(int))
 	deviceIDStr := strconv.FormatInt(deviceID, 10)
 	name := d.Get("name").(string)
-	port := int64(d.Get("port").(int))
-	portStr := strconv.FormatInt(port, 10)
+	port := float64(d.Get("port").(int))
 	protocol := d.Get("protocol").(string)
 	vmID := int64(d.Get("virtualmachine_id").(int))
 	vmIDStr := strconv.FormatInt(vmID, 10)
 
 	p := ipam.NewIpamServicesListParams().WithName(&name)
-	p.SetPort(&portStr)
+	p.SetPort(&port)
 	p.SetProtocol(&protocol)
 	if deviceID != 0 {
 		p.SetDeviceID(&deviceIDStr)

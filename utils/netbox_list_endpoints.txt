@@ -28,7 +28,6 @@ dcim_power_outlets Dcim PowerOutlets
 dcim_power_panels  Dcim PowerPanels
 dcim_power_port_templates  Dcim PowerPortTemplates
 dcim_power_ports   Dcim PowerPorts
-dcim_rack_groups   Dcim RackGroups
 dcim_rack_reservations     Dcim RackReservations
 dcim_rack_roles    Dcim RackRoles
 dcim_racks Dcim Racks

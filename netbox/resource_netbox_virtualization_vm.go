@@ -2,13 +2,14 @@ package netbox
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
-	"github.com/netbox-community/go-netbox/netbox/client/virtualization"
-	"github.com/netbox-community/go-netbox/netbox/models"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/virtualization"
+	"github.com/smutel/go-netbox/netbox/models"
 )
 
 func resourceNetboxVirtualizationVM() *schema.Resource {
@@ -32,22 +33,26 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Optional: true,
 				Default:  " ",
 			},
-			"custom_fields": {
-				Type:     schema.TypeMap,
+			"custom_field": {
+				Type:     schema.TypeSet,
 				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				// terraform default behavior sees a difference between null and an empty string
-				// therefore we override the default, because null in terraform results in empty string in netbox
-				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					// function is called for each member of map
-					// including additional call on the amount of entries
-					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
-					if k == CustomFieldsRegex {
-						return true
-					}
-					return old == new
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
+								"date", "url", "selection", "multiple"}, false),
+						},
+						"value": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
 				},
 			},
 			"disk": {
@@ -107,9 +112,11 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Optional: true,
 			},
 			"vcpus": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Optional: true,
-				Default:  0,
+				ValidateFunc: validation.StringMatch(
+					regexp.MustCompile("^[0-9]+|[0-9]+.[0-9]+$"),
+					"Must be like ^[0-9]+|[0-9]+.[0-9]+$"),
 			},
 		},
 	}
@@ -121,8 +128,8 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 
 	clusterID := int64(d.Get("cluster_id").(int))
 	comments := d.Get("comments").(string)
-	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
-	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	disk := int64(d.Get("disk").(int))
 	localContextData := d.Get("local_context_data").(string)
 	memory := int64(d.Get("memory").(int))
@@ -132,7 +139,7 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
-	vcpus := int64(d.Get("vcpus").(int))
+	vcpus := d.Get("vcpus").(string)
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:          &clusterID,
@@ -164,7 +171,7 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 		newResource.Tenant = &tenantID
 	}
 
-	if vcpus != 0 {
+	if vcpus != "" {
 		newResource.Vcpus = &vcpus
 	}
 
@@ -212,9 +219,10 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				return err
 			}
 
-			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
+			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
-			if err = d.Set("custom_fields", customFields); err != nil {
+			if err = d.Set("custom_field", customFields); err != nil {
 				return err
 			}
 
@@ -301,9 +309,9 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 		params.Comments = comments
 	}
 
-	if d.HasChange("custom_fields") {
-		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
-		customFields := convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields)
+	if d.HasChange("custom_field") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
+		customFields := convertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
 		params.CustomFields = &customFields
 	}
 
@@ -346,7 +354,7 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	}
 
 	if d.HasChange("vcpus") {
-		vcpus := int64(d.Get("vcpus").(int))
+		vcpus := d.Get("vcpus").(string)
 		params.Vcpus = &vcpus
 	}
 

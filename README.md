@@ -11,13 +11,16 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 
 * A libc library like libc6-compat or libc-utils
 * General developer tools like make, bash, ... (to build the provider)
-* Go 1.15 minimum (to build the provider)
+* Go 1.16 minimum (to build the provider)
 * Terraform (to use the provider)
 
 ## Compatibility with Netbox
 
-Version 0.x.y => Netbox 2.8
-Version 1.x.y => Netbox 2.9
+| Netbox version | Provider version |
+|:--------------:|:----------------:|
+| 2.8            | 0.x.y            |
+| 2.9            | 1.x.y            |
+| 2.11           | 2.x.y            |
 
 ## Building the provider
 
@@ -123,11 +126,3 @@ $ export NETBOX_SCHEME="http"
 $ cd examples
 $ terraform init & terraform apply
 ```
-## Known bugs in external project which can impact this provider
-
-* *Closed* - [Issue 85 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/85)
-* *Closed* - [Issue 54 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/54)
-* *Open* - [Issue 115 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/115)
-* *Closed* - [Issue 100 in project go-netbox](https://github.com/netbox-community/go-netbox/issues/100)
-  - json: cannot unmarshal number into Go struct field \<field\>.results.connected_endpoint of type string
-  - Currently causes issues for Circuits/CircuitTerminations, DCIM/Cables, DCIM/Interfaces, and Extras/ObjectChanges

@@ -8,9 +8,9 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
-	"github.com/netbox-community/go-netbox/netbox/client/ipam"
-	"github.com/netbox-community/go-netbox/netbox/models"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/ipam"
+	"github.com/smutel/go-netbox/netbox/models"
 )
 
 func resourceNetboxIpamAggregate() *schema.Resource {
@@ -25,22 +25,26 @@ func resourceNetboxIpamAggregate() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"custom_fields": {
-				Type:     schema.TypeMap,
+			"custom_field": {
+				Type:     schema.TypeSet,
 				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				// terraform default behavior sees a difference between null and an empty string
-				// therefore we override the default, because null in terraform results in empty string in netbox
-				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					// function is called for each member of map
-					// including additional call on the amount of entries
-					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
-					if k == CustomFieldsRegex {
-						return true
-					}
-					return old == new
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
+								"date", "url", "selection", "multiple"}, false),
+						},
+						"value": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
 				},
 			},
 			"date_added": {
@@ -95,8 +99,8 @@ func resourceNetboxIpamAggregateCreate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
-	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
-	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	dateAdded := d.Get("date_added").(string)
 	description := d.Get("description").(string)
 	prefix := d.Get("prefix").(string)
@@ -149,9 +153,10 @@ func resourceNetboxIpamAggregateRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
+			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
-			if err = d.Set("custom_fields", customFields); err != nil {
+			if err = d.Set("custom_field", customFields); err != nil {
 				return err
 			}
 
@@ -215,9 +220,9 @@ func resourceNetboxIpamAggregateUpdate(d *schema.ResourceData,
 	rirID := int64(d.Get("rir_id").(int))
 	params.Rir = &rirID
 
-	if d.HasChange("custom_fields") {
-		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
-		customFields := convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields)
+	if d.HasChange("custom_field") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
+		customFields := convertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
 		params.CustomFields = &customFields
 	}
 
