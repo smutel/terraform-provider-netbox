@@ -5,7 +5,10 @@ Get json output from the dcim_interfaces_list Netbox endpoint
 ## Example Usage
 
 ```hcl
-data "netbox_json_dcim_interfaces_list" "test" {}
+data "netbox_json_dcim_interfaces_list" "test" {
+  devicename = ""
+  limit = 0
+}
 output "example" {
   value = jsondecode(data.netbox_json_dcim_interfaces_list.test.json)
 }
@@ -13,7 +16,10 @@ output "example" {
 
 ## Argument Reference
 
-This function takes no arguments.
+The following arguments are supported:
+
+* ``devicename`` (Optional). The name of the interface device.
+* ``limit`` (Optional). The max number of returned results. If 0 is specified, all interfaces will be returned.
 
 ## Attributes Reference
 
