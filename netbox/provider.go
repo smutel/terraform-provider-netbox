@@ -1,7 +1,9 @@
 package netbox
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net/http"
 
 	runtimeclient "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -45,6 +47,11 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("NETBOX_INSECURE", false),
 				Description: "Skip TLS certificate validation.",
+			},
+			"private_key": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Key used for Secrets",
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
@@ -149,17 +156,52 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	token := d.Get("token").(string)
 	scheme := d.Get("scheme").(string)
 	insecure := d.Get("insecure").(bool)
-
-	defaultScheme := []string{scheme}
+	privateKey := d.Get("private_key").(string)
 
 	var options runtimeclient.TLSClientOptions
 	options.InsecureSkipVerify = insecure
 
-	clientWithTLSOptions, _ := runtimeclient.TLSClient(options)
+	tlsConfig, _ := runtimeclient.TLSClientAuth(options)
 
-	t := runtimeclient.NewWithClient(url, basepath, defaultScheme, clientWithTLSOptions)
+	sessionKey := GetSessionKey(fmt.Sprintf("%s://%s", scheme, url), token, privateKey)
+	// Create a custom client
+	// Override the default transport with a RoundTripper to inject dynamic headers
+	// Add TLSOptions
+	cli := &http.Client{
+		Transport: &transport{
+			headers: map[string]string{
+				"X-Session-Key": sessionKey,
+			},
+			TLSClientConfig: tlsConfig,
+		},
+	}
+
+	defaultScheme := []string{scheme}
+
+	t := runtimeclient.NewWithClient(url, basepath, defaultScheme, cli)
 	t.DefaultAuthentication = runtimeclient.APIKeyAuth(authHeaderName, "header",
 		fmt.Sprintf(authHeaderFormat, token))
 
 	return client.New(t, strfmt.Default), nil
+}
+
+type transport struct {
+	headers         map[string]string
+	base            http.RoundTripper
+	TLSClientConfig *tls.Config
+}
+
+func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Add headers to request
+	for k, v := range t.headers {
+		req.Header.Add(k, v)
+	}
+	base := t.base
+	if base == nil {
+		// init an http.Transport with TLSOptions
+		customTransport := http.DefaultTransport.(*http.Transport).Clone()
+		customTransport.TLSClientConfig = t.TLSClientConfig
+		base = customTransport
+	}
+	return base.RoundTrip(req)
 }
