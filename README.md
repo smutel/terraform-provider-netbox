@@ -16,8 +16,8 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 
 ## Compatibility with Netbox
 
-Version 0.x.y => Netbox 2.8  
-Version 1.x.y => Netbox 2.9  
+Version 0.x.y => Netbox 2.8
+Version 1.x.y => Netbox 2.9
 
 ## Building the provider
 
@@ -78,19 +78,25 @@ $ make localinstall
 
 ## Using the provider
 
-The definition of the provider is optional.  
-All the parameters could be setup by environment variables.  
+The definition of the provider is optional.
+All the parameters could be setup by environment variables.
 
 ```hcl
 provider netbox {
   # Environment variable NETBOX_URL
   url = "127.0.0.1:8000"
-  
+
   # Environment variable NETBOX_TOKEN
   token = "c07a2db4adb8b1e7f75e7c4369964e92f7680512"
-  
+
   # Environment variable NETBOX_SCHEME
   scheme = "http"
+
+  # Environment variable NETBOX_INSECURE
+  insecure = "true"
+
+  # Environment variable NETBOX_PRIVATE_KEY_FILE
+  private_key_file = "/path/to/private/key"
 }
 ```
 
@@ -103,8 +109,8 @@ commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/) rules.
 
 ## Examples
 
-You can find some examples in the examples folder.  
-Each example can be executed directly with command terraform init & terraform apply.  
+You can find some examples in the examples folder.
+Each example can be executed directly with command terraform init & terraform apply.
 You can set different environment variables for your test:
 * NETBOX_URL to define the URL and the port (127.0.0.1:8000 by default)
 * NETBOX_TOKEN to define the TOKEN to access the application (empty by default)
