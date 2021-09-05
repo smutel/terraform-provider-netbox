@@ -65,9 +65,9 @@ func dataNetboxJSONVirtualizationClustersListRead(d *schema.ResourceData, m inte
 				return fmt.Errorf("'%s' is not a supported filter parameter", k)
 			}
 		}
-	} else {
-		params.Limit = &limit
 	}
+
+	params.Limit = &limit
 
 	list, err := client.Virtualization.VirtualizationClustersList(params, nil)
 	if err != nil {

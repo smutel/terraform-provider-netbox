@@ -64,9 +64,9 @@ func dataNetboxJSONSecretsSecretsListRead(d *schema.ResourceData, m interface{})
 				return fmt.Errorf("'%s' is not a supported filter parameter", k)
 			}
 		}
-	} else {
-		params.Limit = &limit
 	}
+
+	params.Limit = &limit
 
 	list, err := client.Secrets.SecretsSecretsList(params, nil)
 	if err != nil {

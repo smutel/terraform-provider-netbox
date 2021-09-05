@@ -67,9 +67,9 @@ func dataNetboxJSONDcimDevicesListRead(d *schema.ResourceData, m interface{}) er
 				return fmt.Errorf("'%s' is not a supported filter parameter", k)
 			}
 		}
-	} else {
-		params.Limit = &limit
 	}
+
+	params.Limit = &limit
 
 	list, err := client.Dcim.DcimDevicesList(params, nil)
 	if err != nil {
