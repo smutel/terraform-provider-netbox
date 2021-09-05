@@ -217,6 +217,14 @@ func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCust
 	return toReturn
 }
 
+func ReadRSAKey(filePath string) (res string, err error) {
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
 func GetSessionKey(destinationUrl string, token string, rsaKey string) string {
 	privateKey := rsaKey
 	data := url.Values{}

@@ -48,10 +48,11 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("NETBOX_INSECURE", false),
 				Description: "Skip TLS certificate validation.",
 			},
-			"private_key": {
+			"private_key_file": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Key used for Secrets",
+				DefaultFunc: schema.EnvDefaultFunc("NETBOX_PRIVATE_KEY_FILE", ""),
+				Description: "Private Key used for Secrets",
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
@@ -156,22 +157,25 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	token := d.Get("token").(string)
 	scheme := d.Get("scheme").(string)
 	insecure := d.Get("insecure").(bool)
-	privateKey := d.Get("private_key").(string)
+	privateKeyFile := d.Get("private_key_file").(string)
 
 	var options runtimeclient.TLSClientOptions
 	options.InsecureSkipVerify = insecure
-
 	tlsConfig, _ := runtimeclient.TLSClientAuth(options)
 
-	sessionKey := GetSessionKey(fmt.Sprintf("%s://%s", scheme, url), token, privateKey)
+	headers := make(map[string]string)
+
+	if privateKeyFile != "" {
+		privateKey, _ := ReadRSAKey(privateKeyFile)
+		sessionKey := GetSessionKey(fmt.Sprintf("%s://%s", scheme, url), token, privateKey)
+		headers["X-Session-Key"] = sessionKey
+	}
 	// Create a custom client
 	// Override the default transport with a RoundTripper to inject dynamic headers
 	// Add TLSOptions
 	cli := &http.Client{
 		Transport: &transport{
-			headers: map[string]string{
-				"X-Session-Key": sessionKey,
-			},
+			headers:         headers,
 			TLSClientConfig: tlsConfig,
 		},
 	}
