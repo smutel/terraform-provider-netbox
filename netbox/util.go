@@ -217,12 +217,12 @@ func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCust
 	return toReturn
 }
 
-func ReadRSAKey(filePath string) (res string, err error) {
+func ReadRSAKey(filePath string) (res string) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		return "", err
+		return ""
 	}
-	return string(data), nil
+	return string(data)
 }
 
 func GetSessionKey(destinationUrl string, token string, rsaKey string) string {
@@ -230,10 +230,11 @@ func GetSessionKey(destinationUrl string, token string, rsaKey string) string {
 	data := url.Values{}
 	data.Set("private_key", privateKey) // set private key string
 	destinationUrl = destinationUrl + "/api/secrets/get-session-key/"
-	// get session key
+
 	req, err := http.NewRequest("POST", destinationUrl, strings.NewReader(data.Encode())) // URL-enconded payload
 	if err != nil {
-		fmt.Println(err)
+		//
+		return ""
 	}
 
 	req.Header.Set("Authorization", "Token "+token)
@@ -242,12 +243,12 @@ func GetSessionKey(destinationUrl string, token string, rsaKey string) string {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		return ""
 	}
 
 	content, err := ioutil.ReadAll(resp.Body)
 	m := make(map[string]string)
-	err = json.Unmarshal(content, &m) // convert json to dict
+	err = json.Unmarshal(content, &m) // convert json to map
 
 	return m["session_key"]
 }

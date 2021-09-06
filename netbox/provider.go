@@ -166,7 +166,7 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	headers := make(map[string]string)
 
 	if privateKeyFile != "" {
-		privateKey, _ := ReadRSAKey(privateKeyFile)
+		privateKey := ReadRSAKey(privateKeyFile)
 		sessionKey := GetSessionKey(fmt.Sprintf("%s://%s", scheme, url), token, privateKey)
 		headers["X-Session-Key"] = sessionKey
 	}
