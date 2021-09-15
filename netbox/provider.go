@@ -1,7 +1,9 @@
 package netbox
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net/http"
 
 	runtimeclient "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -45,6 +47,12 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("NETBOX_INSECURE", false),
 				Description: "Skip TLS certificate validation.",
+			},
+			"private_key_file": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("NETBOX_PRIVATE_KEY_FILE", ""),
+				Description: "Private Key used for Secrets",
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
@@ -149,17 +157,61 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	token := d.Get("token").(string)
 	scheme := d.Get("scheme").(string)
 	insecure := d.Get("insecure").(bool)
-
-	defaultScheme := []string{scheme}
+	privateKeyFile := d.Get("private_key_file").(string)
 
 	var options runtimeclient.TLSClientOptions
 	options.InsecureSkipVerify = insecure
+	tlsConfig, _ := runtimeclient.TLSClientAuth(options)
 
-	clientWithTLSOptions, _ := runtimeclient.TLSClient(options)
+	headers := make(map[string]string)
 
-	t := runtimeclient.NewWithClient(url, basepath, defaultScheme, clientWithTLSOptions)
+	if privateKeyFile != "" {
+		privateKey := ReadRSAKey(privateKeyFile)
+		if privateKey == "" {
+			return nil, fmt.Errorf("Error reading the private key file.")
+		}
+		sessionKey := GetSessionKey(fmt.Sprintf("%s://%s", scheme, url), token, privateKey)
+		if sessionKey == "" {
+			return nil, fmt.Errorf("The provided private key is invalid.")
+		}
+		headers["X-Session-Key"] = sessionKey
+	}
+	// Create a custom client
+	// Override the default transport with a RoundTripper to inject dynamic headers
+	// Add TLSOptions
+	cli := &http.Client{
+		Transport: &transport{
+			headers:         headers,
+			TLSClientConfig: tlsConfig,
+		},
+	}
+
+	defaultScheme := []string{scheme}
+
+	t := runtimeclient.NewWithClient(url, basepath, defaultScheme, cli)
 	t.DefaultAuthentication = runtimeclient.APIKeyAuth(authHeaderName, "header",
 		fmt.Sprintf(authHeaderFormat, token))
 
 	return client.New(t, strfmt.Default), nil
+}
+
+type transport struct {
+	headers         map[string]string
+	base            http.RoundTripper
+	TLSClientConfig *tls.Config
+}
+
+func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Add headers to request
+	for k, v := range t.headers {
+		req.Header.Add(k, v)
+	}
+	base := t.base
+	if base == nil {
+		// init an http.Transport with TLSOptions
+		customTransport := http.DefaultTransport.(*http.Transport).Clone()
+		customTransport.TLSClientConfig = t.TLSClientConfig
+		base = customTransport
+	}
+	return base.RoundTrip(req)
 }
