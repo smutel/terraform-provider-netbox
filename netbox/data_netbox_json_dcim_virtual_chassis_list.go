@@ -1,37 +1,47 @@
 package netbox
 
 import (
-        "encoding/json"
+	"encoding/json"
 
-        "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-        netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/netbox-community/go-netbox/netbox/client/dcim"
 )
 
 func dataNetboxJSONDcimVirtualChassisList() *schema.Resource {
-        return &schema.Resource{
-                Read: dataNetboxJSONDcimVirtualChassisListRead,
+	return &schema.Resource{
+		Read: dataNetboxJSONDcimVirtualChassisListRead,
 
-                Schema: map[string]*schema.Schema{
-                        "json": {
-                                Type:     schema.TypeString,
-                                Computed: true,
-                        },
-                },
-        }
+		Schema: map[string]*schema.Schema{
+			"limit": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  0,
+			},
+			"json": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
+	}
 }
 
 func dataNetboxJSONDcimVirtualChassisListRead(d *schema.ResourceData, m interface{}) error {
-        client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netboxclient.NetBoxAPI)
 
-        list, err := client.Dcim.DcimVirtualChassisList(nil, nil)
-        if err != nil {
-                return err
-        }
+	params := dcim.NewDcimVirtualChassisListParams()
+	limit := int64(d.Get("limit").(int))
+	params.Limit = &limit
 
-        j, _ := json.Marshal(list.Payload.Results)
+	list, err := client.Dcim.DcimVirtualChassisList(params, nil)
+	if err != nil {
+		return err
+	}
 
-        d.Set("json", string(j))
-        d.SetId("NetboxJSONDcimVirtualChassisList")
+	j, _ := json.Marshal(list.Payload.Results)
 
-        return nil
+	d.Set("json", string(j))
+	d.SetId("NetboxJSONDcimVirtualChassisList")
+
+	return nil
 }

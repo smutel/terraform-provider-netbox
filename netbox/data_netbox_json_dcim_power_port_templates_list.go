@@ -1,37 +1,47 @@
 package netbox
 
 import (
-        "encoding/json"
+	"encoding/json"
 
-        "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-        netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/netbox-community/go-netbox/netbox/client/dcim"
 )
 
 func dataNetboxJSONDcimPowerPortTemplatesList() *schema.Resource {
-        return &schema.Resource{
-                Read: dataNetboxJSONDcimPowerPortTemplatesListRead,
+	return &schema.Resource{
+		Read: dataNetboxJSONDcimPowerPortTemplatesListRead,
 
-                Schema: map[string]*schema.Schema{
-                        "json": {
-                                Type:     schema.TypeString,
-                                Computed: true,
-                        },
-                },
-        }
+		Schema: map[string]*schema.Schema{
+			"limit": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  0,
+			},
+			"json": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
+	}
 }
 
 func dataNetboxJSONDcimPowerPortTemplatesListRead(d *schema.ResourceData, m interface{}) error {
-        client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netboxclient.NetBoxAPI)
 
-        list, err := client.Dcim.DcimPowerPortTemplatesList(nil, nil)
-        if err != nil {
-                return err
-        }
+	params := dcim.NewDcimPowerPortTemplatesListParams()
+	limit := int64(d.Get("limit").(int))
+	params.Limit = &limit
 
-        j, _ := json.Marshal(list.Payload.Results)
+	list, err := client.Dcim.DcimPowerPortTemplatesList(params, nil)
+	if err != nil {
+		return err
+	}
 
-        d.Set("json", string(j))
-        d.SetId("NetboxJSONDcimPowerPortTemplatesList")
+	j, _ := json.Marshal(list.Payload.Results)
 
-        return nil
+	d.Set("json", string(j))
+	d.SetId("NetboxJSONDcimPowerPortTemplatesList")
+
+	return nil
 }

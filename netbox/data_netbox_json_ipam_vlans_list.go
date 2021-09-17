@@ -1,37 +1,47 @@
 package netbox
 
 import (
-        "encoding/json"
+	"encoding/json"
 
-        "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-        netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/netbox-community/go-netbox/netbox/client/ipam"
 )
 
 func dataNetboxJSONIpamVlansList() *schema.Resource {
-        return &schema.Resource{
-                Read: dataNetboxJSONIpamVlansListRead,
+	return &schema.Resource{
+		Read: dataNetboxJSONIpamVlansListRead,
 
-                Schema: map[string]*schema.Schema{
-                        "json": {
-                                Type:     schema.TypeString,
-                                Computed: true,
-                        },
-                },
-        }
+		Schema: map[string]*schema.Schema{
+			"limit": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  0,
+			},
+			"json": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
+	}
 }
 
 func dataNetboxJSONIpamVlansListRead(d *schema.ResourceData, m interface{}) error {
-        client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netboxclient.NetBoxAPI)
 
-        list, err := client.Ipam.IpamVlansList(nil, nil)
-        if err != nil {
-                return err
-        }
+	params := ipam.NewIpamVlansListParams()
+	limit := int64(d.Get("limit").(int))
+	params.Limit = &limit
 
-        j, _ := json.Marshal(list.Payload.Results)
+	list, err := client.Ipam.IpamVlansList(params, nil)
+	if err != nil {
+		return err
+	}
 
-        d.Set("json", string(j))
-        d.SetId("NetboxJSONIpamVlansList")
+	j, _ := json.Marshal(list.Payload.Results)
 
-        return nil
+	d.Set("json", string(j))
+	d.SetId("NetboxJSONIpamVlansList")
+
+	return nil
 }
