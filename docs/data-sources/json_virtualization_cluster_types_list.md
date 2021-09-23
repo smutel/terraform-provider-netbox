@@ -5,15 +5,17 @@ Get json output from the virtualization_cluster_types_list Netbox endpoint
 ## Example Usage
 
 ```hcl
-data "netbox_json_virtualization_cluster_types_list" "test" {}
+data "netbox_json_virtualization_cluster_types_list" "test" {
+        limit = 0
+}
 output "example" {
-  value = jsondecode(data.netbox_json_virtualization_cluster_types_list.test.json)
+        value = jsondecode(data.netbox_json_virtualization_cluster_types_list.test.json)
 }
 ```
 
 ## Argument Reference
 
-This function takes no arguments.
+* ``limit`` (Optional). The max number of returned results. If 0 is specified, all records will be returned.
 
 ## Attributes Reference
 

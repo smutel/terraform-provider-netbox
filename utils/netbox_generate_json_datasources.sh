@@ -17,6 +17,7 @@ import (
 
         "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
         netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+        "github.com/netbox-community/go-netbox/netbox/client/${SECTION,}"
 )
 
 func dataNetboxJSON${SECTION}${ITEM}List() *schema.Resource {
@@ -24,6 +25,11 @@ func dataNetboxJSON${SECTION}${ITEM}List() *schema.Resource {
                 Read: dataNetboxJSON${SECTION}${ITEM}ListRead,
 
                 Schema: map[string]*schema.Schema{
+                        "limit": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  0,
+			},
                         "json": {
                                 Type:     schema.TypeString,
                                 Computed: true,
@@ -35,7 +41,11 @@ func dataNetboxJSON${SECTION}${ITEM}List() *schema.Resource {
 func dataNetboxJSON${SECTION}${ITEM}ListRead(d *schema.ResourceData, m interface{}) error {
         client := m.(*netboxclient.NetBoxAPI)
 
-        list, err := client.${SECTION}.${SECTION}${ITEM}List(nil, nil)
+        params := ${SECTION,}.New${SECTION}${ITEM}ListParams()
+        limit := int64(d.Get("limit").(int))
+        params.Limit = &limit
+
+        list, err := client.${SECTION}.${SECTION}${ITEM}List(params, nil)
         if err != nil {
                 return err
         }
@@ -63,15 +73,17 @@ Get json output from the ${ENDPOINT}_list Netbox endpoint
 ## Example Usage
 
 \`\`\`hcl
-data "netbox_json_${ENDPOINT}_list" "test" {}
+data "netbox_json_${ENDPOINT}_list" "test" {
+        limit = 0
+}
 output "example" {
-  value = jsondecode(data.netbox_json_${ENDPOINT}_list.test.json)
+        value = jsondecode(data.netbox_json_${ENDPOINT}_list.test.json)
 }
 \`\`\`
 
 ## Argument Reference
 
-This function takes no arguments.
+* \`\`limit\`\` (Optional). The max number of returned results. If 0 is specified, all records will be returned.
 
 ## Attributes Reference
 

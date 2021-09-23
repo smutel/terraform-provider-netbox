@@ -1,37 +1,47 @@
 package netbox
 
 import (
-        "encoding/json"
+	"encoding/json"
 
-        "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-        netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/netbox-community/go-netbox/netbox/client/extras"
 )
 
 func dataNetboxJSONExtrasTagsList() *schema.Resource {
-        return &schema.Resource{
-                Read: dataNetboxJSONExtrasTagsListRead,
+	return &schema.Resource{
+		Read: dataNetboxJSONExtrasTagsListRead,
 
-                Schema: map[string]*schema.Schema{
-                        "json": {
-                                Type:     schema.TypeString,
-                                Computed: true,
-                        },
-                },
-        }
+		Schema: map[string]*schema.Schema{
+			"limit": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  0,
+			},
+			"json": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
+	}
 }
 
 func dataNetboxJSONExtrasTagsListRead(d *schema.ResourceData, m interface{}) error {
-        client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netboxclient.NetBoxAPI)
 
-        list, err := client.Extras.ExtrasTagsList(nil, nil)
-        if err != nil {
-                return err
-        }
+	params := extras.NewExtrasTagsListParams()
+	limit := int64(d.Get("limit").(int))
+	params.Limit = &limit
 
-        j, _ := json.Marshal(list.Payload.Results)
+	list, err := client.Extras.ExtrasTagsList(params, nil)
+	if err != nil {
+		return err
+	}
 
-        d.Set("json", string(j))
-        d.SetId("NetboxJSONExtrasTagsList")
+	j, _ := json.Marshal(list.Payload.Results)
 
-        return nil
+	d.Set("json", string(j))
+	d.SetId("NetboxJSONExtrasTagsList")
+
+	return nil
 }
