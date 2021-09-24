@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: [ '1.15.x' ]
+        go: [ '1.16.x' ]
     steps:
       - name: Check conventional commits in PR
         uses: Namchee/conventional-pr@master
@@ -20,6 +20,7 @@ jobs:
           close: false
           template: "Thank you for your contribution attempt in this repository!\n\nUnfortunately, this pull request doesn't meet our standards by reason we stated below.\nFor future pull requests, please use conventional commits.\nPlease update the commits in this PR with conventional commits rules."
           strict: false
+          link_issue: false
 
       - name: Checkout
         uses: actions/checkout@v2.3.4
@@ -28,7 +29,7 @@ jobs:
         run: git fetch --prune --unshallow
 
       - name: Lint
-        uses: reviewdog/action-golangci-lint@v1.17.0
+        uses: reviewdog/action-golangci-lint@v2.0.1
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
@@ -43,7 +44,7 @@ jobs:
         shell: bash
 
       - name: Go installation
-        uses: actions/setup-go@v1.1.3
+        uses: actions/setup-go@v2.1.4
         with:
           go-version: ${{ matrix.go }}
 

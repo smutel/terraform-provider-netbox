@@ -8,7 +8,6 @@ Manage a vlan group within Netbox.
 resource "netbox_ipam_vlan_group" "vlan_group_test" {
   name = "TestVlanGroup"
   slug = "TestVlanGroup"
-  site_id = data.netbox_dcim_sites.site_test.id
 }
 ```
 
@@ -16,7 +15,6 @@ resource "netbox_ipam_vlan_group" "vlan_group_test" {
 
 The following arguments are supported:
 * ``name`` - (Required) The name for this object.
-* ``site_id`` - (Optional) ID of the site where this object is created.
 * ``slug`` - (Required) The slug for this object.
 
 ## Attributes Reference

@@ -8,7 +8,7 @@ import (
 	runtimeclient "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/netbox-community/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client"
 )
 
 const authHeaderName = "Authorization"
@@ -94,7 +94,6 @@ func Provider() *schema.Provider {
 			"netbox_json_dcim_power_panels_list":                  dataNetboxJSONDcimPowerPanelsList(),
 			"netbox_json_dcim_power_port_templates_list":          dataNetboxJSONDcimPowerPortTemplatesList(),
 			"netbox_json_dcim_power_ports_list":                   dataNetboxJSONDcimPowerPortsList(),
-			"netbox_json_dcim_rack_groups_list":                   dataNetboxJSONDcimRackGroupsList(),
 			"netbox_json_dcim_rack_reservations_list":             dataNetboxJSONDcimRackReservationsList(),
 			"netbox_json_dcim_rack_roles_list":                    dataNetboxJSONDcimRackRolesList(),
 			"netbox_json_dcim_racks_list":                         dataNetboxJSONDcimRacksList(),
@@ -105,7 +104,6 @@ func Provider() *schema.Provider {
 			"netbox_json_dcim_virtual_chassis_list":               dataNetboxJSONDcimVirtualChassisList(),
 			"netbox_json_extras_config_contexts_list":             dataNetboxJSONExtrasConfigContextsList(),
 			"netbox_json_extras_export_templates_list":            dataNetboxJSONExtrasExportTemplatesList(),
-			"netbox_json_extras_graphs_list":                      dataNetboxJSONExtrasGraphsList(),
 			"netbox_json_extras_image_attachments_list":           dataNetboxJSONExtrasImageAttachmentsList(),
 			"netbox_json_extras_job_results_list":                 dataNetboxJSONExtrasJobResultsList(),
 			"netbox_json_extras_object_changes_list":              dataNetboxJSONExtrasObjectChangesList(),

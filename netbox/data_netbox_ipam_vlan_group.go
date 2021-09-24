@@ -7,8 +7,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
-	"github.com/netbox-community/go-netbox/netbox/client/ipam"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/ipam"
 )
 
 func dataNetboxIpamVlanGroup() *schema.Resource {
@@ -23,10 +23,6 @@ func dataNetboxIpamVlanGroup() *schema.Resource {
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
 			},
-			"site_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 		},
 	}
 }
@@ -35,13 +31,8 @@ func dataNetboxIpamVlanGroupRead(d *schema.ResourceData, m interface{}) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	slug := d.Get("slug").(string)
-	siteID := d.Get("site_id").(int)
-	siteIDStr := strconv.FormatInt(int64(siteID), 10)
 
 	p := ipam.NewIpamVlanGroupsListParams().WithSlug(&slug)
-	if siteID != 0 {
-		p.SetSiteID(&siteIDStr)
-	}
 
 	list, err := client.Ipam.IpamVlanGroupsList(p, nil)
 	if err != nil {

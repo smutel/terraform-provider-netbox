@@ -7,9 +7,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
-	"github.com/netbox-community/go-netbox/netbox/client/ipam"
-	"github.com/netbox-community/go-netbox/netbox/models"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/ipam"
+	"github.com/smutel/go-netbox/netbox/models"
 )
 
 func resourceNetboxIpamIPAddresses() *schema.Resource {
@@ -25,26 +25,30 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"address": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
 				ValidateFunc: validation.IsCIDR,
 			},
-			"custom_fields": {
-				Type:     schema.TypeMap,
+			"custom_field": {
+				Type:     schema.TypeSet,
 				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				// terraform default behavior sees a difference between null and an empty string
-				// therefore we override the default, because null in terraform results in empty string in netbox
-				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					// function is called for each member of map
-					// including additional call on the amount of entries
-					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
-					if k == CustomFieldsRegex {
-						return true
-					}
-					return old == new
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
+								"date", "url", "selection", "multiple"}, false),
+						},
+						"value": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
 				},
 			},
 			"description": {
@@ -62,10 +66,6 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 					"Must be like ^[-a-zA-Z0-9_.]{1,255}$"),
 			},
 			"nat_inside_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"nat_outside_id": {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
@@ -135,12 +135,11 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	client := m.(*netboxclient.NetBoxAPI)
 
 	address := d.Get("address").(string)
-	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
-	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	dnsName := d.Get("dns_name").(string)
 	natInsideID := int64(d.Get("nat_inside_id").(int))
-	natOutsideID := int64(d.Get("nat_outside_id").(int))
 	objectID := int64(d.Get("object_id").(int))
 	objectType := d.Get("object_type").(string)
 	primaryIP4 := d.Get("primary_ip4").(bool)
@@ -164,10 +163,6 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 		newResource.NatInside = &natInsideID
 	}
 
-	if natOutsideID != 0 {
-		newResource.NatOutside = &natOutsideID
-	}
-
 	var info InfosForPrimary
 	if primaryIP4 && objectID != 0 {
 		if objectType == VMInterfaceType {
@@ -181,7 +176,7 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 
 	if objectID != 0 {
 		newResource.AssignedObjectID = &objectID
-		newResource.AssignedObjectType = objectType
+		newResource.AssignedObjectType = &objectType
 	}
 
 	if tenantID != 0 {
@@ -226,9 +221,10 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				return err
 			}
 
-			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
+			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
-			if err = d.Set("custom_fields", customFields); err != nil {
+			if err = d.Set("custom_field", customFields); err != nil {
 				return err
 			}
 
@@ -264,16 +260,6 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				}
 			}
 
-			if resource.NatOutside == nil {
-				if err = d.Set("nat_outside_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("nat_outside_id", resource.NatOutside.ID); err != nil {
-					return err
-				}
-			}
-
 			if resource.AssignedObjectID == nil {
 				if err = d.Set("object_id", nil); err != nil {
 					return err
@@ -289,7 +275,7 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 
 				var info InfosForPrimary
 				if *resource.AssignedObjectID != 0 {
-					if resource.AssignedObjectType == VMInterfaceType {
+					if *resource.AssignedObjectType == VMInterfaceType {
 						var err error
 						info, err = getInfoForPrimary(m, *resource.AssignedObjectID)
 						if err != nil {
@@ -310,8 +296,8 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 			}
 
 			objectType := resource.AssignedObjectType
-			if objectType == "" {
-				objectType = VMInterfaceType
+			if *objectType == "" {
+				*objectType = VMInterfaceType
 			}
 			if err = d.Set("object_type", objectType); err != nil {
 				return err
@@ -380,9 +366,9 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 	address := d.Get("address").(string)
 	params.Address = &address
 
-	if d.HasChange("custom_fields") {
-		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
-		customFields := convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields)
+	if d.HasChange("custom_field") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
+		customFields := convertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
 		params.CustomFields = &customFields
 	}
 
@@ -405,25 +391,18 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 		}
 	}
 
-	if d.HasChange("nat_outside_id") {
-		natInsideID := int64(d.Get("nat_outside_id").(int))
-		if natInsideID != 0 {
-			params.NatInside = &natInsideID
-		}
-	}
-
 	if d.HasChange("object_id") || d.HasChange("object_type") {
 		// primary_ip4 = true
 		objectID := int64(d.Get("object_id").(int))
 		params.AssignedObjectID = &objectID
 
 		var objectType string
-		if params.AssignedObjectType == "" {
+		if *params.AssignedObjectType == "" {
 			objectType = VMInterfaceType
 		} else {
 			objectType = d.Get("object_type").(string)
 		}
-		params.AssignedObjectType = objectType
+		*params.AssignedObjectType = objectType
 	}
 
 	if d.HasChange("role") {

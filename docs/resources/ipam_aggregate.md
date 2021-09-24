@@ -15,13 +15,46 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
     slug = "tag1"
   }
   
-  custom_fields = {
-    cf_boolean = "true"
-    cf_date = "2020-12-25"
-    cf_integer = "10"
-    cf_selection = "1"
-    cf_text = "Some text"
-    cf_url = "https://github.com"
+  custom_field {
+    name = "cf_boolean"
+    type = "boolean"
+    value = "true"
+  }
+
+  custom_field {
+    name = "cf_date"
+    type = "date"
+    value = "2020-12-25"
+  }
+
+  custom_field {
+    name = "cf_text"
+    type = "text"
+    value = "some text"
+  }
+
+  custom_field {
+    name = "cf_integer"
+    type = "integer"
+    value = "10"
+  }
+
+  custom_field {
+    name = "cf_selection"
+    type = "selection"
+    value = "1"
+  }
+
+  custom_field {
+    name = "cf_url"
+    type = "url"
+    value = "https://github.com"
+  }
+
+  custom_field {
+    name = "cf_multiple_selection"
+    type = "multiple"
+    value = "0,1"
   }
 }
 ```
@@ -29,19 +62,17 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
 ## Argument Reference
 
 The following arguments are supported:
-* ``custom_fields`` - (Optional) Custom Field Keys and Values for this object
-  * For boolean, use the string value "true" or "false"
-  * For data, use the string format "YYYY-MM-DD"
-  * For integer, use the value between double quote "10"
-  * For selection, use the level id
-  * For text, use the string value
-  * For URL, use the URL as string
 * ``date_added`` - (Optional) Date when this aggregate was added. Format *YYYY-MM-DD*.
 * ``description`` - (Optional) The description of this object.
 * ``prefix`` - (Required) The prefix (with mask) used for this object.
 * ``rir_id`` - (Required) The RIR id linked to this object.
 
-The ``tag`` block supports:
+The ``custom_field`` block (optional) supports:
+* ``name`` - (Required) Name of the existing custom resource to associate with this resource.
+* ``type`` - (Required) Type of the existing custom resource to associate with this resource (text, integer, boolean, url, selection, multiple).
+* ``value`` - (Required) Value of the existing custom resource to associate with this resource.
+
+The ``tag`` block (optional) supports:
 * ``name`` - (Required) Name of the existing tag to associate with this resource.
 * ``slug`` - (Required) Slug of the existing tag to associate with this resource.
 

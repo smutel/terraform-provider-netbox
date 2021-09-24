@@ -7,9 +7,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
-	"github.com/netbox-community/go-netbox/netbox/client/ipam"
-	"github.com/netbox-community/go-netbox/netbox/models"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/ipam"
+	"github.com/smutel/go-netbox/netbox/models"
 )
 
 func resourceNetboxIpamVlanGroup() *schema.Resource {
@@ -29,10 +29,6 @@ func resourceNetboxIpamVlanGroup() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
 			},
-			"site_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 			"slug": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -49,16 +45,11 @@ func resourceNetboxIpamVlanGroupCreate(d *schema.ResourceData,
 	client := m.(*netboxclient.NetBoxAPI)
 
 	groupName := d.Get("name").(string)
-	groupSiteID := int64(d.Get("site_id").(int))
 	groupSlug := d.Get("slug").(string)
 
-	newResource := &models.WritableVLANGroup{
+	newResource := &models.VLANGroup{
 		Name: &groupName,
 		Slug: &groupSlug,
-	}
-
-	if groupSiteID != 0 {
-		newResource.Site = &groupSiteID
 	}
 
 	resource := ipam.NewIpamVlanGroupsCreateParams().WithData(newResource)
@@ -89,16 +80,6 @@ func resourceNetboxIpamVlanGroupRead(d *schema.ResourceData,
 				return err
 			}
 
-			if resource.Site == nil {
-				if err = d.Set("site_id", nil); err != nil {
-					return err
-				}
-			} else {
-				if err = d.Set("site_id", resource.Site.ID); err != nil {
-					return err
-				}
-			}
-
 			if err = d.Set("slug", resource.Slug); err != nil {
 				return err
 			}
@@ -114,7 +95,7 @@ func resourceNetboxIpamVlanGroupRead(d *schema.ResourceData,
 func resourceNetboxIpamVlanGroupUpdate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBoxAPI)
-	params := &models.WritableVLANGroup{}
+	params := &models.VLANGroup{}
 
 	// Required parameters
 	name := d.Get("name").(string)
@@ -122,13 +103,6 @@ func resourceNetboxIpamVlanGroupUpdate(d *schema.ResourceData,
 
 	slug := d.Get("slug").(string)
 	params.Slug = &slug
-
-	if d.HasChange("site_id") {
-		siteID := int64(d.Get("site_id").(int))
-		if siteID != 0 {
-			params.Site = &siteID
-		}
-	}
 
 	resource := ipam.NewIpamVlanGroupsPartialUpdateParams().WithData(
 		params)

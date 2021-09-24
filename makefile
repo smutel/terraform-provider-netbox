@@ -5,6 +5,12 @@ MAKEFLAGS += --warn-undefined-variables
 
 VERSION := $(shell jq .version package.json | xargs)
 
+update-go-deps:
+	@echo "==> Updating Go dependencies"
+	go get -u -d $$(pwd)
+	go mod tidy
+	go mod vendor
+
 install-dep:
 	@echo "==> Installing dep"
 	@go get -u github.com/golang/dep/cmd/dep

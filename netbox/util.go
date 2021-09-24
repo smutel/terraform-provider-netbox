@@ -6,11 +6,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"sort"
+	"strconv"
 	"strings"
 
-	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
-	"github.com/netbox-community/go-netbox/netbox/client/virtualization"
-	"github.com/netbox-community/go-netbox/netbox/models"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/virtualization"
+	"github.com/smutel/go-netbox/netbox/models"
 )
 
 type InfosForPrimary struct {
@@ -18,10 +20,12 @@ type InfosForPrimary struct {
 	vmName         string
 	vmClusterID    int64
 	vmPrimaryIP4ID int64
+	vmTags         []*models.NestedTag
 }
 
 const VMInterfaceType string = "virtualization.vminterface"
-const CustomFieldsRegex = "custom_fields.%"
+
+const CustomFieldBoolean = "boolean"
 
 func expandToStringSlice(v []interface{}) []string {
 	s := make([]string, len(v))
@@ -55,6 +59,20 @@ func convertTagsToNestedTags(tags []interface{}) []*models.NestedTag {
 		tagSlug := t["slug"].(string)
 
 		nestedTag := models.NestedTag{Name: &tagName, Slug: &tagSlug}
+		nestedTags = append(nestedTags, &nestedTag)
+	}
+
+	return nestedTags
+}
+
+func purgeNestedTagsToNestedTags(vmTags []*models.NestedTag) []*models.NestedTag {
+	nestedTags := []*models.NestedTag{}
+
+	for _, tag := range vmTags {
+		tagName := tag.Name
+		tagSlug := tag.Slug
+
+		nestedTag := models.NestedTag{Name: tagName, Slug: tagSlug}
 		nestedTags = append(nestedTags, &nestedTag)
 	}
 
@@ -109,6 +127,7 @@ func getInfoForPrimary(m interface{}, objectID int64) (InfosForPrimary, error) {
 				info.vmID = i.VirtualMachine.ID
 				info.vmName = *vms.Payload.Results[0].Name
 				info.vmClusterID = vms.Payload.Results[0].Cluster.ID
+				info.vmTags = vms.Payload.Results[0].Tags
 
 				if vms.Payload.Results[0].PrimaryIp4 != nil {
 					info.vmPrimaryIP4ID = vms.Payload.Results[0].PrimaryIp4.ID
@@ -133,6 +152,7 @@ func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
 		params.Name = &info.vmName
 		params.Cluster = &info.vmClusterID
 		params.PrimaryIp4 = &id
+		params.Tags = purgeNestedTagsToNestedTags(info.vmTags)
 		vm := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
 		vm.SetID(info.vmID)
 		_, err := client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
@@ -145,73 +165,99 @@ func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
 	return nil
 }
 
-// custom_fields have multiple data type returns based on field type
-// but terraform only supports map[string]string, so we convert all to strings
-func convertCustomFieldsFromAPIToTerraform(customFields interface{}) map[string]string {
-	toReturn := make(map[string]string)
-	switch t := customFields.(type) {
+func convertArrayInterfaceString(arrayInterface []interface{}) string {
+	var arrayString []string
 
+	for _, item := range arrayInterface {
+		switch v := item.(type) {
+		case string:
+			arrayString = append(arrayString, v)
+		case int:
+			strV := strconv.FormatInt(int64(v), 10)
+			arrayString = append(arrayString, strV)
+		}
+
+	}
+
+	sort.Strings(arrayString)
+	result := strings.Join(arrayString, ",")
+
+	return result
+}
+
+// Pick the custom fields in the state file and update values with data from API
+func updateCustomFieldsFromAPI(stateCustomFields, customFields interface{}) []map[string]string {
+
+	var tfCms []map[string]string
+
+	switch t := customFields.(type) {
 	case map[string]interface{}:
-		for key, value := range t {
-			var strValue string
-			if value != nil {
-				switch v := value.(type) {
-				default:
-					strValue = fmt.Sprintf("%v", v)
-				case map[string]interface{}:
-					strValue = fmt.Sprintf("%v", v["value"])
+		for _, stateCustomField := range stateCustomFields.([]interface{}) {
+			for key, value := range t {
+				if stateCustomField.(map[string]interface{})["name"].(string) == key {
+					var strValue string
+					if value != nil {
+						cm := map[string]string{}
+						cm["name"] = key
+						cm["type"] = stateCustomField.(map[string]interface{})["type"].(string)
+
+						switch v := value.(type) {
+						case []interface{}:
+							strValue = convertArrayInterfaceString(v)
+						default:
+							strValue = fmt.Sprintf("%v", v)
+						}
+
+						if strValue == "1" && cm["type"] == CustomFieldBoolean {
+							strValue = "true"
+						} else if strValue == "0" && cm["type"] == CustomFieldBoolean {
+							strValue = "false"
+						}
+
+						cm["value"] = strValue
+						tfCms = append(tfCms, cm)
+					}
 				}
 			}
-
-			toReturn[key] = strValue
 		}
 	}
 
-	return toReturn
+	return tfCms
 }
 
-func convertCustomFieldsFromTerraformToAPICreate(customFields map[string]interface{}) map[string]interface{} {
-	toReturn := make(map[string]interface{})
-	for key, value := range customFields {
-		toReturn[key] = value
-
-		// special handling for booleans, as they are the only parameter not supplied as string to netbox
-		if value == "true" {
-			toReturn[key] = 1
-		} else if value == "false" {
-			toReturn[key] = 0
-		}
-	}
-
-	return toReturn
-}
-
-// all custom fields need to be submitted to the netbox API for updates
-func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields interface{}) map[string]interface{} {
+// Convert custom field regarding his type
+func convertCustomFieldsFromTerraformToAPI(stateCustomFields []interface{}, customFields []interface{}) map[string]interface{} {
 	toReturn := make(map[string]interface{})
 
-	// netbox needs explicit empty string to remove old values
-	// first we fill all existing fields from the state with an empty string
-	for key := range stateCustomFields.(map[string]interface{}) {
-		toReturn[key] = nil
+	for _, stateCf := range stateCustomFields {
+		stateCustomField := stateCf.(map[string]interface{})
+		toReturn[stateCustomField["name"].(string)] = nil
 	}
 
-	// then we override the values that still exist in the terraform code with their respective value
-	for key, value := range resourceCustomFields.(map[string]interface{}) {
-		toReturn[key] = value
-		// https://github.com/smutel/terraform-provider-netbox/issues/32
-		// under certain circumstances terraform puts empty string into `resourceCustomFields` when parent block is removed
-		// we simply replace these occurences with `nil` to not negatively affect the boolean field where empty string is equal to false
-		if value == "" {
-			toReturn[key] = nil
+	for _, cf := range customFields {
+		customField := cf.(map[string]interface{})
+
+		cfName := customField["name"].(string)
+		cfType := customField["type"].(string)
+		cfValue := customField["value"].(string)
+
+		if cfType == "integer" {
+			cfValueInt, _ := strconv.Atoi(cfValue)
+			toReturn[cfName] = cfValueInt
+		} else if cfType == CustomFieldBoolean {
+			if cfValue == "true" {
+				toReturn[cfName] = 1
+			} else if cfValue == "false" {
+				toReturn[cfName] = 0
+			}
+		} else if cfType == "multiple" {
+			cfValueArray := strings.Split(cfValue, ",")
+			sort.Strings(cfValueArray)
+			toReturn[cfName] = cfValueArray
+		} else {
+			toReturn[cfName] = cfValue
 		}
 
-		// special handling for booleans, as they are the only parameter not supplied as string to netbox
-		if value == "true" {
-			toReturn[key] = 1
-		} else if value == "false" {
-			toReturn[key] = 0
-		}
 	}
 
 	return toReturn

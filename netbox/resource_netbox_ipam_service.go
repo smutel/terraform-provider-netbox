@@ -6,9 +6,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
-	"github.com/netbox-community/go-netbox/netbox/client/ipam"
-	"github.com/netbox-community/go-netbox/netbox/models"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/ipam"
+	"github.com/smutel/go-netbox/netbox/models"
 )
 
 func resourceNetboxIpamService() *schema.Resource {
@@ -23,22 +23,26 @@ func resourceNetboxIpamService() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"custom_fields": {
-				Type:     schema.TypeMap,
+			"custom_field": {
+				Type:     schema.TypeSet,
 				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				// terraform default behavior sees a difference between null and an empty string
-				// therefore we override the default, because null in terraform results in empty string in netbox
-				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					// function is called for each member of map
-					// including additional call on the amount of entries
-					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
-					if k == CustomFieldsRegex {
-						return true
-					}
-					return old == new
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
+								"date", "url", "selection", "multiple"}, false),
+						},
+						"value": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
 				},
 			},
 			"description": {
@@ -64,10 +68,12 @@ func resourceNetboxIpamService() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
 			},
-			"port": {
-				Type:         schema.TypeInt,
-				Required:     true,
-				ValidateFunc: validation.IntBetween(1, 65535),
+			"ports": {
+				Type:     schema.TypeList,
+				Required: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeInt,
+				},
 			},
 			"protocol": {
 				Type:         schema.TypeString,
@@ -102,14 +108,15 @@ func resourceNetboxIpamServiceCreate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
-	resourceCustomFields := d.Get("custom_fields").(map[string]interface{})
-	customFields := convertCustomFieldsFromTerraformToAPICreate(resourceCustomFields)
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	deviceID := int64(d.Get("device_id").(int))
 	IPaddressesID := d.Get("ip_addresses_id").([]interface{})
 	IPaddressesID64 := []int64{}
 	name := d.Get("name").(string)
-	port := int64(d.Get("port").(int))
+	ports := d.Get("ports").([]interface{})
+	ports64 := []int64{}
 	protocol := d.Get("protocol").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 	virtualmachineID := int64(d.Get("virtualmachine_id").(int))
@@ -118,12 +125,16 @@ func resourceNetboxIpamServiceCreate(d *schema.ResourceData,
 		IPaddressesID64 = append(IPaddressesID64, int64(id.(int)))
 	}
 
+	for _, p := range ports {
+		ports64 = append(ports64, int64(p.(int)))
+	}
+
 	newResource := &models.WritableService{
 		CustomFields: &customFields,
 		Description:  description,
 		Ipaddresses:  IPaddressesID64,
 		Name:         &name,
-		Port:         &port,
+		Ports:        ports64,
 		Protocol:     &protocol,
 		Tags:         convertTagsToNestedTags(tags),
 	}
@@ -160,9 +171,10 @@ func resourceNetboxIpamServiceRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			customFields := convertCustomFieldsFromAPIToTerraform(resource.CustomFields)
+			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
-			if err = d.Set("custom_fields", customFields); err != nil {
+			if err = d.Set("custom_field", customFields); err != nil {
 				return err
 			}
 
@@ -201,7 +213,8 @@ func resourceNetboxIpamServiceRead(d *schema.ResourceData,
 				return err
 			}
 
-			if err = d.Set("port", resource.Port); err != nil {
+			ports := resource.Ports
+			if err = d.Set("ports", ports); err != nil {
 				return err
 			}
 
@@ -240,8 +253,13 @@ func resourceNetboxIpamServiceUpdate(d *schema.ResourceData,
 	name := d.Get("name").(string)
 	params.Name = &name
 
-	port := int64(d.Get("port").(int))
-	params.Port = &port
+	ports := d.Get("ports").([]interface{})
+	ports64 := []int64{}
+	for _, port := range ports {
+		ports64 = append(ports64, int64(port.(int)))
+	}
+
+	params.Ports = ports64
 
 	protocol := d.Get("protocol").(string)
 	params.Protocol = &protocol
@@ -264,9 +282,9 @@ func resourceNetboxIpamServiceUpdate(d *schema.ResourceData,
 		params.VirtualMachine = &vmID
 	}
 
-	if d.HasChange("custom_fields") {
-		stateCustomFields, resourceCustomFields := d.GetChange("custom_fields")
-		customFields := convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCustomFields)
+	if d.HasChange("custom_field") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
+		customFields := convertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
 		params.CustomFields = &customFields
 	}
 
