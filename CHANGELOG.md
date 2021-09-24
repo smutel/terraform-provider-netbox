@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/smutel/terraform-provider-netbox/compare/v1.3.0...v2.0.1) (2021-09-24)
+
+
+### Features
+
+* Add an option to initialize the client with the private key ([d638c23](https://github.com/smutel/terraform-provider-netbox/commit/d638c230e124c77f54ac711bfef9df2621367656))
+* Add limit param to data resources ([472b9e1](https://github.com/smutel/terraform-provider-netbox/commit/472b9e125e25f5bfe6d3db0c7ec4f303dddfc1fc))
+* Update provider to work with Netbox 2.11 ([b4b2512](https://github.com/smutel/terraform-provider-netbox/commit/b4b2512a25cb41ef563d9e5a2c6c7aa834e00c7d))
+
+
+### Bug Fixes
+
+* Fix CI for release generation ([0e70fbf](https://github.com/smutel/terraform-provider-netbox/commit/0e70fbf7a9462596954db52acbe22c27b0d96bb3))
+
 ## [2.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v1.3.0...v2.0.0) (2021-09-24)
 
 
