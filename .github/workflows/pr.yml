@@ -47,7 +47,7 @@ jobs:
         uses: actions/setup-go@v2.1.4
         with:
           go-version: ${{ matrix.go }}
-
+      
       - name: Build
         run: |
           cd "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
