@@ -5,7 +5,7 @@ Get info about tenancy tenant groups from netbox.
 ## Example Usage
 
 ```hcl
-data "netbox_tenancy_tenant_groups" "tenant_group_test" {
+data "netbox_tenancy_tenant_group" "tenant_group_test" {
   slug = "TestTenantGroup"
 }
 ```
