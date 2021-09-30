@@ -68,7 +68,7 @@ The following arguments are supported:
 * ``nat_inside_id`` - (Optional) The ID of the NAT inside of this object.
 * ``object_id`` - (Optional) The ID of the object where this resource is attached to.
 * ``object_type`` - (Optional) The object type among virtualization.vminterface
-or dcim.interface (virtualization.vminterface by default)
+or dcim.interface (empty by default)
 * ``primary_ip4`` - (Optional) Set this resource as primary IPv4 (false by default)
 * ``role`` - (Optional) The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this object.
 * ``status`` - (Optional) The status among container, active, reserved, deprecated (active by default).

@@ -77,7 +77,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 			"object_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  VMInterfaceType,
+				Default:  "",
 				ValidateFunc: validation.StringInSlice([]string{
 					VMInterfaceType, "dcim.interface"}, false),
 			},
@@ -296,11 +296,16 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 			}
 
 			objectType := resource.AssignedObjectType
-			if *objectType == "" {
+			if objectType != nil {
 				*objectType = VMInterfaceType
-			}
-			if err = d.Set("object_type", objectType); err != nil {
-				return err
+
+				if err = d.Set("object_type", *objectType); err != nil {
+					return err
+				}
+			} else {
+				if err = d.Set("object_type", nil); err != nil {
+					return err
+				}
 			}
 
 			if resource.Role == nil {

@@ -4,8 +4,11 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 
 ## Compatibility with Netbox
 
-Version 0.x.y => Netbox 2.8
-Version 1.x.y => Netbox 2.9
+| Netbox version | Provider version |
+|:--------------:|:----------------:|
+| 2.8            | 0.x.y            |
+| 2.9            | 1.x.y            |
+| 2.11           | 2.x.y            |
 
 ## Example Usage
 
