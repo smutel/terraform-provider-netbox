@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.2](https://github.com/smutel/terraform-provider-netbox/compare/v2.0.1...v2.0.2) (2021-09-30)
+
+
+### Bug Fixes
+
+* Terraform crashes when ip address not affected to vm/device ([21d283a](https://github.com/smutel/terraform-provider-netbox/commit/21d283a97d2a963945a665f63200b9dea4a27574))
+
 ### [2.0.1](https://github.com/smutel/terraform-provider-netbox/compare/v1.3.0...v2.0.1) (2021-09-24)
 
 
