@@ -40,7 +40,7 @@ jobs:
         run: ./utils/getChangelogRelease CHANGELOG.md ${{ steps.tag.outputs.tag }} > /tmp/RELEASE_CHANGELOG.md
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2.4.1
+        uses: goreleaser/goreleaser-action@v2.8.0
         with:
           version: latest
           args: release --rm-dist --release-notes=/tmp/RELEASE_CHANGELOG.md
