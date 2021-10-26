@@ -24,6 +24,28 @@ func resourceNetboxVirtualizationInterface() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"custom_field": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
+								"date", "url", "selection", "multiple"}, false),
+						},
+						"value": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -104,6 +126,8 @@ func resourceNetboxVirtualizationInterfaceCreate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	enabled := d.Get("enabled").(bool)
 	macAddress := d.Get("mac_address").(string)
@@ -116,6 +140,7 @@ func resourceNetboxVirtualizationInterfaceCreate(d *schema.ResourceData,
 	virtualmachineID := int64(d.Get("virtualmachine_id").(int))
 
 	newResource := &models.WritableVMInterface{
+		CustomFields:   &customFields,
 		Description:    description,
 		Enabled:        enabled,
 		Mode:           mode,
@@ -167,6 +192,13 @@ func resourceNetboxVirtualizationInterfaceRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+
+			if err = d.Set("custom_field", customFields); err != nil {
+				return err
+			}
+
 			var description string
 
 			if resource.Description == "" {
@@ -253,6 +285,12 @@ func resourceNetboxVirtualizationInterfaceUpdate(d *schema.ResourceData,
 	params.VirtualMachine = &virtualMachineID
 	taggedVlans := d.Get("tagged_vlans").(*schema.Set).List()
 	params.TaggedVlans = expandToInt64Slice(taggedVlans)
+
+	if d.HasChange("custom_field") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
+		customFields := convertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
+		params.CustomFields = &customFields
+	}
 
 	if d.HasChange("description") {
 		description := d.Get("description").(string)
