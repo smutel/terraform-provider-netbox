@@ -8,6 +8,7 @@ Manage a virtual machine resource within Netbox.
 resource "netbox_virtualization_vm" "vm_test" {
   name            = "TestVm"
   comments        = "VM created by terraform"
+  vcpus           = "2.00"
   disk            = 50
   memory          = 16
   cluster_id      = 1
