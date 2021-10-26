@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
@@ -117,6 +118,12 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[0-9]+|[0-9]+.[0-9]+$"),
 					"Must be like ^[0-9]+|[0-9]+.[0-9]+$"),
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if old == new+".00" || old == new {
+						return true
+					}
+					return false
+				},
 			},
 		},
 	}
@@ -140,6 +147,10 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	tags := d.Get("tag").(*schema.Set).List()
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := d.Get("vcpus").(string)
+
+	if !strings.Contains(vcpus, ".") {
+		vcpus = vcpus + ".00"
+	}
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:          &clusterID,
@@ -355,6 +366,11 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 
 	if d.HasChange("vcpus") {
 		vcpus := d.Get("vcpus").(string)
+
+		if !strings.Contains(vcpus, ".") {
+			vcpus = vcpus + ".00"
+		}
+
 		params.Vcpus = &vcpus
 	}
 
