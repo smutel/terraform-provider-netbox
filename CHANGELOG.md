@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v2.0.2...v2.1.0) (2021-10-26)
+
+
+### Features
+
+* Add custom fields to interface resource ([dc34ae5](https://github.com/smutel/terraform-provider-netbox/commit/dc34ae5e43c16190795db5c88559deb5cc45f2e4))
+
+
+### Bug Fixes
+
+* Don't display changes when vcpus does not contain .00 ([085050b](https://github.com/smutel/terraform-provider-netbox/commit/085050bb6ee04f7892410fc37e33fbd0c184ffd4))
+
 ### [2.0.2](https://github.com/smutel/terraform-provider-netbox/compare/v2.0.1...v2.0.2) (2021-09-30)
 
 
