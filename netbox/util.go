@@ -246,9 +246,9 @@ func convertCustomFieldsFromTerraformToAPI(stateCustomFields []interface{}, cust
 			toReturn[cfName] = cfValueInt
 		} else if cfType == CustomFieldBoolean {
 			if cfValue == "true" {
-				toReturn[cfName] = 1
+				toReturn[cfName] = true
 			} else if cfValue == "false" {
-				toReturn[cfName] = 0
+				toReturn[cfName] = false
 			}
 		} else if cfType == "multiple" {
 			cfValueArray := strings.Split(cfValue, ",")
