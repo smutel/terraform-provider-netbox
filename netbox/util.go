@@ -187,7 +187,6 @@ func convertArrayInterfaceString(arrayInterface []interface{}) string {
 
 // Pick the custom fields in the state file and update values with data from API
 func updateCustomFieldsFromAPI(stateCustomFields, customFields interface{}) []map[string]string {
-
 	var tfCms []map[string]string
 
 	switch t := customFields.(type) {
@@ -196,11 +195,12 @@ func updateCustomFieldsFromAPI(stateCustomFields, customFields interface{}) []ma
 			for key, value := range t {
 				if stateCustomField.(map[string]interface{})["name"].(string) == key {
 					var strValue string
-					if value != nil {
-						cm := map[string]string{}
-						cm["name"] = key
-						cm["type"] = stateCustomField.(map[string]interface{})["type"].(string)
 
+					cm := map[string]string{}
+					cm["name"] = key
+					cm["type"] = stateCustomField.(map[string]interface{})["type"].(string)
+
+					if value != nil {
 						switch v := value.(type) {
 						case []interface{}:
 							strValue = convertArrayInterfaceString(v)
@@ -215,8 +215,11 @@ func updateCustomFieldsFromAPI(stateCustomFields, customFields interface{}) []ma
 						}
 
 						cm["value"] = strValue
-						tfCms = append(tfCms, cm)
+					} else {
+						cm["value"] = ""
 					}
+
+					tfCms = append(tfCms, cm)
 				}
 			}
 		}
@@ -241,23 +244,26 @@ func convertCustomFieldsFromTerraformToAPI(stateCustomFields []interface{}, cust
 		cfType := customField["type"].(string)
 		cfValue := customField["value"].(string)
 
-		if cfType == "integer" {
-			cfValueInt, _ := strconv.Atoi(cfValue)
-			toReturn[cfName] = cfValueInt
-		} else if cfType == CustomFieldBoolean {
-			if cfValue == "true" {
-				toReturn[cfName] = true
-			} else if cfValue == "false" {
-				toReturn[cfName] = false
+		if len(cfValue) > 0 {
+			if cfType == "integer" {
+				cfValueInt, _ := strconv.Atoi(cfValue)
+				toReturn[cfName] = cfValueInt
+			} else if cfType == CustomFieldBoolean {
+				if cfValue == "true" {
+					toReturn[cfName] = true
+				} else if cfValue == "false" {
+					toReturn[cfName] = false
+				}
+			} else if cfType == "multiple" {
+				cfValueArray := strings.Split(cfValue, ",")
+				sort.Strings(cfValueArray)
+				toReturn[cfName] = cfValueArray
+			} else {
+				toReturn[cfName] = cfValue
 			}
-		} else if cfType == "multiple" {
-			cfValueArray := strings.Split(cfValue, ",")
-			sort.Strings(cfValueArray)
-			toReturn[cfName] = cfValueArray
 		} else {
-			toReturn[cfName] = cfValue
+			toReturn[cfName] = nil
 		}
-
 	}
 
 	return toReturn
