@@ -148,7 +148,7 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := d.Get("vcpus").(string)
 
-	if !strings.Contains(vcpus, ".") {
+	if vcpus != "" && !strings.Contains(vcpus, ".") {
 		vcpus = vcpus + ".00"
 	}
 
@@ -367,11 +367,15 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	if d.HasChange("vcpus") {
 		vcpus := d.Get("vcpus").(string)
 
-		if !strings.Contains(vcpus, ".") {
+		if vcpus != "" && !strings.Contains(vcpus, ".") {
 			vcpus = vcpus + ".00"
 		}
 
-		params.Vcpus = &vcpus
+		if vcpus == "" {
+			params.Vcpus = nil
+		} else {
+			params.Vcpus = &vcpus
+		}
 	}
 
 	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)

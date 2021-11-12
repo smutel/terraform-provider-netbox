@@ -271,6 +271,7 @@ data "netbox_dcim_platform" "platform_test" {
 resource "netbox_virtualization_vm" "vm_test" {
   cluster_id  = data.netbox_virtualization_cluster.cluster_test.id
   name        = "test"
+#  vcpus       = 2
   disk        = 10
   memory      = 10
   platform_id = data.netbox_dcim_platform.platform_test.id
