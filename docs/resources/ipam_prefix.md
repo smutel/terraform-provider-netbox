@@ -17,6 +17,48 @@ resource "netbox_ipam_prefix" "prefix_test" {
     name = "tag1"
     slug = "tag1"
   }
+  
+  custom_field {
+    name = "cf_boolean"
+    type = "boolean"
+    value = "true"
+  }
+
+  custom_field {
+    name = "cf_date"
+    type = "date"
+    value = "2020-12-25"
+  }
+
+  custom_field {
+    name = "cf_text"
+    type = "text"
+    value = "some text"
+  }
+
+  custom_field {
+    name = "cf_integer"
+    type = "integer"
+    value = "10"
+  }
+
+  custom_field {
+    name = "cf_selection"
+    type = "selection"
+    value = "1"
+  }
+
+  custom_field {
+    name = "cf_url"
+    type = "url"
+    value = "https://github.com"
+  }
+
+  custom_field {
+    name = "cf_multiple_selection"
+    type = "multiple"
+    value = "0,1"
+  }
 }
 ```
 
@@ -32,6 +74,11 @@ The following arguments are supported:
 * ``tenant_id`` - (Optional) ID of the tenant where this object is attached.
 * ``vlan_id`` - (Optional) ID of the vlan where this object is attached.
 * ``vrf_id`` - (Optional) The ID of the vrf attached to this object.
+
+The ``custom_field`` block (optional) supports:
+* ``name`` - (Required) Name of the existing custom resource to associate with this resource.
+* ``type`` - (Required) Type of the existing custom resource to associate with this resource (text, integer, boolean, url, selection, multiple).
+* ``value`` - (Required) Value of the existing custom resource to associate with this resource.
 
 The ``tag`` block supports:
 * ``name`` - (Required) Name of the existing tag to associate with this resource.

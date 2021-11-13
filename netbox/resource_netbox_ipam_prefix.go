@@ -23,6 +23,28 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"custom_field": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
+								"date", "url", "selection", "multiple"}, false),
+						},
+						"value": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -90,6 +112,8 @@ func resourceNetboxIpamPrefixCreate(d *schema.ResourceData,
 	m interface{}) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	isPool := d.Get("is_pool").(bool)
 	prefix := d.Get("prefix").(string)
@@ -102,11 +126,12 @@ func resourceNetboxIpamPrefixCreate(d *schema.ResourceData,
 	vrfID := int64(d.Get("vrf_id").(int))
 
 	newResource := &models.WritablePrefix{
-		Description: description,
-		IsPool:      isPool,
-		Prefix:      &prefix,
-		Status:      status,
-		Tags:        convertTagsToNestedTags(tags),
+		CustomFields: &customFields,
+		Description:  description,
+		IsPool:       isPool,
+		Prefix:       &prefix,
+		Status:       status,
+		Tags:         convertTagsToNestedTags(tags),
 	}
 
 	if roleID != 0 {
@@ -154,6 +179,13 @@ func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+
+			if err = d.Set("custom_field", customFields); err != nil {
+				return err
+			}
+
 			var description string
 
 			if resource.Description == "" {
@@ -254,6 +286,12 @@ func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
 	// Required parameters
 	prefix := d.Get("prefix").(string)
 	params.Prefix = &prefix
+
+	if d.HasChange("custom_field") {
+		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
+		customFields := convertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
+		params.CustomFields = &customFields
+	}
 
 	if d.HasChange("description") {
 		description := d.Get("description").(string)
