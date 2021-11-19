@@ -15,7 +15,7 @@ jobs:
         go: [ '1.16.x' ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.5
+        uses: actions/checkout@v2.4.0
 
       - name: Unshallow
         run: git fetch --prune --unshallow
@@ -34,7 +34,7 @@ jobs:
 
       - name: Get tag
         id: tag
-        uses: dawidd6/action-get-tag@v1
+        uses: dawidd6/action-get-tag@v1.1.0
 
       - name: Generate CHANGELOG for this version
         run: ./utils/getChangelogRelease CHANGELOG.md ${{ steps.tag.outputs.tag }} > /tmp/RELEASE_CHANGELOG.md

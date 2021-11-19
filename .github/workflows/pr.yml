@@ -22,13 +22,13 @@ jobs:
           strict: false
 
       - name: Checkout
-        uses: actions/checkout@v2.3.5
+        uses: actions/checkout@v2.4.0
 
       - name: Unshallow
         run: git fetch --prune --unshallow
 
       - name: Lint
-        uses: reviewdog/action-golangci-lint@v2.0.1
+        uses: reviewdog/action-golangci-lint@v2.0.2
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
