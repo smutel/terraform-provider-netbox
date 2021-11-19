@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/smutel/terraform-provider-netbox/compare/v2.1.0...v2.2.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* Handle empty custom fields correctly ([b3d342e](https://github.com/smutel/terraform-provider-netbox/commit/b3d342edcae376a79e78a13b354fe9f5cc05ed9a))
+* Netbox Boolean custom fields take a Boolean type value ([7015047](https://github.com/smutel/terraform-provider-netbox/commit/7015047d012bef81b7a487587ed7522579d56391))
+
+
+### Enhancements
+
+* Manage custom fields in prefix resource ([e8086bc](https://github.com/smutel/terraform-provider-netbox/commit/e8086bc0d347eca4d8aba3809b74f64735cf70eb))
+
 ## [2.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v2.0.2...v2.1.0) (2021-10-26)
 
 
