@@ -54,13 +54,13 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      " ",
+				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
 			"dns_name": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  " ",
+				Default:  nil,
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_.]{1,255}$"),
 					"Must be like ^[-a-zA-Z0-9_.]{1,255}$"),
@@ -228,9 +228,9 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				return err
 			}
 
-			var description string
+			var description interface{}
 			if resource.Description == "" {
-				description = " "
+				description = nil
 			} else {
 				description = resource.Description
 			}
@@ -239,9 +239,9 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				return err
 			}
 
-			var dnsName string
+			var dnsName interface{}
 			if resource.DNSName == "" {
-				dnsName = " "
+				dnsName = nil
 			} else {
 				dnsName = resource.DNSName
 			}
@@ -386,7 +386,11 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 	}
 
 	if d.HasChange("dns_name") {
-		params.DNSName = d.Get("dns_name").(string)
+		if dnsName, exist := d.GetOk("dns_name"); exist {
+			params.DNSName = dnsName.(string)
+		} else {
+			params.DNSName = " "
+		}
 	}
 
 	if d.HasChange("nat_inside_id") {
