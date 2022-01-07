@@ -49,5 +49,5 @@ override.tf.json
 # example: *tfplan*
 
 # Exclude the provider
-terraform-provider-netbox*
+**/terraform-provider-netbox*
 sha256sums.txt
