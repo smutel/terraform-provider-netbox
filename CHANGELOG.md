@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.1](https://github.com/smutel/terraform-provider-netbox/compare/v2.2.0...v2.2.1) (2022-01-07)
+
+
+### Bug Fixes
+
+* Store empty static String field as nil in TF state ([00dd09e](https://github.com/smutel/terraform-provider-netbox/commit/00dd09ed12e7a2d8cd577a102c24400554a92103))
+
 ## [2.2.0](https://github.com/smutel/terraform-provider-netbox/compare/v2.1.0...v2.2.0) (2021-11-19)
 
 
