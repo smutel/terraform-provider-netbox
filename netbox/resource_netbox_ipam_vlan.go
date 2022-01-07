@@ -48,7 +48,7 @@ func resourceNetboxIpamVlan() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      " ",
+				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
 			"vlan_group_id": {
@@ -175,10 +175,9 @@ func resourceNetboxIpamVlanRead(d *schema.ResourceData,
 				return err
 			}
 
-			var description string
-
+			var description interface{}
 			if resource.Description == "" {
-				description = " "
+				description = nil
 			} else {
 				description = resource.Description
 			}
@@ -270,8 +269,11 @@ func resourceNetboxIpamVlanUpdate(d *schema.ResourceData,
 	params.Vid = &vid
 
 	if d.HasChange("description") {
-		description := d.Get("description").(string)
-		params.Description = description
+		if description, exist := d.GetOk("description"); exist {
+			params.Description = description.(string)
+		} else {
+			params.Description = " "
+		}
 	}
 
 	if d.HasChange("custom_field") {

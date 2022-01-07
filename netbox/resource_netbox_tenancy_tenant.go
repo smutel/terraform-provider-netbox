@@ -27,7 +27,7 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 			"comments": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  " ",
+				Default:  nil,
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -54,7 +54,7 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      " ",
+				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
 			"tenant_group_id": {
@@ -145,10 +145,10 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			var comments string
 
+			var comments interface{}
 			if resource.Comments == "" {
-				comments = " "
+				comments = nil
 			} else {
 				comments = resource.Comments
 			}
@@ -164,10 +164,9 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 				return err
 			}
 
-			var description string
-
+			var description interface{}
 			if resource.Description == "" {
-				description = " "
+				description = nil
 			} else {
 				description = resource.Description
 			}
@@ -219,8 +218,11 @@ func resourceNetboxTenancyTenantUpdate(d *schema.ResourceData,
 	params.Slug = &slug
 
 	if d.HasChange("comments") {
-		comments := d.Get("comments").(string)
-		params.Comments = comments
+		if comments, exist := d.GetOk("comments"); exist {
+			params.Comments = comments.(string)
+		} else {
+			params.Comments = " "
+		}
 	}
 
 	if d.HasChange("custom_field") {
@@ -230,8 +232,11 @@ func resourceNetboxTenancyTenantUpdate(d *schema.ResourceData,
 	}
 
 	if d.HasChange("description") {
-		description := d.Get("description").(string)
-		params.Description = description
+		if description, exist := d.GetOk("description"); exist {
+			params.Description = description.(string)
+		} else {
+			params.Description = " "
+		}
 	}
 
 	if d.HasChange("tenant_group_id") {

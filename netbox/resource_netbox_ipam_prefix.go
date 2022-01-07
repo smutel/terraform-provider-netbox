@@ -48,7 +48,7 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      " ",
+				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
 			"is_pool": {
@@ -186,10 +186,9 @@ func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 				return err
 			}
 
-			var description string
-
+			var description interface{}
 			if resource.Description == "" {
-				description = " "
+				description = nil
 			} else {
 				description = resource.Description
 			}
@@ -294,8 +293,11 @@ func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
 	}
 
 	if d.HasChange("description") {
-		description := d.Get("description").(string)
-		params.Description = description
+		if description, exist := d.GetOk("description"); exist {
+			params.Description = description.(string)
+		} else {
+			params.Description = " "
+		}
 	}
 
 	params.IsPool = d.Get("is_pool").(bool)

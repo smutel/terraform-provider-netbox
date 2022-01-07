@@ -48,7 +48,7 @@ func resourceNetboxIpamService() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      " ",
+				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
 			},
 			"device_id": {
@@ -178,10 +178,9 @@ func resourceNetboxIpamServiceRead(d *schema.ResourceData,
 				return err
 			}
 
-			var description string
-
+			var description interface{}
 			if resource.Description == "" {
-				description = " "
+				description = nil
 			} else {
 				description = resource.Description
 			}
@@ -289,8 +288,11 @@ func resourceNetboxIpamServiceUpdate(d *schema.ResourceData,
 	}
 
 	if d.HasChange("description") {
-		description := d.Get("description").(string)
-		params.Description = description
+		if description, exist := d.GetOk("description"); exist {
+			params.Description = description.(string)
+		} else {
+			params.Description = " "
+		}
 	}
 
 	tags := d.Get("tag").(*schema.Set).List()

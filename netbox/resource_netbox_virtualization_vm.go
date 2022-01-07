@@ -32,7 +32,7 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 			"comments": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  " ",
+				Default:  nil,
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -218,10 +218,9 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				return err
 			}
 
-			var comments string
-
+			var comments interface{}
 			if resource.Comments == "" {
-				comments = " "
+				comments = nil
 			} else {
 				comments = resource.Comments
 			}
@@ -316,8 +315,11 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	params.Cluster = &clusterID
 
 	if d.HasChange("comments") {
-		comments := d.Get("comments").(string)
-		params.Comments = comments
+		if comments, exist := d.GetOk("comments"); exist {
+			params.Comments = comments.(string)
+		} else {
+			params.Comments = " "
+		}
 	}
 
 	if d.HasChange("custom_field") {
