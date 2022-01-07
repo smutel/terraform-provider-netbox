@@ -273,6 +273,7 @@ resource "netbox_virtualization_vm" "vm_test" {
   name        = "test"
   disk        = 10
   memory      = 10
+  vcpus       = 2
   platform_id = data.netbox_dcim_platform.platform_test.id
   tenant_id   = netbox_tenancy_tenant.tenant_test.id
   role_id     = 1
