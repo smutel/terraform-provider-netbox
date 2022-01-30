@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Lint
-        uses: reviewdog/action-golangci-lint@v2.0.2
+        uses: reviewdog/action-golangci-lint@v2.0.3
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
@@ -34,7 +34,7 @@ jobs:
         shell: bash
 
       - name: Go installation
-        uses: actions/setup-go@v2.1.4
+        uses: actions/setup-go@v2.1.5
         with:
           go-version: ${{ matrix.go }}
 
@@ -45,7 +45,7 @@ jobs:
         shell: bash
 
       - name: Commit changes
-        uses: EndBug/add-and-commit@v7.4.0
+        uses: EndBug/add-and-commit@v7.5.0
         with:
           add: 'netbox'
           author_name: smutel

@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Go installation
-        uses: actions/setup-go@v2.1.4
+        uses: actions/setup-go@v2.1.5
         with:
           go-version: ${{ matrix.go }}
 
@@ -39,7 +39,7 @@ jobs:
         run: ./utils/getChangelogRelease CHANGELOG.md ${{ steps.tag.outputs.tag }} > /tmp/RELEASE_CHANGELOG.md
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2.8.0
+        uses: goreleaser/goreleaser-action@v2.8.1
         with:
           version: latest
           args: release --rm-dist --release-notes=/tmp/RELEASE_CHANGELOG.md
