@@ -144,6 +144,9 @@ type ExtrasExportTemplatesListParams struct {
 	*/
 	Offset *int64
 
+	// Q.
+	Q *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -426,6 +429,17 @@ func (o *ExtrasExportTemplatesListParams) WithOffset(offset *int64) *ExtrasExpor
 // SetOffset adds the offset to the extras export templates list params
 func (o *ExtrasExportTemplatesListParams) SetOffset(offset *int64) {
 	o.Offset = offset
+}
+
+// WithQ adds the q to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithQ(q *string) *ExtrasExportTemplatesListParams {
+	o.SetQ(q)
+	return o
+}
+
+// SetQ adds the q to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetQ(q *string) {
+	o.Q = q
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -788,6 +802,23 @@ func (o *ExtrasExportTemplatesListParams) WriteToRequest(r runtime.ClientRequest
 		if qOffset != "" {
 
 			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Q != nil {
+
+		// query param q
+		var qrQ string
+
+		if o.Q != nil {
+			qrQ = *o.Q
+		}
+		qQ := qrQ
+		if qQ != "" {
+
+			if err := r.SetQueryParam("q", qQ); err != nil {
 				return err
 			}
 		}

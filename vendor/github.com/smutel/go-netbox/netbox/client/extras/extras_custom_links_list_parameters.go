@@ -246,6 +246,9 @@ type ExtrasCustomLinksListParams struct {
 	*/
 	Offset *int64
 
+	// Q.
+	Q *string
+
 	// Weight.
 	Weight *string
 
@@ -920,6 +923,17 @@ func (o *ExtrasCustomLinksListParams) WithOffset(offset *int64) *ExtrasCustomLin
 // SetOffset adds the offset to the extras custom links list params
 func (o *ExtrasCustomLinksListParams) SetOffset(offset *int64) {
 	o.Offset = offset
+}
+
+// WithQ adds the q to the extras custom links list params
+func (o *ExtrasCustomLinksListParams) WithQ(q *string) *ExtrasCustomLinksListParams {
+	o.SetQ(q)
+	return o
+}
+
+// SetQ adds the q to the extras custom links list params
+func (o *ExtrasCustomLinksListParams) SetQ(q *string) {
+	o.Q = q
 }
 
 // WithWeight adds the weight to the extras custom links list params
@@ -1926,6 +1940,23 @@ func (o *ExtrasCustomLinksListParams) WriteToRequest(r runtime.ClientRequest, re
 		if qOffset != "" {
 
 			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Q != nil {
+
+		// query param q
+		var qrQ string
+
+		if o.Q != nil {
+			qrQ = *o.Q
+		}
+		qQ := qrQ
+		if qQ != "" {
+
+			if err := r.SetQueryParam("q", qQ); err != nil {
 				return err
 			}
 		}

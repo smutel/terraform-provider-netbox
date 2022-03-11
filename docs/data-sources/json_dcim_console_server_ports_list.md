@@ -6,10 +6,10 @@ Get json output from the dcim_console_server_ports_list Netbox endpoint
 
 ```hcl
 data "netbox_json_dcim_console_server_ports_list" "test" {
-        limit = 0
+  limit = 0
 }
 output "example" {
-        value = jsondecode(data.netbox_json_dcim_console_server_ports_list.test.json)
+  value = jsondecode(data.netbox_json_dcim_console_server_ports_list.test.json)
 }
 ```
 

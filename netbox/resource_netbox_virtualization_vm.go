@@ -116,8 +116,8 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				ValidateFunc: validation.StringMatch(
-					regexp.MustCompile("^[0-9]+|[0-9]+.[0-9]+$"),
-					"Must be like ^[0-9]+|[0-9]+.[0-9]+$"),
+					regexp.MustCompile("^[0-9]+((.[0-9]){0,1}[0-9]{0,1})$"),
+					"Must be like ^[0-9]+((.[0-9]){0,1}[0-9]{0,1})$"),
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					if old == new+".00" || old == new {
 						return true
@@ -183,7 +183,8 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	}
 
 	if vcpus != "" {
-		newResource.Vcpus = &vcpus
+		vcpusFloat, _ := strconv.ParseFloat(vcpus, 32)
+		newResource.Vcpus = &vcpusFloat
 	}
 
 	resource := virtualization.NewVirtualizationVirtualMachinesCreateParams().WithData(newResource)
@@ -291,7 +292,7 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				}
 			}
 
-			if err = d.Set("vcpus", resource.Vcpus); err != nil {
+			if err = d.Set("vcpus", fmt.Sprintf("%v", *resource.Vcpus)); err != nil {
 				return err
 			}
 
@@ -373,7 +374,8 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 			vcpus = vcpus + ".00"
 		}
 
-		params.Vcpus = &vcpus
+		vcpusFloat, _ := strconv.ParseFloat(vcpus, 32)
+		params.Vcpus = &vcpusFloat
 	}
 
 	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)

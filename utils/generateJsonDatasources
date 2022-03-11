@@ -1,0 +1,175 @@
+#!/bin/bash
+
+SCRIPT_PATH=$(dirname "$0")
+FILE="${SCRIPT_PATH}/netbox_list_endpoints.txt"
+
+find ${SCRIPT_PATH}/../vendor/github.com/smutel/go-netbox/netbox/client -mindepth 1 -name "*_list_parameters.go" | while read line; do
+  OPERATION_ID=0
+  EXCLUDE=0
+
+  FILENAME="${line##*/}"
+  FILENAME="$(echo ${FILENAME%.go})"
+
+  for i in 2 3 4 5 6; do
+    OPERATION_FOUND=0
+    OPERATION="$(echo ${FILENAME} | cut -d"_" -f$i)"
+    if [ "${OPERATION}" == "list" ]; then
+      OPERATION_FOUND=1
+    fi
+
+    if [ ${OPERATION_FOUND} -eq 1 -a ${OPERATION_ID} -eq 0 ]; then
+      OPERATION_ID=$i
+    fi
+  done
+
+  if [ ${OPERATION_ID} -eq 3 ]; then
+    ENDPOINT="$(echo ${FILENAME} | cut -d"_" -f1)_$(echo ${FILENAME} | cut -d"_" -f2)"
+    ITEM=$(echo ${FILENAME} | cut -d"_" -f2)
+    ITEM=${ITEM^}
+  elif [ ${OPERATION_ID} -eq 4 ]; then
+    ENDPOINT="$(echo ${FILENAME} | cut -d"_" -f1)_$(echo ${FILENAME} | cut -d"_" -f2)_$(echo ${FILENAME} | cut -d"_" -f3)"
+    ITEM1=$(echo ${FILENAME} | cut -d"_" -f2)
+    ITEM2=$(echo ${FILENAME} | cut -d"_" -f3)
+    ITEM="${ITEM1^}${ITEM2^}"
+  elif [ ${OPERATION_ID} -eq 5 ]; then
+    ENDPOINT="$(echo ${FILENAME} | cut -d"_" -f1)_$(echo ${FILENAME} | cut -d"_" -f2)_$(echo ${FILENAME} | cut -d"_" -f3)_$(echo ${FILENAME} | cut -d"_" -f4)"
+    ITEM1=$(echo ${FILENAME} | cut -d"_" -f2)
+    ITEM2=$(echo ${FILENAME} | cut -d"_" -f3)
+    ITEM3=$(echo ${FILENAME} | cut -d"_" -f4)
+    ITEM="${ITEM1^}${ITEM2^}${ITEM3^}"
+  elif [ ${OPERATION_ID} -eq 6 ]; then
+    ENDPOINT="$(echo ${FILENAME} | cut -d"_" -f1)_$(echo ${FILENAME} | cut -d"_" -f2)_$(echo ${FILENAME} | cut -d"_" -f3)_$(echo ${FILENAME} | cut -d"_" -f4)_$(echo ${FILENAME} | cut -d"_" -f5)"
+    ITEM1=$(echo ${FILENAME} | cut -d"_" -f2)
+    ITEM2=$(echo ${FILENAME} | cut -d"_" -f3)
+    ITEM3=$(echo ${FILENAME} | cut -d"_" -f4)
+    ITEM4=$(echo ${FILENAME} | cut -d"_" -f5)
+    ITEM="${ITEM1^}${ITEM2^}${ITEM3^}${ITEM4^}"
+  fi
+
+  SECTION=$(echo ${FILENAME} | cut -d"_" -f1)
+  SECTION=${SECTION^}
+
+  if [ ${OPERATION_ID} -eq 2 ]; then
+    EXCLUDE=1
+  fi
+
+  LIMIT=$(grep -ci "Limit *int64" "${line}")
+  if [ $LIMIT -eq 0 ]; then
+    EXCLUDE=1
+  fi
+
+  ITEM=$(echo ${ITEM} | sed 's/IpAddresses/IPAddresses/g')
+  ITEM=$(echo ${ITEM} | sed 's/IpRanges/IPRanges/g')
+
+  if [ ${EXCLUDE} -eq 0 ]; then
+    echo ${ENDPOINT} ${SECTION} ${ITEM} >> ${FILE}.tmp
+  fi
+done
+
+cat ${FILE}.tmp | sort -u > ${FILE}
+rm ${FILE}.tmp
+
+find ${SCRIPT_PATH}/../netbox -name "*_json_*.go" -delete
+find ${SCRIPT_PATH}/../docs/data-sources -name "json_*" -delete
+
+rm -f ${SCRIPT_PATH}/provider_update.txt
+while read -r line; do
+        SPLIT=( $line )
+
+        ENDPOINT=${SPLIT[0]}
+        SECTION=${SPLIT[1]}
+        ITEM=${SPLIT[2]}
+
+cat << EOF > ${SCRIPT_PATH}/../netbox/data_netbox_json_${ENDPOINT}_list.go
+package netbox
+
+import (
+  "encoding/json"
+
+  "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+  netboxclient "github.com/smutel/go-netbox/netbox/client"
+  "github.com/smutel/go-netbox/netbox/client/${SECTION,}"
+)
+
+func dataNetboxJSON${SECTION}${ITEM}List() *schema.Resource {
+  return &schema.Resource{
+    Read: dataNetboxJSON${SECTION}${ITEM}ListRead,
+
+    Schema: map[string]*schema.Schema{
+      "limit": {
+        Type:     schema.TypeInt,
+        Optional: true,
+        Default:  0,
+      },
+      "json": {
+        Type:     schema.TypeString,
+        Computed: true,
+      },
+    },
+  }
+}
+
+func dataNetboxJSON${SECTION}${ITEM}ListRead(d *schema.ResourceData, m interface{}) error {
+  client := m.(*netboxclient.NetBoxAPI)
+
+  params := ${SECTION,}.New${SECTION}${ITEM}ListParams()
+  limit := int64(d.Get("limit").(int))
+  params.Limit = &limit
+
+  list, err := client.${SECTION}.${SECTION}${ITEM}List(params, nil)
+  if err != nil {
+    return err
+  }
+
+  j, _ := json.Marshal(list.Payload.Results)
+
+  d.Set("json", string(j))
+  d.SetId("NetboxJSON${SECTION}${ITEM}List")
+
+  return nil
+}
+EOF
+
+cat << EOF >> ${SCRIPT_PATH}/provider_update.txt
+"netbox_json_${ENDPOINT}_list": dataNetboxJSON${SECTION}${ITEM}List(),
+EOF
+
+cat << EOF > ${SCRIPT_PATH}/../docs/data-sources/json_${ENDPOINT}_list.md
+# netbox\_json\_`echo ${ENDPOINT} | sed 's/_/\\\_/g'`\_list Data Source
+
+Get json output from the ${ENDPOINT}_list Netbox endpoint
+
+## Example Usage
+
+\`\`\`hcl
+data "netbox_json_${ENDPOINT}_list" "test" {
+  limit = 0
+}
+output "example" {
+  value = jsondecode(data.netbox_json_${ENDPOINT}_list.test.json)
+}
+\`\`\`
+
+## Argument Reference
+
+* \`\`limit\`\` (Optional). The max number of returned results. If 0 is specified, all records will be returned.
+
+## Attributes Reference
+
+In addition to the above arguments, the following attributes are exported:
+* \`\`json\`\` - JSON output of the list of objects for this Netbox endpoint.
+
+EOF
+
+done < "$FILE"
+
+grep -v "netbox_json_" ${SCRIPT_PATH}/../netbox/provider.go > ${SCRIPT_PATH}/../netbox/provider.go.tmp
+sed -Ei 's/DataSourcesMap: map\[string\]\*schema.Resource\{/DataSourcesMap: map\[string\]\*schema.Resource\{\nDATAJSON/g' ${SCRIPT_PATH}/../netbox/provider.go.tmp
+while read line; do
+  sed -i "s/DATAJSON/$line\nDATAJSON/g" ${SCRIPT_PATH}/../netbox/provider.go.tmp
+done < ${SCRIPT_PATH}/provider_update.txt
+sed -i '/^DATAJSON$/d' ${SCRIPT_PATH}/../netbox/provider.go.tmp
+mv ${SCRIPT_PATH}/../netbox/provider.go.tmp ${SCRIPT_PATH}/../netbox/provider.go
+go fmt ${SCRIPT_PATH}/../netbox/provider.go > /dev/null
+rm -f ${SCRIPT_PATH}/provider_update.txt
+rm -f ${SCRIPT_PATH}/netbox_list_endpoints.txt

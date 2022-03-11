@@ -171,6 +171,9 @@ type ExtrasImageAttachmentsListParams struct {
 	*/
 	Offset *int64
 
+	// Q.
+	Q *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -552,6 +555,17 @@ func (o *ExtrasImageAttachmentsListParams) WithOffset(offset *int64) *ExtrasImag
 // SetOffset adds the offset to the extras image attachments list params
 func (o *ExtrasImageAttachmentsListParams) SetOffset(offset *int64) {
 	o.Offset = offset
+}
+
+// WithQ adds the q to the extras image attachments list params
+func (o *ExtrasImageAttachmentsListParams) WithQ(q *string) *ExtrasImageAttachmentsListParams {
+	o.SetQ(q)
+	return o
+}
+
+// SetQ adds the q to the extras image attachments list params
+func (o *ExtrasImageAttachmentsListParams) SetQ(q *string) {
+	o.Q = q
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -1067,6 +1081,23 @@ func (o *ExtrasImageAttachmentsListParams) WriteToRequest(r runtime.ClientReques
 		if qOffset != "" {
 
 			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Q != nil {
+
+		// query param q
+		var qrQ string
+
+		if o.Q != nil {
+			qrQ = *o.Q
+		}
+		qQ := qrQ
+		if qQ != "" {
+
+			if err := r.SetQueryParam("q", qQ); err != nil {
 				return err
 			}
 		}

@@ -72,10 +72,6 @@ type DeviceWithConfigContext struct {
 	// Read Only: true
 	Display string `json:"display,omitempty"`
 
-	// Display name
-	// Read Only: true
-	DisplayName string `json:"display_name,omitempty"`
-
 	// face
 	Face *DeviceWithConfigContextFace `json:"face,omitempty"`
 
@@ -290,6 +286,8 @@ func (m *DeviceWithConfigContext) validateCluster(formats strfmt.Registry) error
 		if err := m.Cluster.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("cluster")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cluster")
 			}
 			return err
 		}
@@ -320,6 +318,8 @@ func (m *DeviceWithConfigContext) validateDeviceRole(formats strfmt.Registry) er
 		if err := m.DeviceRole.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("device_role")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("device_role")
 			}
 			return err
 		}
@@ -338,6 +338,8 @@ func (m *DeviceWithConfigContext) validateDeviceType(formats strfmt.Registry) er
 		if err := m.DeviceType.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("device_type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("device_type")
 			}
 			return err
 		}
@@ -355,6 +357,8 @@ func (m *DeviceWithConfigContext) validateFace(formats strfmt.Registry) error {
 		if err := m.Face.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("face")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("face")
 			}
 			return err
 		}
@@ -384,6 +388,8 @@ func (m *DeviceWithConfigContext) validateLocation(formats strfmt.Registry) erro
 		if err := m.Location.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("location")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("location")
 			}
 			return err
 		}
@@ -413,6 +419,8 @@ func (m *DeviceWithConfigContext) validateParentDevice(formats strfmt.Registry) 
 		if err := m.ParentDevice.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("parent_device")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("parent_device")
 			}
 			return err
 		}
@@ -430,6 +438,8 @@ func (m *DeviceWithConfigContext) validatePlatform(formats strfmt.Registry) erro
 		if err := m.Platform.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("platform")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("platform")
 			}
 			return err
 		}
@@ -463,6 +473,8 @@ func (m *DeviceWithConfigContext) validatePrimaryIP(formats strfmt.Registry) err
 		if err := m.PrimaryIP.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("primary_ip")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("primary_ip")
 			}
 			return err
 		}
@@ -480,6 +492,8 @@ func (m *DeviceWithConfigContext) validatePrimaryIp4(formats strfmt.Registry) er
 		if err := m.PrimaryIp4.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("primary_ip4")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("primary_ip4")
 			}
 			return err
 		}
@@ -497,6 +511,8 @@ func (m *DeviceWithConfigContext) validatePrimaryIp6(formats strfmt.Registry) er
 		if err := m.PrimaryIp6.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("primary_ip6")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("primary_ip6")
 			}
 			return err
 		}
@@ -514,6 +530,8 @@ func (m *DeviceWithConfigContext) validateRack(formats strfmt.Registry) error {
 		if err := m.Rack.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("rack")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("rack")
 			}
 			return err
 		}
@@ -544,6 +562,8 @@ func (m *DeviceWithConfigContext) validateSite(formats strfmt.Registry) error {
 		if err := m.Site.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("site")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("site")
 			}
 			return err
 		}
@@ -561,6 +581,8 @@ func (m *DeviceWithConfigContext) validateStatus(formats strfmt.Registry) error 
 		if err := m.Status.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("status")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("status")
 			}
 			return err
 		}
@@ -583,6 +605,8 @@ func (m *DeviceWithConfigContext) validateTags(formats strfmt.Registry) error {
 			if err := m.Tags[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -602,6 +626,8 @@ func (m *DeviceWithConfigContext) validateTenant(formats strfmt.Registry) error 
 		if err := m.Tenant.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("tenant")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("tenant")
 			}
 			return err
 		}
@@ -663,6 +689,8 @@ func (m *DeviceWithConfigContext) validateVirtualChassis(formats strfmt.Registry
 		if err := m.VirtualChassis.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("virtual_chassis")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("virtual_chassis")
 			}
 			return err
 		}
@@ -696,10 +724,6 @@ func (m *DeviceWithConfigContext) ContextValidate(ctx context.Context, formats s
 	}
 
 	if err := m.contextValidateDisplay(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateDisplayName(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -779,6 +803,8 @@ func (m *DeviceWithConfigContext) contextValidateCluster(ctx context.Context, fo
 		if err := m.Cluster.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("cluster")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cluster")
 			}
 			return err
 		}
@@ -807,6 +833,8 @@ func (m *DeviceWithConfigContext) contextValidateDeviceRole(ctx context.Context,
 		if err := m.DeviceRole.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("device_role")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("device_role")
 			}
 			return err
 		}
@@ -821,6 +849,8 @@ func (m *DeviceWithConfigContext) contextValidateDeviceType(ctx context.Context,
 		if err := m.DeviceType.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("device_type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("device_type")
 			}
 			return err
 		}
@@ -838,21 +868,14 @@ func (m *DeviceWithConfigContext) contextValidateDisplay(ctx context.Context, fo
 	return nil
 }
 
-func (m *DeviceWithConfigContext) contextValidateDisplayName(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "display_name", "body", string(m.DisplayName)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *DeviceWithConfigContext) contextValidateFace(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Face != nil {
 		if err := m.Face.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("face")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("face")
 			}
 			return err
 		}
@@ -885,6 +908,8 @@ func (m *DeviceWithConfigContext) contextValidateLocation(ctx context.Context, f
 		if err := m.Location.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("location")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("location")
 			}
 			return err
 		}
@@ -899,6 +924,8 @@ func (m *DeviceWithConfigContext) contextValidateParentDevice(ctx context.Contex
 		if err := m.ParentDevice.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("parent_device")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("parent_device")
 			}
 			return err
 		}
@@ -913,6 +940,8 @@ func (m *DeviceWithConfigContext) contextValidatePlatform(ctx context.Context, f
 		if err := m.Platform.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("platform")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("platform")
 			}
 			return err
 		}
@@ -927,6 +956,8 @@ func (m *DeviceWithConfigContext) contextValidatePrimaryIP(ctx context.Context, 
 		if err := m.PrimaryIP.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("primary_ip")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("primary_ip")
 			}
 			return err
 		}
@@ -941,6 +972,8 @@ func (m *DeviceWithConfigContext) contextValidatePrimaryIp4(ctx context.Context,
 		if err := m.PrimaryIp4.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("primary_ip4")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("primary_ip4")
 			}
 			return err
 		}
@@ -955,6 +988,8 @@ func (m *DeviceWithConfigContext) contextValidatePrimaryIp6(ctx context.Context,
 		if err := m.PrimaryIp6.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("primary_ip6")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("primary_ip6")
 			}
 			return err
 		}
@@ -969,6 +1004,8 @@ func (m *DeviceWithConfigContext) contextValidateRack(ctx context.Context, forma
 		if err := m.Rack.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("rack")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("rack")
 			}
 			return err
 		}
@@ -983,6 +1020,8 @@ func (m *DeviceWithConfigContext) contextValidateSite(ctx context.Context, forma
 		if err := m.Site.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("site")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("site")
 			}
 			return err
 		}
@@ -997,6 +1036,8 @@ func (m *DeviceWithConfigContext) contextValidateStatus(ctx context.Context, for
 		if err := m.Status.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("status")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("status")
 			}
 			return err
 		}
@@ -1013,6 +1054,8 @@ func (m *DeviceWithConfigContext) contextValidateTags(ctx context.Context, forma
 			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -1029,6 +1072,8 @@ func (m *DeviceWithConfigContext) contextValidateTenant(ctx context.Context, for
 		if err := m.Tenant.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("tenant")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("tenant")
 			}
 			return err
 		}
@@ -1052,6 +1097,8 @@ func (m *DeviceWithConfigContext) contextValidateVirtualChassis(ctx context.Cont
 		if err := m.VirtualChassis.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("virtual_chassis")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("virtual_chassis")
 			}
 			return err
 		}

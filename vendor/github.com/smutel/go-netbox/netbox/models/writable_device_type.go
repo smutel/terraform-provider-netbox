@@ -55,10 +55,6 @@ type WritableDeviceType struct {
 	// Read Only: true
 	Display string `json:"display,omitempty"`
 
-	// Display name
-	// Read Only: true
-	DisplayName string `json:"display_name,omitempty"`
-
 	// Front image
 	// Read Only: true
 	// Format: uri
@@ -347,6 +343,8 @@ func (m *WritableDeviceType) validateTags(formats strfmt.Registry) error {
 			if err := m.Tags[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -398,10 +396,6 @@ func (m *WritableDeviceType) ContextValidate(ctx context.Context, formats strfmt
 	}
 
 	if err := m.contextValidateDisplay(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateDisplayName(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -462,15 +456,6 @@ func (m *WritableDeviceType) contextValidateDisplay(ctx context.Context, formats
 	return nil
 }
 
-func (m *WritableDeviceType) contextValidateDisplayName(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "display_name", "body", string(m.DisplayName)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *WritableDeviceType) contextValidateFrontImage(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "front_image", "body", strfmt.URI(m.FrontImage)); err != nil {
@@ -515,6 +500,8 @@ func (m *WritableDeviceType) contextValidateTags(ctx context.Context, formats st
 			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

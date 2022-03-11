@@ -195,6 +195,8 @@ func (m *ConsoleServerPort) validateCable(formats strfmt.Registry) error {
 		if err := m.Cable.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("cable")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cable")
 			}
 			return err
 		}
@@ -237,6 +239,8 @@ func (m *ConsoleServerPort) validateDevice(formats strfmt.Registry) error {
 		if err := m.Device.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("device")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("device")
 			}
 			return err
 		}
@@ -295,6 +299,8 @@ func (m *ConsoleServerPort) validateSpeed(formats strfmt.Registry) error {
 		if err := m.Speed.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("speed")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("speed")
 			}
 			return err
 		}
@@ -317,6 +323,8 @@ func (m *ConsoleServerPort) validateTags(formats strfmt.Registry) error {
 			if err := m.Tags[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -336,6 +344,8 @@ func (m *ConsoleServerPort) validateType(formats strfmt.Registry) error {
 		if err := m.Type.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("type")
 			}
 			return err
 		}
@@ -445,6 +455,8 @@ func (m *ConsoleServerPort) contextValidateCable(ctx context.Context, formats st
 		if err := m.Cable.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("cable")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cable")
 			}
 			return err
 		}
@@ -505,6 +517,8 @@ func (m *ConsoleServerPort) contextValidateDevice(ctx context.Context, formats s
 		if err := m.Device.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("device")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("device")
 			}
 			return err
 		}
@@ -546,6 +560,8 @@ func (m *ConsoleServerPort) contextValidateSpeed(ctx context.Context, formats st
 		if err := m.Speed.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("speed")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("speed")
 			}
 			return err
 		}
@@ -562,6 +578,8 @@ func (m *ConsoleServerPort) contextValidateTags(ctx context.Context, formats str
 			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -578,6 +596,8 @@ func (m *ConsoleServerPort) contextValidateType(ctx context.Context, formats str
 		if err := m.Type.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("type")
 			}
 			return err
 		}
@@ -772,12 +792,12 @@ type ConsoleServerPortType struct {
 
 	// label
 	// Required: true
-	// Enum: [DE-9 DB-25 RJ-11 RJ-12 RJ-45 USB Type A USB Type B USB Type C USB Mini A USB Mini B USB Micro A USB Micro B Other]
+	// Enum: [DE-9 DB-25 RJ-11 RJ-12 RJ-45 Mini-DIN 8 USB Type A USB Type B USB Type C USB Mini A USB Mini B USB Micro A USB Micro B USB Micro AB Other]
 	Label *string `json:"label"`
 
 	// value
 	// Required: true
-	// Enum: [de-9 db-25 rj-11 rj-12 rj-45 usb-a usb-b usb-c usb-mini-a usb-mini-b usb-micro-a usb-micro-b other]
+	// Enum: [de-9 db-25 rj-11 rj-12 rj-45 mini-din-8 usb-a usb-b usb-c usb-mini-a usb-mini-b usb-micro-a usb-micro-b usb-micro-ab other]
 	Value *string `json:"value"`
 }
 
@@ -803,7 +823,7 @@ var consoleServerPortTypeTypeLabelPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["DE-9","DB-25","RJ-11","RJ-12","RJ-45","USB Type A","USB Type B","USB Type C","USB Mini A","USB Mini B","USB Micro A","USB Micro B","Other"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["DE-9","DB-25","RJ-11","RJ-12","RJ-45","Mini-DIN 8","USB Type A","USB Type B","USB Type C","USB Mini A","USB Mini B","USB Micro A","USB Micro B","USB Micro AB","Other"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -828,6 +848,9 @@ const (
 	// ConsoleServerPortTypeLabelRJDash45 captures enum value "RJ-45"
 	ConsoleServerPortTypeLabelRJDash45 string = "RJ-45"
 
+	// ConsoleServerPortTypeLabelMiniDashDIN8 captures enum value "Mini-DIN 8"
+	ConsoleServerPortTypeLabelMiniDashDIN8 string = "Mini-DIN 8"
+
 	// ConsoleServerPortTypeLabelUSBTypeA captures enum value "USB Type A"
 	ConsoleServerPortTypeLabelUSBTypeA string = "USB Type A"
 
@@ -848,6 +871,9 @@ const (
 
 	// ConsoleServerPortTypeLabelUSBMicroB captures enum value "USB Micro B"
 	ConsoleServerPortTypeLabelUSBMicroB string = "USB Micro B"
+
+	// ConsoleServerPortTypeLabelUSBMicroAB captures enum value "USB Micro AB"
+	ConsoleServerPortTypeLabelUSBMicroAB string = "USB Micro AB"
 
 	// ConsoleServerPortTypeLabelOther captures enum value "Other"
 	ConsoleServerPortTypeLabelOther string = "Other"
@@ -879,7 +905,7 @@ var consoleServerPortTypeTypeValuePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["de-9","db-25","rj-11","rj-12","rj-45","usb-a","usb-b","usb-c","usb-mini-a","usb-mini-b","usb-micro-a","usb-micro-b","other"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["de-9","db-25","rj-11","rj-12","rj-45","mini-din-8","usb-a","usb-b","usb-c","usb-mini-a","usb-mini-b","usb-micro-a","usb-micro-b","usb-micro-ab","other"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -904,6 +930,9 @@ const (
 	// ConsoleServerPortTypeValueRjDash45 captures enum value "rj-45"
 	ConsoleServerPortTypeValueRjDash45 string = "rj-45"
 
+	// ConsoleServerPortTypeValueMiniDashDinDash8 captures enum value "mini-din-8"
+	ConsoleServerPortTypeValueMiniDashDinDash8 string = "mini-din-8"
+
 	// ConsoleServerPortTypeValueUsbDasha captures enum value "usb-a"
 	ConsoleServerPortTypeValueUsbDasha string = "usb-a"
 
@@ -924,6 +953,9 @@ const (
 
 	// ConsoleServerPortTypeValueUsbDashMicroDashb captures enum value "usb-micro-b"
 	ConsoleServerPortTypeValueUsbDashMicroDashb string = "usb-micro-b"
+
+	// ConsoleServerPortTypeValueUsbDashMicroDashAb captures enum value "usb-micro-ab"
+	ConsoleServerPortTypeValueUsbDashMicroDashAb string = "usb-micro-ab"
 
 	// ConsoleServerPortTypeValueOther captures enum value "other"
 	ConsoleServerPortTypeValueOther string = "other"

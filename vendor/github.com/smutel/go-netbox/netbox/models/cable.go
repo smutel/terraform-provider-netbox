@@ -57,9 +57,7 @@ type Cable struct {
 	Label string `json:"label,omitempty"`
 
 	// Length
-	// Maximum: 32767
-	// Minimum: 0
-	Length *int64 `json:"length,omitempty"`
+	Length *float64 `json:"length,omitempty"`
 
 	// length unit
 	LengthUnit *CableLengthUnit `json:"length_unit,omitempty"`
@@ -117,10 +115,6 @@ func (m *Cable) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateLabel(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateLength(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -194,22 +188,6 @@ func (m *Cable) validateLabel(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Cable) validateLength(formats strfmt.Registry) error {
-	if swag.IsZero(m.Length) { // not required
-		return nil
-	}
-
-	if err := validate.MinimumInt("length", "body", *m.Length, 0, false); err != nil {
-		return err
-	}
-
-	if err := validate.MaximumInt("length", "body", *m.Length, 32767, false); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *Cable) validateLengthUnit(formats strfmt.Registry) error {
 	if swag.IsZero(m.LengthUnit) { // not required
 		return nil
@@ -219,6 +197,8 @@ func (m *Cable) validateLengthUnit(formats strfmt.Registry) error {
 		if err := m.LengthUnit.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("length_unit")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("length_unit")
 			}
 			return err
 		}
@@ -236,6 +216,8 @@ func (m *Cable) validateStatus(formats strfmt.Registry) error {
 		if err := m.Status.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("status")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("status")
 			}
 			return err
 		}
@@ -258,6 +240,8 @@ func (m *Cable) validateTags(formats strfmt.Registry) error {
 			if err := m.Tags[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -503,6 +487,8 @@ func (m *Cable) contextValidateLengthUnit(ctx context.Context, formats strfmt.Re
 		if err := m.LengthUnit.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("length_unit")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("length_unit")
 			}
 			return err
 		}
@@ -517,6 +503,8 @@ func (m *Cable) contextValidateStatus(ctx context.Context, formats strfmt.Regist
 		if err := m.Status.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("status")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("status")
 			}
 			return err
 		}
@@ -533,6 +521,8 @@ func (m *Cable) contextValidateTags(ctx context.Context, formats strfmt.Registry
 			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -587,12 +577,12 @@ type CableLengthUnit struct {
 
 	// label
 	// Required: true
-	// Enum: [Meters Centimeters Feet Inches]
+	// Enum: [Kilometers Meters Centimeters Miles Feet Inches]
 	Label *string `json:"label"`
 
 	// value
 	// Required: true
-	// Enum: [m cm ft in]
+	// Enum: [km m cm mi ft in]
 	Value *string `json:"value"`
 }
 
@@ -618,7 +608,7 @@ var cableLengthUnitTypeLabelPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Meters","Centimeters","Feet","Inches"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Kilometers","Meters","Centimeters","Miles","Feet","Inches"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -628,11 +618,17 @@ func init() {
 
 const (
 
+	// CableLengthUnitLabelKilometers captures enum value "Kilometers"
+	CableLengthUnitLabelKilometers string = "Kilometers"
+
 	// CableLengthUnitLabelMeters captures enum value "Meters"
 	CableLengthUnitLabelMeters string = "Meters"
 
 	// CableLengthUnitLabelCentimeters captures enum value "Centimeters"
 	CableLengthUnitLabelCentimeters string = "Centimeters"
+
+	// CableLengthUnitLabelMiles captures enum value "Miles"
+	CableLengthUnitLabelMiles string = "Miles"
 
 	// CableLengthUnitLabelFeet captures enum value "Feet"
 	CableLengthUnitLabelFeet string = "Feet"
@@ -667,7 +663,7 @@ var cableLengthUnitTypeValuePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["m","cm","ft","in"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["km","m","cm","mi","ft","in"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -677,11 +673,17 @@ func init() {
 
 const (
 
+	// CableLengthUnitValueKm captures enum value "km"
+	CableLengthUnitValueKm string = "km"
+
 	// CableLengthUnitValueM captures enum value "m"
 	CableLengthUnitValueM string = "m"
 
 	// CableLengthUnitValueCm captures enum value "cm"
 	CableLengthUnitValueCm string = "cm"
+
+	// CableLengthUnitValueMi captures enum value "mi"
+	CableLengthUnitValueMi string = "mi"
 
 	// CableLengthUnitValueFt captures enum value "ft"
 	CableLengthUnitValueFt string = "ft"

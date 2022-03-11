@@ -78,6 +78,39 @@ type DcimFrontPortsListParams struct {
 	// Cabled.
 	Cabled *string
 
+	// Color.
+	Color *string
+
+	// ColorEmpty.
+	ColorEmpty *string
+
+	// ColorIc.
+	ColorIc *string
+
+	// ColorIe.
+	ColorIe *string
+
+	// ColorIew.
+	ColorIew *string
+
+	// ColorIsw.
+	ColorIsw *string
+
+	// Colorn.
+	Colorn *string
+
+	// ColorNic.
+	ColorNic *string
+
+	// ColorNie.
+	ColorNie *string
+
+	// ColorNiew.
+	ColorNiew *string
+
+	// ColorNisw.
+	ColorNisw *string
+
 	// Created.
 	Created *string
 
@@ -198,6 +231,18 @@ type DcimFrontPortsListParams struct {
 	*/
 	Limit *int64
 
+	// Location.
+	Location *string
+
+	// Locationn.
+	Locationn *string
+
+	// LocationID.
+	LocationID *string
+
+	// LocationIDn.
+	LocationIDn *string
+
 	// Name.
 	Name *string
 
@@ -288,6 +333,18 @@ type DcimFrontPortsListParams struct {
 	// Typen.
 	Typen *string
 
+	// VirtualChassis.
+	VirtualChassis *string
+
+	// VirtualChassisn.
+	VirtualChassisn *string
+
+	// VirtualChassisID.
+	VirtualChassisID *string
+
+	// VirtualChassisIDn.
+	VirtualChassisIDn *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -350,6 +407,127 @@ func (o *DcimFrontPortsListParams) WithCabled(cabled *string) *DcimFrontPortsLis
 // SetCabled adds the cabled to the dcim front ports list params
 func (o *DcimFrontPortsListParams) SetCabled(cabled *string) {
 	o.Cabled = cabled
+}
+
+// WithColor adds the color to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColor(color *string) *DcimFrontPortsListParams {
+	o.SetColor(color)
+	return o
+}
+
+// SetColor adds the color to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColor(color *string) {
+	o.Color = color
+}
+
+// WithColorEmpty adds the colorEmpty to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorEmpty(colorEmpty *string) *DcimFrontPortsListParams {
+	o.SetColorEmpty(colorEmpty)
+	return o
+}
+
+// SetColorEmpty adds the colorEmpty to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorEmpty(colorEmpty *string) {
+	o.ColorEmpty = colorEmpty
+}
+
+// WithColorIc adds the colorIc to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorIc(colorIc *string) *DcimFrontPortsListParams {
+	o.SetColorIc(colorIc)
+	return o
+}
+
+// SetColorIc adds the colorIc to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorIc(colorIc *string) {
+	o.ColorIc = colorIc
+}
+
+// WithColorIe adds the colorIe to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorIe(colorIe *string) *DcimFrontPortsListParams {
+	o.SetColorIe(colorIe)
+	return o
+}
+
+// SetColorIe adds the colorIe to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorIe(colorIe *string) {
+	o.ColorIe = colorIe
+}
+
+// WithColorIew adds the colorIew to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorIew(colorIew *string) *DcimFrontPortsListParams {
+	o.SetColorIew(colorIew)
+	return o
+}
+
+// SetColorIew adds the colorIew to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorIew(colorIew *string) {
+	o.ColorIew = colorIew
+}
+
+// WithColorIsw adds the colorIsw to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorIsw(colorIsw *string) *DcimFrontPortsListParams {
+	o.SetColorIsw(colorIsw)
+	return o
+}
+
+// SetColorIsw adds the colorIsw to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorIsw(colorIsw *string) {
+	o.ColorIsw = colorIsw
+}
+
+// WithColorn adds the colorn to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorn(colorn *string) *DcimFrontPortsListParams {
+	o.SetColorn(colorn)
+	return o
+}
+
+// SetColorn adds the colorN to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorn(colorn *string) {
+	o.Colorn = colorn
+}
+
+// WithColorNic adds the colorNic to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorNic(colorNic *string) *DcimFrontPortsListParams {
+	o.SetColorNic(colorNic)
+	return o
+}
+
+// SetColorNic adds the colorNic to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorNic(colorNic *string) {
+	o.ColorNic = colorNic
+}
+
+// WithColorNie adds the colorNie to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorNie(colorNie *string) *DcimFrontPortsListParams {
+	o.SetColorNie(colorNie)
+	return o
+}
+
+// SetColorNie adds the colorNie to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorNie(colorNie *string) {
+	o.ColorNie = colorNie
+}
+
+// WithColorNiew adds the colorNiew to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorNiew(colorNiew *string) *DcimFrontPortsListParams {
+	o.SetColorNiew(colorNiew)
+	return o
+}
+
+// SetColorNiew adds the colorNiew to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorNiew(colorNiew *string) {
+	o.ColorNiew = colorNiew
+}
+
+// WithColorNisw adds the colorNisw to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithColorNisw(colorNisw *string) *DcimFrontPortsListParams {
+	o.SetColorNisw(colorNisw)
+	return o
+}
+
+// SetColorNisw adds the colorNisw to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetColorNisw(colorNisw *string) {
+	o.ColorNisw = colorNisw
 }
 
 // WithCreated adds the created to the dcim front ports list params
@@ -781,6 +959,50 @@ func (o *DcimFrontPortsListParams) SetLimit(limit *int64) {
 	o.Limit = limit
 }
 
+// WithLocation adds the location to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithLocation(location *string) *DcimFrontPortsListParams {
+	o.SetLocation(location)
+	return o
+}
+
+// SetLocation adds the location to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetLocation(location *string) {
+	o.Location = location
+}
+
+// WithLocationn adds the locationn to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithLocationn(locationn *string) *DcimFrontPortsListParams {
+	o.SetLocationn(locationn)
+	return o
+}
+
+// SetLocationn adds the locationN to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetLocationn(locationn *string) {
+	o.Locationn = locationn
+}
+
+// WithLocationID adds the locationID to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithLocationID(locationID *string) *DcimFrontPortsListParams {
+	o.SetLocationID(locationID)
+	return o
+}
+
+// SetLocationID adds the locationId to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetLocationID(locationID *string) {
+	o.LocationID = locationID
+}
+
+// WithLocationIDn adds the locationIDn to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithLocationIDn(locationIDn *string) *DcimFrontPortsListParams {
+	o.SetLocationIDn(locationIDn)
+	return o
+}
+
+// SetLocationIDn adds the locationIdN to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetLocationIDn(locationIDn *string) {
+	o.LocationIDn = locationIDn
+}
+
 // WithName adds the name to the dcim front ports list params
 func (o *DcimFrontPortsListParams) WithName(name *string) *DcimFrontPortsListParams {
 	o.SetName(name)
@@ -1100,6 +1322,50 @@ func (o *DcimFrontPortsListParams) SetTypen(typen *string) {
 	o.Typen = typen
 }
 
+// WithVirtualChassis adds the virtualChassis to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithVirtualChassis(virtualChassis *string) *DcimFrontPortsListParams {
+	o.SetVirtualChassis(virtualChassis)
+	return o
+}
+
+// SetVirtualChassis adds the virtualChassis to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetVirtualChassis(virtualChassis *string) {
+	o.VirtualChassis = virtualChassis
+}
+
+// WithVirtualChassisn adds the virtualChassisn to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithVirtualChassisn(virtualChassisn *string) *DcimFrontPortsListParams {
+	o.SetVirtualChassisn(virtualChassisn)
+	return o
+}
+
+// SetVirtualChassisn adds the virtualChassisN to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetVirtualChassisn(virtualChassisn *string) {
+	o.VirtualChassisn = virtualChassisn
+}
+
+// WithVirtualChassisID adds the virtualChassisID to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithVirtualChassisID(virtualChassisID *string) *DcimFrontPortsListParams {
+	o.SetVirtualChassisID(virtualChassisID)
+	return o
+}
+
+// SetVirtualChassisID adds the virtualChassisId to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetVirtualChassisID(virtualChassisID *string) {
+	o.VirtualChassisID = virtualChassisID
+}
+
+// WithVirtualChassisIDn adds the virtualChassisIDn to the dcim front ports list params
+func (o *DcimFrontPortsListParams) WithVirtualChassisIDn(virtualChassisIDn *string) *DcimFrontPortsListParams {
+	o.SetVirtualChassisIDn(virtualChassisIDn)
+	return o
+}
+
+// SetVirtualChassisIDn adds the virtualChassisIdN to the dcim front ports list params
+func (o *DcimFrontPortsListParams) SetVirtualChassisIDn(virtualChassisIDn *string) {
+	o.VirtualChassisIDn = virtualChassisIDn
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *DcimFrontPortsListParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -1120,6 +1386,193 @@ func (o *DcimFrontPortsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qCabled != "" {
 
 			if err := r.SetQueryParam("cabled", qCabled); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Color != nil {
+
+		// query param color
+		var qrColor string
+
+		if o.Color != nil {
+			qrColor = *o.Color
+		}
+		qColor := qrColor
+		if qColor != "" {
+
+			if err := r.SetQueryParam("color", qColor); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ColorEmpty != nil {
+
+		// query param color__empty
+		var qrColorEmpty string
+
+		if o.ColorEmpty != nil {
+			qrColorEmpty = *o.ColorEmpty
+		}
+		qColorEmpty := qrColorEmpty
+		if qColorEmpty != "" {
+
+			if err := r.SetQueryParam("color__empty", qColorEmpty); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ColorIc != nil {
+
+		// query param color__ic
+		var qrColorIc string
+
+		if o.ColorIc != nil {
+			qrColorIc = *o.ColorIc
+		}
+		qColorIc := qrColorIc
+		if qColorIc != "" {
+
+			if err := r.SetQueryParam("color__ic", qColorIc); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ColorIe != nil {
+
+		// query param color__ie
+		var qrColorIe string
+
+		if o.ColorIe != nil {
+			qrColorIe = *o.ColorIe
+		}
+		qColorIe := qrColorIe
+		if qColorIe != "" {
+
+			if err := r.SetQueryParam("color__ie", qColorIe); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ColorIew != nil {
+
+		// query param color__iew
+		var qrColorIew string
+
+		if o.ColorIew != nil {
+			qrColorIew = *o.ColorIew
+		}
+		qColorIew := qrColorIew
+		if qColorIew != "" {
+
+			if err := r.SetQueryParam("color__iew", qColorIew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ColorIsw != nil {
+
+		// query param color__isw
+		var qrColorIsw string
+
+		if o.ColorIsw != nil {
+			qrColorIsw = *o.ColorIsw
+		}
+		qColorIsw := qrColorIsw
+		if qColorIsw != "" {
+
+			if err := r.SetQueryParam("color__isw", qColorIsw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Colorn != nil {
+
+		// query param color__n
+		var qrColorn string
+
+		if o.Colorn != nil {
+			qrColorn = *o.Colorn
+		}
+		qColorn := qrColorn
+		if qColorn != "" {
+
+			if err := r.SetQueryParam("color__n", qColorn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ColorNic != nil {
+
+		// query param color__nic
+		var qrColorNic string
+
+		if o.ColorNic != nil {
+			qrColorNic = *o.ColorNic
+		}
+		qColorNic := qrColorNic
+		if qColorNic != "" {
+
+			if err := r.SetQueryParam("color__nic", qColorNic); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ColorNie != nil {
+
+		// query param color__nie
+		var qrColorNie string
+
+		if o.ColorNie != nil {
+			qrColorNie = *o.ColorNie
+		}
+		qColorNie := qrColorNie
+		if qColorNie != "" {
+
+			if err := r.SetQueryParam("color__nie", qColorNie); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ColorNiew != nil {
+
+		// query param color__niew
+		var qrColorNiew string
+
+		if o.ColorNiew != nil {
+			qrColorNiew = *o.ColorNiew
+		}
+		qColorNiew := qrColorNiew
+		if qColorNiew != "" {
+
+			if err := r.SetQueryParam("color__niew", qColorNiew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ColorNisw != nil {
+
+		// query param color__nisw
+		var qrColorNisw string
+
+		if o.ColorNisw != nil {
+			qrColorNisw = *o.ColorNisw
+		}
+		qColorNisw := qrColorNisw
+		if qColorNisw != "" {
+
+			if err := r.SetQueryParam("color__nisw", qColorNisw); err != nil {
 				return err
 			}
 		}
@@ -1788,6 +2241,74 @@ func (o *DcimFrontPortsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
+	if o.Location != nil {
+
+		// query param location
+		var qrLocation string
+
+		if o.Location != nil {
+			qrLocation = *o.Location
+		}
+		qLocation := qrLocation
+		if qLocation != "" {
+
+			if err := r.SetQueryParam("location", qLocation); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Locationn != nil {
+
+		// query param location__n
+		var qrLocationn string
+
+		if o.Locationn != nil {
+			qrLocationn = *o.Locationn
+		}
+		qLocationn := qrLocationn
+		if qLocationn != "" {
+
+			if err := r.SetQueryParam("location__n", qLocationn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LocationID != nil {
+
+		// query param location_id
+		var qrLocationID string
+
+		if o.LocationID != nil {
+			qrLocationID = *o.LocationID
+		}
+		qLocationID := qrLocationID
+		if qLocationID != "" {
+
+			if err := r.SetQueryParam("location_id", qLocationID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LocationIDn != nil {
+
+		// query param location_id__n
+		var qrLocationIDn string
+
+		if o.LocationIDn != nil {
+			qrLocationIDn = *o.LocationIDn
+		}
+		qLocationIDn := qrLocationIDn
+		if qLocationIDn != "" {
+
+			if err := r.SetQueryParam("location_id__n", qLocationIDn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.Name != nil {
 
 		// query param name
@@ -2276,6 +2797,74 @@ func (o *DcimFrontPortsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qTypen != "" {
 
 			if err := r.SetQueryParam("type__n", qTypen); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VirtualChassis != nil {
+
+		// query param virtual_chassis
+		var qrVirtualChassis string
+
+		if o.VirtualChassis != nil {
+			qrVirtualChassis = *o.VirtualChassis
+		}
+		qVirtualChassis := qrVirtualChassis
+		if qVirtualChassis != "" {
+
+			if err := r.SetQueryParam("virtual_chassis", qVirtualChassis); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VirtualChassisn != nil {
+
+		// query param virtual_chassis__n
+		var qrVirtualChassisn string
+
+		if o.VirtualChassisn != nil {
+			qrVirtualChassisn = *o.VirtualChassisn
+		}
+		qVirtualChassisn := qrVirtualChassisn
+		if qVirtualChassisn != "" {
+
+			if err := r.SetQueryParam("virtual_chassis__n", qVirtualChassisn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VirtualChassisID != nil {
+
+		// query param virtual_chassis_id
+		var qrVirtualChassisID string
+
+		if o.VirtualChassisID != nil {
+			qrVirtualChassisID = *o.VirtualChassisID
+		}
+		qVirtualChassisID := qrVirtualChassisID
+		if qVirtualChassisID != "" {
+
+			if err := r.SetQueryParam("virtual_chassis_id", qVirtualChassisID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VirtualChassisIDn != nil {
+
+		// query param virtual_chassis_id__n
+		var qrVirtualChassisIDn string
+
+		if o.VirtualChassisIDn != nil {
+			qrVirtualChassisIDn = *o.VirtualChassisIDn
+		}
+		qVirtualChassisIDn := qrVirtualChassisIDn
+		if qVirtualChassisIDn != "" {
+
+			if err := r.SetQueryParam("virtual_chassis_id__n", qVirtualChassisIDn); err != nil {
 				return err
 			}
 		}

@@ -219,6 +219,18 @@ type DcimPowerPortsListParams struct {
 	*/
 	Limit *int64
 
+	// Location.
+	Location *string
+
+	// Locationn.
+	Locationn *string
+
+	// LocationID.
+	LocationID *string
+
+	// LocationIDn.
+	LocationIDn *string
+
 	// MaximumDraw.
 	MaximumDraw *string
 
@@ -326,6 +338,18 @@ type DcimPowerPortsListParams struct {
 
 	// Typen.
 	Typen *string
+
+	// VirtualChassis.
+	VirtualChassis *string
+
+	// VirtualChassisn.
+	VirtualChassisn *string
+
+	// VirtualChassisID.
+	VirtualChassisID *string
+
+	// VirtualChassisIDn.
+	VirtualChassisIDn *string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -897,6 +921,50 @@ func (o *DcimPowerPortsListParams) SetLimit(limit *int64) {
 	o.Limit = limit
 }
 
+// WithLocation adds the location to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithLocation(location *string) *DcimPowerPortsListParams {
+	o.SetLocation(location)
+	return o
+}
+
+// SetLocation adds the location to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetLocation(location *string) {
+	o.Location = location
+}
+
+// WithLocationn adds the locationn to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithLocationn(locationn *string) *DcimPowerPortsListParams {
+	o.SetLocationn(locationn)
+	return o
+}
+
+// SetLocationn adds the locationN to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetLocationn(locationn *string) {
+	o.Locationn = locationn
+}
+
+// WithLocationID adds the locationID to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithLocationID(locationID *string) *DcimPowerPortsListParams {
+	o.SetLocationID(locationID)
+	return o
+}
+
+// SetLocationID adds the locationId to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetLocationID(locationID *string) {
+	o.LocationID = locationID
+}
+
+// WithLocationIDn adds the locationIDn to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithLocationIDn(locationIDn *string) *DcimPowerPortsListParams {
+	o.SetLocationIDn(locationIDn)
+	return o
+}
+
+// SetLocationIDn adds the locationIdN to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetLocationIDn(locationIDn *string) {
+	o.LocationIDn = locationIDn
+}
+
 // WithMaximumDraw adds the maximumDraw to the dcim power ports list params
 func (o *DcimPowerPortsListParams) WithMaximumDraw(maximumDraw *string) *DcimPowerPortsListParams {
 	o.SetMaximumDraw(maximumDraw)
@@ -1280,6 +1348,50 @@ func (o *DcimPowerPortsListParams) WithTypen(typen *string) *DcimPowerPortsListP
 // SetTypen adds the typeN to the dcim power ports list params
 func (o *DcimPowerPortsListParams) SetTypen(typen *string) {
 	o.Typen = typen
+}
+
+// WithVirtualChassis adds the virtualChassis to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithVirtualChassis(virtualChassis *string) *DcimPowerPortsListParams {
+	o.SetVirtualChassis(virtualChassis)
+	return o
+}
+
+// SetVirtualChassis adds the virtualChassis to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetVirtualChassis(virtualChassis *string) {
+	o.VirtualChassis = virtualChassis
+}
+
+// WithVirtualChassisn adds the virtualChassisn to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithVirtualChassisn(virtualChassisn *string) *DcimPowerPortsListParams {
+	o.SetVirtualChassisn(virtualChassisn)
+	return o
+}
+
+// SetVirtualChassisn adds the virtualChassisN to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetVirtualChassisn(virtualChassisn *string) {
+	o.VirtualChassisn = virtualChassisn
+}
+
+// WithVirtualChassisID adds the virtualChassisID to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithVirtualChassisID(virtualChassisID *string) *DcimPowerPortsListParams {
+	o.SetVirtualChassisID(virtualChassisID)
+	return o
+}
+
+// SetVirtualChassisID adds the virtualChassisId to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetVirtualChassisID(virtualChassisID *string) {
+	o.VirtualChassisID = virtualChassisID
+}
+
+// WithVirtualChassisIDn adds the virtualChassisIDn to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithVirtualChassisIDn(virtualChassisIDn *string) *DcimPowerPortsListParams {
+	o.SetVirtualChassisIDn(virtualChassisIDn)
+	return o
+}
+
+// SetVirtualChassisIDn adds the virtualChassisIdN to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetVirtualChassisIDn(virtualChassisIDn *string) {
+	o.VirtualChassisIDn = virtualChassisIDn
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -2089,6 +2201,74 @@ func (o *DcimPowerPortsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
+	if o.Location != nil {
+
+		// query param location
+		var qrLocation string
+
+		if o.Location != nil {
+			qrLocation = *o.Location
+		}
+		qLocation := qrLocation
+		if qLocation != "" {
+
+			if err := r.SetQueryParam("location", qLocation); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Locationn != nil {
+
+		// query param location__n
+		var qrLocationn string
+
+		if o.Locationn != nil {
+			qrLocationn = *o.Locationn
+		}
+		qLocationn := qrLocationn
+		if qLocationn != "" {
+
+			if err := r.SetQueryParam("location__n", qLocationn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LocationID != nil {
+
+		// query param location_id
+		var qrLocationID string
+
+		if o.LocationID != nil {
+			qrLocationID = *o.LocationID
+		}
+		qLocationID := qrLocationID
+		if qLocationID != "" {
+
+			if err := r.SetQueryParam("location_id", qLocationID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LocationIDn != nil {
+
+		// query param location_id__n
+		var qrLocationIDn string
+
+		if o.LocationIDn != nil {
+			qrLocationIDn = *o.LocationIDn
+		}
+		qLocationIDn := qrLocationIDn
+		if qLocationIDn != "" {
+
+			if err := r.SetQueryParam("location_id__n", qLocationIDn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.MaximumDraw != nil {
 
 		// query param maximum_draw
@@ -2679,6 +2859,74 @@ func (o *DcimPowerPortsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qTypen != "" {
 
 			if err := r.SetQueryParam("type__n", qTypen); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VirtualChassis != nil {
+
+		// query param virtual_chassis
+		var qrVirtualChassis string
+
+		if o.VirtualChassis != nil {
+			qrVirtualChassis = *o.VirtualChassis
+		}
+		qVirtualChassis := qrVirtualChassis
+		if qVirtualChassis != "" {
+
+			if err := r.SetQueryParam("virtual_chassis", qVirtualChassis); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VirtualChassisn != nil {
+
+		// query param virtual_chassis__n
+		var qrVirtualChassisn string
+
+		if o.VirtualChassisn != nil {
+			qrVirtualChassisn = *o.VirtualChassisn
+		}
+		qVirtualChassisn := qrVirtualChassisn
+		if qVirtualChassisn != "" {
+
+			if err := r.SetQueryParam("virtual_chassis__n", qVirtualChassisn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VirtualChassisID != nil {
+
+		// query param virtual_chassis_id
+		var qrVirtualChassisID string
+
+		if o.VirtualChassisID != nil {
+			qrVirtualChassisID = *o.VirtualChassisID
+		}
+		qVirtualChassisID := qrVirtualChassisID
+		if qVirtualChassisID != "" {
+
+			if err := r.SetQueryParam("virtual_chassis_id", qVirtualChassisID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VirtualChassisIDn != nil {
+
+		// query param virtual_chassis_id__n
+		var qrVirtualChassisIDn string
+
+		if o.VirtualChassisIDn != nil {
+			qrVirtualChassisIDn = *o.VirtualChassisIDn
+		}
+		qVirtualChassisIDn := qrVirtualChassisIDn
+		if qVirtualChassisIDn != "" {
+
+			if err := r.SetQueryParam("virtual_chassis_id__n", qVirtualChassisIDn); err != nil {
 				return err
 			}
 		}

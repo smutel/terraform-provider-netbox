@@ -145,15 +145,6 @@ const (
 	netSendMMsg    = 20
 )
 
-func accept(s int, rsa *RawSockaddrAny, addrlen *_Socklen) (int, error) {
-	args := [3]uintptr{uintptr(s), uintptr(unsafe.Pointer(rsa)), uintptr(unsafe.Pointer(addrlen))}
-	fd, _, err := Syscall(SYS_SOCKETCALL, netAccept, uintptr(unsafe.Pointer(&args)), 0)
-	if err != 0 {
-		return 0, err
-	}
-	return int(fd), nil
-}
-
 func accept4(s int, rsa *RawSockaddrAny, addrlen *_Socklen, flags int) (int, error) {
 	args := [4]uintptr{uintptr(s), uintptr(unsafe.Pointer(rsa)), uintptr(unsafe.Pointer(addrlen)), uintptr(flags)}
 	fd, _, err := Syscall(SYS_SOCKETCALL, netAccept4, uintptr(unsafe.Pointer(&args)), 0)
@@ -295,15 +286,6 @@ func Shutdown(s, how int) error {
 		return err
 	}
 	return nil
-}
-
-//sys	poll(fds *PollFd, nfds int, timeout int) (n int, err error)
-
-func Poll(fds []PollFd, timeout int) (n int, err error) {
-	if len(fds) == 0 {
-		return poll(nil, 0, timeout)
-	}
-	return poll(&fds[0], len(fds), timeout)
 }
 
 //sys	kexecFileLoad(kernelFd int, initrdFd int, cmdlineLen int, cmdline string, flags int) (err error)
