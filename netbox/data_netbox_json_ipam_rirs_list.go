@@ -1,47 +1,47 @@
 package netbox
 
 import (
-  "encoding/json"
+	"encoding/json"
 
-  "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-  netboxclient "github.com/smutel/go-netbox/netbox/client"
-  "github.com/smutel/go-netbox/netbox/client/ipam"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/ipam"
 )
 
 func dataNetboxJSONIpamRirsList() *schema.Resource {
-  return &schema.Resource{
-    Read: dataNetboxJSONIpamRirsListRead,
+	return &schema.Resource{
+		Read: dataNetboxJSONIpamRirsListRead,
 
-    Schema: map[string]*schema.Schema{
-      "limit": {
-        Type:     schema.TypeInt,
-        Optional: true,
-        Default:  0,
-      },
-      "json": {
-        Type:     schema.TypeString,
-        Computed: true,
-      },
-    },
-  }
+		Schema: map[string]*schema.Schema{
+			"limit": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  0,
+			},
+			"json": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
+	}
 }
 
 func dataNetboxJSONIpamRirsListRead(d *schema.ResourceData, m interface{}) error {
-  client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netboxclient.NetBoxAPI)
 
-  params := ipam.NewIpamRirsListParams()
-  limit := int64(d.Get("limit").(int))
-  params.Limit = &limit
+	params := ipam.NewIpamRirsListParams()
+	limit := int64(d.Get("limit").(int))
+	params.Limit = &limit
 
-  list, err := client.Ipam.IpamRirsList(params, nil)
-  if err != nil {
-    return err
-  }
+	list, err := client.Ipam.IpamRirsList(params, nil)
+	if err != nil {
+		return err
+	}
 
-  j, _ := json.Marshal(list.Payload.Results)
+	j, _ := json.Marshal(list.Payload.Results)
 
-  d.Set("json", string(j))
-  d.SetId("NetboxJSONIpamRirsList")
+	d.Set("json", string(j))
+	d.SetId("NetboxJSONIpamRirsList")
 
-  return nil
+	return nil
 }
