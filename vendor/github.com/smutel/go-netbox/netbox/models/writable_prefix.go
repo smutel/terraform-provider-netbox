@@ -78,6 +78,11 @@ type WritablePrefix struct {
 	// Format: date-time
 	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
 
+	// Mark utilized
+	//
+	// Treat as 100% utilized
+	MarkUtilized bool `json:"mark_utilized,omitempty"`
+
 	// Prefix
 	//
 	// IPv4 or IPv6 network with mask
@@ -261,6 +266,8 @@ func (m *WritablePrefix) validateTags(formats strfmt.Registry) error {
 			if err := m.Tags[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -400,6 +407,8 @@ func (m *WritablePrefix) contextValidateTags(ctx context.Context, formats strfmt
 			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

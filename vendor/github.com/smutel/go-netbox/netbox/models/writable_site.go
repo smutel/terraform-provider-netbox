@@ -104,12 +104,12 @@ type WritableSite struct {
 	// Latitude
 	//
 	// GPS coordinate (latitude)
-	Latitude *string `json:"latitude,omitempty"`
+	Latitude *float64 `json:"latitude,omitempty"`
 
 	// Longitude
 	//
 	// GPS coordinate (longitude)
-	Longitude *string `json:"longitude,omitempty"`
+	Longitude *float64 `json:"longitude,omitempty"`
 
 	// Name
 	// Required: true
@@ -471,6 +471,8 @@ func (m *WritableSite) validateTags(formats strfmt.Registry) error {
 			if err := m.Tags[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -631,6 +633,8 @@ func (m *WritableSite) contextValidateTags(ctx context.Context, formats strfmt.R
 			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

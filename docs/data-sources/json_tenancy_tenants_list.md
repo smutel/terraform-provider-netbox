@@ -6,10 +6,10 @@ Get json output from the tenancy_tenants_list Netbox endpoint
 
 ```hcl
 data "netbox_json_tenancy_tenants_list" "test" {
-        limit = 0
+  limit = 0
 }
 output "example" {
-        value = jsondecode(data.netbox_json_tenancy_tenants_list.test.json)
+  value = jsondecode(data.netbox_json_tenancy_tenants_list.test.json)
 }
 ```
 

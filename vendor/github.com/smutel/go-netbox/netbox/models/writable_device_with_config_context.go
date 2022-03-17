@@ -72,10 +72,6 @@ type WritableDeviceWithConfigContext struct {
 	// Read Only: true
 	Display string `json:"display,omitempty"`
 
-	// Display name
-	// Read Only: true
-	DisplayName string `json:"display_name,omitempty"`
-
 	// Rack face
 	// Enum: [front rear]
 	Face string `json:"face,omitempty"`
@@ -353,6 +349,8 @@ func (m *WritableDeviceWithConfigContext) validateParentDevice(formats strfmt.Re
 		if err := m.ParentDevice.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("parent_device")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("parent_device")
 			}
 			return err
 		}
@@ -469,6 +467,8 @@ func (m *WritableDeviceWithConfigContext) validateTags(formats strfmt.Registry) 
 			if err := m.Tags[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -539,10 +539,6 @@ func (m *WritableDeviceWithConfigContext) ContextValidate(ctx context.Context, f
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateDisplayName(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateID(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -596,15 +592,6 @@ func (m *WritableDeviceWithConfigContext) contextValidateDisplay(ctx context.Con
 	return nil
 }
 
-func (m *WritableDeviceWithConfigContext) contextValidateDisplayName(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "display_name", "body", string(m.DisplayName)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *WritableDeviceWithConfigContext) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "id", "body", int64(m.ID)); err != nil {
@@ -629,6 +616,8 @@ func (m *WritableDeviceWithConfigContext) contextValidateParentDevice(ctx contex
 		if err := m.ParentDevice.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("parent_device")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("parent_device")
 			}
 			return err
 		}
@@ -654,6 +643,8 @@ func (m *WritableDeviceWithConfigContext) contextValidateTags(ctx context.Contex
 			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

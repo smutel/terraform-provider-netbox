@@ -276,6 +276,9 @@ type ExtrasWebhooksListParams struct {
 	// PayloadURLNisw.
 	PayloadURLNisw *string
 
+	// Q.
+	Q *string
+
 	// Secret.
 	Secret *string
 
@@ -1087,6 +1090,17 @@ func (o *ExtrasWebhooksListParams) WithPayloadURLNisw(payloadURLNisw *string) *E
 // SetPayloadURLNisw adds the payloadUrlNisw to the extras webhooks list params
 func (o *ExtrasWebhooksListParams) SetPayloadURLNisw(payloadURLNisw *string) {
 	o.PayloadURLNisw = payloadURLNisw
+}
+
+// WithQ adds the q to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) WithQ(q *string) *ExtrasWebhooksListParams {
+	o.SetQ(q)
+	return o
+}
+
+// SetQ adds the q to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) SetQ(q *string) {
+	o.Q = q
 }
 
 // WithSecret adds the secret to the extras webhooks list params
@@ -2362,6 +2376,23 @@ func (o *ExtrasWebhooksListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qPayloadURLNisw != "" {
 
 			if err := r.SetQueryParam("payload_url__nisw", qPayloadURLNisw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Q != nil {
+
+		// query param q
+		var qrQ string
+
+		if o.Q != nil {
+			qrQ = *o.Q
+		}
+		qQ := qrQ
+		if qQ != "" {
+
+			if err := r.SetQueryParam("q", qQ); err != nil {
 				return err
 			}
 		}

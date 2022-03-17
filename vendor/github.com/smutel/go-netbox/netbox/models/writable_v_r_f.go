@@ -51,10 +51,6 @@ type WritableVRF struct {
 	// Read Only: true
 	Display string `json:"display,omitempty"`
 
-	// Display name
-	// Read Only: true
-	DisplayName string `json:"display_name,omitempty"`
-
 	// Enforce unique space
 	//
 	// Prevent duplicate prefixes/IP addresses within this VRF
@@ -258,6 +254,8 @@ func (m *WritableVRF) validateTags(formats strfmt.Registry) error {
 			if err := m.Tags[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -289,10 +287,6 @@ func (m *WritableVRF) ContextValidate(ctx context.Context, formats strfmt.Regist
 	}
 
 	if err := m.contextValidateDisplay(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateDisplayName(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -344,15 +338,6 @@ func (m *WritableVRF) contextValidateDisplay(ctx context.Context, formats strfmt
 	return nil
 }
 
-func (m *WritableVRF) contextValidateDisplayName(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "display_name", "body", string(m.DisplayName)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *WritableVRF) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "id", "body", int64(m.ID)); err != nil {
@@ -397,6 +382,8 @@ func (m *WritableVRF) contextValidateTags(ctx context.Context, formats strfmt.Re
 			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

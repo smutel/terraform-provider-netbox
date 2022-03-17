@@ -55,6 +55,11 @@ type FrontPort struct {
 	// Read Only: true
 	CablePeerType string `json:"cable_peer_type,omitempty"`
 
+	// Color
+	// Max Length: 6
+	// Pattern: ^[0-9a-f]{6}$
+	Color string `json:"color,omitempty"`
+
 	// Created
 	// Read Only: true
 	// Format: date
@@ -131,6 +136,10 @@ func (m *FrontPort) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateColor(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateCreated(formats); err != nil {
 		res = append(res, err)
 	}
@@ -190,9 +199,27 @@ func (m *FrontPort) validateCable(formats strfmt.Registry) error {
 		if err := m.Cable.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("cable")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cable")
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *FrontPort) validateColor(formats strfmt.Registry) error {
+	if swag.IsZero(m.Color) { // not required
+		return nil
+	}
+
+	if err := validate.MaxLength("color", "body", m.Color, 6); err != nil {
+		return err
+	}
+
+	if err := validate.Pattern("color", "body", m.Color, `^[0-9a-f]{6}$`); err != nil {
+		return err
 	}
 
 	return nil
@@ -232,6 +259,8 @@ func (m *FrontPort) validateDevice(formats strfmt.Registry) error {
 		if err := m.Device.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("device")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("device")
 			}
 			return err
 		}
@@ -291,6 +320,8 @@ func (m *FrontPort) validateRearPort(formats strfmt.Registry) error {
 		if err := m.RearPort.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("rear_port")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("rear_port")
 			}
 			return err
 		}
@@ -329,6 +360,8 @@ func (m *FrontPort) validateTags(formats strfmt.Registry) error {
 			if err := m.Tags[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -349,6 +382,8 @@ func (m *FrontPort) validateType(formats strfmt.Registry) error {
 		if err := m.Type.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("type")
 			}
 			return err
 		}
@@ -446,6 +481,8 @@ func (m *FrontPort) contextValidateCable(ctx context.Context, formats strfmt.Reg
 		if err := m.Cable.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("cable")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cable")
 			}
 			return err
 		}
@@ -483,6 +520,8 @@ func (m *FrontPort) contextValidateDevice(ctx context.Context, formats strfmt.Re
 		if err := m.Device.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("device")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("device")
 			}
 			return err
 		}
@@ -524,6 +563,8 @@ func (m *FrontPort) contextValidateRearPort(ctx context.Context, formats strfmt.
 		if err := m.RearPort.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("rear_port")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("rear_port")
 			}
 			return err
 		}
@@ -540,6 +581,8 @@ func (m *FrontPort) contextValidateTags(ctx context.Context, formats strfmt.Regi
 			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -556,6 +599,8 @@ func (m *FrontPort) contextValidateType(ctx context.Context, formats strfmt.Regi
 		if err := m.Type.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("type")
 			}
 			return err
 		}
@@ -598,12 +643,12 @@ type FrontPortType struct {
 
 	// label
 	// Required: true
-	// Enum: [8P8C 8P6C 8P4C 8P2C 6P6C 6P4C 6P2C 4P4C 4P2C GG45 TERA 4P TERA 2P TERA 1P 110 Punch BNC F Connector N Connector MRJ21 FC LC LC/APC LSH LSH/APC MPO MTRJ SC SC/APC ST CS SN Splice]
+	// Enum: [8P8C 8P6C 8P4C 8P2C 6P6C 6P4C 6P2C 4P4C 4P2C GG45 TERA 4P TERA 2P TERA 1P 110 Punch BNC F Connector N Connector MRJ21 FC LC LC/APC LSH LSH/APC MPO MTRJ SC SC/APC ST CS SN SMA 905 SMA 906 URM-P2 URM-P4 URM-P8 Splice]
 	Label *string `json:"label"`
 
 	// value
 	// Required: true
-	// Enum: [8p8c 8p6c 8p4c 8p2c 6p6c 6p4c 6p2c 4p4c 4p2c gg45 tera-4p tera-2p tera-1p 110-punch bnc f n mrj21 fc lc lc-apc lsh lsh-apc mpo mtrj sc sc-apc st cs sn splice]
+	// Enum: [8p8c 8p6c 8p4c 8p2c 6p6c 6p4c 6p2c 4p4c 4p2c gg45 tera-4p tera-2p tera-1p 110-punch bnc f n mrj21 fc lc lc-apc lsh lsh-apc mpo mtrj sc sc-apc st cs sn sma-905 sma-906 urm-p2 urm-p4 urm-p8 splice]
 	Value *string `json:"value"`
 }
 
@@ -629,7 +674,7 @@ var frontPortTypeTypeLabelPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["8P8C","8P6C","8P4C","8P2C","6P6C","6P4C","6P2C","4P4C","4P2C","GG45","TERA 4P","TERA 2P","TERA 1P","110 Punch","BNC","F Connector","N Connector","MRJ21","FC","LC","LC/APC","LSH","LSH/APC","MPO","MTRJ","SC","SC/APC","ST","CS","SN","Splice"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["8P8C","8P6C","8P4C","8P2C","6P6C","6P4C","6P2C","4P4C","4P2C","GG45","TERA 4P","TERA 2P","TERA 1P","110 Punch","BNC","F Connector","N Connector","MRJ21","FC","LC","LC/APC","LSH","LSH/APC","MPO","MTRJ","SC","SC/APC","ST","CS","SN","SMA 905","SMA 906","URM-P2","URM-P4","URM-P8","Splice"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -729,6 +774,21 @@ const (
 	// FrontPortTypeLabelSN captures enum value "SN"
 	FrontPortTypeLabelSN string = "SN"
 
+	// FrontPortTypeLabelSMA905 captures enum value "SMA 905"
+	FrontPortTypeLabelSMA905 string = "SMA 905"
+
+	// FrontPortTypeLabelSMA906 captures enum value "SMA 906"
+	FrontPortTypeLabelSMA906 string = "SMA 906"
+
+	// FrontPortTypeLabelURMDashP2 captures enum value "URM-P2"
+	FrontPortTypeLabelURMDashP2 string = "URM-P2"
+
+	// FrontPortTypeLabelURMDashP4 captures enum value "URM-P4"
+	FrontPortTypeLabelURMDashP4 string = "URM-P4"
+
+	// FrontPortTypeLabelURMDashP8 captures enum value "URM-P8"
+	FrontPortTypeLabelURMDashP8 string = "URM-P8"
+
 	// FrontPortTypeLabelSplice captures enum value "Splice"
 	FrontPortTypeLabelSplice string = "Splice"
 )
@@ -759,7 +819,7 @@ var frontPortTypeTypeValuePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["8p8c","8p6c","8p4c","8p2c","6p6c","6p4c","6p2c","4p4c","4p2c","gg45","tera-4p","tera-2p","tera-1p","110-punch","bnc","f","n","mrj21","fc","lc","lc-apc","lsh","lsh-apc","mpo","mtrj","sc","sc-apc","st","cs","sn","splice"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["8p8c","8p6c","8p4c","8p2c","6p6c","6p4c","6p2c","4p4c","4p2c","gg45","tera-4p","tera-2p","tera-1p","110-punch","bnc","f","n","mrj21","fc","lc","lc-apc","lsh","lsh-apc","mpo","mtrj","sc","sc-apc","st","cs","sn","sma-905","sma-906","urm-p2","urm-p4","urm-p8","splice"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -858,6 +918,21 @@ const (
 
 	// FrontPortTypeValueSn captures enum value "sn"
 	FrontPortTypeValueSn string = "sn"
+
+	// FrontPortTypeValueSmaDash905 captures enum value "sma-905"
+	FrontPortTypeValueSmaDash905 string = "sma-905"
+
+	// FrontPortTypeValueSmaDash906 captures enum value "sma-906"
+	FrontPortTypeValueSmaDash906 string = "sma-906"
+
+	// FrontPortTypeValueUrmDashP2 captures enum value "urm-p2"
+	FrontPortTypeValueUrmDashP2 string = "urm-p2"
+
+	// FrontPortTypeValueUrmDashP4 captures enum value "urm-p4"
+	FrontPortTypeValueUrmDashP4 string = "urm-p4"
+
+	// FrontPortTypeValueUrmDashP8 captures enum value "urm-p8"
+	FrontPortTypeValueUrmDashP8 string = "urm-p8"
 
 	// FrontPortTypeValueSplice captures enum value "splice"
 	FrontPortTypeValueSplice string = "splice"

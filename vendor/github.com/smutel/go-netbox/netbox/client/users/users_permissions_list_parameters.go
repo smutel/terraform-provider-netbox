@@ -159,6 +159,9 @@ type UsersPermissionsListParams struct {
 	*/
 	Offset *int64
 
+	// Q.
+	Q *string
+
 	// User.
 	User *string
 
@@ -508,6 +511,17 @@ func (o *UsersPermissionsListParams) WithOffset(offset *int64) *UsersPermissions
 // SetOffset adds the offset to the users permissions list params
 func (o *UsersPermissionsListParams) SetOffset(offset *int64) {
 	o.Offset = offset
+}
+
+// WithQ adds the q to the users permissions list params
+func (o *UsersPermissionsListParams) WithQ(q *string) *UsersPermissionsListParams {
+	o.SetQ(q)
+	return o
+}
+
+// SetQ adds the q to the users permissions list params
+func (o *UsersPermissionsListParams) SetQ(q *string) {
+	o.Q = q
 }
 
 // WithUser adds the user to the users permissions list params
@@ -999,6 +1013,23 @@ func (o *UsersPermissionsListParams) WriteToRequest(r runtime.ClientRequest, reg
 		if qOffset != "" {
 
 			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Q != nil {
+
+		// query param q
+		var qrQ string
+
+		if o.Q != nil {
+			qrQ = *o.Q
+		}
+		qQ := qrQ
+		if qQ != "" {
+
+			if err := r.SetQueryParam("q", qQ); err != nil {
 				return err
 			}
 		}

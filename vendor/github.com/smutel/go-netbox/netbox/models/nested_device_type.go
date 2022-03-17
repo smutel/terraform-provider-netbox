@@ -42,10 +42,6 @@ type NestedDeviceType struct {
 	// Read Only: true
 	Display string `json:"display,omitempty"`
 
-	// Display name
-	// Read Only: true
-	DisplayName string `json:"display_name,omitempty"`
-
 	// Id
 	// Read Only: true
 	ID int64 `json:"id,omitempty"`
@@ -107,6 +103,8 @@ func (m *NestedDeviceType) validateManufacturer(formats strfmt.Registry) error {
 		if err := m.Manufacturer.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("manufacturer")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("manufacturer")
 			}
 			return err
 		}
@@ -177,10 +175,6 @@ func (m *NestedDeviceType) ContextValidate(ctx context.Context, formats strfmt.R
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateDisplayName(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateID(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -217,15 +211,6 @@ func (m *NestedDeviceType) contextValidateDisplay(ctx context.Context, formats s
 	return nil
 }
 
-func (m *NestedDeviceType) contextValidateDisplayName(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "display_name", "body", string(m.DisplayName)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *NestedDeviceType) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "id", "body", int64(m.ID)); err != nil {
@@ -241,6 +226,8 @@ func (m *NestedDeviceType) contextValidateManufacturer(ctx context.Context, form
 		if err := m.Manufacturer.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("manufacturer")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("manufacturer")
 			}
 			return err
 		}
