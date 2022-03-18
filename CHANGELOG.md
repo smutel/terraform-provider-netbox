@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v2.2.1...v3.0.0) (2022-03-18)
+
+
+### Features
+
+* Update provider to work with Netbox 3.0 ([6327700](https://github.com/smutel/terraform-provider-netbox/commit/6327700872152cf16100b60ae2a8643e4f0e8ae4))
+
 ### [2.2.1](https://github.com/smutel/terraform-provider-netbox/compare/v2.2.0...v2.2.1) (2022-01-07)
 
 
