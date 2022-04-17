@@ -295,7 +295,7 @@ github.com/opentracing/opentracing-go/log
 github.com/posener/complete
 github.com/posener/complete/cmd
 github.com/posener/complete/cmd/install
-# github.com/smutel/go-netbox v3.0.0+incompatible
+# github.com/smutel/go-netbox v3.0.1+incompatible
 ## explicit
 github.com/smutel/go-netbox/netbox/client
 github.com/smutel/go-netbox/netbox/client/circuits

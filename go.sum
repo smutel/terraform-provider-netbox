@@ -485,6 +485,8 @@ github.com/smutel/go-netbox v2.11.0+incompatible h1:ADb7xHCQd6nOyNRZDD1CzYOqKarG
 github.com/smutel/go-netbox v2.11.0+incompatible/go.mod h1:UlNOimilX5qQkyVvFaDgajexiCRjVqzh1i0r9kQfr+M=
 github.com/smutel/go-netbox v3.0.0+incompatible h1:Jx8yGdB+BYBqi46bn/VNY5qBGzAtmQ9Z2E66YMmwyRI=
 github.com/smutel/go-netbox v3.0.0+incompatible/go.mod h1:UlNOimilX5qQkyVvFaDgajexiCRjVqzh1i0r9kQfr+M=
+github.com/smutel/go-netbox v3.0.1+incompatible h1:g/A7Hce+PPwYjbHLJrNHx7jhobB6n/VPJNkP/NiykOU=
+github.com/smutel/go-netbox v3.0.1+incompatible/go.mod h1:UlNOimilX5qQkyVvFaDgajexiCRjVqzh1i0r9kQfr+M=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/spf13/afero v1.2.2/go.mod h1:9ZxEEn6pIJ8Rxe320qSDBk6AsU0r9pR7Q4OcevTdifk=
 github.com/spf13/afero v1.8.2 h1:xehSyVa0YnHWsJ49JFljMpg1HX19V6NDZ1fkm1Xznbo=

@@ -31,7 +31,7 @@ require (
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/posener/complete v1.2.3 // indirect
-	github.com/smutel/go-netbox v3.0.0+incompatible
+	github.com/smutel/go-netbox v3.0.1+incompatible
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/vmihailenco/tagparser v0.1.2 // indirect
