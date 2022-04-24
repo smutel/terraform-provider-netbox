@@ -9,6 +9,7 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 | 2.8            | 0.x.y            |
 | 2.9            | 1.x.y            |
 | 2.11           | 2.x.y            |
+| 3.0            | 3.x.y            |
 
 ## Example Usage
 
