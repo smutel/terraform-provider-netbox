@@ -81,7 +81,7 @@ type Device struct {
 	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Local context data
-	LocalContextData *string `json:"local_context_data,omitempty"`
+	LocalContextData interface{} `json:"local_context_data,omitempty"`
 
 	// location
 	Location *NestedLocation `json:"location,omitempty"`

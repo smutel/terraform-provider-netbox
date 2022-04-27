@@ -1,6 +1,7 @@
 package netbox
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -156,7 +157,6 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 		Cluster:          &clusterID,
 		Comments:         comments,
 		CustomFields:     &customFields,
-		LocalContextData: &localContextData,
 		Name:             &name,
 		Status:           status,
 		Tags:             convertTagsToNestedTags(tags),
@@ -168,6 +168,14 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 
 	if memory != 0 {
 		newResource.Memory = &memory
+	}
+
+	if localContextData != "" {
+		var localContextDataMap map[string]*interface{}
+		if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
+						return err
+		}
+		newResource.LocalContextData = localContextDataMap
 	}
 
 	if platformID != 0 {
@@ -241,9 +249,17 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				return err
 			}
 
-			if err = d.Set("local_context_data",
-				*resource.LocalContextData); err != nil {
-				return err
+			if resource.LocalContextData != nil {
+				localContextDataJSON, err := json.Marshal(resource.LocalContextData)
+				if err != nil {
+					return err
+				}
+				if err = d.Set("local_context_data",
+					string(localContextDataJSON)); err != nil {
+					return err
+				}
+			} else {
+				d.Set("local_context_data", "");
 			}
 
 			if err = d.Set("memory", resource.Memory); err != nil {
@@ -336,7 +352,13 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 
 	if d.HasChange("local_context_data") {
 		localContextData := d.Get("local_context_data").(string)
-		params.LocalContextData = &localContextData
+		var localContextDataMap map[string]*interface{}
+		if localContextData == "" {
+			localContextDataMap = nil
+		} else if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
+						return err
+		}
+		params.LocalContextData = localContextDataMap
 	}
 
 	if d.HasChange("memory") {

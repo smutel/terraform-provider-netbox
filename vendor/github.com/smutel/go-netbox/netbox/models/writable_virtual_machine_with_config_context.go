@@ -45,7 +45,7 @@ type WritableVirtualMachineWithConfigContext struct {
 
 	// Config context
 	// Read Only: true
-	ConfigContext map[string]*string `json:"config_context,omitempty"`
+	ConfigContext interface{} `json:"config_context,omitempty"`
 
 	// Created
 	// Read Only: true
@@ -74,7 +74,7 @@ type WritableVirtualMachineWithConfigContext struct {
 	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Local context data
-	LocalContextData *string `json:"local_context_data,omitempty"`
+	LocalContextData interface{} `json:"local_context_data,omitempty"`
 
 	// Memory (MB)
 	// Maximum: 2.147483647e+09
@@ -367,10 +367,6 @@ func (m *WritableVirtualMachineWithConfigContext) validateVcpus(formats strfmt.R
 func (m *WritableVirtualMachineWithConfigContext) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateConfigContext(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateCreated(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -406,11 +402,6 @@ func (m *WritableVirtualMachineWithConfigContext) ContextValidate(ctx context.Co
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *WritableVirtualMachineWithConfigContext) contextValidateConfigContext(ctx context.Context, formats strfmt.Registry) error {
-
 	return nil
 }
 

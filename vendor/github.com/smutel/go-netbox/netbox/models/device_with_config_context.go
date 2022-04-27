@@ -50,7 +50,7 @@ type DeviceWithConfigContext struct {
 
 	// Config context
 	// Read Only: true
-	ConfigContext map[string]*string `json:"config_context,omitempty"`
+	ConfigContext interface{} `json:"config_context,omitempty"`
 
 	// Created
 	// Read Only: true
@@ -85,7 +85,7 @@ type DeviceWithConfigContext struct {
 	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Local context data
-	LocalContextData *string `json:"local_context_data,omitempty"`
+	LocalContextData interface{} `json:"local_context_data,omitempty"`
 
 	// location
 	Location *NestedLocation `json:"location,omitempty"`
@@ -707,10 +707,6 @@ func (m *DeviceWithConfigContext) ContextValidate(ctx context.Context, formats s
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateConfigContext(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateCreated(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -809,11 +805,6 @@ func (m *DeviceWithConfigContext) contextValidateCluster(ctx context.Context, fo
 			return err
 		}
 	}
-
-	return nil
-}
-
-func (m *DeviceWithConfigContext) contextValidateConfigContext(ctx context.Context, formats strfmt.Registry) error {
 
 	return nil
 }

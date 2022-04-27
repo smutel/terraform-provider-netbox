@@ -50,7 +50,7 @@ type WritableDeviceWithConfigContext struct {
 
 	// Config context
 	// Read Only: true
-	ConfigContext map[string]*string `json:"config_context,omitempty"`
+	ConfigContext interface{} `json:"config_context,omitempty"`
 
 	// Created
 	// Read Only: true
@@ -86,7 +86,7 @@ type WritableDeviceWithConfigContext struct {
 	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Local context data
-	LocalContextData *string `json:"local_context_data,omitempty"`
+	LocalContextData interface{} `json:"local_context_data,omitempty"`
 
 	// Location
 	Location *int64 `json:"location,omitempty"`
@@ -527,10 +527,6 @@ func (m *WritableDeviceWithConfigContext) validateVcPriority(formats strfmt.Regi
 func (m *WritableDeviceWithConfigContext) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateConfigContext(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateCreated(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -566,11 +562,6 @@ func (m *WritableDeviceWithConfigContext) ContextValidate(ctx context.Context, f
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *WritableDeviceWithConfigContext) contextValidateConfigContext(ctx context.Context, formats strfmt.Registry) error {
-
 	return nil
 }
 

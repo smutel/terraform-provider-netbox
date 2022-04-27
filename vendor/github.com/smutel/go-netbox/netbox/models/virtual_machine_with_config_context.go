@@ -45,7 +45,7 @@ type VirtualMachineWithConfigContext struct {
 
 	// Config context
 	// Read Only: true
-	ConfigContext map[string]*string `json:"config_context,omitempty"`
+	ConfigContext interface{} `json:"config_context,omitempty"`
 
 	// Created
 	// Read Only: true
@@ -74,7 +74,7 @@ type VirtualMachineWithConfigContext struct {
 	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Local context data
-	LocalContextData *string `json:"local_context_data,omitempty"`
+	LocalContextData interface{} `json:"local_context_data,omitempty"`
 
 	// Memory (MB)
 	// Maximum: 2.147483647e+09
@@ -505,10 +505,6 @@ func (m *VirtualMachineWithConfigContext) ContextValidate(ctx context.Context, f
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateConfigContext(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateCreated(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -583,11 +579,6 @@ func (m *VirtualMachineWithConfigContext) contextValidateCluster(ctx context.Con
 			return err
 		}
 	}
-
-	return nil
-}
-
-func (m *VirtualMachineWithConfigContext) contextValidateConfigContext(ctx context.Context, formats strfmt.Registry) error {
 
 	return nil
 }
