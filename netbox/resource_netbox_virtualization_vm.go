@@ -154,12 +154,12 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	}
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
-		Cluster:          &clusterID,
-		Comments:         comments,
-		CustomFields:     &customFields,
-		Name:             &name,
-		Status:           status,
-		Tags:             convertTagsToNestedTags(tags),
+		Cluster:      &clusterID,
+		Comments:     comments,
+		CustomFields: &customFields,
+		Name:         &name,
+		Status:       status,
+		Tags:         convertTagsToNestedTags(tags),
 	}
 
 	if disk != 0 {
@@ -173,7 +173,7 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	if localContextData != "" {
 		var localContextDataMap map[string]*interface{}
 		if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
-						return err
+			return err
 		}
 		newResource.LocalContextData = localContextDataMap
 	}
@@ -259,7 +259,7 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 					return err
 				}
 			} else {
-				d.Set("local_context_data", "");
+				d.Set("local_context_data", "")
 			}
 
 			if err = d.Set("memory", resource.Memory); err != nil {
@@ -356,7 +356,7 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 		if localContextData == "" {
 			localContextDataMap = nil
 		} else if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
-						return err
+			return err
 		}
 		params.LocalContextData = localContextDataMap
 	}
