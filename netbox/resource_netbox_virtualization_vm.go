@@ -249,13 +249,17 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 				return err
 			}
 
-			localContextDataJSON, err := json.Marshal(resource.LocalContextData)
-			if err != nil {
-				return err
-			}
-			if err = d.Set("local_context_data",
-				string(localContextDataJSON)); err != nil {
-				return err
+			if resource.LocalContextData != nil {
+				localContextDataJSON, err := json.Marshal(resource.LocalContextData)
+				if err != nil {
+					return err
+				}
+				if err = d.Set("local_context_data",
+					string(localContextDataJSON)); err != nil {
+					return err
+				}
+			} else {
+				d.Set("local_context_data", "");
 			}
 
 			if err = d.Set("memory", resource.Memory); err != nil {
@@ -349,7 +353,9 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	if d.HasChange("local_context_data") {
 		localContextData := d.Get("local_context_data").(string)
 		var localContextDataMap map[string]*interface{}
-		if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
+		if localContextData == "" {
+			localContextDataMap = nil
+		} else if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
 						return err
 		}
 		params.LocalContextData = localContextDataMap
