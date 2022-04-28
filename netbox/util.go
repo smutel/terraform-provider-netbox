@@ -1,11 +1,7 @@
 package netbox
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -267,40 +263,4 @@ func convertCustomFieldsFromTerraformToAPI(stateCustomFields []interface{}, cust
 	}
 
 	return toReturn
-}
-
-func ReadRSAKey(filePath string) (res string) {
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return ""
-	}
-	return string(data)
-}
-
-func GetSessionKey(destinationUrl string, token string, rsaKey string) string {
-	privateKey := rsaKey
-	data := url.Values{}
-	data.Set("private_key", privateKey) // set private key string
-	destinationUrl = destinationUrl + "/api/secrets/get-session-key/"
-
-	req, err := http.NewRequest("POST", destinationUrl, strings.NewReader(data.Encode())) // URL-enconded payload
-	if err != nil {
-		//
-		return ""
-	}
-
-	req.Header.Set("Authorization", "Token "+token)
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Accept", "application/json; indent=4")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return ""
-	}
-
-	content, err := ioutil.ReadAll(resp.Body)
-	m := make(map[string]string)
-	err = json.Unmarshal(content, &m) // convert json to map
-
-	return m["session_key"]
 }
