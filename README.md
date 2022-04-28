@@ -53,10 +53,11 @@ Before changing the version of the provider, please remove the temporary folder 
 
 ```hcl
 terraform {
+  required_version = ">= 0.14.0"
   required_providers {
     netbox = {
       source = "smutel/netbox"
-      version = "0.2.1"
+      version = "~> 3.1.0"
     }
   }
 }
@@ -67,7 +68,7 @@ terraform {
 You can install the provider manually in your global terraform provider folder.
 
 ```bash
-$ export NETBOX_PROVIDER_VERSION=1.0.0
+$ export NETBOX_PROVIDER_VERSION=3.1.0
 $ mkdir -p ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64
 $ cp terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION} ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64/terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION}
 ```
@@ -91,7 +92,7 @@ provider netbox {
   url = "127.0.0.1:8000"
 
   # Environment variable NETBOX_TOKEN
-  token = "c07a2db4adb8b1e7f75e7c4369964e92f7680512"
+  token = "0123456789abcdef0123456789abcdef01234567"
 
   # Environment variable NETBOX_SCHEME
   scheme = "http"

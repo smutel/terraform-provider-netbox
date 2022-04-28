@@ -14,6 +14,16 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 ## Example Usage
 
 ```hcl
+terraform {
+  required_version = ">= 0.14.0"
+  required_providers {
+    netbox = {
+      source = "smutel/netbox"
+      version = "~> 3.1.0"
+    }
+  }
+}
+
 provider netbox {
   # Environment variable NETBOX_URL
   url = "127.0.0.1:8000"
@@ -22,7 +32,7 @@ provider netbox {
   basepath = "/api"
 
   # Environment variable NETBOX_TOKEN
-  token = "c07a2db4adb8b1e7f75e7c4369964e92f7680512"
+  token = "0123456789abcdef0123456789abcdef01234567"
 
   # Environment variable NETBOX_SCHEME
   scheme = "http"

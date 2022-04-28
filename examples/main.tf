@@ -277,6 +277,12 @@ resource "netbox_virtualization_vm" "vm_test" {
   platform_id = data.netbox_dcim_platform.platform_test.id
   tenant_id   = netbox_tenancy_tenant.tenant_test.id
   role_id     = 1
+  local_context_data = jsonencode(
+    {
+      hello = "world"
+      number = 1
+    }
+  )
 
   tag {
     name = "tag1"
