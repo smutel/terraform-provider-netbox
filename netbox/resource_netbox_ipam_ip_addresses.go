@@ -20,7 +20,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 		Delete: resourceNetboxIpamIPAddressesDelete,
 		Exists: resourceNetboxIpamIPAddressesExists,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

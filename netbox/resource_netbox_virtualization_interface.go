@@ -20,7 +20,7 @@ func resourceNetboxVirtualizationInterface() *schema.Resource {
 		Delete: resourceNetboxVirtualizationInterfaceDelete,
 		Exists: resourceNetboxVirtualizationInterfaceExists,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
