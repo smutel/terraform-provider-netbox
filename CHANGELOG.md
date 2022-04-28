@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v3.0.0...v3.1.0) (2022-04-28)
+
+
+### Bug Fixes
+
+* Allow setting local_context_data ([5ba20c6](https://github.com/smutel/terraform-provider-netbox/commit/5ba20c6b23fa9d8fa7b5b6a16b8f99155c3aedfa)), closes [#59](https://github.com/smutel/terraform-provider-netbox/issues/59)
+
+
+### Enhancements
+
+* Remove unused private key (vault removed) ([92804a3](https://github.com/smutel/terraform-provider-netbox/commit/92804a3f40c165503e19d5123784459d5acf1992))
+* Switch to terraform SDKv2 ([dde04e1](https://github.com/smutel/terraform-provider-netbox/commit/dde04e1a5b7d5c5882866c50d237550bc521678c))
+
 ## [3.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v2.2.1...v3.0.0) (2022-03-18)
 
 
