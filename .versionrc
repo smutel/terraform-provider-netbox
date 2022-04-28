@@ -27,6 +27,10 @@
     {
       "type":"git",
       "hidden":true
+    },
+    {
+      "type":"docs",
+      "hidden":true
     }
   ]
 }

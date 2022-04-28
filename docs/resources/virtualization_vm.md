@@ -12,6 +12,12 @@ resource "netbox_virtualization_vm" "vm_test" {
   disk            = 50
   memory          = 16
   cluster_id      = 1
+  local_context_data = jsonencode(
+    {
+      hello = "world"
+      number = 1
+    }
+  )
 
   tag {
     name = "tag1"
