@@ -23,17 +23,6 @@ const VMInterfaceType string = "virtualization.vminterface"
 
 const CustomFieldBoolean = "boolean"
 
-func expandToStringSlice(v []interface{}) []string {
-	s := make([]string, len(v))
-	for i, val := range v {
-		if strVal, ok := val.(string); ok {
-			s[i] = strVal
-		}
-	}
-
-	return s
-}
-
 func expandToInt64Slice(v []interface{}) []int64 {
 	s := make([]int64, len(v))
 	for i, val := range v {

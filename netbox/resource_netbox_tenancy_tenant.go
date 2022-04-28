@@ -20,7 +20,7 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 		Delete: resourceNetboxTenancyTenantDelete,
 		Exists: resourceNetboxTenancyTenantExists,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
