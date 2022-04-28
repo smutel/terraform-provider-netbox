@@ -98,9 +98,6 @@ provider netbox {
 
   # Environment variable NETBOX_INSECURE
   insecure = "true"
-
-  # Environment variable NETBOX_PRIVATE_KEY_FILE
-  private_key_file = "/path/to/private/key"
 }
 ```
 

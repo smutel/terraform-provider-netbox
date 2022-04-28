@@ -29,9 +29,6 @@ provider netbox {
 
   # Environment variable NETBOX_INSECURE
   insecure = "true"
-
-  # Environment variable NETBOX_PRIVATE_KEY_FILE
-  private_key_file = "/path/to/private/key"
 }
 ```
 
@@ -42,4 +39,3 @@ provider netbox {
 * `token` or `NETBOX_TOKEN` environment variable to define the TOKEN to access the application (empty by default)
 * `scheme` or `NETBOX_SCHEME` environment variable to define the SCHEME of the URL (https by default)
 * `insecure` or `NETBOX_INSECURE` environment variable to skip or not the TLS certificat validation (false by default)
-* `private_key_file` or `NETBOX_PRIVATE_KEY_FILE` environment variable to add a private key to work with encoded data like secrets (empty by default)
