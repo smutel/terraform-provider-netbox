@@ -16,6 +16,7 @@ type InfosForPrimary struct {
 	vmName         string
 	vmClusterID    int64
 	vmPrimaryIP4ID int64
+	vmPrimaryIP6ID int64
 	vmTags         []*models.NestedTag
 }
 
@@ -119,6 +120,11 @@ func getInfoForPrimary(m interface{}, objectID int64) (InfosForPrimary, error) {
 				} else {
 					info.vmPrimaryIP4ID = 0
 				}
+				if vms.Payload.Results[0].PrimaryIp6 != nil {
+					info.vmPrimaryIP6ID = vms.Payload.Results[0].PrimaryIp6.ID
+				} else {
+					info.vmPrimaryIP6ID = 0
+				}
 			} else {
 				return info, fmt.Errorf("Cannot set an interface as primary when the " +
 					"interface is not attached to a VM.")
@@ -129,14 +135,18 @@ func getInfoForPrimary(m interface{}, objectID int64) (InfosForPrimary, error) {
 	return info, nil
 }
 
-func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
+func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64, ip4 bool) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	if info.vmName != "" {
 		params := &models.WritableVirtualMachineWithConfigContext{}
 		params.Name = &info.vmName
 		params.Cluster = &info.vmClusterID
-		params.PrimaryIp4 = &id
+		if ip4 {
+			params.PrimaryIp4 = &id
+		} else {
+			params.PrimaryIp6 = &id
+		}
 		params.Tags = purgeNestedTagsToNestedTags(info.vmTags)
 		vm := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
 		vm.SetID(info.vmID)

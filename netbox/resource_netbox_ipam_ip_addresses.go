@@ -87,6 +87,12 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Default:  false,
 				ForceNew: true,
 			},
+			"primary_ip6": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+				ForceNew: true,
+			},
 			"role": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -143,6 +149,7 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	objectID := int64(d.Get("object_id").(int))
 	objectType := d.Get("object_type").(string)
 	primaryIP4 := d.Get("primary_ip4").(bool)
+	primaryIP6 := d.Get("primary_ip6").(bool)
 	role := d.Get("role").(string)
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
@@ -164,7 +171,7 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 	}
 
 	var info InfosForPrimary
-	if primaryIP4 && objectID != 0 {
+	if (primaryIP4 || primaryIP6) && objectID != 0 {
 		if objectType == VMInterfaceType {
 			var err error
 			info, err = getInfoForPrimary(m, objectID)
@@ -196,7 +203,11 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID)
+	if primaryIP4 {
+		err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID, true)
+	} else if primaryIP6 {
+		err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID, false)
+	}
 	if err != nil {
 		return err
 	}
@@ -268,6 +279,9 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				if err = d.Set("primary_ip4", false); err != nil {
 					return err
 				}
+				if err = d.Set("primary_ip6", false); err != nil {
+					return err
+				}
 			} else {
 				if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
 					return err
@@ -288,6 +302,15 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 							}
 						} else {
 							if err = d.Set("primary_ip4", false); err != nil {
+								return err
+							}
+						}
+						if info.vmPrimaryIP6ID == resource.ID {
+							if err = d.Set("primary_ip6", true); err != nil {
+								return err
+							}
+						} else {
+							if err = d.Set("primary_ip6", false); err != nil {
 								return err
 							}
 						}
