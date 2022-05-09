@@ -203,14 +203,16 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	if primaryIP4 {
-		err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID, true)
-	} else if primaryIP6 {
-		err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID, false)
-	}
-	if err != nil {
-		return err
-	}
+  if primaryIP4 {
+    if err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID, true); err != nil {
+		  return err
+		}
+  }
+  if primaryIP6 {
+    if err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID, false); err != nil {
+      return err
+    }
+  }
 
 	return resourceNetboxIpamIPAddressesRead(d, m)
 }
