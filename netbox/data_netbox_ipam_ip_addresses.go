@@ -16,8 +16,8 @@ func dataNetboxIpamIPAddresses() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"address": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
 				ValidateFunc: validation.IsCIDR,
 			},
 		},
