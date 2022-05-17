@@ -36,6 +36,22 @@ func resourceNetboxTenancyTenantGroup() *schema.Resource {
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
 			},
+			"tag": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"slug": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -46,10 +62,12 @@ func resourceNetboxTenancyTenantGroupCreate(d *schema.ResourceData,
 
 	groupName := d.Get("name").(string)
 	groupSlug := d.Get("slug").(string)
+	tags := d.Get("tag").(*schema.Set).List()
 
 	newResource := &models.WritableTenantGroup{
 		Name: &groupName,
 		Slug: &groupSlug,
+		Tags: convertTagsToNestedTags(tags),
 	}
 
 	resource := tenancy.NewTenancyTenantGroupsCreateParams().WithData(newResource)
@@ -85,6 +103,10 @@ func resourceNetboxTenancyTenantGroupRead(d *schema.ResourceData,
 				return err
 			}
 
+			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+				return err
+			}
+
 			return nil
 		}
 	}
@@ -103,10 +125,11 @@ func resourceNetboxTenancyTenantGroupUpdate(d *schema.ResourceData,
 	slug := d.Get("slug").(string)
 	params.Slug = &slug
 
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
-	}
+	name := d.Get("name").(string)
+	params.Name = &name
+
+	tags := d.Get("tag").(*schema.Set).List()
+	params.Tags = convertTagsToNestedTags(tags)
 
 	resource := tenancy.NewTenancyTenantGroupsPartialUpdateParams().WithData(
 		params)

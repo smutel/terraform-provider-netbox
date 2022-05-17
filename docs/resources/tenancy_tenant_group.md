@@ -8,6 +8,11 @@ Manage a tenant group within Netbox.
 resource "netbox_tenancy_tenant_group" "tenant_group_test" {
   name = "TestTenantGroup"
   slug = "TestTenantGroup"
+  
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
 }
 ```
 
@@ -16,6 +21,10 @@ resource "netbox_tenancy_tenant_group" "tenant_group_test" {
 The following arguments are supported:
 * ``name`` - (Required) The name for this object.
 * ``slug`` - (Required) The slug for this object.
+
+The ``tag`` block (optional) supports:
+* ``name`` - (Required) Name of the existing tag to associate with this resource.
+* ``slug`` - (Required) Slug of the existing tag to associate with this resource.
 
 ## Attributes Reference
 
