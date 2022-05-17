@@ -81,6 +81,39 @@ type ExtrasExportTemplatesListParams struct {
 	// ContentTypen.
 	ContentTypen *string
 
+	// Description.
+	Description *string
+
+	// DescriptionEmpty.
+	DescriptionEmpty *string
+
+	// DescriptionIc.
+	DescriptionIc *string
+
+	// DescriptionIe.
+	DescriptionIe *string
+
+	// DescriptionIew.
+	DescriptionIew *string
+
+	// DescriptionIsw.
+	DescriptionIsw *string
+
+	// Descriptionn.
+	Descriptionn *string
+
+	// DescriptionNic.
+	DescriptionNic *string
+
+	// DescriptionNie.
+	DescriptionNie *string
+
+	// DescriptionNiew.
+	DescriptionNiew *string
+
+	// DescriptionNisw.
+	DescriptionNisw *string
+
 	// ID.
 	ID *string
 
@@ -220,6 +253,127 @@ func (o *ExtrasExportTemplatesListParams) WithContentTypen(contentTypen *string)
 // SetContentTypen adds the contentTypeN to the extras export templates list params
 func (o *ExtrasExportTemplatesListParams) SetContentTypen(contentTypen *string) {
 	o.ContentTypen = contentTypen
+}
+
+// WithDescription adds the description to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescription(description *string) *ExtrasExportTemplatesListParams {
+	o.SetDescription(description)
+	return o
+}
+
+// SetDescription adds the description to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescription(description *string) {
+	o.Description = description
+}
+
+// WithDescriptionEmpty adds the descriptionEmpty to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionEmpty(descriptionEmpty *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionEmpty(descriptionEmpty)
+	return o
+}
+
+// SetDescriptionEmpty adds the descriptionEmpty to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionEmpty(descriptionEmpty *string) {
+	o.DescriptionEmpty = descriptionEmpty
+}
+
+// WithDescriptionIc adds the descriptionIc to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionIc(descriptionIc *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionIc(descriptionIc)
+	return o
+}
+
+// SetDescriptionIc adds the descriptionIc to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionIc(descriptionIc *string) {
+	o.DescriptionIc = descriptionIc
+}
+
+// WithDescriptionIe adds the descriptionIe to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionIe(descriptionIe *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionIe(descriptionIe)
+	return o
+}
+
+// SetDescriptionIe adds the descriptionIe to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionIe(descriptionIe *string) {
+	o.DescriptionIe = descriptionIe
+}
+
+// WithDescriptionIew adds the descriptionIew to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionIew(descriptionIew *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionIew(descriptionIew)
+	return o
+}
+
+// SetDescriptionIew adds the descriptionIew to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionIew(descriptionIew *string) {
+	o.DescriptionIew = descriptionIew
+}
+
+// WithDescriptionIsw adds the descriptionIsw to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionIsw(descriptionIsw *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionIsw(descriptionIsw)
+	return o
+}
+
+// SetDescriptionIsw adds the descriptionIsw to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionIsw(descriptionIsw *string) {
+	o.DescriptionIsw = descriptionIsw
+}
+
+// WithDescriptionn adds the descriptionn to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionn(descriptionn *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionn(descriptionn)
+	return o
+}
+
+// SetDescriptionn adds the descriptionN to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionn(descriptionn *string) {
+	o.Descriptionn = descriptionn
+}
+
+// WithDescriptionNic adds the descriptionNic to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionNic(descriptionNic *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionNic(descriptionNic)
+	return o
+}
+
+// SetDescriptionNic adds the descriptionNic to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionNic(descriptionNic *string) {
+	o.DescriptionNic = descriptionNic
+}
+
+// WithDescriptionNie adds the descriptionNie to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionNie(descriptionNie *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionNie(descriptionNie)
+	return o
+}
+
+// SetDescriptionNie adds the descriptionNie to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionNie(descriptionNie *string) {
+	o.DescriptionNie = descriptionNie
+}
+
+// WithDescriptionNiew adds the descriptionNiew to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionNiew(descriptionNiew *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionNiew(descriptionNiew)
+	return o
+}
+
+// SetDescriptionNiew adds the descriptionNiew to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionNiew(descriptionNiew *string) {
+	o.DescriptionNiew = descriptionNiew
+}
+
+// WithDescriptionNisw adds the descriptionNisw to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) WithDescriptionNisw(descriptionNisw *string) *ExtrasExportTemplatesListParams {
+	o.SetDescriptionNisw(descriptionNisw)
+	return o
+}
+
+// SetDescriptionNisw adds the descriptionNisw to the extras export templates list params
+func (o *ExtrasExportTemplatesListParams) SetDescriptionNisw(descriptionNisw *string) {
+	o.DescriptionNisw = descriptionNisw
 }
 
 // WithID adds the id to the extras export templates list params
@@ -479,6 +633,193 @@ func (o *ExtrasExportTemplatesListParams) WriteToRequest(r runtime.ClientRequest
 		if qContentTypen != "" {
 
 			if err := r.SetQueryParam("content_type__n", qContentTypen); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Description != nil {
+
+		// query param description
+		var qrDescription string
+
+		if o.Description != nil {
+			qrDescription = *o.Description
+		}
+		qDescription := qrDescription
+		if qDescription != "" {
+
+			if err := r.SetQueryParam("description", qDescription); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionEmpty != nil {
+
+		// query param description__empty
+		var qrDescriptionEmpty string
+
+		if o.DescriptionEmpty != nil {
+			qrDescriptionEmpty = *o.DescriptionEmpty
+		}
+		qDescriptionEmpty := qrDescriptionEmpty
+		if qDescriptionEmpty != "" {
+
+			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionIc != nil {
+
+		// query param description__ic
+		var qrDescriptionIc string
+
+		if o.DescriptionIc != nil {
+			qrDescriptionIc = *o.DescriptionIc
+		}
+		qDescriptionIc := qrDescriptionIc
+		if qDescriptionIc != "" {
+
+			if err := r.SetQueryParam("description__ic", qDescriptionIc); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionIe != nil {
+
+		// query param description__ie
+		var qrDescriptionIe string
+
+		if o.DescriptionIe != nil {
+			qrDescriptionIe = *o.DescriptionIe
+		}
+		qDescriptionIe := qrDescriptionIe
+		if qDescriptionIe != "" {
+
+			if err := r.SetQueryParam("description__ie", qDescriptionIe); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionIew != nil {
+
+		// query param description__iew
+		var qrDescriptionIew string
+
+		if o.DescriptionIew != nil {
+			qrDescriptionIew = *o.DescriptionIew
+		}
+		qDescriptionIew := qrDescriptionIew
+		if qDescriptionIew != "" {
+
+			if err := r.SetQueryParam("description__iew", qDescriptionIew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionIsw != nil {
+
+		// query param description__isw
+		var qrDescriptionIsw string
+
+		if o.DescriptionIsw != nil {
+			qrDescriptionIsw = *o.DescriptionIsw
+		}
+		qDescriptionIsw := qrDescriptionIsw
+		if qDescriptionIsw != "" {
+
+			if err := r.SetQueryParam("description__isw", qDescriptionIsw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Descriptionn != nil {
+
+		// query param description__n
+		var qrDescriptionn string
+
+		if o.Descriptionn != nil {
+			qrDescriptionn = *o.Descriptionn
+		}
+		qDescriptionn := qrDescriptionn
+		if qDescriptionn != "" {
+
+			if err := r.SetQueryParam("description__n", qDescriptionn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionNic != nil {
+
+		// query param description__nic
+		var qrDescriptionNic string
+
+		if o.DescriptionNic != nil {
+			qrDescriptionNic = *o.DescriptionNic
+		}
+		qDescriptionNic := qrDescriptionNic
+		if qDescriptionNic != "" {
+
+			if err := r.SetQueryParam("description__nic", qDescriptionNic); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionNie != nil {
+
+		// query param description__nie
+		var qrDescriptionNie string
+
+		if o.DescriptionNie != nil {
+			qrDescriptionNie = *o.DescriptionNie
+		}
+		qDescriptionNie := qrDescriptionNie
+		if qDescriptionNie != "" {
+
+			if err := r.SetQueryParam("description__nie", qDescriptionNie); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionNiew != nil {
+
+		// query param description__niew
+		var qrDescriptionNiew string
+
+		if o.DescriptionNiew != nil {
+			qrDescriptionNiew = *o.DescriptionNiew
+		}
+		qDescriptionNiew := qrDescriptionNiew
+		if qDescriptionNiew != "" {
+
+			if err := r.SetQueryParam("description__niew", qDescriptionNiew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionNisw != nil {
+
+		// query param description__nisw
+		var qrDescriptionNisw string
+
+		if o.DescriptionNisw != nil {
+			qrDescriptionNisw = *o.DescriptionNisw
+		}
+		qDescriptionNisw := qrDescriptionNisw
+		if qDescriptionNisw != "" {
+
+			if err := r.SetQueryParam("description__nisw", qDescriptionNisw); err != nil {
 				return err
 			}
 		}

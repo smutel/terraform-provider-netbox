@@ -22,6 +22,7 @@ package models
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -82,6 +83,9 @@ type DeviceRole struct {
 	// Pattern: ^[-a-zA-Z0-9_]+$
 	Slug *string `json:"slug"`
 
+	// tags
+	Tags []*NestedTag `json:"tags"`
+
 	// Url
 	// Read Only: true
 	// Format: uri
@@ -122,6 +126,10 @@ func (m *DeviceRole) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateSlug(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTags(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -229,6 +237,32 @@ func (m *DeviceRole) validateSlug(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *DeviceRole) validateTags(formats strfmt.Registry) error {
+	if swag.IsZero(m.Tags) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Tags); i++ {
+		if swag.IsZero(m.Tags[i]) { // not required
+			continue
+		}
+
+		if m.Tags[i] != nil {
+			if err := m.Tags[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (m *DeviceRole) validateURL(formats strfmt.Registry) error {
 	if swag.IsZero(m.URL) { // not required
 		return nil
@@ -262,6 +296,10 @@ func (m *DeviceRole) ContextValidate(ctx context.Context, formats strfmt.Registr
 	}
 
 	if err := m.contextValidateLastUpdated(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateTags(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -319,6 +357,26 @@ func (m *DeviceRole) contextValidateLastUpdated(ctx context.Context, formats str
 
 	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *DeviceRole) contextValidateTags(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Tags); i++ {
+
+		if m.Tags[i] != nil {
+			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

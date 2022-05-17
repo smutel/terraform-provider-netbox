@@ -44,6 +44,11 @@ type CustomField struct {
 	// Unique: true
 	ContentTypes []string `json:"content_types"`
 
+	// Created
+	// Read Only: true
+	// Format: date
+	Created strfmt.Date `json:"created,omitempty"`
+
 	// Default
 	//
 	// Default value for the field (must be a JSON value). Encapsulate strings with double quotes (e.g. "Foo").
@@ -70,12 +75,18 @@ type CustomField struct {
 	// Max Length: 50
 	Label string `json:"label,omitempty"`
 
+	// Last updated
+	// Read Only: true
+	// Format: date-time
+	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
+
 	// Name
 	//
 	// Internal field name
 	// Required: true
 	// Max Length: 50
 	// Min Length: 1
+	// Pattern: ^[a-z0-9_]+$
 	Name *string `json:"name"`
 
 	// Required
@@ -96,14 +107,14 @@ type CustomField struct {
 	//
 	// Maximum allowed value (for numeric fields)
 	// Maximum: 2.147483647e+09
-	// Minimum: 0
+	// Minimum: -2.147483648e+09
 	ValidationMaximum *int64 `json:"validation_maximum,omitempty"`
 
 	// Minimum value
 	//
 	// Minimum allowed value (for numeric fields)
 	// Maximum: 2.147483647e+09
-	// Minimum: 0
+	// Minimum: -2.147483648e+09
 	ValidationMinimum *int64 `json:"validation_minimum,omitempty"`
 
 	// Validation regex
@@ -132,6 +143,10 @@ func (m *CustomField) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateCreated(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateDescription(formats); err != nil {
 		res = append(res, err)
 	}
@@ -141,6 +156,10 @@ func (m *CustomField) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateLabel(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLastUpdated(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -211,6 +230,18 @@ func (m *CustomField) validateContentTypes(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *CustomField) validateCreated(formats strfmt.Registry) error {
+	if swag.IsZero(m.Created) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("created", "body", "date", m.Created.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *CustomField) validateDescription(formats strfmt.Registry) error {
 	if swag.IsZero(m.Description) { // not required
 		return nil
@@ -254,6 +285,18 @@ func (m *CustomField) validateLabel(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *CustomField) validateLastUpdated(formats strfmt.Registry) error {
+	if swag.IsZero(m.LastUpdated) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("last_updated", "body", "date-time", m.LastUpdated.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *CustomField) validateName(formats strfmt.Registry) error {
 
 	if err := validate.Required("name", "body", m.Name); err != nil {
@@ -265,6 +308,10 @@ func (m *CustomField) validateName(formats strfmt.Registry) error {
 	}
 
 	if err := validate.MaxLength("name", "body", *m.Name, 50); err != nil {
+		return err
+	}
+
+	if err := validate.Pattern("name", "body", *m.Name, `^[a-z0-9_]+$`); err != nil {
 		return err
 	}
 
@@ -308,7 +355,7 @@ func (m *CustomField) validateValidationMaximum(formats strfmt.Registry) error {
 		return nil
 	}
 
-	if err := validate.MinimumInt("validation_maximum", "body", *m.ValidationMaximum, 0, false); err != nil {
+	if err := validate.MinimumInt("validation_maximum", "body", *m.ValidationMaximum, -2.147483648e+09, false); err != nil {
 		return err
 	}
 
@@ -324,7 +371,7 @@ func (m *CustomField) validateValidationMinimum(formats strfmt.Registry) error {
 		return nil
 	}
 
-	if err := validate.MinimumInt("validation_minimum", "body", *m.ValidationMinimum, 0, false); err != nil {
+	if err := validate.MinimumInt("validation_minimum", "body", *m.ValidationMinimum, -2.147483648e+09, false); err != nil {
 		return err
 	}
 
@@ -367,6 +414,10 @@ func (m *CustomField) validateWeight(formats strfmt.Registry) error {
 func (m *CustomField) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateCreated(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateDisplay(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -376,6 +427,10 @@ func (m *CustomField) ContextValidate(ctx context.Context, formats strfmt.Regist
 	}
 
 	if err := m.contextValidateID(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateLastUpdated(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -390,6 +445,15 @@ func (m *CustomField) ContextValidate(ctx context.Context, formats strfmt.Regist
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *CustomField) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "created", "body", strfmt.Date(m.Created)); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -421,6 +485,15 @@ func (m *CustomField) contextValidateFilterLogic(ctx context.Context, formats st
 func (m *CustomField) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "id", "body", int64(m.ID)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *CustomField) contextValidateLastUpdated(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
 		return err
 	}
 
@@ -626,12 +699,12 @@ type CustomFieldType struct {
 
 	// label
 	// Required: true
-	// Enum: [Text Integer Boolean (true/false) Date URL Selection Multiple selection]
+	// Enum: [Text Text (long) Integer Boolean (true/false) Date URL JSON Selection Multiple selection]
 	Label *string `json:"label"`
 
 	// value
 	// Required: true
-	// Enum: [text integer boolean date url select multiselect]
+	// Enum: [text longtext integer boolean date url json select multiselect]
 	Value *string `json:"value"`
 }
 
@@ -657,7 +730,7 @@ var customFieldTypeTypeLabelPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["Text","Integer","Boolean (true/false)","Date","URL","Selection","Multiple selection"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["Text","Text (long)","Integer","Boolean (true/false)","Date","URL","JSON","Selection","Multiple selection"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -670,6 +743,9 @@ const (
 	// CustomFieldTypeLabelText captures enum value "Text"
 	CustomFieldTypeLabelText string = "Text"
 
+	// CustomFieldTypeLabelTextLong captures enum value "Text (long)"
+	CustomFieldTypeLabelTextLong string = "Text (long)"
+
 	// CustomFieldTypeLabelInteger captures enum value "Integer"
 	CustomFieldTypeLabelInteger string = "Integer"
 
@@ -681,6 +757,9 @@ const (
 
 	// CustomFieldTypeLabelURL captures enum value "URL"
 	CustomFieldTypeLabelURL string = "URL"
+
+	// CustomFieldTypeLabelJSON captures enum value "JSON"
+	CustomFieldTypeLabelJSON string = "JSON"
 
 	// CustomFieldTypeLabelSelection captures enum value "Selection"
 	CustomFieldTypeLabelSelection string = "Selection"
@@ -715,7 +794,7 @@ var customFieldTypeTypeValuePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["text","integer","boolean","date","url","select","multiselect"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["text","longtext","integer","boolean","date","url","json","select","multiselect"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -728,6 +807,9 @@ const (
 	// CustomFieldTypeValueText captures enum value "text"
 	CustomFieldTypeValueText string = "text"
 
+	// CustomFieldTypeValueLongtext captures enum value "longtext"
+	CustomFieldTypeValueLongtext string = "longtext"
+
 	// CustomFieldTypeValueInteger captures enum value "integer"
 	CustomFieldTypeValueInteger string = "integer"
 
@@ -739,6 +821,9 @@ const (
 
 	// CustomFieldTypeValueURL captures enum value "url"
 	CustomFieldTypeValueURL string = "url"
+
+	// CustomFieldTypeValueJSON captures enum value "json"
+	CustomFieldTypeValueJSON string = "json"
 
 	// CustomFieldTypeValueSelect captures enum value "select"
 	CustomFieldTypeValueSelect string = "select"

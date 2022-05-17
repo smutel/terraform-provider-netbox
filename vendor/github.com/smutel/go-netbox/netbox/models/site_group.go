@@ -22,6 +22,7 @@ package models
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -83,6 +84,9 @@ type SiteGroup struct {
 	// Pattern: ^[-a-zA-Z0-9_]+$
 	Slug *string `json:"slug"`
 
+	// tags
+	Tags []*NestedTag `json:"tags"`
+
 	// Url
 	// Read Only: true
 	// Format: uri
@@ -114,6 +118,10 @@ func (m *SiteGroup) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateSlug(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTags(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -220,6 +228,32 @@ func (m *SiteGroup) validateSlug(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *SiteGroup) validateTags(formats strfmt.Registry) error {
+	if swag.IsZero(m.Tags) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Tags); i++ {
+		if swag.IsZero(m.Tags[i]) { // not required
+			continue
+		}
+
+		if m.Tags[i] != nil {
+			if err := m.Tags[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (m *SiteGroup) validateURL(formats strfmt.Registry) error {
 	if swag.IsZero(m.URL) { // not required
 		return nil
@@ -261,6 +295,10 @@ func (m *SiteGroup) ContextValidate(ctx context.Context, formats strfmt.Registry
 	}
 
 	if err := m.contextValidateSiteCount(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateTags(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -339,6 +377,26 @@ func (m *SiteGroup) contextValidateSiteCount(ctx context.Context, formats strfmt
 
 	if err := validate.ReadOnly(ctx, "site_count", "body", int64(m.SiteCount)); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *SiteGroup) contextValidateTags(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Tags); i++ {
+
+		if m.Tags[i] != nil {
+			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

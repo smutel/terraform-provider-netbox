@@ -67,8 +67,6 @@ type Rack struct {
 	Display string `json:"display,omitempty"`
 
 	// Facility ID
-	//
-	// Locally-assigned identifier
 	// Max Length: 50
 	FacilityID *string `json:"facility_id,omitempty"`
 

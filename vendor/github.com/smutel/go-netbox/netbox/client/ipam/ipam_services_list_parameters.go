@@ -84,6 +84,39 @@ type IpamServicesListParams struct {
 	// CreatedLte.
 	CreatedLte *string
 
+	// Description.
+	Description *string
+
+	// DescriptionEmpty.
+	DescriptionEmpty *string
+
+	// DescriptionIc.
+	DescriptionIc *string
+
+	// DescriptionIe.
+	DescriptionIe *string
+
+	// DescriptionIew.
+	DescriptionIew *string
+
+	// DescriptionIsw.
+	DescriptionIsw *string
+
+	// Descriptionn.
+	Descriptionn *string
+
+	// DescriptionNic.
+	DescriptionNic *string
+
+	// DescriptionNie.
+	DescriptionNie *string
+
+	// DescriptionNiew.
+	DescriptionNiew *string
+
+	// DescriptionNisw.
+	DescriptionNisw *string
+
 	// Device.
 	Device *string
 
@@ -282,6 +315,127 @@ func (o *IpamServicesListParams) WithCreatedLte(createdLte *string) *IpamService
 // SetCreatedLte adds the createdLte to the ipam services list params
 func (o *IpamServicesListParams) SetCreatedLte(createdLte *string) {
 	o.CreatedLte = createdLte
+}
+
+// WithDescription adds the description to the ipam services list params
+func (o *IpamServicesListParams) WithDescription(description *string) *IpamServicesListParams {
+	o.SetDescription(description)
+	return o
+}
+
+// SetDescription adds the description to the ipam services list params
+func (o *IpamServicesListParams) SetDescription(description *string) {
+	o.Description = description
+}
+
+// WithDescriptionEmpty adds the descriptionEmpty to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionEmpty(descriptionEmpty *string) *IpamServicesListParams {
+	o.SetDescriptionEmpty(descriptionEmpty)
+	return o
+}
+
+// SetDescriptionEmpty adds the descriptionEmpty to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionEmpty(descriptionEmpty *string) {
+	o.DescriptionEmpty = descriptionEmpty
+}
+
+// WithDescriptionIc adds the descriptionIc to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionIc(descriptionIc *string) *IpamServicesListParams {
+	o.SetDescriptionIc(descriptionIc)
+	return o
+}
+
+// SetDescriptionIc adds the descriptionIc to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionIc(descriptionIc *string) {
+	o.DescriptionIc = descriptionIc
+}
+
+// WithDescriptionIe adds the descriptionIe to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionIe(descriptionIe *string) *IpamServicesListParams {
+	o.SetDescriptionIe(descriptionIe)
+	return o
+}
+
+// SetDescriptionIe adds the descriptionIe to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionIe(descriptionIe *string) {
+	o.DescriptionIe = descriptionIe
+}
+
+// WithDescriptionIew adds the descriptionIew to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionIew(descriptionIew *string) *IpamServicesListParams {
+	o.SetDescriptionIew(descriptionIew)
+	return o
+}
+
+// SetDescriptionIew adds the descriptionIew to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionIew(descriptionIew *string) {
+	o.DescriptionIew = descriptionIew
+}
+
+// WithDescriptionIsw adds the descriptionIsw to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionIsw(descriptionIsw *string) *IpamServicesListParams {
+	o.SetDescriptionIsw(descriptionIsw)
+	return o
+}
+
+// SetDescriptionIsw adds the descriptionIsw to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionIsw(descriptionIsw *string) {
+	o.DescriptionIsw = descriptionIsw
+}
+
+// WithDescriptionn adds the descriptionn to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionn(descriptionn *string) *IpamServicesListParams {
+	o.SetDescriptionn(descriptionn)
+	return o
+}
+
+// SetDescriptionn adds the descriptionN to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionn(descriptionn *string) {
+	o.Descriptionn = descriptionn
+}
+
+// WithDescriptionNic adds the descriptionNic to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionNic(descriptionNic *string) *IpamServicesListParams {
+	o.SetDescriptionNic(descriptionNic)
+	return o
+}
+
+// SetDescriptionNic adds the descriptionNic to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionNic(descriptionNic *string) {
+	o.DescriptionNic = descriptionNic
+}
+
+// WithDescriptionNie adds the descriptionNie to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionNie(descriptionNie *string) *IpamServicesListParams {
+	o.SetDescriptionNie(descriptionNie)
+	return o
+}
+
+// SetDescriptionNie adds the descriptionNie to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionNie(descriptionNie *string) {
+	o.DescriptionNie = descriptionNie
+}
+
+// WithDescriptionNiew adds the descriptionNiew to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionNiew(descriptionNiew *string) *IpamServicesListParams {
+	o.SetDescriptionNiew(descriptionNiew)
+	return o
+}
+
+// SetDescriptionNiew adds the descriptionNiew to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionNiew(descriptionNiew *string) {
+	o.DescriptionNiew = descriptionNiew
+}
+
+// WithDescriptionNisw adds the descriptionNisw to the ipam services list params
+func (o *IpamServicesListParams) WithDescriptionNisw(descriptionNisw *string) *IpamServicesListParams {
+	o.SetDescriptionNisw(descriptionNisw)
+	return o
+}
+
+// SetDescriptionNisw adds the descriptionNisw to the ipam services list params
+func (o *IpamServicesListParams) SetDescriptionNisw(descriptionNisw *string) {
+	o.DescriptionNisw = descriptionNisw
 }
 
 // WithDevice adds the device to the ipam services list params
@@ -734,6 +888,193 @@ func (o *IpamServicesListParams) WriteToRequest(r runtime.ClientRequest, reg str
 		if qCreatedLte != "" {
 
 			if err := r.SetQueryParam("created__lte", qCreatedLte); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Description != nil {
+
+		// query param description
+		var qrDescription string
+
+		if o.Description != nil {
+			qrDescription = *o.Description
+		}
+		qDescription := qrDescription
+		if qDescription != "" {
+
+			if err := r.SetQueryParam("description", qDescription); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionEmpty != nil {
+
+		// query param description__empty
+		var qrDescriptionEmpty string
+
+		if o.DescriptionEmpty != nil {
+			qrDescriptionEmpty = *o.DescriptionEmpty
+		}
+		qDescriptionEmpty := qrDescriptionEmpty
+		if qDescriptionEmpty != "" {
+
+			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionIc != nil {
+
+		// query param description__ic
+		var qrDescriptionIc string
+
+		if o.DescriptionIc != nil {
+			qrDescriptionIc = *o.DescriptionIc
+		}
+		qDescriptionIc := qrDescriptionIc
+		if qDescriptionIc != "" {
+
+			if err := r.SetQueryParam("description__ic", qDescriptionIc); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionIe != nil {
+
+		// query param description__ie
+		var qrDescriptionIe string
+
+		if o.DescriptionIe != nil {
+			qrDescriptionIe = *o.DescriptionIe
+		}
+		qDescriptionIe := qrDescriptionIe
+		if qDescriptionIe != "" {
+
+			if err := r.SetQueryParam("description__ie", qDescriptionIe); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionIew != nil {
+
+		// query param description__iew
+		var qrDescriptionIew string
+
+		if o.DescriptionIew != nil {
+			qrDescriptionIew = *o.DescriptionIew
+		}
+		qDescriptionIew := qrDescriptionIew
+		if qDescriptionIew != "" {
+
+			if err := r.SetQueryParam("description__iew", qDescriptionIew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionIsw != nil {
+
+		// query param description__isw
+		var qrDescriptionIsw string
+
+		if o.DescriptionIsw != nil {
+			qrDescriptionIsw = *o.DescriptionIsw
+		}
+		qDescriptionIsw := qrDescriptionIsw
+		if qDescriptionIsw != "" {
+
+			if err := r.SetQueryParam("description__isw", qDescriptionIsw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Descriptionn != nil {
+
+		// query param description__n
+		var qrDescriptionn string
+
+		if o.Descriptionn != nil {
+			qrDescriptionn = *o.Descriptionn
+		}
+		qDescriptionn := qrDescriptionn
+		if qDescriptionn != "" {
+
+			if err := r.SetQueryParam("description__n", qDescriptionn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionNic != nil {
+
+		// query param description__nic
+		var qrDescriptionNic string
+
+		if o.DescriptionNic != nil {
+			qrDescriptionNic = *o.DescriptionNic
+		}
+		qDescriptionNic := qrDescriptionNic
+		if qDescriptionNic != "" {
+
+			if err := r.SetQueryParam("description__nic", qDescriptionNic); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionNie != nil {
+
+		// query param description__nie
+		var qrDescriptionNie string
+
+		if o.DescriptionNie != nil {
+			qrDescriptionNie = *o.DescriptionNie
+		}
+		qDescriptionNie := qrDescriptionNie
+		if qDescriptionNie != "" {
+
+			if err := r.SetQueryParam("description__nie", qDescriptionNie); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionNiew != nil {
+
+		// query param description__niew
+		var qrDescriptionNiew string
+
+		if o.DescriptionNiew != nil {
+			qrDescriptionNiew = *o.DescriptionNiew
+		}
+		qDescriptionNiew := qrDescriptionNiew
+		if qDescriptionNiew != "" {
+
+			if err := r.SetQueryParam("description__niew", qDescriptionNiew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.DescriptionNisw != nil {
+
+		// query param description__nisw
+		var qrDescriptionNisw string
+
+		if o.DescriptionNisw != nil {
+			qrDescriptionNisw = *o.DescriptionNisw
+		}
+		qDescriptionNisw := qrDescriptionNisw
+		if qDescriptionNisw != "" {
+
+			if err := r.SetQueryParam("description__nisw", qDescriptionNisw); err != nil {
 				return err
 			}
 		}

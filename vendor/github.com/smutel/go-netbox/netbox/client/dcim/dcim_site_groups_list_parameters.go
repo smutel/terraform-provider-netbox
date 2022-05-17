@@ -75,6 +75,18 @@ func NewDcimSiteGroupsListParamsWithHTTPClient(client *http.Client) *DcimSiteGro
 */
 type DcimSiteGroupsListParams struct {
 
+	// Contact.
+	Contact *string
+
+	// Contactn.
+	Contactn *string
+
+	// ContactRole.
+	ContactRole *string
+
+	// ContactRolen.
+	ContactRolen *string
+
 	// Created.
 	Created *string
 
@@ -237,6 +249,12 @@ type DcimSiteGroupsListParams struct {
 	// SlugNisw.
 	SlugNisw *string
 
+	// Tag.
+	Tag *string
+
+	// Tagn.
+	Tagn *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -288,6 +306,50 @@ func (o *DcimSiteGroupsListParams) WithHTTPClient(client *http.Client) *DcimSite
 // SetHTTPClient adds the HTTPClient to the dcim site groups list params
 func (o *DcimSiteGroupsListParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
+}
+
+// WithContact adds the contact to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) WithContact(contact *string) *DcimSiteGroupsListParams {
+	o.SetContact(contact)
+	return o
+}
+
+// SetContact adds the contact to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) SetContact(contact *string) {
+	o.Contact = contact
+}
+
+// WithContactn adds the contactn to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) WithContactn(contactn *string) *DcimSiteGroupsListParams {
+	o.SetContactn(contactn)
+	return o
+}
+
+// SetContactn adds the contactN to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) SetContactn(contactn *string) {
+	o.Contactn = contactn
+}
+
+// WithContactRole adds the contactRole to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) WithContactRole(contactRole *string) *DcimSiteGroupsListParams {
+	o.SetContactRole(contactRole)
+	return o
+}
+
+// SetContactRole adds the contactRole to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) SetContactRole(contactRole *string) {
+	o.ContactRole = contactRole
+}
+
+// WithContactRolen adds the contactRolen to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) WithContactRolen(contactRolen *string) *DcimSiteGroupsListParams {
+	o.SetContactRolen(contactRolen)
+	return o
+}
+
+// SetContactRolen adds the contactRoleN to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) SetContactRolen(contactRolen *string) {
+	o.ContactRolen = contactRolen
 }
 
 // WithCreated adds the created to the dcim site groups list params
@@ -862,6 +924,28 @@ func (o *DcimSiteGroupsListParams) SetSlugNisw(slugNisw *string) {
 	o.SlugNisw = slugNisw
 }
 
+// WithTag adds the tag to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) WithTag(tag *string) *DcimSiteGroupsListParams {
+	o.SetTag(tag)
+	return o
+}
+
+// SetTag adds the tag to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) SetTag(tag *string) {
+	o.Tag = tag
+}
+
+// WithTagn adds the tagn to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) WithTagn(tagn *string) *DcimSiteGroupsListParams {
+	o.SetTagn(tagn)
+	return o
+}
+
+// SetTagn adds the tagN to the dcim site groups list params
+func (o *DcimSiteGroupsListParams) SetTagn(tagn *string) {
+	o.Tagn = tagn
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *DcimSiteGroupsListParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -869,6 +953,74 @@ func (o *DcimSiteGroupsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		return err
 	}
 	var res []error
+
+	if o.Contact != nil {
+
+		// query param contact
+		var qrContact string
+
+		if o.Contact != nil {
+			qrContact = *o.Contact
+		}
+		qContact := qrContact
+		if qContact != "" {
+
+			if err := r.SetQueryParam("contact", qContact); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Contactn != nil {
+
+		// query param contact__n
+		var qrContactn string
+
+		if o.Contactn != nil {
+			qrContactn = *o.Contactn
+		}
+		qContactn := qrContactn
+		if qContactn != "" {
+
+			if err := r.SetQueryParam("contact__n", qContactn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContactRole != nil {
+
+		// query param contact_role
+		var qrContactRole string
+
+		if o.ContactRole != nil {
+			qrContactRole = *o.ContactRole
+		}
+		qContactRole := qrContactRole
+		if qContactRole != "" {
+
+			if err := r.SetQueryParam("contact_role", qContactRole); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContactRolen != nil {
+
+		// query param contact_role__n
+		var qrContactRolen string
+
+		if o.ContactRolen != nil {
+			qrContactRolen = *o.ContactRolen
+		}
+		qContactRolen := qrContactRolen
+		if qContactRolen != "" {
+
+			if err := r.SetQueryParam("contact_role__n", qContactRolen); err != nil {
+				return err
+			}
+		}
+	}
 
 	if o.Created != nil {
 
@@ -1749,6 +1901,40 @@ func (o *DcimSiteGroupsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qSlugNisw != "" {
 
 			if err := r.SetQueryParam("slug__nisw", qSlugNisw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Tag != nil {
+
+		// query param tag
+		var qrTag string
+
+		if o.Tag != nil {
+			qrTag = *o.Tag
+		}
+		qTag := qrTag
+		if qTag != "" {
+
+			if err := r.SetQueryParam("tag", qTag); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Tagn != nil {
+
+		// query param tag__n
+		var qrTagn string
+
+		if o.Tagn != nil {
+			qrTagn = *o.Tagn
+		}
+		qTagn := qrTagn
+		if qTagn != "" {
+
+			if err := r.SetQueryParam("tag__n", qTagn); err != nil {
 				return err
 			}
 		}

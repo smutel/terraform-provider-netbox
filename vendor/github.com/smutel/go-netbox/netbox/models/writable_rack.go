@@ -67,8 +67,6 @@ type WritableRack struct {
 	Display string `json:"display,omitempty"`
 
 	// Facility ID
-	//
-	// Locally-assigned identifier
 	// Max Length: 50
 	FacilityID *string `json:"facility_id,omitempty"`
 
@@ -82,7 +80,8 @@ type WritableRack struct {
 	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Location
-	Location *int64 `json:"location,omitempty"`
+	// Required: true
+	Location *int64 `json:"location"`
 
 	// Name
 	// Required: true
@@ -175,6 +174,10 @@ func (m *WritableRack) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateLastUpdated(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLocation(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -274,6 +277,15 @@ func (m *WritableRack) validateLastUpdated(formats strfmt.Registry) error {
 	}
 
 	if err := validate.FormatOf("last_updated", "body", "date-time", m.LastUpdated.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *WritableRack) validateLocation(formats strfmt.Registry) error {
+
+	if err := validate.Required("location", "body", m.Location); err != nil {
 		return err
 	}
 

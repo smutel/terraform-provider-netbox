@@ -237,6 +237,12 @@ type TenancyTenantGroupsListParams struct {
 	// SlugNisw.
 	SlugNisw *string
 
+	// Tag.
+	Tag *string
+
+	// Tagn.
+	Tagn *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -860,6 +866,28 @@ func (o *TenancyTenantGroupsListParams) WithSlugNisw(slugNisw *string) *TenancyT
 // SetSlugNisw adds the slugNisw to the tenancy tenant groups list params
 func (o *TenancyTenantGroupsListParams) SetSlugNisw(slugNisw *string) {
 	o.SlugNisw = slugNisw
+}
+
+// WithTag adds the tag to the tenancy tenant groups list params
+func (o *TenancyTenantGroupsListParams) WithTag(tag *string) *TenancyTenantGroupsListParams {
+	o.SetTag(tag)
+	return o
+}
+
+// SetTag adds the tag to the tenancy tenant groups list params
+func (o *TenancyTenantGroupsListParams) SetTag(tag *string) {
+	o.Tag = tag
+}
+
+// WithTagn adds the tagn to the tenancy tenant groups list params
+func (o *TenancyTenantGroupsListParams) WithTagn(tagn *string) *TenancyTenantGroupsListParams {
+	o.SetTagn(tagn)
+	return o
+}
+
+// SetTagn adds the tagN to the tenancy tenant groups list params
+func (o *TenancyTenantGroupsListParams) SetTagn(tagn *string) {
+	o.Tagn = tagn
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -1749,6 +1777,40 @@ func (o *TenancyTenantGroupsListParams) WriteToRequest(r runtime.ClientRequest, 
 		if qSlugNisw != "" {
 
 			if err := r.SetQueryParam("slug__nisw", qSlugNisw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Tag != nil {
+
+		// query param tag
+		var qrTag string
+
+		if o.Tag != nil {
+			qrTag = *o.Tag
+		}
+		qTag := qrTag
+		if qTag != "" {
+
+			if err := r.SetQueryParam("tag", qTag); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Tagn != nil {
+
+		// query param tag__n
+		var qrTagn string
+
+		if o.Tagn != nil {
+			qrTagn = *o.Tagn
+		}
+		qTagn := qrTagn
+		if qTagn != "" {
+
+			if err := r.SetQueryParam("tag__n", qTagn); err != nil {
 				return err
 			}
 		}

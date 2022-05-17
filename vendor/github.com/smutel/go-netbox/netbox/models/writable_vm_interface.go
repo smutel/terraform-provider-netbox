@@ -36,6 +36,13 @@ import (
 // swagger:model WritableVMInterface
 type WritableVMInterface struct {
 
+	// Bridge interface
+	Bridge *int64 `json:"bridge,omitempty"`
+
+	// Count fhrp groups
+	// Read Only: true
+	CountFhrpGroups int64 `json:"count_fhrp_groups,omitempty"`
+
 	// Count ipaddresses
 	// Read Only: true
 	CountIpaddresses int64 `json:"count_ipaddresses,omitempty"`
@@ -336,6 +343,10 @@ func (m *WritableVMInterface) validateVirtualMachine(formats strfmt.Registry) er
 func (m *WritableVMInterface) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateCountFhrpGroups(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateCountIpaddresses(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -367,6 +378,15 @@ func (m *WritableVMInterface) ContextValidate(ctx context.Context, formats strfm
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *WritableVMInterface) contextValidateCountFhrpGroups(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "count_fhrp_groups", "body", int64(m.CountFhrpGroups)); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -74,7 +74,7 @@ type IPAddress struct {
 	//
 	// Hostname or FQDN (not case-sensitive)
 	// Max Length: 255
-	// Pattern: ^[0-9A-Za-z._-]+$
+	// Pattern: ^([0-9A-Za-z_-]+|\*)(\.[0-9A-Za-z_-]+)*\.?$
 	DNSName string `json:"dns_name,omitempty"`
 
 	// family
@@ -244,7 +244,7 @@ func (m *IPAddress) validateDNSName(formats strfmt.Registry) error {
 		return err
 	}
 
-	if err := validate.Pattern("dns_name", "body", m.DNSName, `^[0-9A-Za-z._-]+$`); err != nil {
+	if err := validate.Pattern("dns_name", "body", m.DNSName, `^([0-9A-Za-z_-]+|\*)(\.[0-9A-Za-z_-]+)*\.?$`); err != nil {
 		return err
 	}
 

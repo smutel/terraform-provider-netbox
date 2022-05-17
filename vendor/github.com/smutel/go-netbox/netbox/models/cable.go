@@ -41,6 +41,11 @@ type Cable struct {
 	// Pattern: ^[0-9a-f]{6}$
 	Color string `json:"color,omitempty"`
 
+	// Created
+	// Read Only: true
+	// Format: date
+	Created strfmt.Date `json:"created,omitempty"`
+
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
 
@@ -56,6 +61,11 @@ type Cable struct {
 	// Max Length: 100
 	Label string `json:"label,omitempty"`
 
+	// Last updated
+	// Read Only: true
+	// Format: date-time
+	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
+
 	// Length
 	Length *float64 `json:"length,omitempty"`
 
@@ -67,6 +77,9 @@ type Cable struct {
 
 	// tags
 	Tags []*NestedTag `json:"tags"`
+
+	// tenant
+	Tenant *NestedTenant `json:"tenant,omitempty"`
 
 	// Termination a
 	// Read Only: true
@@ -114,7 +127,15 @@ func (m *Cable) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateCreated(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateLabel(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLastUpdated(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -127,6 +148,10 @@ func (m *Cable) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateTags(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTenant(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -176,12 +201,36 @@ func (m *Cable) validateColor(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Cable) validateCreated(formats strfmt.Registry) error {
+	if swag.IsZero(m.Created) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("created", "body", "date", m.Created.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Cable) validateLabel(formats strfmt.Registry) error {
 	if swag.IsZero(m.Label) { // not required
 		return nil
 	}
 
 	if err := validate.MaxLength("label", "body", m.Label, 100); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Cable) validateLastUpdated(formats strfmt.Registry) error {
+	if swag.IsZero(m.LastUpdated) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("last_updated", "body", "date-time", m.LastUpdated.String(), formats); err != nil {
 		return err
 	}
 
@@ -247,6 +296,25 @@ func (m *Cable) validateTags(formats strfmt.Registry) error {
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *Cable) validateTenant(formats strfmt.Registry) error {
+	if swag.IsZero(m.Tenant) { // not required
+		return nil
+	}
+
+	if m.Tenant != nil {
+		if err := m.Tenant.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("tenant")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("tenant")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -425,11 +493,19 @@ func (m *Cable) validateURL(formats strfmt.Registry) error {
 func (m *Cable) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateCreated(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateDisplay(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.contextValidateID(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateLastUpdated(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -442,6 +518,10 @@ func (m *Cable) ContextValidate(ctx context.Context, formats strfmt.Registry) er
 	}
 
 	if err := m.contextValidateTags(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateTenant(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -463,6 +543,15 @@ func (m *Cable) ContextValidate(ctx context.Context, formats strfmt.Registry) er
 	return nil
 }
 
+func (m *Cable) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "created", "body", strfmt.Date(m.Created)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Cable) contextValidateDisplay(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "display", "body", string(m.Display)); err != nil {
@@ -475,6 +564,15 @@ func (m *Cable) contextValidateDisplay(ctx context.Context, formats strfmt.Regis
 func (m *Cable) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "id", "body", int64(m.ID)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Cable) contextValidateLastUpdated(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
 		return err
 	}
 
@@ -528,6 +626,22 @@ func (m *Cable) contextValidateTags(ctx context.Context, formats strfmt.Registry
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *Cable) contextValidateTenant(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Tenant != nil {
+		if err := m.Tenant.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("tenant")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("tenant")
+			}
+			return err
+		}
 	}
 
 	return nil

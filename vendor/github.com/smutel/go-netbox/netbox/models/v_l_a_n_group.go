@@ -22,6 +22,7 @@ package models
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -70,7 +71,6 @@ type VLANGroup struct {
 	Scope string `json:"scope,omitempty"`
 
 	// Scope id
-	// Minimum: 0
 	ScopeID *int64 `json:"scope_id,omitempty"`
 
 	// Scope type
@@ -82,6 +82,9 @@ type VLANGroup struct {
 	// Min Length: 1
 	// Pattern: ^[-a-zA-Z0-9_]+$
 	Slug *string `json:"slug"`
+
+	// tags
+	Tags []*NestedTag `json:"tags"`
 
 	// Url
 	// Read Only: true
@@ -113,11 +116,11 @@ func (m *VLANGroup) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateScopeID(formats); err != nil {
+	if err := m.validateSlug(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validateSlug(formats); err != nil {
+	if err := m.validateTags(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -184,18 +187,6 @@ func (m *VLANGroup) validateName(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *VLANGroup) validateScopeID(formats strfmt.Registry) error {
-	if swag.IsZero(m.ScopeID) { // not required
-		return nil
-	}
-
-	if err := validate.MinimumInt("scope_id", "body", *m.ScopeID, 0, false); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *VLANGroup) validateSlug(formats strfmt.Registry) error {
 
 	if err := validate.Required("slug", "body", m.Slug); err != nil {
@@ -212,6 +203,32 @@ func (m *VLANGroup) validateSlug(formats strfmt.Registry) error {
 
 	if err := validate.Pattern("slug", "body", *m.Slug, `^[-a-zA-Z0-9_]+$`); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *VLANGroup) validateTags(formats strfmt.Registry) error {
+	if swag.IsZero(m.Tags) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Tags); i++ {
+		if swag.IsZero(m.Tags[i]) { // not required
+			continue
+		}
+
+		if m.Tags[i] != nil {
+			if err := m.Tags[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
@@ -250,6 +267,10 @@ func (m *VLANGroup) ContextValidate(ctx context.Context, formats strfmt.Registry
 	}
 
 	if err := m.contextValidateScope(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateTags(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -307,6 +328,26 @@ func (m *VLANGroup) contextValidateScope(ctx context.Context, formats strfmt.Reg
 
 	if err := validate.ReadOnly(ctx, "scope", "body", string(m.Scope)); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *VLANGroup) contextValidateTags(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Tags); i++ {
+
+		if m.Tags[i] != nil {
+			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

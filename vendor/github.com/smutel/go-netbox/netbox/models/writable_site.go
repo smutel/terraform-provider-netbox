@@ -43,6 +43,10 @@ type WritableSite struct {
 	// Minimum: 1
 	Asn *int64 `json:"asn,omitempty"`
 
+	// asns
+	// Unique: true
+	Asns []int64 `json:"asns"`
+
 	// Circuit count
 	// Read Only: true
 	CircuitCount int64 `json:"circuit_count,omitempty"`
@@ -178,6 +182,10 @@ func (m *WritableSite) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateAsns(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateContactEmail(formats); err != nil {
 		res = append(res, err)
 	}
@@ -250,6 +258,18 @@ func (m *WritableSite) validateAsn(formats strfmt.Registry) error {
 	}
 
 	if err := validate.MaximumInt("asn", "body", *m.Asn, 4.294967295e+09, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *WritableSite) validateAsns(formats strfmt.Registry) error {
+	if swag.IsZero(m.Asns) { // not required
+		return nil
+	}
+
+	if err := validate.UniqueItems("asns", "body", m.Asns); err != nil {
 		return err
 	}
 
