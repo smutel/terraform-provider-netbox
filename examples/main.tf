@@ -60,6 +60,16 @@ resource "netbox_tenancy_tenant" "tenant_test" {
 resource "netbox_tenancy_tenant_group" "tenant_group_test" {
   name = "Test_TenantGroup"
   slug = "Test_TenantGroup"
+
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
+
+  tag {
+    name = "tag2"
+    slug = "tag2"
+  }
 }
 
 data "netbox_dcim_site" "site_test" {
