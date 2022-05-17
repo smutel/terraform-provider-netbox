@@ -69,6 +69,16 @@ data "netbox_dcim_site" "site_test" {
 resource "netbox_ipam_vlan_group" "vlan_group_test" {
   name    = "Test_VlanGroup"
   slug    = "Test_VlanGroup"
+
+  tag {
+    name = "tag1"
+    slug = "tag1"
+  }
+
+  tag {
+    name = "tag2"
+    slug = "tag2"
+  }
 }
 
 data "netbox_ipam_role" "vlan_role_production" {
