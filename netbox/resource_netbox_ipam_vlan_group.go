@@ -36,6 +36,22 @@ func resourceNetboxIpamVlanGroup() *schema.Resource {
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
 			},
+			"tag": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"slug": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -46,10 +62,12 @@ func resourceNetboxIpamVlanGroupCreate(d *schema.ResourceData,
 
 	groupName := d.Get("name").(string)
 	groupSlug := d.Get("slug").(string)
+	tags := d.Get("tag").(*schema.Set).List()
 
 	newResource := &models.VLANGroup{
 		Name: &groupName,
 		Slug: &groupSlug,
+		Tags: convertTagsToNestedTags(tags),
 	}
 
 	resource := ipam.NewIpamVlanGroupsCreateParams().WithData(newResource)
@@ -84,6 +102,10 @@ func resourceNetboxIpamVlanGroupRead(d *schema.ResourceData,
 				return err
 			}
 
+			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+				return err
+			}
+
 			return nil
 		}
 	}
@@ -103,6 +125,9 @@ func resourceNetboxIpamVlanGroupUpdate(d *schema.ResourceData,
 
 	slug := d.Get("slug").(string)
 	params.Slug = &slug
+
+	tags := d.Get("tag").(*schema.Set).List()
+	params.Tags = convertTagsToNestedTags(tags)
 
 	resource := ipam.NewIpamVlanGroupsPartialUpdateParams().WithData(
 		params)
