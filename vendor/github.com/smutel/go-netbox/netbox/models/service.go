@@ -554,12 +554,12 @@ type ServiceProtocol struct {
 
 	// label
 	// Required: true
-	// Enum: [TCP UDP]
+	// Enum: [TCP UDP SCTP]
 	Label *string `json:"label"`
 
 	// value
 	// Required: true
-	// Enum: [tcp udp]
+	// Enum: [tcp udp sctp]
 	Value *string `json:"value"`
 }
 
@@ -585,7 +585,7 @@ var serviceProtocolTypeLabelPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["TCP","UDP"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["TCP","UDP","SCTP"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -600,6 +600,9 @@ const (
 
 	// ServiceProtocolLabelUDP captures enum value "UDP"
 	ServiceProtocolLabelUDP string = "UDP"
+
+	// ServiceProtocolLabelSCTP captures enum value "SCTP"
+	ServiceProtocolLabelSCTP string = "SCTP"
 )
 
 // prop value enum
@@ -628,7 +631,7 @@ var serviceProtocolTypeValuePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["tcp","udp"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["tcp","udp","sctp"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -643,6 +646,9 @@ const (
 
 	// ServiceProtocolValueUDP captures enum value "udp"
 	ServiceProtocolValueUDP string = "udp"
+
+	// ServiceProtocolValueSctp captures enum value "sctp"
+	ServiceProtocolValueSctp string = "sctp"
 )
 
 // prop value enum

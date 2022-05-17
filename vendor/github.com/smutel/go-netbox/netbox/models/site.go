@@ -43,6 +43,10 @@ type Site struct {
 	// Minimum: 1
 	Asn *int64 `json:"asn,omitempty"`
 
+	// asns
+	// Unique: true
+	Asns []*NestedASN `json:"asns"`
+
 	// Circuit count
 	// Read Only: true
 	CircuitCount int64 `json:"circuit_count,omitempty"`
@@ -177,6 +181,10 @@ func (m *Site) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateAsns(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateContactEmail(formats); err != nil {
 		res = append(res, err)
 	}
@@ -262,6 +270,36 @@ func (m *Site) validateAsn(formats strfmt.Registry) error {
 
 	if err := validate.MaximumInt("asn", "body", *m.Asn, 4.294967295e+09, false); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *Site) validateAsns(formats strfmt.Registry) error {
+	if swag.IsZero(m.Asns) { // not required
+		return nil
+	}
+
+	if err := validate.UniqueItems("asns", "body", m.Asns); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.Asns); i++ {
+		if swag.IsZero(m.Asns[i]) { // not required
+			continue
+		}
+
+		if m.Asns[i] != nil {
+			if err := m.Asns[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("asns" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("asns" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
@@ -535,6 +573,10 @@ func (m *Site) validateURL(formats strfmt.Registry) error {
 func (m *Site) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateAsns(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateCircuitCount(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -602,6 +644,26 @@ func (m *Site) ContextValidate(ctx context.Context, formats strfmt.Registry) err
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *Site) contextValidateAsns(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Asns); i++ {
+
+		if m.Asns[i] != nil {
+			if err := m.Asns[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("asns" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("asns" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

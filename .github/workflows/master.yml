@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: [ '1.17.x' ]
+        go: [ '1.18.x' ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.2
@@ -34,7 +34,7 @@ jobs:
         shell: bash
 
       - name: Go installation
-        uses: actions/setup-go@v3.0.0
+        uses: actions/setup-go@v3.1.0
         with:
           go-version: ${{ matrix.go }}
 

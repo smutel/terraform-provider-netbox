@@ -57,6 +57,11 @@ type RackReservation struct {
 	// Read Only: true
 	ID int64 `json:"id,omitempty"`
 
+	// Last updated
+	// Read Only: true
+	// Format: date-time
+	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
+
 	// rack
 	// Required: true
 	Rack *NestedRack `json:"rack"`
@@ -90,6 +95,10 @@ func (m *RackReservation) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateDescription(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLastUpdated(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -146,6 +155,18 @@ func (m *RackReservation) validateDescription(formats strfmt.Registry) error {
 	}
 
 	if err := validate.MaxLength("description", "body", *m.Description, 200); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *RackReservation) validateLastUpdated(formats strfmt.Registry) error {
+	if swag.IsZero(m.LastUpdated) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("last_updated", "body", "date-time", m.LastUpdated.String(), formats); err != nil {
 		return err
 	}
 
@@ -289,6 +310,10 @@ func (m *RackReservation) ContextValidate(ctx context.Context, formats strfmt.Re
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateLastUpdated(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateRack(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -336,6 +361,15 @@ func (m *RackReservation) contextValidateDisplay(ctx context.Context, formats st
 func (m *RackReservation) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "id", "body", int64(m.ID)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *RackReservation) contextValidateLastUpdated(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
 		return err
 	}
 

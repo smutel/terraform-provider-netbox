@@ -80,7 +80,7 @@ type WritableService struct {
 
 	// Protocol
 	// Required: true
-	// Enum: [tcp udp]
+	// Enum: [tcp udp sctp]
 	Protocol *string `json:"protocol"`
 
 	// tags
@@ -231,7 +231,7 @@ var writableServiceTypeProtocolPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["tcp","udp"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["tcp","udp","sctp"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -246,6 +246,9 @@ const (
 
 	// WritableServiceProtocolUDP captures enum value "udp"
 	WritableServiceProtocolUDP string = "udp"
+
+	// WritableServiceProtocolSctp captures enum value "sctp"
+	WritableServiceProtocolSctp string = "sctp"
 )
 
 // prop value enum

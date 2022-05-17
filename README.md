@@ -11,7 +11,7 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 
 * A libc library like libc6-compat or libc-utils
 * General developer tools like make, bash, ... (to build the provider)
-* Go 1.16 minimum (to build the provider)
+* Go 1.18 minimum (to build the provider)
 * Terraform (to use the provider)
 
 ## Compatibility with Netbox

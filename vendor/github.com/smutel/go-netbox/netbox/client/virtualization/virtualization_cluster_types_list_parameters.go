@@ -225,6 +225,12 @@ type VirtualizationClusterTypesListParams struct {
 	// SlugNisw.
 	SlugNisw *string
 
+	// Tag.
+	Tag *string
+
+	// Tagn.
+	Tagn *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -804,6 +810,28 @@ func (o *VirtualizationClusterTypesListParams) WithSlugNisw(slugNisw *string) *V
 // SetSlugNisw adds the slugNisw to the virtualization cluster types list params
 func (o *VirtualizationClusterTypesListParams) SetSlugNisw(slugNisw *string) {
 	o.SlugNisw = slugNisw
+}
+
+// WithTag adds the tag to the virtualization cluster types list params
+func (o *VirtualizationClusterTypesListParams) WithTag(tag *string) *VirtualizationClusterTypesListParams {
+	o.SetTag(tag)
+	return o
+}
+
+// SetTag adds the tag to the virtualization cluster types list params
+func (o *VirtualizationClusterTypesListParams) SetTag(tag *string) {
+	o.Tag = tag
+}
+
+// WithTagn adds the tagn to the virtualization cluster types list params
+func (o *VirtualizationClusterTypesListParams) WithTagn(tagn *string) *VirtualizationClusterTypesListParams {
+	o.SetTagn(tagn)
+	return o
+}
+
+// SetTagn adds the tagN to the virtualization cluster types list params
+func (o *VirtualizationClusterTypesListParams) SetTagn(tagn *string) {
+	o.Tagn = tagn
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -1625,6 +1653,40 @@ func (o *VirtualizationClusterTypesListParams) WriteToRequest(r runtime.ClientRe
 		if qSlugNisw != "" {
 
 			if err := r.SetQueryParam("slug__nisw", qSlugNisw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Tag != nil {
+
+		// query param tag
+		var qrTag string
+
+		if o.Tag != nil {
+			qrTag = *o.Tag
+		}
+		qTag := qrTag
+		if qTag != "" {
+
+			if err := r.SetQueryParam("tag", qTag); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Tagn != nil {
+
+		// query param tag__n
+		var qrTagn string
+
+		if o.Tagn != nil {
+			qrTagn = *o.Tagn
+		}
+		qTagn := qrTagn
+		if qTagn != "" {
+
+			if err := r.SetQueryParam("tag__n", qTagn); err != nil {
 				return err
 			}
 		}

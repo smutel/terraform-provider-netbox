@@ -68,6 +68,11 @@ type ImageAttachment struct {
 	// Minimum: 0
 	ImageWidth *int64 `json:"image_width"`
 
+	// Last updated
+	// Read Only: true
+	// Format: date-time
+	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
+
 	// Name
 	// Max Length: 50
 	Name string `json:"name,omitempty"`
@@ -109,6 +114,10 @@ func (m *ImageAttachment) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateImageWidth(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLastUpdated(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -197,6 +206,18 @@ func (m *ImageAttachment) validateImageWidth(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *ImageAttachment) validateLastUpdated(formats strfmt.Registry) error {
+	if swag.IsZero(m.LastUpdated) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("last_updated", "body", "date-time", m.LastUpdated.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *ImageAttachment) validateName(formats strfmt.Registry) error {
 	if swag.IsZero(m.Name) { // not required
 		return nil
@@ -258,6 +279,10 @@ func (m *ImageAttachment) ContextValidate(ctx context.Context, formats strfmt.Re
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateLastUpdated(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateParent(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -302,6 +327,15 @@ func (m *ImageAttachment) contextValidateID(ctx context.Context, formats strfmt.
 func (m *ImageAttachment) contextValidateImage(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "image", "body", strfmt.URI(m.Image)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ImageAttachment) contextValidateLastUpdated(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
 		return err
 	}
 

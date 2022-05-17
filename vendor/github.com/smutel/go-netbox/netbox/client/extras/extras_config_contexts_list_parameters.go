@@ -252,6 +252,12 @@ type ExtrasConfigContextsListParams struct {
 	// Tagn.
 	Tagn *string
 
+	// TagID.
+	TagID *string
+
+	// TagIDn.
+	TagIDn *string
+
 	// Tenant.
 	Tenant *string
 
@@ -954,6 +960,28 @@ func (o *ExtrasConfigContextsListParams) WithTagn(tagn *string) *ExtrasConfigCon
 // SetTagn adds the tagN to the extras config contexts list params
 func (o *ExtrasConfigContextsListParams) SetTagn(tagn *string) {
 	o.Tagn = tagn
+}
+
+// WithTagID adds the tagID to the extras config contexts list params
+func (o *ExtrasConfigContextsListParams) WithTagID(tagID *string) *ExtrasConfigContextsListParams {
+	o.SetTagID(tagID)
+	return o
+}
+
+// SetTagID adds the tagId to the extras config contexts list params
+func (o *ExtrasConfigContextsListParams) SetTagID(tagID *string) {
+	o.TagID = tagID
+}
+
+// WithTagIDn adds the tagIDn to the extras config contexts list params
+func (o *ExtrasConfigContextsListParams) WithTagIDn(tagIDn *string) *ExtrasConfigContextsListParams {
+	o.SetTagIDn(tagIDn)
+	return o
+}
+
+// SetTagIDn adds the tagIdN to the extras config contexts list params
+func (o *ExtrasConfigContextsListParams) SetTagIDn(tagIDn *string) {
+	o.TagIDn = tagIDn
 }
 
 // WithTenant adds the tenant to the extras config contexts list params
@@ -2016,6 +2044,40 @@ func (o *ExtrasConfigContextsListParams) WriteToRequest(r runtime.ClientRequest,
 		if qTagn != "" {
 
 			if err := r.SetQueryParam("tag__n", qTagn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.TagID != nil {
+
+		// query param tag_id
+		var qrTagID string
+
+		if o.TagID != nil {
+			qrTagID = *o.TagID
+		}
+		qTagID := qrTagID
+		if qTagID != "" {
+
+			if err := r.SetQueryParam("tag_id", qTagID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.TagIDn != nil {
+
+		// query param tag_id__n
+		var qrTagIDn string
+
+		if o.TagIDn != nil {
+			qrTagIDn = *o.TagIDn
+		}
+		qTagIDn := qrTagIDn
+		if qTagIDn != "" {
+
+			if err := r.SetQueryParam("tag_id__n", qTagIDn); err != nil {
 				return err
 			}
 		}

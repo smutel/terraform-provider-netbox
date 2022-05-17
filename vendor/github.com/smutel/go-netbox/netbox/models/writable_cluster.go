@@ -55,7 +55,8 @@ type WritableCluster struct {
 	Display string `json:"display,omitempty"`
 
 	// Group
-	Group *int64 `json:"group,omitempty"`
+	// Required: true
+	Group *int64 `json:"group"`
 
 	// Id
 	// Read Only: true
@@ -73,7 +74,8 @@ type WritableCluster struct {
 	Name *string `json:"name"`
 
 	// Site
-	Site *int64 `json:"site,omitempty"`
+	// Required: true
+	Site *int64 `json:"site"`
 
 	// tags
 	Tags []*NestedTag `json:"tags"`
@@ -103,11 +105,19 @@ func (m *WritableCluster) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateGroup(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateLastUpdated(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateName(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSite(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -141,6 +151,15 @@ func (m *WritableCluster) validateCreated(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *WritableCluster) validateGroup(formats strfmt.Registry) error {
+
+	if err := validate.Required("group", "body", m.Group); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *WritableCluster) validateLastUpdated(formats strfmt.Registry) error {
 	if swag.IsZero(m.LastUpdated) { // not required
 		return nil
@@ -164,6 +183,15 @@ func (m *WritableCluster) validateName(formats strfmt.Registry) error {
 	}
 
 	if err := validate.MaxLength("name", "body", *m.Name, 100); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *WritableCluster) validateSite(formats strfmt.Registry) error {
+
+	if err := validate.Required("site", "body", m.Site); err != nil {
 		return err
 	}
 

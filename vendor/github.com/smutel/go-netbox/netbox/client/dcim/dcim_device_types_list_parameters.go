@@ -75,6 +75,12 @@ func NewDcimDeviceTypesListParamsWithHTTPClient(client *http.Client) *DcimDevice
 */
 type DcimDeviceTypesListParams struct {
 
+	// Airflow.
+	Airflow *string
+
+	// Airflown.
+	Airflown *string
+
 	// ConsolePorts.
 	ConsolePorts *string
 
@@ -342,6 +348,28 @@ func (o *DcimDeviceTypesListParams) WithHTTPClient(client *http.Client) *DcimDev
 // SetHTTPClient adds the HTTPClient to the dcim device types list params
 func (o *DcimDeviceTypesListParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
+}
+
+// WithAirflow adds the airflow to the dcim device types list params
+func (o *DcimDeviceTypesListParams) WithAirflow(airflow *string) *DcimDeviceTypesListParams {
+	o.SetAirflow(airflow)
+	return o
+}
+
+// SetAirflow adds the airflow to the dcim device types list params
+func (o *DcimDeviceTypesListParams) SetAirflow(airflow *string) {
+	o.Airflow = airflow
+}
+
+// WithAirflown adds the airflown to the dcim device types list params
+func (o *DcimDeviceTypesListParams) WithAirflown(airflown *string) *DcimDeviceTypesListParams {
+	o.SetAirflown(airflown)
+	return o
+}
+
+// SetAirflown adds the airflowN to the dcim device types list params
+func (o *DcimDeviceTypesListParams) SetAirflown(airflown *string) {
+	o.Airflown = airflown
 }
 
 // WithConsolePorts adds the consolePorts to the dcim device types list params
@@ -1121,6 +1149,40 @@ func (o *DcimDeviceTypesListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		return err
 	}
 	var res []error
+
+	if o.Airflow != nil {
+
+		// query param airflow
+		var qrAirflow string
+
+		if o.Airflow != nil {
+			qrAirflow = *o.Airflow
+		}
+		qAirflow := qrAirflow
+		if qAirflow != "" {
+
+			if err := r.SetQueryParam("airflow", qAirflow); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Airflown != nil {
+
+		// query param airflow__n
+		var qrAirflown string
+
+		if o.Airflown != nil {
+			qrAirflown = *o.Airflown
+		}
+		qAirflown := qrAirflown
+		if qAirflown != "" {
+
+			if err := r.SetQueryParam("airflow__n", qAirflown); err != nil {
+				return err
+			}
+		}
+	}
 
 	if o.ConsolePorts != nil {
 
