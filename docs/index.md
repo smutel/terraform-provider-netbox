@@ -10,6 +10,7 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 | 2.9            | 1.x.y            |
 | 2.11           | 2.x.y            |
 | 3.0            | 3.x.y            |
+| 3.1            | 4.x.y            |
 
 ## Example Usage
 
@@ -19,7 +20,7 @@ terraform {
   required_providers {
     netbox = {
       source = "smutel/netbox"
-      version = "~> 3.1.0"
+      version = "~> 4.0.0"
     }
   }
 }
