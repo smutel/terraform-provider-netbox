@@ -5,6 +5,10 @@ title: "[Main title for your issue here]"
 labels: bug
 assignees: smutel
 ---
+<!--- BEFORE CREATING A NEW ISSUE, ENSURE THAT THE PROVIDER VERSION THAT YOUR ARE USING IS -->
+<!--- COMPATIBLE WITH YOUR VERSION OF NETBOX. PLEASE CHECK THE COMPATIBILITY MATRIX HERE -->
+<!--- https://github.com/smutel/terraform-provider-netbox#compatibility-with-netbox -->
+
 <!--- Verify first that your issue is not already reported on GitHub -->
 <!--- Ensure that the latest release is affected by this bug -->
 <!--- Complete most of sections below as described -->
