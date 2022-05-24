@@ -1,18 +1,15 @@
-# netbox\_tenancy\_contact Resource
+# netbox\_tenancy\_contact\_group Resource
 
-Manage a contact within Netbox.
+Manage a contact group within Netbox.
 
 ## Example Usage
 
 ```hcl
-resource "netbox_tenancy_contact" "contact_test" {
-  name = "John Doe"
-  title = "Someone in the world"
-  phone = "+330123456789"
-  email = "john.doe@unknown.com"
-  address = "Somewhere in the world"
-  comments = "Good contact"
-  contact_group_id = netbox_tenancy_contact_group.contact_group_02.id
+resource "netbox_tenancy_contact_group" "contact_group_test" {
+  description = "Contact group created by terraform"
+  name = "TestContactGroup"
+  parent_id = 10
+  slug = "TestContactGroup"
   
   tag {
     name = "tag1"
@@ -66,13 +63,10 @@ resource "netbox_tenancy_contact" "contact_test" {
 ## Argument Reference
 
 The following arguments are supported:
+* ``description`` - (Optional) Description for this object.
 * ``name`` - (Required) The name for this object.
-* ``title`` - (Optional) The title for this object.
-* ``phone`` - (Optional) The phone for this object.
-* ``email`` - (Optional) The e-mail for this object.
-* ``address`` - (Optional) The address for this object.
-* ``comments`` - (Optional) Comments for this object.
-* ``contact_group_id`` - (Optional) ID of the group where this object belongs to.
+* ``parent_id`` - (Optional) ID of the parent.
+* ``slug`` - (Required) The slug for this object.
 
 The ``custom_field`` block (optional) supports:
 * ``name`` - (Required) Name of the existing custom resource to associate with this resource.
@@ -90,8 +84,8 @@ In addition to the above arguments, the following attributes are exported:
 
 ## Import
 
-Tenants can be imported by `id` e.g.
+Contact groups can be imported by `id` e.g.
 
 ```
-$ terraform import netbox_tenancy_contact.contact_test id
+$ terraform import netbox_tenancy_contact_group.contact_group_test id
 ```
