@@ -283,7 +283,11 @@ func resourceNetboxTenancyContactUpdate(d *schema.ResourceData,
 
 	if d.HasChange("contact_group_id") {
 		groupID := int64(d.Get("contact_group_id").(int))
-		params.Group = &groupID
+		if groupID == 0 {
+			params.Group = nil
+		} else {
+			params.Group = &groupID
+		}
 	}
 
 	if d.HasChange("custom_field") {
