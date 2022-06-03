@@ -40,6 +40,10 @@ func resourceNetboxTenancyContact() *schema.Resource {
 				Optional: true,
 				Default:  0,
 			},
+			"content_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"custom_field": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -198,6 +202,10 @@ func resourceNetboxTenancyContactRead(d *schema.ResourceData,
 				if err = d.Set("contact_group_id", resource.Group.ID); err != nil {
 					return err
 				}
+			}
+
+			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
+				return err
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()

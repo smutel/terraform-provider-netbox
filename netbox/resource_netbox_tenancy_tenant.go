@@ -29,6 +29,10 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 				Optional: true,
 				Default:  nil,
 			},
+			"content_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"custom_field": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -154,6 +158,10 @@ func resourceNetboxTenancyTenantRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("comments", comments); err != nil {
+				return err
+			}
+
+			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
 				return err
 			}
 

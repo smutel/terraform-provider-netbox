@@ -2,10 +2,12 @@ package netbox
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/go-openapi/strfmt"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/virtualization"
 	"github.com/smutel/go-netbox/netbox/models"
@@ -252,4 +254,18 @@ func convertCustomFieldsFromTerraformToAPI(stateCustomFields []interface{}, cust
 	}
 
 	return toReturn
+}
+
+// Convert URL in content_type
+func convertURIContentType(uri strfmt.URI) string {
+	uriSplit := strings.Split(uri.String(), "/")
+	firstLevel := uriSplit[len(uriSplit)-4]
+	secondLevel := uriSplit[len(uriSplit)-3]
+
+	slRegexp := regexp.MustCompile(`s$`)
+	secondLevel = strings.ReplaceAll(secondLevel, "-", "")
+	secondLevel = slRegexp.ReplaceAllString(secondLevel, "")
+
+	contentType := firstLevel + "." + secondLevel
+	return contentType
 }

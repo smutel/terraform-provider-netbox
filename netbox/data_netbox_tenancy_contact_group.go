@@ -15,6 +15,10 @@ func dataNetboxTenancyContactGroup() *schema.Resource {
 		Read: dataNetboxTenancyContactGroupRead,
 
 		Schema: map[string]*schema.Schema{
+			"content_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
@@ -44,7 +48,9 @@ func dataNetboxTenancyContactGroupRead(d *schema.ResourceData, m interface{}) er
 			"Please try a more specific search criteria.")
 	}
 
-	d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
+	r := list.Payload.Results[0]
+	d.SetId(strconv.FormatInt(r.ID, 10))
+	d.Set("content_type", convertURIContentType(r.URL))
 
 	return nil
 }

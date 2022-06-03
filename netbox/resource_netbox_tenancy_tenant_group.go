@@ -24,6 +24,10 @@ func resourceNetboxTenancyTenantGroup() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"content_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
@@ -95,6 +99,10 @@ func resourceNetboxTenancyTenantGroupRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
+				return err
+			}
+
 			if err = d.Set("name", resource.Name); err != nil {
 				return err
 			}

@@ -168,7 +168,7 @@ github.com/oklog/ulid
 github.com/opentracing/opentracing-go
 github.com/opentracing/opentracing-go/ext
 github.com/opentracing/opentracing-go/log
-# github.com/smutel/go-netbox v3.1.0+incompatible
+# github.com/smutel/go-netbox v3.1.1+incompatible
 ## explicit
 github.com/smutel/go-netbox/netbox/client
 github.com/smutel/go-netbox/netbox/client/circuits

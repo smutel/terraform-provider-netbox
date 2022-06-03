@@ -294,6 +294,8 @@ github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMB
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/smutel/go-netbox v3.1.0+incompatible h1:2M1vldc2YIGs7OdPK+ujizRyghy04cK9Uzswgoc1Tcg=
 github.com/smutel/go-netbox v3.1.0+incompatible/go.mod h1:UlNOimilX5qQkyVvFaDgajexiCRjVqzh1i0r9kQfr+M=
+github.com/smutel/go-netbox v3.1.1+incompatible h1:H+4/jVhl0iaIKGch2tdDLDUArsDg+57TTc1phmm+mNw=
+github.com/smutel/go-netbox v3.1.1+incompatible/go.mod h1:UlNOimilX5qQkyVvFaDgajexiCRjVqzh1i0r9kQfr+M=
 github.com/spf13/cobra v0.0.3/go.mod h1:1l0Ry5zgKvJasoi3XT1TypsSe7PqH0Sj9dhYf7v3XqQ=
 github.com/spf13/pflag v1.0.2/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
 github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=

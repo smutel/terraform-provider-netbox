@@ -18,7 +18,7 @@ require (
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/oklog/run v1.1.0 // indirect
-	github.com/smutel/go-netbox v3.1.0+incompatible
+	github.com/smutel/go-netbox v3.1.1+incompatible
 	github.com/vmihailenco/tagparser v0.1.2 // indirect
 	go.mongodb.org/mongo-driver v1.9.1 // indirect
 	golang.org/x/net v0.0.0-20220516155154-20f960328961 // indirect
