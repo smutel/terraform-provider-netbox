@@ -29,6 +29,10 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.IsCIDR,
 			},
+			"content_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"custom_field": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -218,6 +222,10 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("address", resource.Address); err != nil {
+				return err
+			}
+
+			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
 				return err
 			}
 

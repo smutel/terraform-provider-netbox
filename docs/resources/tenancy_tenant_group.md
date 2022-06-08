@@ -30,6 +30,7 @@ The ``tag`` block (optional) supports:
 
 In addition to the above arguments, the following attributes are exported:
 * ``id`` - The id (ref in Netbox) of this object.
+* ``content_type`` - The content type of this object.
 
 ## Import
 

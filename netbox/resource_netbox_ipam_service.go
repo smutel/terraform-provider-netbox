@@ -23,6 +23,10 @@ func resourceNetboxIpamService() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"content_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"custom_field": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -171,6 +175,10 @@ func resourceNetboxIpamServiceRead(d *schema.ResourceData,
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
+			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
+				return err
+			}
+
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 

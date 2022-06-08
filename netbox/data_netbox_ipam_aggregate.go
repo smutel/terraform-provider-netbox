@@ -15,6 +15,10 @@ func dataNetboxIpamAggregate() *schema.Resource {
 		Read: dataNetboxIpamAggregateRead,
 
 		Schema: map[string]*schema.Schema{
+			"content_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"prefix": {
 				Type:         schema.TypeString,
 				Required:     true,
@@ -50,7 +54,9 @@ func dataNetboxIpamAggregateRead(d *schema.ResourceData,
 			"Please try a more specific search criteria.")
 	}
 
-	d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))
+	r := list.Payload.Results[0]
+	d.SetId(strconv.FormatInt(r.ID, 10))
+	d.Set("content_type", convertURIContentType(r.URL))
 
 	return nil
 }
