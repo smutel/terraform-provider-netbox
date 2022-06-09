@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v3.1.0...v4.0.0) (2022-06-09)
+
+
+### Features
+
+* Add contact assignment resource ([2b413f2](https://github.com/smutel/terraform-provider-netbox/commit/2b413f2245f800b49f2f40e80fdff1c11e270a2a))
+* Add contact group resource ([5c1b8cd](https://github.com/smutel/terraform-provider-netbox/commit/5c1b8cda31c4caaff73a89426c5227ac3e10dd31))
+* Add contact resource ([43d3089](https://github.com/smutel/terraform-provider-netbox/commit/43d308959e63ae32aa927ccfbe70e48961ce1d25))
+* Add contact role resource ([372fa49](https://github.com/smutel/terraform-provider-netbox/commit/372fa492cc25cabd659e215a17e50f2913ab33e1))
+* Add tag parameter to tenant group resource ([83f77f6](https://github.com/smutel/terraform-provider-netbox/commit/83f77f64a33021339b3039a06ce8b1610e95d84f))
+* Add tag parameter to vlan group resource ([eb88a02](https://github.com/smutel/terraform-provider-netbox/commit/eb88a0230f6afd749b2702cc9c4016d3120351f9))
+* Update provider to work with Netbox 3.1 ([169c160](https://github.com/smutel/terraform-provider-netbox/commit/169c160509733d312ad8097a697b2439c982141f))
+
+
+### Bug Fixes
+
+* Allow ipv6 addresses for data.netbox_ipam_ip_addresses ([c54cab7](https://github.com/smutel/terraform-provider-netbox/commit/c54cab732e4c611548d8b5819e43549ad74f3ccd)), closes [#107](https://github.com/smutel/terraform-provider-netbox/issues/107)
+
+
+### Enhancements
+
+* Update JSON data/resource with Netbox 3.1 ([973ab72](https://github.com/smutel/terraform-provider-netbox/commit/973ab72db755fbd4187fedda72ac1055aa1de9cd))
+
 ## [3.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v3.0.0...v3.1.0) (2022-04-28)
 
 
