@@ -1,47 +1,47 @@
 package netbox
 
 import (
-  "encoding/json"
+	"encoding/json"
 
-  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-  netboxclient "github.com/smutel/go-netbox/netbox/client"
-  "github.com/smutel/go-netbox/netbox/client/virtualization"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/virtualization"
 )
 
 func dataNetboxJSONVirtualizationClusterTypesList() *schema.Resource {
-  return &schema.Resource{
-    Read: dataNetboxJSONVirtualizationClusterTypesListRead,
+	return &schema.Resource{
+		Read: dataNetboxJSONVirtualizationClusterTypesListRead,
 
-    Schema: map[string]*schema.Schema{
-      "limit": {
-        Type:     schema.TypeInt,
-        Optional: true,
-        Default:  0,
-      },
-      "json": {
-        Type:     schema.TypeString,
-        Computed: true,
-      },
-    },
-  }
+		Schema: map[string]*schema.Schema{
+			"limit": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  0,
+			},
+			"json": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
+	}
 }
 
 func dataNetboxJSONVirtualizationClusterTypesListRead(d *schema.ResourceData, m interface{}) error {
-  client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netboxclient.NetBoxAPI)
 
-  params := virtualization.NewVirtualizationClusterTypesListParams()
-  limit := int64(d.Get("limit").(int))
-  params.Limit = &limit
+	params := virtualization.NewVirtualizationClusterTypesListParams()
+	limit := int64(d.Get("limit").(int))
+	params.Limit = &limit
 
-  list, err := client.Virtualization.VirtualizationClusterTypesList(params, nil)
-  if err != nil {
-    return err
-  }
+	list, err := client.Virtualization.VirtualizationClusterTypesList(params, nil)
+	if err != nil {
+		return err
+	}
 
-  j, _ := json.Marshal(list.Payload.Results)
+	j, _ := json.Marshal(list.Payload.Results)
 
-  d.Set("json", string(j))
-  d.SetId("NetboxJSONVirtualizationClusterTypesList")
+	d.Set("json", string(j))
+	d.SetId("NetboxJSONVirtualizationClusterTypesList")
 
-  return nil
+	return nil
 }
