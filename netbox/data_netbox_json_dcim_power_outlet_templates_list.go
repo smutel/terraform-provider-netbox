@@ -1,47 +1,47 @@
 package netbox
 
 import (
-	"encoding/json"
+  "encoding/json"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	netboxclient "github.com/smutel/go-netbox/netbox/client"
-	"github.com/smutel/go-netbox/netbox/client/dcim"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+  netboxclient "github.com/smutel/go-netbox/netbox/client"
+  "github.com/smutel/go-netbox/netbox/client/dcim"
 )
 
 func dataNetboxJSONDcimPowerOutletTemplatesList() *schema.Resource {
-	return &schema.Resource{
-		Read: dataNetboxJSONDcimPowerOutletTemplatesListRead,
+  return &schema.Resource{
+    Read: dataNetboxJSONDcimPowerOutletTemplatesListRead,
 
-		Schema: map[string]*schema.Schema{
-			"limit": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
-			},
-			"json": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-		},
-	}
+    Schema: map[string]*schema.Schema{
+      "limit": {
+        Type:     schema.TypeInt,
+        Optional: true,
+        Default:  0,
+      },
+      "json": {
+        Type:     schema.TypeString,
+        Computed: true,
+      },
+    },
+  }
 }
 
 func dataNetboxJSONDcimPowerOutletTemplatesListRead(d *schema.ResourceData, m interface{}) error {
-	client := m.(*netboxclient.NetBoxAPI)
+  client := m.(*netboxclient.NetBoxAPI)
 
-	params := dcim.NewDcimPowerOutletTemplatesListParams()
-	limit := int64(d.Get("limit").(int))
-	params.Limit = &limit
+  params := dcim.NewDcimPowerOutletTemplatesListParams()
+  limit := int64(d.Get("limit").(int))
+  params.Limit = &limit
 
-	list, err := client.Dcim.DcimPowerOutletTemplatesList(params, nil)
-	if err != nil {
-		return err
-	}
+  list, err := client.Dcim.DcimPowerOutletTemplatesList(params, nil)
+  if err != nil {
+    return err
+  }
 
-	j, _ := json.Marshal(list.Payload.Results)
+  j, _ := json.Marshal(list.Payload.Results)
 
-	d.Set("json", string(j))
-	d.SetId("NetboxJSONDcimPowerOutletTemplatesList")
+  d.Set("json", string(j))
+  d.SetId("NetboxJSONDcimPowerOutletTemplatesList")
 
-	return nil
+  return nil
 }

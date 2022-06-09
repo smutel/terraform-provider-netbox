@@ -1,47 +1,47 @@
 package netbox
 
 import (
-	"encoding/json"
+  "encoding/json"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	netboxclient "github.com/smutel/go-netbox/netbox/client"
-	"github.com/smutel/go-netbox/netbox/client/extras"
+  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+  netboxclient "github.com/smutel/go-netbox/netbox/client"
+  "github.com/smutel/go-netbox/netbox/client/extras"
 )
 
 func dataNetboxJSONExtrasObjectChangesList() *schema.Resource {
-	return &schema.Resource{
-		Read: dataNetboxJSONExtrasObjectChangesListRead,
+  return &schema.Resource{
+    Read: dataNetboxJSONExtrasObjectChangesListRead,
 
-		Schema: map[string]*schema.Schema{
-			"limit": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
-			},
-			"json": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-		},
-	}
+    Schema: map[string]*schema.Schema{
+      "limit": {
+        Type:     schema.TypeInt,
+        Optional: true,
+        Default:  0,
+      },
+      "json": {
+        Type:     schema.TypeString,
+        Computed: true,
+      },
+    },
+  }
 }
 
 func dataNetboxJSONExtrasObjectChangesListRead(d *schema.ResourceData, m interface{}) error {
-	client := m.(*netboxclient.NetBoxAPI)
+  client := m.(*netboxclient.NetBoxAPI)
 
-	params := extras.NewExtrasObjectChangesListParams()
-	limit := int64(d.Get("limit").(int))
-	params.Limit = &limit
+  params := extras.NewExtrasObjectChangesListParams()
+  limit := int64(d.Get("limit").(int))
+  params.Limit = &limit
 
-	list, err := client.Extras.ExtrasObjectChangesList(params, nil)
-	if err != nil {
-		return err
-	}
+  list, err := client.Extras.ExtrasObjectChangesList(params, nil)
+  if err != nil {
+    return err
+  }
 
-	j, _ := json.Marshal(list.Payload.Results)
+  j, _ := json.Marshal(list.Payload.Results)
 
-	d.Set("json", string(j))
-	d.SetId("NetboxJSONExtrasObjectChangesList")
+  d.Set("json", string(j))
+  d.SetId("NetboxJSONExtrasObjectChangesList")
 
-	return nil
+  return nil
 }
