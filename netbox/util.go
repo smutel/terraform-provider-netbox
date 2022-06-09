@@ -13,6 +13,7 @@ import (
 	"github.com/smutel/go-netbox/netbox/models"
 )
 
+// InfosForPrimary is used to store info about primary IP
 type InfosForPrimary struct {
 	vmID           int64
 	vmName         string
@@ -21,8 +22,10 @@ type InfosForPrimary struct {
 	vmTags         []*models.NestedTag
 }
 
+// Type of vm interface in Netbox
 const VMInterfaceType string = "virtualization.vminterface"
 
+// Boolean string for custom field
 const CustomFieldBoolean = "boolean"
 
 func expandToInt64Slice(v []interface{}) []int64 {
