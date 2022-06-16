@@ -13,19 +13,21 @@ import (
 
 func resourceNetboxIpamPrefix() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxIpamPrefixCreate,
-		Read:   resourceNetboxIpamPrefixRead,
-		Update: resourceNetboxIpamPrefixUpdate,
-		Delete: resourceNetboxIpamPrefixDelete,
-		Exists: resourceNetboxIpamPrefixExists,
+		Description: "Manage a prefix (ipam module) within Netbox.",
+		Create:      resourceNetboxIpamPrefixCreate,
+		Read:        resourceNetboxIpamPrefixRead,
+		Update:      resourceNetboxIpamPrefixUpdate,
+		Delete:      resourceNetboxIpamPrefixDelete,
+		Exists:      resourceNetboxIpamPrefixExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this prefix (ipam module).",
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -33,45 +35,54 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing custom field.",
 						},
 						"type": {
 							Type:     schema.TypeString,
 							Required: true,
 							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
 								"date", "url", "selection", "multiple"}, false),
+							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
 						},
 						"value": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Value of the existing custom field.",
 						},
 					},
 				},
+				Description: "Existing custom fields to associate to this prefix (ipam module).",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "The description of this prefix (ipam module).",
 			},
 			"is_pool": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  nil,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     nil,
+				Description: "Define if this object is a pool (false by default).",
 			},
 			"prefix": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.IsCIDRNetwork(0, 256),
+				Description:  "The prefix (IP address/mask) used for this prefix (ipam module).",
 			},
 			"role_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the role attached to this prefix (ipam module).",
 			},
 			"site_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the site where this prefix (ipam module) is located.",
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -79,6 +90,7 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 				Default:  "active",
 				ValidateFunc: validation.StringInSlice([]string{"container", "active",
 					"reserved", "deprecated"}, false),
+				Description: "Status among container, active, reserved, deprecated (active by default).",
 			},
 			"tag": {
 				Type:     schema.TypeSet,
@@ -86,27 +98,33 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing tag.",
 						},
 						"slug": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Slug of the existing tag.",
 						},
 					},
 				},
+				Description: "Existing tag to associate to this prefix (ipam module).",
 			},
 			"tenant_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the tenant where this prefix (ipam module) is attached.",
 			},
 			"vlan_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the vlan where this prefix (ipam module) is attached.",
 			},
 			"vrf_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the vrf attached to this prefix (ipam module).",
 			},
 		},
 	}

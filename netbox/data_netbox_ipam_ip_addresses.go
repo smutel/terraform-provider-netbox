@@ -12,17 +12,20 @@ import (
 
 func dataNetboxIpamIPAddresses() *schema.Resource {
 	return &schema.Resource{
-		Read: dataNetboxIpamIPAddressesRead,
+		Description: "Get info about IP addresses (ipam module) from netbox.",
+		Read:        dataNetboxIpamIPAddressesRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this ipam IP addresses (ipam module).",
 			},
 			"address": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.IsCIDR,
+				Description:  "The address (with mask) of the ipam IP addresses (ipam module).",
 			},
 		},
 	}

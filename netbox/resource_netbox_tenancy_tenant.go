@@ -14,24 +14,27 @@ import (
 
 func resourceNetboxTenancyTenant() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxTenancyTenantCreate,
-		Read:   resourceNetboxTenancyTenantRead,
-		Update: resourceNetboxTenancyTenantUpdate,
-		Delete: resourceNetboxTenancyTenantDelete,
-		Exists: resourceNetboxTenancyTenantExists,
+		Description: "Manage a tenant (tenancy module) within Netbox.",
+		Create:      resourceNetboxTenancyTenantCreate,
+		Read:        resourceNetboxTenancyTenantRead,
+		Update:      resourceNetboxTenancyTenantUpdate,
+		Delete:      resourceNetboxTenancyTenantDelete,
+		Exists:      resourceNetboxTenancyTenantExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"comments": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  nil,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     nil,
+				Description: "Comments for this tenant (tenancy module).",
 			},
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this tenant (tenancy module).",
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -39,37 +42,44 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing custom field.",
 						},
 						"type": {
 							Type:     schema.TypeString,
 							Required: true,
 							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
 								"date", "url", "selection", "multiple"}, false),
+							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
 						},
 						"value": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Value of the existing custom field.",
 						},
 					},
 				},
+				Description: "Existing custom fields to associate to this tenant (tenancy module).",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "The description for this tenant (tenancy module).",
 			},
 			"tenant_group_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     0,
+				Description: "ID of the group where this tenant (tenancy module) is attached to.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 30),
+				Description:  "The name for this tenant (tenancy module).",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -77,6 +87,7 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
+				Description: "The slug for this tenant (tenancy module).",
 			},
 			"tag": {
 				Type:     schema.TypeSet,
@@ -84,15 +95,18 @@ func resourceNetboxTenancyTenant() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing tag.",
 						},
 						"slug": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Slug of the existing tag.",
 						},
 					},
 				},
+				Description: "Existing tag to associate to this tenant (tenancy module).",
 			},
 		},
 	}

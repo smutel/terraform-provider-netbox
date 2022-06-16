@@ -13,16 +13,19 @@ import (
 
 func dataNetboxDcimPlatform() *schema.Resource {
 	return &schema.Resource{
-		Read: dataNetboxDcimPlatformRead,
+		Description: "Get info about platform (dcim module) from netbox.",
+		Read:        dataNetboxDcimPlatformRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "Content type of this platform (dcim module).",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"slug": {
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "Slug of this platform (dcim module).",
+				Type:        schema.TypeString,
+				Required:    true,
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),

@@ -13,19 +13,21 @@ import (
 
 func resourceNetboxIpamVlan() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxIpamVlanCreate,
-		Read:   resourceNetboxIpamVlanRead,
-		Update: resourceNetboxIpamVlanUpdate,
-		Delete: resourceNetboxIpamVlanDelete,
-		Exists: resourceNetboxIpamVlanExists,
+		Description: "Manage a vlan (ipam module) within Netbox.",
+		Create:      resourceNetboxIpamVlanCreate,
+		Read:        resourceNetboxIpamVlanRead,
+		Update:      resourceNetboxIpamVlanUpdate,
+		Delete:      resourceNetboxIpamVlanDelete,
+		Exists:      resourceNetboxIpamVlanExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this vlan (ipam module).",
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -33,44 +35,53 @@ func resourceNetboxIpamVlan() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing custom field.",
 						},
 						"type": {
 							Type:     schema.TypeString,
 							Required: true,
 							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
 								"date", "url", "selection", "multiple"}, false),
+							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
 						},
 						"value": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Value of the existing custom field.",
 						},
 					},
 				},
+				Description: "Existing custom fields to associate to this vlan (ipam module).",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "The description of this vlan (ipam module).",
 			},
 			"vlan_group_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the group where this vlan (ipam module) belongs to.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
+				Description:  "The name for this vlan (ipam module).",
 			},
 			"role_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the role attached to this vlan (ipam module).",
 			},
 			"site_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the site where this vlan (ipam module) is located.",
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -78,6 +89,7 @@ func resourceNetboxIpamVlan() *schema.Resource {
 				Default:  "active",
 				ValidateFunc: validation.StringInSlice([]string{"active", "reserved",
 					"deprecated"}, false),
+				Description: "The description of this vlan (ipam module).",
 			},
 			"tag": {
 				Type:     schema.TypeSet,
@@ -85,23 +97,28 @@ func resourceNetboxIpamVlan() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing tag.",
 						},
 						"slug": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Slug of the existing tag.",
 						},
 					},
 				},
+				Description: "Existing tag to associate to this vlan (ipam module).",
 			},
 			"tenant_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the tenant where this vlan (ipam module) is attached.",
 			},
 			"vlan_id": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The ID of the vlan (vlan tag).",
 			},
 		},
 	}

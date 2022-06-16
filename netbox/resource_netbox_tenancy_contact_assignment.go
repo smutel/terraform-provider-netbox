@@ -13,31 +13,36 @@ import (
 
 func resourceNetboxTenancyContactAssignment() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxTenancyContactAssignmentCreate,
-		Read:   resourceNetboxTenancyContactAssignmentRead,
-		Update: resourceNetboxTenancyContactAssignmentUpdate,
-		Delete: resourceNetboxTenancyContactAssignmentDelete,
-		Exists: resourceNetboxTenancyContactAssignmentExists,
+		Description: "Link a contact (tenancy module) to another resource within Netbox.",
+		Create:      resourceNetboxTenancyContactAssignmentCreate,
+		Read:        resourceNetboxTenancyContactAssignmentRead,
+		Update:      resourceNetboxTenancyContactAssignmentUpdate,
+		Delete:      resourceNetboxTenancyContactAssignmentDelete,
+		Exists:      resourceNetboxTenancyContactAssignmentExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"contact_id": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "ID of the contact to link to this contact assignment (tenancy module).",
 			},
 			"contact_role_id": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The role of the contact for this contact assignment (tenancy module).",
 			},
 			"content_type": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Type of the object where the contact will be linked.",
 			},
 			"object_id": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "ID of the object where the contact will be linked.",
 			},
 			"priority": {
 				Type:     schema.TypeString,
@@ -45,6 +50,7 @@ func resourceNetboxTenancyContactAssignment() *schema.Resource {
 				Default:  "primary",
 				ValidateFunc: validation.StringInSlice([]string{"primary", "secondary", "tertiary",
 					"inactive"}, false),
+				Description: "Priority of this contact among primary, secondary and tertiary (primary by default).",
 			},
 		},
 	}
