@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.0.1](https://github.com/smutel/terraform-provider-netbox/compare/v4.0.0...v4.0.1) (2022-06-17)
+
+
+### Bug Fixes
+
+* JSON error when vlangroup contains scope ([875b1ab](https://github.com/smutel/terraform-provider-netbox/commit/875b1abe8b4c627d51f13c6581ac28862ba1803d))
+
+
+### Enhancements
+
+* Automate the doc generation ([bc82477](https://github.com/smutel/terraform-provider-netbox/commit/bc82477f18f3c670b1293c26bd0172b1d7ec4233))
+
 ## [4.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v3.1.0...v4.0.0) (2022-06-09)
 
 
