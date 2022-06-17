@@ -12,21 +12,25 @@ import (
 
 func dataNetboxIpamAggregate() *schema.Resource {
 	return &schema.Resource{
-		Read: dataNetboxIpamAggregateRead,
+		Description: "Get info about aggregate (ipam module) from Netbox.",
+		Read:        dataNetboxIpamAggregateRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this aggregate (ipam module).",
 			},
 			"prefix": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.IsCIDRNetwork(0, 256),
+				Description:  "The prefix (with mask) used for this aggregate (ipam module).",
 			},
 			"rir_id": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The RIR id linked to this aggregate (ipam module).",
 			},
 		},
 	}

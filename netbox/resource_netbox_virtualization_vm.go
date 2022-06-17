@@ -16,28 +16,32 @@ import (
 
 func resourceNetboxVirtualizationVM() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxVirtualizationVMCreate,
-		Read:   resourceNetboxVirtualizationVMRead,
-		Update: resourceNetboxVirtualizationVMUpdate,
-		Delete: resourceNetboxVirtualizationVMDelete,
-		Exists: resourceNetboxVirtualizationVMExists,
+		Description: "Manage a VM (virtualization module) resource within Netbox.",
+		Create:      resourceNetboxVirtualizationVMCreate,
+		Read:        resourceNetboxVirtualizationVMRead,
+		Update:      resourceNetboxVirtualizationVMUpdate,
+		Delete:      resourceNetboxVirtualizationVMDelete,
+		Exists:      resourceNetboxVirtualizationVMExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"cluster_id": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "ID of the cluster which host this VM (virtualization module).",
 			},
 			"comments": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  nil,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     nil,
+				Description: "Comments for this VM (virtualization module).",
 			},
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this VM (virtualization module).",
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -45,50 +49,60 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing custom field.",
 						},
 						"type": {
 							Type:     schema.TypeString,
 							Required: true,
 							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
 								"date", "url", "selection", "multiple"}, false),
+							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
 						},
 						"value": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Value of the existing custom field.",
 						},
 					},
 				},
+				Description: "Existing custom fields to associate to this VM (virtualization module).",
 			},
 			"disk": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     0,
+				Description: "The size in GB of the disk for this VM (virtualization module).",
 			},
 			"local_context_data": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Local context data for this VM (virtualization module).",
 			},
 			"memory": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     0,
+				Description: "The size in MB of the memory of this VM (virtualization module).",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 64),
+				Description:  "The name for this VM (virtualization module).",
 			},
 			"platform_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     0,
+				Description: "ID of the platform for this VM (virtualization module).",
 			},
 			"role_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     0,
+				Description: "ID of the role for this VM (virtualization module).",
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -96,6 +110,7 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Default:  "active",
 				ValidateFunc: validation.StringInSlice([]string{"offline", "active",
 					"planned", "staged", "failed", "decommissioning"}, false),
+				Description: "The status among offline, active, planned, staged, failed or decommissioning (active by default).",
 			},
 			"tag": {
 				Type:     schema.TypeSet,
@@ -103,19 +118,23 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing tag.",
 						},
 						"slug": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Slug of the existing tag.",
 						},
 					},
 				},
+				Description: "Existing tag to associate to this VM (virtualization module).",
 			},
 			"tenant_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the tenant where this VM (virtualization module) is attached.",
 			},
 			"vcpus": {
 				Type:     schema.TypeString,
@@ -129,6 +148,7 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 					}
 					return false
 				},
+				Description: "The number of VCPUS for this VM (virtualization module).",
 			},
 		},
 	}

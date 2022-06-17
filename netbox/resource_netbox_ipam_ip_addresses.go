@@ -14,11 +14,12 @@ import (
 
 func resourceNetboxIpamIPAddresses() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxIpamIPAddressesCreate,
-		Read:   resourceNetboxIpamIPAddressesRead,
-		Update: resourceNetboxIpamIPAddressesUpdate,
-		Delete: resourceNetboxIpamIPAddressesDelete,
-		Exists: resourceNetboxIpamIPAddressesExists,
+		Description: "Manage an IP address (ipam module) within Netbox.",
+		Create:      resourceNetboxIpamIPAddressesCreate,
+		Read:        resourceNetboxIpamIPAddressesRead,
+		Update:      resourceNetboxIpamIPAddressesUpdate,
+		Delete:      resourceNetboxIpamIPAddressesDelete,
+		Exists:      resourceNetboxIpamIPAddressesExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -28,10 +29,12 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.IsCIDR,
+				Description:  "The IP address (with mask) used for this IP address (ipam module).",
 			},
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this IP address (ipam module).",
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -39,27 +42,32 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing custom field.",
 						},
 						"type": {
 							Type:     schema.TypeString,
 							Required: true,
 							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
 								"date", "url", "selection", "multiple"}, false),
+							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
 						},
 						"value": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Value of the existing custom field.",
 						},
 					},
 				},
+				Description: "Existing custom fields to associate to this IP address (ipam module).",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "The description of this IP address (ipam module).",
 			},
 			"dns_name": {
 				Type:     schema.TypeString,
@@ -68,15 +76,18 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_.]{1,255}$"),
 					"Must be like ^[-a-zA-Z0-9_.]{1,255}$"),
+				Description: "The DNS name of this IP address (ipam module).",
 			},
 			"nat_inside_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "The ID of the NAT inside of this IP address (ipam module).",
 			},
 			"object_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				ForceNew: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				ForceNew:    true,
+				Description: "The ID of the object where this resource is attached to.",
 			},
 			"object_type": {
 				Type:     schema.TypeString,
@@ -84,12 +95,14 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Default:  "",
 				ValidateFunc: validation.StringInSlice([]string{
 					VMInterfaceType, "dcim.interface"}, false),
+				Description: "The object type among virtualization.vminterface or dcim.interface (empty by default).",
 			},
 			"primary_ip4": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
-				ForceNew: true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				ForceNew:    true,
+				Description: "Set this resource as primary IPv4 (false by default).",
 			},
 			"role": {
 				Type:     schema.TypeString,
@@ -98,6 +111,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"loopback",
 					"secondary", "anycast", "vip", "vrrp", "hsrp", "glbp", "carp"},
 					false),
+				Description: "The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this IP address (ipam module).",
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -105,6 +119,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Default:  "active",
 				ValidateFunc: validation.StringInSlice([]string{"container", "active",
 					"reserved", "deprecated", "dhcp"}, false),
+				Description: "The status among of this IP address (ipam module) container, active, reserved, deprecated (active by default).",
 			},
 			"tag": {
 				Type:     schema.TypeSet,
@@ -112,23 +127,28 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing tag.",
 						},
 						"slug": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Slug of the existing tag.",
 						},
 					},
 				},
+				Description: "Existing tag to associate to this IP address (ipam module).",
 			},
 			"tenant_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the tenant where this object is attached.",
 			},
 			"vrf_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the vrf attached to this IP address (ipam module).",
 			},
 		},
 	}

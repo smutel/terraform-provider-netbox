@@ -12,37 +12,44 @@ import (
 
 func dataNetboxIpamService() *schema.Resource {
 	return &schema.Resource{
-		Read: dataNetboxIpamServiceRead,
+		Description: "Get info about a service (ipam module) from netbox.",
+		Read:        dataNetboxIpamServiceRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this service (ipam module).",
 			},
 			"device_id": {
 				Type:          schema.TypeInt,
 				Optional:      true,
 				ConflictsWith: []string{"virtualmachine_id"},
+				Description:   "ID of the device linked to this service (ipam module).",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
+				Description:  "The name of this service (ipam module).",
 			},
 			"port": {
 				Type:         schema.TypeInt,
 				Required:     true,
 				ValidateFunc: validation.IntBetween(1, 65535),
+				Description:  "The port of this service (ipam module).",
 			},
 			"protocol": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringInSlice([]string{"tcp", "udp"}, false),
+				Description:  "The protocol of this service (ipam module) (tcp or udp).",
 			},
 			"virtualmachine_id": {
 				Type:          schema.TypeInt,
 				Optional:      true,
 				ConflictsWith: []string{"device_id"},
+				Description:   "ID of the VM linked to this service (ipam module).",
 			},
 		},
 	}

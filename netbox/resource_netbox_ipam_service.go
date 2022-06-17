@@ -13,19 +13,21 @@ import (
 
 func resourceNetboxIpamService() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxIpamServiceCreate,
-		Read:   resourceNetboxIpamServiceRead,
-		Update: resourceNetboxIpamServiceUpdate,
-		Delete: resourceNetboxIpamServiceDelete,
-		Exists: resourceNetboxIpamServiceExists,
+		Description: "Manage an service (ipam module) within Netbox.",
+		Create:      resourceNetboxIpamServiceCreate,
+		Read:        resourceNetboxIpamServiceRead,
+		Update:      resourceNetboxIpamServiceUpdate,
+		Delete:      resourceNetboxIpamServiceDelete,
+		Exists:      resourceNetboxIpamServiceExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this service (ipam module).",
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -33,32 +35,38 @@ func resourceNetboxIpamService() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing custom field.",
 						},
 						"type": {
 							Type:     schema.TypeString,
 							Required: true,
 							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
 								"date", "url", "selection", "multiple"}, false),
+							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
 						},
 						"value": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Value of the existing custom field.",
 						},
 					},
 				},
+				Description: "Existing custom fields to associate to this service (ipam module).",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
+				Description:  "The description of this service (ipam module).",
 			},
 			"device_id": {
 				Type:         schema.TypeInt,
 				Optional:     true,
 				ExactlyOneOf: []string{"device_id", "virtualmachine_id"},
+				Description:  "ID of the device linked to this service (ipam module).",
 			},
 			"ip_addresses_id": {
 				Type:     schema.TypeList,
@@ -66,11 +74,13 @@ func resourceNetboxIpamService() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
+				Description: "Array of ID of IP addresses attached to this service (ipam module).",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
+				Description:  "The name for this service (ipam module).",
 			},
 			"ports": {
 				Type:     schema.TypeList,
@@ -78,11 +88,13 @@ func resourceNetboxIpamService() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
+				Description: "Array of ports of this service (ipam module).",
 			},
 			"protocol": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringInSlice([]string{"tcp", "udp"}, false),
+				Description:  "The protocol of this service (ipam module) (tcp or udp).",
 			},
 			"tag": {
 				Type:     schema.TypeSet,
@@ -90,19 +102,23 @@ func resourceNetboxIpamService() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing tag.",
 						},
 						"slug": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Slug of the existing tag.",
 						},
 					},
 				},
+				Description: "Existing tag to associate to this service (ipam module).",
 			},
 			"virtualmachine_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the VM linked to this service (ipam module).",
 			},
 		},
 	}

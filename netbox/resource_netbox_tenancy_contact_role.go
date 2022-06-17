@@ -14,19 +14,21 @@ import (
 
 func resourceNetboxTenancyContactRole() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxTenancyContactRoleCreate,
-		Read:   resourceNetboxTenancyContactRoleRead,
-		Update: resourceNetboxTenancyContactRoleUpdate,
-		Delete: resourceNetboxTenancyContactRoleDelete,
-		Exists: resourceNetboxTenancyContactRoleExists,
+		Description: "Manage a contact role (tenancy module) within Netbox.",
+		Create:      resourceNetboxTenancyContactRoleCreate,
+		Read:        resourceNetboxTenancyContactRoleRead,
+		Update:      resourceNetboxTenancyContactRoleUpdate,
+		Delete:      resourceNetboxTenancyContactRoleDelete,
+		Exists:      resourceNetboxTenancyContactRoleExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this contact role (tenancy module).",
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -34,32 +36,38 @@ func resourceNetboxTenancyContactRole() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing custom field.",
 						},
 						"type": {
 							Type:     schema.TypeString,
 							Required: true,
 							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
 								"date", "url", "selection", "multiple"}, false),
+							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
 						},
 						"value": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Value of the existing custom field.",
 						},
 					},
 				},
+				Description: "Existing custom fields to associate to this contact role (tenancy module).",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "Description for this contact role (tenancy module).",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "Name of this contact role (tenancy module).",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -67,6 +75,7 @@ func resourceNetboxTenancyContactRole() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
+				Description: "Slug of this contact role (tenancy module).",
 			},
 			"tag": {
 				Type:     schema.TypeSet,
@@ -74,15 +83,18 @@ func resourceNetboxTenancyContactRole() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing tag.",
 						},
 						"slug": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Slug of the existing tag.",
 						},
 					},
 				},
+				Description: "Existing tag to associate to this contact role (tenancy module).",
 			},
 		},
 	}

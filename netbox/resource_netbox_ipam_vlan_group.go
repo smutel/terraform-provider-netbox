@@ -14,24 +14,27 @@ import (
 
 func resourceNetboxIpamVlanGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxIpamVlanGroupCreate,
-		Read:   resourceNetboxIpamVlanGroupRead,
-		Update: resourceNetboxIpamVlanGroupUpdate,
-		Delete: resourceNetboxIpamVlanGroupDelete,
-		Exists: resourceNetboxIpamVlanGroupExists,
+		Description: "Manage a vlan group (ipam module) within Netbox.",
+		Create:      resourceNetboxIpamVlanGroupCreate,
+		Read:        resourceNetboxIpamVlanGroupRead,
+		Update:      resourceNetboxIpamVlanGroupUpdate,
+		Delete:      resourceNetboxIpamVlanGroupDelete,
+		Exists:      resourceNetboxIpamVlanGroupExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this vlan group (ipam module).",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
+				Description:  "The name for this vlan group (ipam module).",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -39,6 +42,7 @@ func resourceNetboxIpamVlanGroup() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
+				Description: "The slug for this vlan group (ipam module).",
 			},
 			"tag": {
 				Type:     schema.TypeSet,
@@ -46,15 +50,18 @@ func resourceNetboxIpamVlanGroup() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing tag.",
 						},
 						"slug": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Slug of the existing tag.",
 						},
 					},
 				},
+				Description: "Existing tag to associate to this vlan group (ipam module).",
 			},
 		},
 	}

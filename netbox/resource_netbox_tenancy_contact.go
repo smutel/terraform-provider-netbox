@@ -14,11 +14,12 @@ import (
 
 func resourceNetboxTenancyContact() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNetboxTenancyContactCreate,
-		Read:   resourceNetboxTenancyContactRead,
-		Update: resourceNetboxTenancyContactUpdate,
-		Delete: resourceNetboxTenancyContactDelete,
-		Exists: resourceNetboxTenancyContactExists,
+		Description: "Manage a contact (tenancy module) within Netbox.",
+		Create:      resourceNetboxTenancyContactCreate,
+		Read:        resourceNetboxTenancyContactRead,
+		Update:      resourceNetboxTenancyContactUpdate,
+		Delete:      resourceNetboxTenancyContactDelete,
+		Exists:      resourceNetboxTenancyContactExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -29,20 +30,24 @@ func resourceNetboxTenancyContact() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
+				Description:  "The address for this contact (tenancy module).",
 			},
 			"comments": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  nil,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     nil,
+				Description: "Comments for this contact (tenancy module).",
 			},
 			"contact_group_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     0,
+				Description: "ID of the group where this contact (tenancy module) belongs to.",
 			},
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this contact (tenancy module).",
 			},
 			"custom_field": {
 				Type:     schema.TypeSet,
@@ -50,21 +55,25 @@ func resourceNetboxTenancyContact() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing custom field.",
 						},
 						"type": {
 							Type:     schema.TypeString,
 							Required: true,
 							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
 								"date", "url", "selection", "multiple"}, false),
+							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
 						},
 						"value": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Value of the existing custom field.",
 						},
 					},
 				},
+				Description: "Existing custom fields to associate to this contact (tenancy module).",
 			},
 			"email": {
 				Type:     schema.TypeString,
@@ -79,17 +88,20 @@ func resourceNetboxTenancyContact() *schema.Resource {
 					}
 					return
 				},
+				Description: "The e-mail for this contact (tenancy module).",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "The name for this contact (tenancy module).",
 			},
 			"phone": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 50),
+				Description:  "The phone for this contact (tenancy module).",
 			},
 			"tag": {
 				Type:     schema.TypeSet,
@@ -97,21 +109,25 @@ func resourceNetboxTenancyContact() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name of the existing tag.",
 						},
 						"slug": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Slug of the existing tag.",
 						},
 					},
 				},
+				Description: "Existing tag to associate to this contact (tenancy module).",
 			},
 			"title": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "The title for this contact (tenancy module).",
 			},
 		},
 	}
