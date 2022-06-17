@@ -1,50 +1,50 @@
 package netbox
 
 import (
-  "encoding/json"
+	"encoding/json"
 
-  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-  netboxclient "github.com/smutel/go-netbox/netbox/client"
-  "github.com/smutel/go-netbox/netbox/client/dcim"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	netboxclient "github.com/smutel/go-netbox/netbox/client"
+	"github.com/smutel/go-netbox/netbox/client/dcim"
 )
 
 func dataNetboxJSONDcimDeviceBaysList() *schema.Resource {
-  return &schema.Resource{
-    Description: "Get json output from the dcim_device_bays_list Netbox endpoint.",
-    Read: dataNetboxJSONDcimDeviceBaysListRead,
+	return &schema.Resource{
+		Description: "Get json output from the dcim_device_bays_list Netbox endpoint.",
+		Read:        dataNetboxJSONDcimDeviceBaysListRead,
 
-    Schema: map[string]*schema.Schema{
-      "limit": {
-        Type:     schema.TypeInt,
-        Optional: true,
-        Default:  0,
-        Description: "The max number of returned results. If 0 is specified, all records will be returned.",
-      },
-      "json": {
-        Type:     schema.TypeString,
-        Computed: true,
-        Description: "JSON output of the list of objects for this Netbox endpoint.",
-      },
-    },
-  }
+		Schema: map[string]*schema.Schema{
+			"limit": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     0,
+				Description: "The max number of returned results. If 0 is specified, all records will be returned.",
+			},
+			"json": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "JSON output of the list of objects for this Netbox endpoint.",
+			},
+		},
+	}
 }
 
 func dataNetboxJSONDcimDeviceBaysListRead(d *schema.ResourceData, m interface{}) error {
-  client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netboxclient.NetBoxAPI)
 
-  params := dcim.NewDcimDeviceBaysListParams()
-  limit := int64(d.Get("limit").(int))
-  params.Limit = &limit
+	params := dcim.NewDcimDeviceBaysListParams()
+	limit := int64(d.Get("limit").(int))
+	params.Limit = &limit
 
-  list, err := client.Dcim.DcimDeviceBaysList(params, nil)
-  if err != nil {
-    return err
-  }
+	list, err := client.Dcim.DcimDeviceBaysList(params, nil)
+	if err != nil {
+		return err
+	}
 
-  j, _ := json.Marshal(list.Payload.Results)
+	j, _ := json.Marshal(list.Payload.Results)
 
-  d.Set("json", string(j))
-  d.SetId("NetboxJSONDcimDeviceBaysList")
+	d.Set("json", string(j))
+	d.SetId("NetboxJSONDcimDeviceBaysList")
 
-  return nil
+	return nil
 }
