@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v4.0.1...v5.0.0) (2022-08-26)
+
+
+### Features
+
+* Update provider to work with Netbox 3.2 ([ea07af5](https://github.com/smutel/terraform-provider-netbox/commit/ea07af58369ee844b5fb051690e350f400192bc2))
+
+
+### Enhancements
+
+* Update JSON data/resource with Netbox 3.2 ([adae68a](https://github.com/smutel/terraform-provider-netbox/commit/adae68aed8622c1b541103a1a523a49595e7d025))
+
 ### [4.0.1](https://github.com/smutel/terraform-provider-netbox/compare/v4.0.0...v4.0.1) (2022-06-17)
 
 
