@@ -87,9 +87,6 @@ type IpamRouteTargetsListParams struct {
 	// Description.
 	Description *string
 
-	// DescriptionEmpty.
-	DescriptionEmpty *string
-
 	// DescriptionIc.
 	DescriptionIc *string
 
@@ -176,9 +173,6 @@ type IpamRouteTargetsListParams struct {
 
 	// Name.
 	Name *string
-
-	// NameEmpty.
-	NameEmpty *string
 
 	// NameIc.
 	NameIc *string
@@ -341,17 +335,6 @@ func (o *IpamRouteTargetsListParams) WithDescription(description *string) *IpamR
 // SetDescription adds the description to the ipam route targets list params
 func (o *IpamRouteTargetsListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the ipam route targets list params
-func (o *IpamRouteTargetsListParams) WithDescriptionEmpty(descriptionEmpty *string) *IpamRouteTargetsListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the ipam route targets list params
-func (o *IpamRouteTargetsListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the ipam route targets list params
@@ -662,17 +645,6 @@ func (o *IpamRouteTargetsListParams) SetName(name *string) {
 	o.Name = name
 }
 
-// WithNameEmpty adds the nameEmpty to the ipam route targets list params
-func (o *IpamRouteTargetsListParams) WithNameEmpty(nameEmpty *string) *IpamRouteTargetsListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the ipam route targets list params
-func (o *IpamRouteTargetsListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
-}
-
 // WithNameIc adds the nameIc to the ipam route targets list params
 func (o *IpamRouteTargetsListParams) WithNameIc(nameIc *string) *IpamRouteTargetsListParams {
 	o.SetNameIc(nameIc)
@@ -975,23 +947,6 @@ func (o *IpamRouteTargetsListParams) WriteToRequest(r runtime.ClientRequest, reg
 		if qDescription != "" {
 
 			if err := r.SetQueryParam("description", qDescription); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
 				return err
 			}
 		}
@@ -1468,23 +1423,6 @@ func (o *IpamRouteTargetsListParams) WriteToRequest(r runtime.ClientRequest, reg
 		if qName != "" {
 
 			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
 				return err
 			}
 		}

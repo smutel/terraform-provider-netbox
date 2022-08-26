@@ -78,9 +78,6 @@ type ExtrasWebhooksListParams struct {
 	// CaFilePath.
 	CaFilePath *string
 
-	// CaFilePathEmpty.
-	CaFilePathEmpty *string
-
 	// CaFilePathIc.
 	CaFilePathIc *string
 
@@ -107,6 +104,24 @@ type ExtrasWebhooksListParams struct {
 
 	// CaFilePathNisw.
 	CaFilePathNisw *string
+
+	// ContentTypeID.
+	ContentTypeID *string
+
+	// ContentTypeIDGt.
+	ContentTypeIDGt *string
+
+	// ContentTypeIDGte.
+	ContentTypeIDGte *string
+
+	// ContentTypeIDLt.
+	ContentTypeIDLt *string
+
+	// ContentTypeIDLte.
+	ContentTypeIDLte *string
+
+	// ContentTypeIDn.
+	ContentTypeIDn *string
 
 	// ContentTypes.
 	ContentTypes *string
@@ -143,9 +158,6 @@ type ExtrasWebhooksListParams struct {
 
 	// HTTPContentType.
 	HTTPContentType *string
-
-	// HTTPContentTypeEmpty.
-	HTTPContentTypeEmpty *string
 
 	// HTTPContentTypeIc.
 	HTTPContentTypeIc *string
@@ -207,9 +219,6 @@ type ExtrasWebhooksListParams struct {
 	// Name.
 	Name *string
 
-	// NameEmpty.
-	NameEmpty *string
-
 	// NameIc.
 	NameIc *string
 
@@ -246,9 +255,6 @@ type ExtrasWebhooksListParams struct {
 	// PayloadURL.
 	PayloadURL *string
 
-	// PayloadURLEmpty.
-	PayloadURLEmpty *string
-
 	// PayloadURLIc.
 	PayloadURLIc *string
 
@@ -281,9 +287,6 @@ type ExtrasWebhooksListParams struct {
 
 	// Secret.
 	Secret *string
-
-	// SecretEmpty.
-	SecretEmpty *string
 
 	// SecretIc.
 	SecretIc *string
@@ -388,17 +391,6 @@ func (o *ExtrasWebhooksListParams) SetCaFilePath(caFilePath *string) {
 	o.CaFilePath = caFilePath
 }
 
-// WithCaFilePathEmpty adds the caFilePathEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) WithCaFilePathEmpty(caFilePathEmpty *string) *ExtrasWebhooksListParams {
-	o.SetCaFilePathEmpty(caFilePathEmpty)
-	return o
-}
-
-// SetCaFilePathEmpty adds the caFilePathEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) SetCaFilePathEmpty(caFilePathEmpty *string) {
-	o.CaFilePathEmpty = caFilePathEmpty
-}
-
 // WithCaFilePathIc adds the caFilePathIc to the extras webhooks list params
 func (o *ExtrasWebhooksListParams) WithCaFilePathIc(caFilePathIc *string) *ExtrasWebhooksListParams {
 	o.SetCaFilePathIc(caFilePathIc)
@@ -496,6 +488,72 @@ func (o *ExtrasWebhooksListParams) WithCaFilePathNisw(caFilePathNisw *string) *E
 // SetCaFilePathNisw adds the caFilePathNisw to the extras webhooks list params
 func (o *ExtrasWebhooksListParams) SetCaFilePathNisw(caFilePathNisw *string) {
 	o.CaFilePathNisw = caFilePathNisw
+}
+
+// WithContentTypeID adds the contentTypeID to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) WithContentTypeID(contentTypeID *string) *ExtrasWebhooksListParams {
+	o.SetContentTypeID(contentTypeID)
+	return o
+}
+
+// SetContentTypeID adds the contentTypeId to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) SetContentTypeID(contentTypeID *string) {
+	o.ContentTypeID = contentTypeID
+}
+
+// WithContentTypeIDGt adds the contentTypeIDGt to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) WithContentTypeIDGt(contentTypeIDGt *string) *ExtrasWebhooksListParams {
+	o.SetContentTypeIDGt(contentTypeIDGt)
+	return o
+}
+
+// SetContentTypeIDGt adds the contentTypeIdGt to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) SetContentTypeIDGt(contentTypeIDGt *string) {
+	o.ContentTypeIDGt = contentTypeIDGt
+}
+
+// WithContentTypeIDGte adds the contentTypeIDGte to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) WithContentTypeIDGte(contentTypeIDGte *string) *ExtrasWebhooksListParams {
+	o.SetContentTypeIDGte(contentTypeIDGte)
+	return o
+}
+
+// SetContentTypeIDGte adds the contentTypeIdGte to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) SetContentTypeIDGte(contentTypeIDGte *string) {
+	o.ContentTypeIDGte = contentTypeIDGte
+}
+
+// WithContentTypeIDLt adds the contentTypeIDLt to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) WithContentTypeIDLt(contentTypeIDLt *string) *ExtrasWebhooksListParams {
+	o.SetContentTypeIDLt(contentTypeIDLt)
+	return o
+}
+
+// SetContentTypeIDLt adds the contentTypeIdLt to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) SetContentTypeIDLt(contentTypeIDLt *string) {
+	o.ContentTypeIDLt = contentTypeIDLt
+}
+
+// WithContentTypeIDLte adds the contentTypeIDLte to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) WithContentTypeIDLte(contentTypeIDLte *string) *ExtrasWebhooksListParams {
+	o.SetContentTypeIDLte(contentTypeIDLte)
+	return o
+}
+
+// SetContentTypeIDLte adds the contentTypeIdLte to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) SetContentTypeIDLte(contentTypeIDLte *string) {
+	o.ContentTypeIDLte = contentTypeIDLte
+}
+
+// WithContentTypeIDn adds the contentTypeIDn to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) WithContentTypeIDn(contentTypeIDn *string) *ExtrasWebhooksListParams {
+	o.SetContentTypeIDn(contentTypeIDn)
+	return o
+}
+
+// SetContentTypeIDn adds the contentTypeIdN to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) SetContentTypeIDn(contentTypeIDn *string) {
+	o.ContentTypeIDn = contentTypeIDn
 }
 
 // WithContentTypes adds the contentTypes to the extras webhooks list params
@@ -628,17 +686,6 @@ func (o *ExtrasWebhooksListParams) WithHTTPContentType(hTTPContentType *string) 
 // SetHTTPContentType adds the httpContentType to the extras webhooks list params
 func (o *ExtrasWebhooksListParams) SetHTTPContentType(hTTPContentType *string) {
 	o.HTTPContentType = hTTPContentType
-}
-
-// WithHTTPContentTypeEmpty adds the hTTPContentTypeEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) WithHTTPContentTypeEmpty(hTTPContentTypeEmpty *string) *ExtrasWebhooksListParams {
-	o.SetHTTPContentTypeEmpty(hTTPContentTypeEmpty)
-	return o
-}
-
-// SetHTTPContentTypeEmpty adds the httpContentTypeEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) SetHTTPContentTypeEmpty(hTTPContentTypeEmpty *string) {
-	o.HTTPContentTypeEmpty = hTTPContentTypeEmpty
 }
 
 // WithHTTPContentTypeIc adds the hTTPContentTypeIc to the extras webhooks list params
@@ -850,17 +897,6 @@ func (o *ExtrasWebhooksListParams) SetName(name *string) {
 	o.Name = name
 }
 
-// WithNameEmpty adds the nameEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) WithNameEmpty(nameEmpty *string) *ExtrasWebhooksListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
-}
-
 // WithNameIc adds the nameIc to the extras webhooks list params
 func (o *ExtrasWebhooksListParams) WithNameIc(nameIc *string) *ExtrasWebhooksListParams {
 	o.SetNameIc(nameIc)
@@ -982,17 +1018,6 @@ func (o *ExtrasWebhooksListParams) SetPayloadURL(payloadURL *string) {
 	o.PayloadURL = payloadURL
 }
 
-// WithPayloadURLEmpty adds the payloadURLEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) WithPayloadURLEmpty(payloadURLEmpty *string) *ExtrasWebhooksListParams {
-	o.SetPayloadURLEmpty(payloadURLEmpty)
-	return o
-}
-
-// SetPayloadURLEmpty adds the payloadUrlEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) SetPayloadURLEmpty(payloadURLEmpty *string) {
-	o.PayloadURLEmpty = payloadURLEmpty
-}
-
 // WithPayloadURLIc adds the payloadURLIc to the extras webhooks list params
 func (o *ExtrasWebhooksListParams) WithPayloadURLIc(payloadURLIc *string) *ExtrasWebhooksListParams {
 	o.SetPayloadURLIc(payloadURLIc)
@@ -1112,17 +1137,6 @@ func (o *ExtrasWebhooksListParams) WithSecret(secret *string) *ExtrasWebhooksLis
 // SetSecret adds the secret to the extras webhooks list params
 func (o *ExtrasWebhooksListParams) SetSecret(secret *string) {
 	o.Secret = secret
-}
-
-// WithSecretEmpty adds the secretEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) WithSecretEmpty(secretEmpty *string) *ExtrasWebhooksListParams {
-	o.SetSecretEmpty(secretEmpty)
-	return o
-}
-
-// SetSecretEmpty adds the secretEmpty to the extras webhooks list params
-func (o *ExtrasWebhooksListParams) SetSecretEmpty(secretEmpty *string) {
-	o.SecretEmpty = secretEmpty
 }
 
 // WithSecretIc adds the secretIc to the extras webhooks list params
@@ -1293,23 +1307,6 @@ func (o *ExtrasWebhooksListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
-	if o.CaFilePathEmpty != nil {
-
-		// query param ca_file_path__empty
-		var qrCaFilePathEmpty string
-
-		if o.CaFilePathEmpty != nil {
-			qrCaFilePathEmpty = *o.CaFilePathEmpty
-		}
-		qCaFilePathEmpty := qrCaFilePathEmpty
-		if qCaFilePathEmpty != "" {
-
-			if err := r.SetQueryParam("ca_file_path__empty", qCaFilePathEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.CaFilePathIc != nil {
 
 		// query param ca_file_path__ic
@@ -1458,6 +1455,108 @@ func (o *ExtrasWebhooksListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qCaFilePathNisw != "" {
 
 			if err := r.SetQueryParam("ca_file_path__nisw", qCaFilePathNisw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeID != nil {
+
+		// query param content_type_id
+		var qrContentTypeID string
+
+		if o.ContentTypeID != nil {
+			qrContentTypeID = *o.ContentTypeID
+		}
+		qContentTypeID := qrContentTypeID
+		if qContentTypeID != "" {
+
+			if err := r.SetQueryParam("content_type_id", qContentTypeID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDGt != nil {
+
+		// query param content_type_id__gt
+		var qrContentTypeIDGt string
+
+		if o.ContentTypeIDGt != nil {
+			qrContentTypeIDGt = *o.ContentTypeIDGt
+		}
+		qContentTypeIDGt := qrContentTypeIDGt
+		if qContentTypeIDGt != "" {
+
+			if err := r.SetQueryParam("content_type_id__gt", qContentTypeIDGt); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDGte != nil {
+
+		// query param content_type_id__gte
+		var qrContentTypeIDGte string
+
+		if o.ContentTypeIDGte != nil {
+			qrContentTypeIDGte = *o.ContentTypeIDGte
+		}
+		qContentTypeIDGte := qrContentTypeIDGte
+		if qContentTypeIDGte != "" {
+
+			if err := r.SetQueryParam("content_type_id__gte", qContentTypeIDGte); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDLt != nil {
+
+		// query param content_type_id__lt
+		var qrContentTypeIDLt string
+
+		if o.ContentTypeIDLt != nil {
+			qrContentTypeIDLt = *o.ContentTypeIDLt
+		}
+		qContentTypeIDLt := qrContentTypeIDLt
+		if qContentTypeIDLt != "" {
+
+			if err := r.SetQueryParam("content_type_id__lt", qContentTypeIDLt); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDLte != nil {
+
+		// query param content_type_id__lte
+		var qrContentTypeIDLte string
+
+		if o.ContentTypeIDLte != nil {
+			qrContentTypeIDLte = *o.ContentTypeIDLte
+		}
+		qContentTypeIDLte := qrContentTypeIDLte
+		if qContentTypeIDLte != "" {
+
+			if err := r.SetQueryParam("content_type_id__lte", qContentTypeIDLte); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDn != nil {
+
+		// query param content_type_id__n
+		var qrContentTypeIDn string
+
+		if o.ContentTypeIDn != nil {
+			qrContentTypeIDn = *o.ContentTypeIDn
+		}
+		qContentTypeIDn := qrContentTypeIDn
+		if qContentTypeIDn != "" {
+
+			if err := r.SetQueryParam("content_type_id__n", qContentTypeIDn); err != nil {
 				return err
 			}
 		}
@@ -1662,23 +1761,6 @@ func (o *ExtrasWebhooksListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qHTTPContentType != "" {
 
 			if err := r.SetQueryParam("http_content_type", qHTTPContentType); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.HTTPContentTypeEmpty != nil {
-
-		// query param http_content_type__empty
-		var qrHTTPContentTypeEmpty string
-
-		if o.HTTPContentTypeEmpty != nil {
-			qrHTTPContentTypeEmpty = *o.HTTPContentTypeEmpty
-		}
-		qHTTPContentTypeEmpty := qrHTTPContentTypeEmpty
-		if qHTTPContentTypeEmpty != "" {
-
-			if err := r.SetQueryParam("http_content_type__empty", qHTTPContentTypeEmpty); err != nil {
 				return err
 			}
 		}
@@ -2007,23 +2089,6 @@ func (o *ExtrasWebhooksListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.NameIc != nil {
 
 		// query param name__ic
@@ -2211,23 +2276,6 @@ func (o *ExtrasWebhooksListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
-	if o.PayloadURLEmpty != nil {
-
-		// query param payload_url__empty
-		var qrPayloadURLEmpty string
-
-		if o.PayloadURLEmpty != nil {
-			qrPayloadURLEmpty = *o.PayloadURLEmpty
-		}
-		qPayloadURLEmpty := qrPayloadURLEmpty
-		if qPayloadURLEmpty != "" {
-
-			if err := r.SetQueryParam("payload_url__empty", qPayloadURLEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.PayloadURLIc != nil {
 
 		// query param payload_url__ic
@@ -2410,23 +2458,6 @@ func (o *ExtrasWebhooksListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qSecret != "" {
 
 			if err := r.SetQueryParam("secret", qSecret); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.SecretEmpty != nil {
-
-		// query param secret__empty
-		var qrSecretEmpty string
-
-		if o.SecretEmpty != nil {
-			qrSecretEmpty = *o.SecretEmpty
-		}
-		qSecretEmpty := qrSecretEmpty
-		if qSecretEmpty != "" {
-
-			if err := r.SetQueryParam("secret__empty", qSecretEmpty); err != nil {
 				return err
 			}
 		}

@@ -72,8 +72,8 @@ type WritableInterface struct {
 
 	// Created
 	// Read Only: true
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
+	// Format: date-time
+	Created strfmt.DateTime `json:"created,omitempty"`
 
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
@@ -90,10 +90,14 @@ type WritableInterface struct {
 	// Read Only: true
 	Display string `json:"display,omitempty"`
 
+	// Duplex
+	// Enum: [half full auto]
+	Duplex *string `json:"duplex,omitempty"`
+
 	// Enabled
 	Enabled bool `json:"enabled,omitempty"`
 
-	// Id
+	// ID
 	// Read Only: true
 	ID int64 `json:"id,omitempty"`
 
@@ -140,6 +144,9 @@ type WritableInterface struct {
 	// Enum: [access tagged tagged-all]
 	Mode string `json:"mode,omitempty"`
 
+	// Module
+	Module *int64 `json:"module,omitempty"`
+
 	// MTU
 	// Maximum: 65536
 	// Minimum: 1
@@ -168,6 +175,11 @@ type WritableInterface struct {
 	// Enum: [ap station]
 	RfRole string `json:"rf_role,omitempty"`
 
+	// Speed (Kbps)
+	// Maximum: 2.147483647e+09
+	// Minimum: 0
+	Speed *int64 `json:"speed,omitempty"`
+
 	// tagged vlans
 	// Unique: true
 	TaggedVlans []int64 `json:"tagged_vlans"`
@@ -182,7 +194,7 @@ type WritableInterface struct {
 
 	// Type
 	// Required: true
-	// Enum: [virtual bridge lag 100base-tx 1000base-t 2.5gbase-t 5gbase-t 10gbase-t 10gbase-cx4 1000base-x-gbic 1000base-x-sfp 10gbase-x-sfpp 10gbase-x-xfp 10gbase-x-xenpak 10gbase-x-x2 25gbase-x-sfp28 50gbase-x-sfp56 40gbase-x-qsfpp 50gbase-x-sfp28 100gbase-x-cfp 100gbase-x-cfp2 200gbase-x-cfp2 100gbase-x-cfp4 100gbase-x-cpak 100gbase-x-qsfp28 200gbase-x-qsfp56 400gbase-x-qsfpdd 400gbase-x-osfp ieee802.11a ieee802.11g ieee802.11n ieee802.11ac ieee802.11ad ieee802.11ax ieee802.15.1 gsm cdma lte sonet-oc3 sonet-oc12 sonet-oc48 sonet-oc192 sonet-oc768 sonet-oc1920 sonet-oc3840 1gfc-sfp 2gfc-sfp 4gfc-sfp 8gfc-sfpp 16gfc-sfpp 32gfc-sfp28 64gfc-qsfpp 128gfc-qsfp28 infiniband-sdr infiniband-ddr infiniband-qdr infiniband-fdr10 infiniband-fdr infiniband-edr infiniband-hdr infiniband-ndr infiniband-xdr t1 e1 t3 e3 xdsl cisco-stackwise cisco-stackwise-plus cisco-flexstack cisco-flexstack-plus cisco-stackwise-80 cisco-stackwise-160 cisco-stackwise-320 cisco-stackwise-480 juniper-vcp extreme-summitstack extreme-summitstack-128 extreme-summitstack-256 extreme-summitstack-512 other]
+	// Enum: [virtual bridge lag 100base-tx 1000base-t 2.5gbase-t 5gbase-t 10gbase-t 10gbase-cx4 1000base-x-gbic 1000base-x-sfp 10gbase-x-sfpp 10gbase-x-xfp 10gbase-x-xenpak 10gbase-x-x2 25gbase-x-sfp28 50gbase-x-sfp56 40gbase-x-qsfpp 50gbase-x-sfp28 100gbase-x-cfp 100gbase-x-cfp2 200gbase-x-cfp2 100gbase-x-cfp4 100gbase-x-cpak 100gbase-x-qsfp28 200gbase-x-qsfp56 400gbase-x-qsfpdd 400gbase-x-osfp ieee802.11a ieee802.11g ieee802.11n ieee802.11ac ieee802.11ad ieee802.11ax ieee802.15.1 gsm cdma lte sonet-oc3 sonet-oc12 sonet-oc48 sonet-oc192 sonet-oc768 sonet-oc1920 sonet-oc3840 1gfc-sfp 2gfc-sfp 4gfc-sfp 8gfc-sfpp 16gfc-sfpp 32gfc-sfp28 64gfc-qsfpp 128gfc-qsfp28 infiniband-sdr infiniband-ddr infiniband-qdr infiniband-fdr10 infiniband-fdr infiniband-edr infiniband-hdr infiniband-ndr infiniband-xdr t1 e1 t3 e3 xdsl docsis gpon xg-pon xgs-pon ng-pon2 epon 10g-epon cisco-stackwise cisco-stackwise-plus cisco-flexstack cisco-flexstack-plus cisco-stackwise-80 cisco-stackwise-160 cisco-stackwise-320 cisco-stackwise-480 juniper-vcp extreme-summitstack extreme-summitstack-128 extreme-summitstack-256 extreme-summitstack-512 other]
 	Type *string `json:"type"`
 
 	// Untagged VLAN
@@ -192,6 +204,9 @@ type WritableInterface struct {
 	// Read Only: true
 	// Format: uri
 	URL strfmt.URI `json:"url,omitempty"`
+
+	// VRF
+	Vrf *int64 `json:"vrf,omitempty"`
 
 	// wireless lans
 	// Unique: true
@@ -226,6 +241,10 @@ func (m *WritableInterface) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateDuplex(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateLabel(formats); err != nil {
 		res = append(res, err)
 	}
@@ -251,6 +270,10 @@ func (m *WritableInterface) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateRfRole(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSpeed(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -308,7 +331,7 @@ func (m *WritableInterface) validateCreated(formats strfmt.Registry) error {
 		return nil
 	}
 
-	if err := validate.FormatOf("created", "body", "date", m.Created.String(), formats); err != nil {
+	if err := validate.FormatOf("created", "body", "date-time", m.Created.String(), formats); err != nil {
 		return err
 	}
 
@@ -330,6 +353,51 @@ func (m *WritableInterface) validateDescription(formats strfmt.Registry) error {
 func (m *WritableInterface) validateDevice(formats strfmt.Registry) error {
 
 	if err := validate.Required("device", "body", m.Device); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var writableInterfaceTypeDuplexPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["half","full","auto"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		writableInterfaceTypeDuplexPropEnum = append(writableInterfaceTypeDuplexPropEnum, v)
+	}
+}
+
+const (
+
+	// WritableInterfaceDuplexHalf captures enum value "half"
+	WritableInterfaceDuplexHalf string = "half"
+
+	// WritableInterfaceDuplexFull captures enum value "full"
+	WritableInterfaceDuplexFull string = "full"
+
+	// WritableInterfaceDuplexAuto captures enum value "auto"
+	WritableInterfaceDuplexAuto string = "auto"
+)
+
+// prop value enum
+func (m *WritableInterface) validateDuplexEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, writableInterfaceTypeDuplexPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *WritableInterface) validateDuplex(formats strfmt.Registry) error {
+	if swag.IsZero(m.Duplex) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateDuplexEnum("duplex", "body", *m.Duplex); err != nil {
 		return err
 	}
 
@@ -1107,6 +1175,22 @@ func (m *WritableInterface) validateRfRole(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *WritableInterface) validateSpeed(formats strfmt.Registry) error {
+	if swag.IsZero(m.Speed) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumInt("speed", "body", *m.Speed, 0, false); err != nil {
+		return err
+	}
+
+	if err := validate.MaximumInt("speed", "body", *m.Speed, 2.147483647e+09, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *WritableInterface) validateTaggedVlans(formats strfmt.Registry) error {
 	if swag.IsZero(m.TaggedVlans) { // not required
 		return nil
@@ -1165,7 +1249,7 @@ var writableInterfaceTypeTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["virtual","bridge","lag","100base-tx","1000base-t","2.5gbase-t","5gbase-t","10gbase-t","10gbase-cx4","1000base-x-gbic","1000base-x-sfp","10gbase-x-sfpp","10gbase-x-xfp","10gbase-x-xenpak","10gbase-x-x2","25gbase-x-sfp28","50gbase-x-sfp56","40gbase-x-qsfpp","50gbase-x-sfp28","100gbase-x-cfp","100gbase-x-cfp2","200gbase-x-cfp2","100gbase-x-cfp4","100gbase-x-cpak","100gbase-x-qsfp28","200gbase-x-qsfp56","400gbase-x-qsfpdd","400gbase-x-osfp","ieee802.11a","ieee802.11g","ieee802.11n","ieee802.11ac","ieee802.11ad","ieee802.11ax","ieee802.15.1","gsm","cdma","lte","sonet-oc3","sonet-oc12","sonet-oc48","sonet-oc192","sonet-oc768","sonet-oc1920","sonet-oc3840","1gfc-sfp","2gfc-sfp","4gfc-sfp","8gfc-sfpp","16gfc-sfpp","32gfc-sfp28","64gfc-qsfpp","128gfc-qsfp28","infiniband-sdr","infiniband-ddr","infiniband-qdr","infiniband-fdr10","infiniband-fdr","infiniband-edr","infiniband-hdr","infiniband-ndr","infiniband-xdr","t1","e1","t3","e3","xdsl","cisco-stackwise","cisco-stackwise-plus","cisco-flexstack","cisco-flexstack-plus","cisco-stackwise-80","cisco-stackwise-160","cisco-stackwise-320","cisco-stackwise-480","juniper-vcp","extreme-summitstack","extreme-summitstack-128","extreme-summitstack-256","extreme-summitstack-512","other"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["virtual","bridge","lag","100base-tx","1000base-t","2.5gbase-t","5gbase-t","10gbase-t","10gbase-cx4","1000base-x-gbic","1000base-x-sfp","10gbase-x-sfpp","10gbase-x-xfp","10gbase-x-xenpak","10gbase-x-x2","25gbase-x-sfp28","50gbase-x-sfp56","40gbase-x-qsfpp","50gbase-x-sfp28","100gbase-x-cfp","100gbase-x-cfp2","200gbase-x-cfp2","100gbase-x-cfp4","100gbase-x-cpak","100gbase-x-qsfp28","200gbase-x-qsfp56","400gbase-x-qsfpdd","400gbase-x-osfp","ieee802.11a","ieee802.11g","ieee802.11n","ieee802.11ac","ieee802.11ad","ieee802.11ax","ieee802.15.1","gsm","cdma","lte","sonet-oc3","sonet-oc12","sonet-oc48","sonet-oc192","sonet-oc768","sonet-oc1920","sonet-oc3840","1gfc-sfp","2gfc-sfp","4gfc-sfp","8gfc-sfpp","16gfc-sfpp","32gfc-sfp28","64gfc-qsfpp","128gfc-qsfp28","infiniband-sdr","infiniband-ddr","infiniband-qdr","infiniband-fdr10","infiniband-fdr","infiniband-edr","infiniband-hdr","infiniband-ndr","infiniband-xdr","t1","e1","t3","e3","xdsl","docsis","gpon","xg-pon","xgs-pon","ng-pon2","epon","10g-epon","cisco-stackwise","cisco-stackwise-plus","cisco-flexstack","cisco-flexstack-plus","cisco-stackwise-80","cisco-stackwise-160","cisco-stackwise-320","cisco-stackwise-480","juniper-vcp","extreme-summitstack","extreme-summitstack-128","extreme-summitstack-256","extreme-summitstack-512","other"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -1375,6 +1459,27 @@ const (
 
 	// WritableInterfaceTypeXdsl captures enum value "xdsl"
 	WritableInterfaceTypeXdsl string = "xdsl"
+
+	// WritableInterfaceTypeDocsis captures enum value "docsis"
+	WritableInterfaceTypeDocsis string = "docsis"
+
+	// WritableInterfaceTypeGpon captures enum value "gpon"
+	WritableInterfaceTypeGpon string = "gpon"
+
+	// WritableInterfaceTypeXgDashPon captures enum value "xg-pon"
+	WritableInterfaceTypeXgDashPon string = "xg-pon"
+
+	// WritableInterfaceTypeXgsDashPon captures enum value "xgs-pon"
+	WritableInterfaceTypeXgsDashPon string = "xgs-pon"
+
+	// WritableInterfaceTypeNgDashPon2 captures enum value "ng-pon2"
+	WritableInterfaceTypeNgDashPon2 string = "ng-pon2"
+
+	// WritableInterfaceTypeEpon captures enum value "epon"
+	WritableInterfaceTypeEpon string = "epon"
+
+	// WritableInterfaceTypeNr10gDashEpon captures enum value "10g-epon"
+	WritableInterfaceTypeNr10gDashEpon string = "10g-epon"
 
 	// WritableInterfaceTypeCiscoDashStackwise captures enum value "cisco-stackwise"
 	WritableInterfaceTypeCiscoDashStackwise string = "cisco-stackwise"
@@ -1603,7 +1708,7 @@ func (m *WritableInterface) contextValidateCountIpaddresses(ctx context.Context,
 
 func (m *WritableInterface) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.Date(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
 		return err
 	}
 

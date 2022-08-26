@@ -37,7 +37,7 @@ import (
 type WritableDeviceType struct {
 
 	// Airflow
-	// Enum: [front-to-rear rear-to-front left-to-right right-to-left side-to-rear passive]
+	// Enum: [front-to-rear rear-to-front left-to-right right-to-left side-to-rear passive mixed]
 	Airflow string `json:"airflow,omitempty"`
 
 	// Comments
@@ -45,8 +45,8 @@ type WritableDeviceType struct {
 
 	// Created
 	// Read Only: true
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
+	// Format: date-time
+	Created strfmt.DateTime `json:"created,omitempty"`
 
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
@@ -64,7 +64,7 @@ type WritableDeviceType struct {
 	// Format: uri
 	FrontImage strfmt.URI `json:"front_image,omitempty"`
 
-	// Id
+	// ID
 	// Read Only: true
 	ID int64 `json:"id,omitempty"`
 
@@ -192,7 +192,7 @@ var writableDeviceTypeTypeAirflowPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["front-to-rear","rear-to-front","left-to-right","right-to-left","side-to-rear","passive"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["front-to-rear","rear-to-front","left-to-right","right-to-left","side-to-rear","passive","mixed"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -219,6 +219,9 @@ const (
 
 	// WritableDeviceTypeAirflowPassive captures enum value "passive"
 	WritableDeviceTypeAirflowPassive string = "passive"
+
+	// WritableDeviceTypeAirflowMixed captures enum value "mixed"
+	WritableDeviceTypeAirflowMixed string = "mixed"
 )
 
 // prop value enum
@@ -247,7 +250,7 @@ func (m *WritableDeviceType) validateCreated(formats strfmt.Registry) error {
 		return nil
 	}
 
-	if err := validate.FormatOf("created", "body", "date", m.Created.String(), formats); err != nil {
+	if err := validate.FormatOf("created", "body", "date-time", m.Created.String(), formats); err != nil {
 		return err
 	}
 
@@ -493,7 +496,7 @@ func (m *WritableDeviceType) ContextValidate(ctx context.Context, formats strfmt
 
 func (m *WritableDeviceType) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.Date(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
 		return err
 	}
 

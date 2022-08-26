@@ -78,9 +78,6 @@ type TenancyContactsListParams struct {
 	// Address.
 	Address *string
 
-	// AddressEmpty.
-	AddressEmpty *string
-
 	// AddressIc.
 	AddressIc *string
 
@@ -119,9 +116,6 @@ type TenancyContactsListParams struct {
 
 	// Email.
 	Email *string
-
-	// EmailEmpty.
-	EmailEmpty *string
 
 	// EmailIc.
 	EmailIc *string
@@ -195,11 +189,38 @@ type TenancyContactsListParams struct {
 	*/
 	Limit *int64
 
+	// Link.
+	Link *string
+
+	// LinkIc.
+	LinkIc *string
+
+	// LinkIe.
+	LinkIe *string
+
+	// LinkIew.
+	LinkIew *string
+
+	// LinkIsw.
+	LinkIsw *string
+
+	// Linkn.
+	Linkn *string
+
+	// LinkNic.
+	LinkNic *string
+
+	// LinkNie.
+	LinkNie *string
+
+	// LinkNiew.
+	LinkNiew *string
+
+	// LinkNisw.
+	LinkNisw *string
+
 	// Name.
 	Name *string
-
-	// NameEmpty.
-	NameEmpty *string
 
 	// NameIc.
 	NameIc *string
@@ -236,9 +257,6 @@ type TenancyContactsListParams struct {
 
 	// Phone.
 	Phone *string
-
-	// PhoneEmpty.
-	PhoneEmpty *string
 
 	// PhoneIc.
 	PhoneIc *string
@@ -278,9 +296,6 @@ type TenancyContactsListParams struct {
 
 	// Title.
 	Title *string
-
-	// TitleEmpty.
-	TitleEmpty *string
 
 	// TitleIc.
 	TitleIc *string
@@ -371,17 +386,6 @@ func (o *TenancyContactsListParams) WithAddress(address *string) *TenancyContact
 // SetAddress adds the address to the tenancy contacts list params
 func (o *TenancyContactsListParams) SetAddress(address *string) {
 	o.Address = address
-}
-
-// WithAddressEmpty adds the addressEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) WithAddressEmpty(addressEmpty *string) *TenancyContactsListParams {
-	o.SetAddressEmpty(addressEmpty)
-	return o
-}
-
-// SetAddressEmpty adds the addressEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) SetAddressEmpty(addressEmpty *string) {
-	o.AddressEmpty = addressEmpty
 }
 
 // WithAddressIc adds the addressIc to the tenancy contacts list params
@@ -525,17 +529,6 @@ func (o *TenancyContactsListParams) WithEmail(email *string) *TenancyContactsLis
 // SetEmail adds the email to the tenancy contacts list params
 func (o *TenancyContactsListParams) SetEmail(email *string) {
 	o.Email = email
-}
-
-// WithEmailEmpty adds the emailEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) WithEmailEmpty(emailEmpty *string) *TenancyContactsListParams {
-	o.SetEmailEmpty(emailEmpty)
-	return o
-}
-
-// SetEmailEmpty adds the emailEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) SetEmailEmpty(emailEmpty *string) {
-	o.EmailEmpty = emailEmpty
 }
 
 // WithEmailIc adds the emailIc to the tenancy contacts list params
@@ -791,6 +784,116 @@ func (o *TenancyContactsListParams) SetLimit(limit *int64) {
 	o.Limit = limit
 }
 
+// WithLink adds the link to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLink(link *string) *TenancyContactsListParams {
+	o.SetLink(link)
+	return o
+}
+
+// SetLink adds the link to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLink(link *string) {
+	o.Link = link
+}
+
+// WithLinkIc adds the linkIc to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLinkIc(linkIc *string) *TenancyContactsListParams {
+	o.SetLinkIc(linkIc)
+	return o
+}
+
+// SetLinkIc adds the linkIc to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLinkIc(linkIc *string) {
+	o.LinkIc = linkIc
+}
+
+// WithLinkIe adds the linkIe to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLinkIe(linkIe *string) *TenancyContactsListParams {
+	o.SetLinkIe(linkIe)
+	return o
+}
+
+// SetLinkIe adds the linkIe to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLinkIe(linkIe *string) {
+	o.LinkIe = linkIe
+}
+
+// WithLinkIew adds the linkIew to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLinkIew(linkIew *string) *TenancyContactsListParams {
+	o.SetLinkIew(linkIew)
+	return o
+}
+
+// SetLinkIew adds the linkIew to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLinkIew(linkIew *string) {
+	o.LinkIew = linkIew
+}
+
+// WithLinkIsw adds the linkIsw to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLinkIsw(linkIsw *string) *TenancyContactsListParams {
+	o.SetLinkIsw(linkIsw)
+	return o
+}
+
+// SetLinkIsw adds the linkIsw to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLinkIsw(linkIsw *string) {
+	o.LinkIsw = linkIsw
+}
+
+// WithLinkn adds the linkn to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLinkn(linkn *string) *TenancyContactsListParams {
+	o.SetLinkn(linkn)
+	return o
+}
+
+// SetLinkn adds the linkN to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLinkn(linkn *string) {
+	o.Linkn = linkn
+}
+
+// WithLinkNic adds the linkNic to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLinkNic(linkNic *string) *TenancyContactsListParams {
+	o.SetLinkNic(linkNic)
+	return o
+}
+
+// SetLinkNic adds the linkNic to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLinkNic(linkNic *string) {
+	o.LinkNic = linkNic
+}
+
+// WithLinkNie adds the linkNie to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLinkNie(linkNie *string) *TenancyContactsListParams {
+	o.SetLinkNie(linkNie)
+	return o
+}
+
+// SetLinkNie adds the linkNie to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLinkNie(linkNie *string) {
+	o.LinkNie = linkNie
+}
+
+// WithLinkNiew adds the linkNiew to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLinkNiew(linkNiew *string) *TenancyContactsListParams {
+	o.SetLinkNiew(linkNiew)
+	return o
+}
+
+// SetLinkNiew adds the linkNiew to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLinkNiew(linkNiew *string) {
+	o.LinkNiew = linkNiew
+}
+
+// WithLinkNisw adds the linkNisw to the tenancy contacts list params
+func (o *TenancyContactsListParams) WithLinkNisw(linkNisw *string) *TenancyContactsListParams {
+	o.SetLinkNisw(linkNisw)
+	return o
+}
+
+// SetLinkNisw adds the linkNisw to the tenancy contacts list params
+func (o *TenancyContactsListParams) SetLinkNisw(linkNisw *string) {
+	o.LinkNisw = linkNisw
+}
+
 // WithName adds the name to the tenancy contacts list params
 func (o *TenancyContactsListParams) WithName(name *string) *TenancyContactsListParams {
 	o.SetName(name)
@@ -800,17 +903,6 @@ func (o *TenancyContactsListParams) WithName(name *string) *TenancyContactsListP
 // SetName adds the name to the tenancy contacts list params
 func (o *TenancyContactsListParams) SetName(name *string) {
 	o.Name = name
-}
-
-// WithNameEmpty adds the nameEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) WithNameEmpty(nameEmpty *string) *TenancyContactsListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
 }
 
 // WithNameIc adds the nameIc to the tenancy contacts list params
@@ -932,17 +1024,6 @@ func (o *TenancyContactsListParams) WithPhone(phone *string) *TenancyContactsLis
 // SetPhone adds the phone to the tenancy contacts list params
 func (o *TenancyContactsListParams) SetPhone(phone *string) {
 	o.Phone = phone
-}
-
-// WithPhoneEmpty adds the phoneEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) WithPhoneEmpty(phoneEmpty *string) *TenancyContactsListParams {
-	o.SetPhoneEmpty(phoneEmpty)
-	return o
-}
-
-// SetPhoneEmpty adds the phoneEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) SetPhoneEmpty(phoneEmpty *string) {
-	o.PhoneEmpty = phoneEmpty
 }
 
 // WithPhoneIc adds the phoneIc to the tenancy contacts list params
@@ -1088,17 +1169,6 @@ func (o *TenancyContactsListParams) SetTitle(title *string) {
 	o.Title = title
 }
 
-// WithTitleEmpty adds the titleEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) WithTitleEmpty(titleEmpty *string) *TenancyContactsListParams {
-	o.SetTitleEmpty(titleEmpty)
-	return o
-}
-
-// SetTitleEmpty adds the titleEmpty to the tenancy contacts list params
-func (o *TenancyContactsListParams) SetTitleEmpty(titleEmpty *string) {
-	o.TitleEmpty = titleEmpty
-}
-
 // WithTitleIc adds the titleIc to the tenancy contacts list params
 func (o *TenancyContactsListParams) WithTitleIc(titleIc *string) *TenancyContactsListParams {
 	o.SetTitleIc(titleIc)
@@ -1218,23 +1288,6 @@ func (o *TenancyContactsListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		if qAddress != "" {
 
 			if err := r.SetQueryParam("address", qAddress); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.AddressEmpty != nil {
-
-		// query param address__empty
-		var qrAddressEmpty string
-
-		if o.AddressEmpty != nil {
-			qrAddressEmpty = *o.AddressEmpty
-		}
-		qAddressEmpty := qrAddressEmpty
-		if qAddressEmpty != "" {
-
-			if err := r.SetQueryParam("address__empty", qAddressEmpty); err != nil {
 				return err
 			}
 		}
@@ -1456,23 +1509,6 @@ func (o *TenancyContactsListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		if qEmail != "" {
 
 			if err := r.SetQueryParam("email", qEmail); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.EmailEmpty != nil {
-
-		// query param email__empty
-		var qrEmailEmpty string
-
-		if o.EmailEmpty != nil {
-			qrEmailEmpty = *o.EmailEmpty
-		}
-		qEmailEmpty := qrEmailEmpty
-		if qEmailEmpty != "" {
-
-			if err := r.SetQueryParam("email__empty", qEmailEmpty); err != nil {
 				return err
 			}
 		}
@@ -1869,6 +1905,176 @@ func (o *TenancyContactsListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		}
 	}
 
+	if o.Link != nil {
+
+		// query param link
+		var qrLink string
+
+		if o.Link != nil {
+			qrLink = *o.Link
+		}
+		qLink := qrLink
+		if qLink != "" {
+
+			if err := r.SetQueryParam("link", qLink); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LinkIc != nil {
+
+		// query param link__ic
+		var qrLinkIc string
+
+		if o.LinkIc != nil {
+			qrLinkIc = *o.LinkIc
+		}
+		qLinkIc := qrLinkIc
+		if qLinkIc != "" {
+
+			if err := r.SetQueryParam("link__ic", qLinkIc); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LinkIe != nil {
+
+		// query param link__ie
+		var qrLinkIe string
+
+		if o.LinkIe != nil {
+			qrLinkIe = *o.LinkIe
+		}
+		qLinkIe := qrLinkIe
+		if qLinkIe != "" {
+
+			if err := r.SetQueryParam("link__ie", qLinkIe); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LinkIew != nil {
+
+		// query param link__iew
+		var qrLinkIew string
+
+		if o.LinkIew != nil {
+			qrLinkIew = *o.LinkIew
+		}
+		qLinkIew := qrLinkIew
+		if qLinkIew != "" {
+
+			if err := r.SetQueryParam("link__iew", qLinkIew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LinkIsw != nil {
+
+		// query param link__isw
+		var qrLinkIsw string
+
+		if o.LinkIsw != nil {
+			qrLinkIsw = *o.LinkIsw
+		}
+		qLinkIsw := qrLinkIsw
+		if qLinkIsw != "" {
+
+			if err := r.SetQueryParam("link__isw", qLinkIsw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Linkn != nil {
+
+		// query param link__n
+		var qrLinkn string
+
+		if o.Linkn != nil {
+			qrLinkn = *o.Linkn
+		}
+		qLinkn := qrLinkn
+		if qLinkn != "" {
+
+			if err := r.SetQueryParam("link__n", qLinkn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LinkNic != nil {
+
+		// query param link__nic
+		var qrLinkNic string
+
+		if o.LinkNic != nil {
+			qrLinkNic = *o.LinkNic
+		}
+		qLinkNic := qrLinkNic
+		if qLinkNic != "" {
+
+			if err := r.SetQueryParam("link__nic", qLinkNic); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LinkNie != nil {
+
+		// query param link__nie
+		var qrLinkNie string
+
+		if o.LinkNie != nil {
+			qrLinkNie = *o.LinkNie
+		}
+		qLinkNie := qrLinkNie
+		if qLinkNie != "" {
+
+			if err := r.SetQueryParam("link__nie", qLinkNie); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LinkNiew != nil {
+
+		// query param link__niew
+		var qrLinkNiew string
+
+		if o.LinkNiew != nil {
+			qrLinkNiew = *o.LinkNiew
+		}
+		qLinkNiew := qrLinkNiew
+		if qLinkNiew != "" {
+
+			if err := r.SetQueryParam("link__niew", qLinkNiew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LinkNisw != nil {
+
+		// query param link__nisw
+		var qrLinkNisw string
+
+		if o.LinkNisw != nil {
+			qrLinkNisw = *o.LinkNisw
+		}
+		qLinkNisw := qrLinkNisw
+		if qLinkNisw != "" {
+
+			if err := r.SetQueryParam("link__nisw", qLinkNisw); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.Name != nil {
 
 		// query param name
@@ -1881,23 +2087,6 @@ func (o *TenancyContactsListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		if qName != "" {
 
 			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
 				return err
 			}
 		}
@@ -2085,23 +2274,6 @@ func (o *TenancyContactsListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		if qPhone != "" {
 
 			if err := r.SetQueryParam("phone", qPhone); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.PhoneEmpty != nil {
-
-		// query param phone__empty
-		var qrPhoneEmpty string
-
-		if o.PhoneEmpty != nil {
-			qrPhoneEmpty = *o.PhoneEmpty
-		}
-		qPhoneEmpty := qrPhoneEmpty
-		if qPhoneEmpty != "" {
-
-			if err := r.SetQueryParam("phone__empty", qPhoneEmpty); err != nil {
 				return err
 			}
 		}
@@ -2323,23 +2495,6 @@ func (o *TenancyContactsListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		if qTitle != "" {
 
 			if err := r.SetQueryParam("title", qTitle); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.TitleEmpty != nil {
-
-		// query param title__empty
-		var qrTitleEmpty string
-
-		if o.TitleEmpty != nil {
-			qrTitleEmpty = *o.TitleEmpty
-		}
-		qTitleEmpty := qrTitleEmpty
-		if qTitleEmpty != "" {
-
-			if err := r.SetQueryParam("title__empty", qTitleEmpty); err != nil {
 				return err
 			}
 		}

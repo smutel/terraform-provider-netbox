@@ -120,6 +120,9 @@ type DcimDeviceTypesListParams struct {
 	// Interfaces.
 	Interfaces *string
 
+	// InventoryItems.
+	InventoryItems *string
+
 	// IsFullDepth.
 	IsFullDepth *string
 
@@ -153,9 +156,6 @@ type DcimDeviceTypesListParams struct {
 	// Model.
 	Model *string
 
-	// ModelEmpty.
-	ModelEmpty *string
-
 	// ModelIc.
 	ModelIc *string
 
@@ -183,6 +183,9 @@ type DcimDeviceTypesListParams struct {
 	// ModelNisw.
 	ModelNisw *string
 
+	// ModuleBays.
+	ModuleBays *string
+
 	/* Offset.
 
 	   The initial index from which to return the results.
@@ -191,9 +194,6 @@ type DcimDeviceTypesListParams struct {
 
 	// PartNumber.
 	PartNumber *string
-
-	// PartNumberEmpty.
-	PartNumberEmpty *string
 
 	// PartNumberIc.
 	PartNumberIc *string
@@ -236,9 +236,6 @@ type DcimDeviceTypesListParams struct {
 
 	// Slug.
 	Slug *string
-
-	// SlugEmpty.
-	SlugEmpty *string
 
 	// SlugIc.
 	SlugIc *string
@@ -515,6 +512,17 @@ func (o *DcimDeviceTypesListParams) SetInterfaces(interfaces *string) {
 	o.Interfaces = interfaces
 }
 
+// WithInventoryItems adds the inventoryItems to the dcim device types list params
+func (o *DcimDeviceTypesListParams) WithInventoryItems(inventoryItems *string) *DcimDeviceTypesListParams {
+	o.SetInventoryItems(inventoryItems)
+	return o
+}
+
+// SetInventoryItems adds the inventoryItems to the dcim device types list params
+func (o *DcimDeviceTypesListParams) SetInventoryItems(inventoryItems *string) {
+	o.InventoryItems = inventoryItems
+}
+
 // WithIsFullDepth adds the isFullDepth to the dcim device types list params
 func (o *DcimDeviceTypesListParams) WithIsFullDepth(isFullDepth *string) *DcimDeviceTypesListParams {
 	o.SetIsFullDepth(isFullDepth)
@@ -625,17 +633,6 @@ func (o *DcimDeviceTypesListParams) SetModel(model *string) {
 	o.Model = model
 }
 
-// WithModelEmpty adds the modelEmpty to the dcim device types list params
-func (o *DcimDeviceTypesListParams) WithModelEmpty(modelEmpty *string) *DcimDeviceTypesListParams {
-	o.SetModelEmpty(modelEmpty)
-	return o
-}
-
-// SetModelEmpty adds the modelEmpty to the dcim device types list params
-func (o *DcimDeviceTypesListParams) SetModelEmpty(modelEmpty *string) {
-	o.ModelEmpty = modelEmpty
-}
-
 // WithModelIc adds the modelIc to the dcim device types list params
 func (o *DcimDeviceTypesListParams) WithModelIc(modelIc *string) *DcimDeviceTypesListParams {
 	o.SetModelIc(modelIc)
@@ -735,6 +732,17 @@ func (o *DcimDeviceTypesListParams) SetModelNisw(modelNisw *string) {
 	o.ModelNisw = modelNisw
 }
 
+// WithModuleBays adds the moduleBays to the dcim device types list params
+func (o *DcimDeviceTypesListParams) WithModuleBays(moduleBays *string) *DcimDeviceTypesListParams {
+	o.SetModuleBays(moduleBays)
+	return o
+}
+
+// SetModuleBays adds the moduleBays to the dcim device types list params
+func (o *DcimDeviceTypesListParams) SetModuleBays(moduleBays *string) {
+	o.ModuleBays = moduleBays
+}
+
 // WithOffset adds the offset to the dcim device types list params
 func (o *DcimDeviceTypesListParams) WithOffset(offset *int64) *DcimDeviceTypesListParams {
 	o.SetOffset(offset)
@@ -755,17 +763,6 @@ func (o *DcimDeviceTypesListParams) WithPartNumber(partNumber *string) *DcimDevi
 // SetPartNumber adds the partNumber to the dcim device types list params
 func (o *DcimDeviceTypesListParams) SetPartNumber(partNumber *string) {
 	o.PartNumber = partNumber
-}
-
-// WithPartNumberEmpty adds the partNumberEmpty to the dcim device types list params
-func (o *DcimDeviceTypesListParams) WithPartNumberEmpty(partNumberEmpty *string) *DcimDeviceTypesListParams {
-	o.SetPartNumberEmpty(partNumberEmpty)
-	return o
-}
-
-// SetPartNumberEmpty adds the partNumberEmpty to the dcim device types list params
-func (o *DcimDeviceTypesListParams) SetPartNumberEmpty(partNumberEmpty *string) {
-	o.PartNumberEmpty = partNumberEmpty
 }
 
 // WithPartNumberIc adds the partNumberIc to the dcim device types list params
@@ -920,17 +917,6 @@ func (o *DcimDeviceTypesListParams) WithSlug(slug *string) *DcimDeviceTypesListP
 // SetSlug adds the slug to the dcim device types list params
 func (o *DcimDeviceTypesListParams) SetSlug(slug *string) {
 	o.Slug = slug
-}
-
-// WithSlugEmpty adds the slugEmpty to the dcim device types list params
-func (o *DcimDeviceTypesListParams) WithSlugEmpty(slugEmpty *string) *DcimDeviceTypesListParams {
-	o.SetSlugEmpty(slugEmpty)
-	return o
-}
-
-// SetSlugEmpty adds the slugEmpty to the dcim device types list params
-func (o *DcimDeviceTypesListParams) SetSlugEmpty(slugEmpty *string) {
-	o.SlugEmpty = slugEmpty
 }
 
 // WithSlugIc adds the slugIc to the dcim device types list params
@@ -1405,6 +1391,23 @@ func (o *DcimDeviceTypesListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		}
 	}
 
+	if o.InventoryItems != nil {
+
+		// query param inventory_items
+		var qrInventoryItems string
+
+		if o.InventoryItems != nil {
+			qrInventoryItems = *o.InventoryItems
+		}
+		qInventoryItems := qrInventoryItems
+		if qInventoryItems != "" {
+
+			if err := r.SetQueryParam("inventory_items", qInventoryItems); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.IsFullDepth != nil {
 
 		// query param is_full_depth
@@ -1575,23 +1578,6 @@ func (o *DcimDeviceTypesListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		}
 	}
 
-	if o.ModelEmpty != nil {
-
-		// query param model__empty
-		var qrModelEmpty string
-
-		if o.ModelEmpty != nil {
-			qrModelEmpty = *o.ModelEmpty
-		}
-		qModelEmpty := qrModelEmpty
-		if qModelEmpty != "" {
-
-			if err := r.SetQueryParam("model__empty", qModelEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.ModelIc != nil {
 
 		// query param model__ic
@@ -1745,6 +1731,23 @@ func (o *DcimDeviceTypesListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		}
 	}
 
+	if o.ModuleBays != nil {
+
+		// query param module_bays
+		var qrModuleBays string
+
+		if o.ModuleBays != nil {
+			qrModuleBays = *o.ModuleBays
+		}
+		qModuleBays := qrModuleBays
+		if qModuleBays != "" {
+
+			if err := r.SetQueryParam("module_bays", qModuleBays); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.Offset != nil {
 
 		// query param offset
@@ -1774,23 +1777,6 @@ func (o *DcimDeviceTypesListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		if qPartNumber != "" {
 
 			if err := r.SetQueryParam("part_number", qPartNumber); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.PartNumberEmpty != nil {
-
-		// query param part_number__empty
-		var qrPartNumberEmpty string
-
-		if o.PartNumberEmpty != nil {
-			qrPartNumberEmpty = *o.PartNumberEmpty
-		}
-		qPartNumberEmpty := qrPartNumberEmpty
-		if qPartNumberEmpty != "" {
-
-			if err := r.SetQueryParam("part_number__empty", qPartNumberEmpty); err != nil {
 				return err
 			}
 		}
@@ -2029,23 +2015,6 @@ func (o *DcimDeviceTypesListParams) WriteToRequest(r runtime.ClientRequest, reg 
 		if qSlug != "" {
 
 			if err := r.SetQueryParam("slug", qSlug); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.SlugEmpty != nil {
-
-		// query param slug__empty
-		var qrSlugEmpty string
-
-		if o.SlugEmpty != nil {
-			qrSlugEmpty = *o.SlugEmpty
-		}
-		qSlugEmpty := qrSlugEmpty
-		if qSlugEmpty != "" {
-
-			if err := r.SetQueryParam("slug__empty", qSlugEmpty); err != nil {
 				return err
 			}
 		}

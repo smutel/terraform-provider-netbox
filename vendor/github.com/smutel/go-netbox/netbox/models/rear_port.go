@@ -50,8 +50,8 @@ type RearPort struct {
 
 	// Created
 	// Read Only: true
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
+	// Format: date-time
+	Created strfmt.DateTime `json:"created,omitempty"`
 
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
@@ -68,7 +68,7 @@ type RearPort struct {
 	// Read Only: true
 	Display string `json:"display,omitempty"`
 
-	// Id
+	// ID
 	// Read Only: true
 	ID int64 `json:"id,omitempty"`
 
@@ -99,6 +99,9 @@ type RearPort struct {
 	//
 	// Treat as if a cable is connected
 	MarkConnected bool `json:"mark_connected,omitempty"`
+
+	// module
+	Module *ComponentNestedModule `json:"module,omitempty"`
 
 	// Name
 	// Required: true
@@ -153,6 +156,10 @@ func (m *RearPort) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateLastUpdated(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateModule(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -222,7 +229,7 @@ func (m *RearPort) validateCreated(formats strfmt.Registry) error {
 		return nil
 	}
 
-	if err := validate.FormatOf("created", "body", "date", m.Created.String(), formats); err != nil {
+	if err := validate.FormatOf("created", "body", "date-time", m.Created.String(), formats); err != nil {
 		return err
 	}
 
@@ -280,6 +287,25 @@ func (m *RearPort) validateLastUpdated(formats strfmt.Registry) error {
 
 	if err := validate.FormatOf("last_updated", "body", "date-time", m.LastUpdated.String(), formats); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *RearPort) validateModule(formats strfmt.Registry) error {
+	if swag.IsZero(m.Module) { // not required
+		return nil
+	}
+
+	if m.Module != nil {
+		if err := m.Module.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("module")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("module")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -416,6 +442,10 @@ func (m *RearPort) ContextValidate(ctx context.Context, formats strfmt.Registry)
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateModule(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateTags(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -461,7 +491,7 @@ func (m *RearPort) contextValidateCable(ctx context.Context, formats strfmt.Regi
 
 func (m *RearPort) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.Date(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
 		return err
 	}
 
@@ -520,6 +550,22 @@ func (m *RearPort) contextValidateLinkPeerType(ctx context.Context, formats strf
 
 	if err := validate.ReadOnly(ctx, "link_peer_type", "body", string(m.LinkPeerType)); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *RearPort) contextValidateModule(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Module != nil {
+		if err := m.Module.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("module")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("module")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -595,12 +641,12 @@ type RearPortType struct {
 
 	// label
 	// Required: true
-	// Enum: [8P8C 8P6C 8P4C 8P2C 6P6C 6P4C 6P2C 4P4C 4P2C GG45 TERA 4P TERA 2P TERA 1P 110 Punch BNC F Connector N Connector MRJ21 FC LC LC/PC LC/UPC LC/APC LSH LSH/PC LSH/UPC LSH/APC MPO MTRJ SC SC/PC SC/UPC SC/APC ST CS SN SMA 905 SMA 906 URM-P2 URM-P4 URM-P8 Splice]
+	// Enum: [8P8C 8P6C 8P4C 8P2C 6P6C 6P4C 6P2C 4P4C 4P2C GG45 TERA 4P TERA 2P TERA 1P 110 Punch BNC F Connector N Connector MRJ21 FC LC LC/PC LC/UPC LC/APC LSH LSH/PC LSH/UPC LSH/APC MPO MTRJ SC SC/PC SC/UPC SC/APC ST CS SN SMA 905 SMA 906 URM-P2 URM-P4 URM-P8 Splice Other]
 	Label *string `json:"label"`
 
 	// value
 	// Required: true
-	// Enum: [8p8c 8p6c 8p4c 8p2c 6p6c 6p4c 6p2c 4p4c 4p2c gg45 tera-4p tera-2p tera-1p 110-punch bnc f n mrj21 fc lc lc-pc lc-upc lc-apc lsh lsh-pc lsh-upc lsh-apc mpo mtrj sc sc-pc sc-upc sc-apc st cs sn sma-905 sma-906 urm-p2 urm-p4 urm-p8 splice]
+	// Enum: [8p8c 8p6c 8p4c 8p2c 6p6c 6p4c 6p2c 4p4c 4p2c gg45 tera-4p tera-2p tera-1p 110-punch bnc f n mrj21 fc lc lc-pc lc-upc lc-apc lsh lsh-pc lsh-upc lsh-apc mpo mtrj sc sc-pc sc-upc sc-apc st cs sn sma-905 sma-906 urm-p2 urm-p4 urm-p8 splice other]
 	Value *string `json:"value"`
 }
 
@@ -626,7 +672,7 @@ var rearPortTypeTypeLabelPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["8P8C","8P6C","8P4C","8P2C","6P6C","6P4C","6P2C","4P4C","4P2C","GG45","TERA 4P","TERA 2P","TERA 1P","110 Punch","BNC","F Connector","N Connector","MRJ21","FC","LC","LC/PC","LC/UPC","LC/APC","LSH","LSH/PC","LSH/UPC","LSH/APC","MPO","MTRJ","SC","SC/PC","SC/UPC","SC/APC","ST","CS","SN","SMA 905","SMA 906","URM-P2","URM-P4","URM-P8","Splice"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["8P8C","8P6C","8P4C","8P2C","6P6C","6P4C","6P2C","4P4C","4P2C","GG45","TERA 4P","TERA 2P","TERA 1P","110 Punch","BNC","F Connector","N Connector","MRJ21","FC","LC","LC/PC","LC/UPC","LC/APC","LSH","LSH/PC","LSH/UPC","LSH/APC","MPO","MTRJ","SC","SC/PC","SC/UPC","SC/APC","ST","CS","SN","SMA 905","SMA 906","URM-P2","URM-P4","URM-P8","Splice","Other"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -761,6 +807,9 @@ const (
 
 	// RearPortTypeLabelSplice captures enum value "Splice"
 	RearPortTypeLabelSplice string = "Splice"
+
+	// RearPortTypeLabelOther captures enum value "Other"
+	RearPortTypeLabelOther string = "Other"
 )
 
 // prop value enum
@@ -789,7 +838,7 @@ var rearPortTypeTypeValuePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["8p8c","8p6c","8p4c","8p2c","6p6c","6p4c","6p2c","4p4c","4p2c","gg45","tera-4p","tera-2p","tera-1p","110-punch","bnc","f","n","mrj21","fc","lc","lc-pc","lc-upc","lc-apc","lsh","lsh-pc","lsh-upc","lsh-apc","mpo","mtrj","sc","sc-pc","sc-upc","sc-apc","st","cs","sn","sma-905","sma-906","urm-p2","urm-p4","urm-p8","splice"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["8p8c","8p6c","8p4c","8p2c","6p6c","6p4c","6p2c","4p4c","4p2c","gg45","tera-4p","tera-2p","tera-1p","110-punch","bnc","f","n","mrj21","fc","lc","lc-pc","lc-upc","lc-apc","lsh","lsh-pc","lsh-upc","lsh-apc","mpo","mtrj","sc","sc-pc","sc-upc","sc-apc","st","cs","sn","sma-905","sma-906","urm-p2","urm-p4","urm-p8","splice","other"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -924,6 +973,9 @@ const (
 
 	// RearPortTypeValueSplice captures enum value "splice"
 	RearPortTypeValueSplice string = "splice"
+
+	// RearPortTypeValueOther captures enum value "other"
+	RearPortTypeValueOther string = "other"
 )
 
 // prop value enum

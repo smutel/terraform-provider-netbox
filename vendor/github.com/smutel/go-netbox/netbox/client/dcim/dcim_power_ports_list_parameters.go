@@ -111,9 +111,6 @@ type DcimPowerPortsListParams struct {
 	// Description.
 	Description *string
 
-	// DescriptionEmpty.
-	DescriptionEmpty *string
-
 	// DescriptionIc.
 	DescriptionIc *string
 
@@ -173,9 +170,6 @@ type DcimPowerPortsListParams struct {
 
 	// Label.
 	Label *string
-
-	// LabelEmpty.
-	LabelEmpty *string
 
 	// LabelIc.
 	LabelIc *string
@@ -249,11 +243,14 @@ type DcimPowerPortsListParams struct {
 	// MaximumDrawn.
 	MaximumDrawn *string
 
+	// ModuleID.
+	ModuleID *string
+
+	// ModuleIDn.
+	ModuleIDn *string
+
 	// Name.
 	Name *string
-
-	// NameEmpty.
-	NameEmpty *string
 
 	// NameIc.
 	NameIc *string
@@ -536,17 +533,6 @@ func (o *DcimPowerPortsListParams) SetDescription(description *string) {
 	o.Description = description
 }
 
-// WithDescriptionEmpty adds the descriptionEmpty to the dcim power ports list params
-func (o *DcimPowerPortsListParams) WithDescriptionEmpty(descriptionEmpty *string) *DcimPowerPortsListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the dcim power ports list params
-func (o *DcimPowerPortsListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
-}
-
 // WithDescriptionIc adds the descriptionIc to the dcim power ports list params
 func (o *DcimPowerPortsListParams) WithDescriptionIc(descriptionIc *string) *DcimPowerPortsListParams {
 	o.SetDescriptionIc(descriptionIc)
@@ -765,17 +751,6 @@ func (o *DcimPowerPortsListParams) WithLabel(label *string) *DcimPowerPortsListP
 // SetLabel adds the label to the dcim power ports list params
 func (o *DcimPowerPortsListParams) SetLabel(label *string) {
 	o.Label = label
-}
-
-// WithLabelEmpty adds the labelEmpty to the dcim power ports list params
-func (o *DcimPowerPortsListParams) WithLabelEmpty(labelEmpty *string) *DcimPowerPortsListParams {
-	o.SetLabelEmpty(labelEmpty)
-	return o
-}
-
-// SetLabelEmpty adds the labelEmpty to the dcim power ports list params
-func (o *DcimPowerPortsListParams) SetLabelEmpty(labelEmpty *string) {
-	o.LabelEmpty = labelEmpty
 }
 
 // WithLabelIc adds the labelIc to the dcim power ports list params
@@ -1031,6 +1006,28 @@ func (o *DcimPowerPortsListParams) SetMaximumDrawn(maximumDrawn *string) {
 	o.MaximumDrawn = maximumDrawn
 }
 
+// WithModuleID adds the moduleID to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithModuleID(moduleID *string) *DcimPowerPortsListParams {
+	o.SetModuleID(moduleID)
+	return o
+}
+
+// SetModuleID adds the moduleId to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetModuleID(moduleID *string) {
+	o.ModuleID = moduleID
+}
+
+// WithModuleIDn adds the moduleIDn to the dcim power ports list params
+func (o *DcimPowerPortsListParams) WithModuleIDn(moduleIDn *string) *DcimPowerPortsListParams {
+	o.SetModuleIDn(moduleIDn)
+	return o
+}
+
+// SetModuleIDn adds the moduleIdN to the dcim power ports list params
+func (o *DcimPowerPortsListParams) SetModuleIDn(moduleIDn *string) {
+	o.ModuleIDn = moduleIDn
+}
+
 // WithName adds the name to the dcim power ports list params
 func (o *DcimPowerPortsListParams) WithName(name *string) *DcimPowerPortsListParams {
 	o.SetName(name)
@@ -1040,17 +1037,6 @@ func (o *DcimPowerPortsListParams) WithName(name *string) *DcimPowerPortsListPar
 // SetName adds the name to the dcim power ports list params
 func (o *DcimPowerPortsListParams) SetName(name *string) {
 	o.Name = name
-}
-
-// WithNameEmpty adds the nameEmpty to the dcim power ports list params
-func (o *DcimPowerPortsListParams) WithNameEmpty(nameEmpty *string) *DcimPowerPortsListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the dcim power ports list params
-func (o *DcimPowerPortsListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
 }
 
 // WithNameIc adds the nameIc to the dcim power ports list params
@@ -1606,23 +1592,6 @@ func (o *DcimPowerPortsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.DescriptionIc != nil {
 
 		// query param description__ic
@@ -1958,23 +1927,6 @@ func (o *DcimPowerPortsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qLabel != "" {
 
 			if err := r.SetQueryParam("label", qLabel); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.LabelEmpty != nil {
-
-		// query param label__empty
-		var qrLabelEmpty string
-
-		if o.LabelEmpty != nil {
-			qrLabelEmpty = *o.LabelEmpty
-		}
-		qLabelEmpty := qrLabelEmpty
-		if qLabelEmpty != "" {
-
-			if err := r.SetQueryParam("label__empty", qLabelEmpty); err != nil {
 				return err
 			}
 		}
@@ -2371,6 +2323,40 @@ func (o *DcimPowerPortsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
+	if o.ModuleID != nil {
+
+		// query param module_id
+		var qrModuleID string
+
+		if o.ModuleID != nil {
+			qrModuleID = *o.ModuleID
+		}
+		qModuleID := qrModuleID
+		if qModuleID != "" {
+
+			if err := r.SetQueryParam("module_id", qModuleID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ModuleIDn != nil {
+
+		// query param module_id__n
+		var qrModuleIDn string
+
+		if o.ModuleIDn != nil {
+			qrModuleIDn = *o.ModuleIDn
+		}
+		qModuleIDn := qrModuleIDn
+		if qModuleIDn != "" {
+
+			if err := r.SetQueryParam("module_id__n", qModuleIDn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.Name != nil {
 
 		// query param name
@@ -2383,23 +2369,6 @@ func (o *DcimPowerPortsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qName != "" {
 
 			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
 				return err
 			}
 		}

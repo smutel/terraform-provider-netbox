@@ -87,9 +87,6 @@ type CircuitsCircuitTypesListParams struct {
 	// Description.
 	Description *string
 
-	// DescriptionEmpty.
-	DescriptionEmpty *string
-
 	// DescriptionIc.
 	DescriptionIc *string
 
@@ -153,9 +150,6 @@ type CircuitsCircuitTypesListParams struct {
 	// Name.
 	Name *string
 
-	// NameEmpty.
-	NameEmpty *string
-
 	// NameIc.
 	NameIc *string
 
@@ -194,9 +188,6 @@ type CircuitsCircuitTypesListParams struct {
 
 	// Slug.
 	Slug *string
-
-	// SlugEmpty.
-	SlugEmpty *string
 
 	// SlugIc.
 	SlugIc *string
@@ -326,17 +317,6 @@ func (o *CircuitsCircuitTypesListParams) WithDescription(description *string) *C
 // SetDescription adds the description to the circuits circuit types list params
 func (o *CircuitsCircuitTypesListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the circuits circuit types list params
-func (o *CircuitsCircuitTypesListParams) WithDescriptionEmpty(descriptionEmpty *string) *CircuitsCircuitTypesListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the circuits circuit types list params
-func (o *CircuitsCircuitTypesListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the circuits circuit types list params
@@ -559,17 +539,6 @@ func (o *CircuitsCircuitTypesListParams) SetName(name *string) {
 	o.Name = name
 }
 
-// WithNameEmpty adds the nameEmpty to the circuits circuit types list params
-func (o *CircuitsCircuitTypesListParams) WithNameEmpty(nameEmpty *string) *CircuitsCircuitTypesListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the circuits circuit types list params
-func (o *CircuitsCircuitTypesListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
-}
-
 // WithNameIc adds the nameIc to the circuits circuit types list params
 func (o *CircuitsCircuitTypesListParams) WithNameIc(nameIc *string) *CircuitsCircuitTypesListParams {
 	o.SetNameIc(nameIc)
@@ -700,17 +669,6 @@ func (o *CircuitsCircuitTypesListParams) WithSlug(slug *string) *CircuitsCircuit
 // SetSlug adds the slug to the circuits circuit types list params
 func (o *CircuitsCircuitTypesListParams) SetSlug(slug *string) {
 	o.Slug = slug
-}
-
-// WithSlugEmpty adds the slugEmpty to the circuits circuit types list params
-func (o *CircuitsCircuitTypesListParams) WithSlugEmpty(slugEmpty *string) *CircuitsCircuitTypesListParams {
-	o.SetSlugEmpty(slugEmpty)
-	return o
-}
-
-// SetSlugEmpty adds the slugEmpty to the circuits circuit types list params
-func (o *CircuitsCircuitTypesListParams) SetSlugEmpty(slugEmpty *string) {
-	o.SlugEmpty = slugEmpty
 }
 
 // WithSlugIc adds the slugIc to the circuits circuit types list params
@@ -905,23 +863,6 @@ func (o *CircuitsCircuitTypesListParams) WriteToRequest(r runtime.ClientRequest,
 		if qDescription != "" {
 
 			if err := r.SetQueryParam("description", qDescription); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
 				return err
 			}
 		}
@@ -1267,23 +1208,6 @@ func (o *CircuitsCircuitTypesListParams) WriteToRequest(r runtime.ClientRequest,
 		}
 	}
 
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.NameIc != nil {
 
 		// query param name__ic
@@ -1483,23 +1407,6 @@ func (o *CircuitsCircuitTypesListParams) WriteToRequest(r runtime.ClientRequest,
 		if qSlug != "" {
 
 			if err := r.SetQueryParam("slug", qSlug); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.SlugEmpty != nil {
-
-		// query param slug__empty
-		var qrSlugEmpty string
-
-		if o.SlugEmpty != nil {
-			qrSlugEmpty = *o.SlugEmpty
-		}
-		qSlugEmpty := qrSlugEmpty
-		if qSlugEmpty != "" {
-
-			if err := r.SetQueryParam("slug__empty", qSlugEmpty); err != nil {
 				return err
 			}
 		}
