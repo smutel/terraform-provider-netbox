@@ -1,0 +1,10 @@
+--- ../netbox/swagger-v2.11.12.json.ori	2021-08-27 15:59:15.460593632 +0200
++++ ../netbox/swagger-v2.11.12.json	2021-08-27 16:10:31.799354479 +0200
+@@ -9991,7 +9991,6 @@
+                   "type" : "string"
+                 },
+               "scope_id" : { 
+-                  "maximum" : 9223372036854775807,
+                   "minimum" : 0,
+                   "title" : "Scope id",
+                   "type" : "integer",

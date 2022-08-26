@@ -1,0 +1,10 @@
+--- swagger-v3.0.11.json.ori	2022-03-10 06:28:02.676236888 +0100
++++ swagger-v3.0.11.json	2022-03-10 06:31:17.782874886 +0100
+@@ -10027,7 +10027,6 @@
+                   "type" : "string"
+                 },
+               "scope_id" : { 
+-                  "maximum" : 9223372036854775807,
+                   "minimum" : 0,
+                   "title" : "Scope id",
+                   "type" : "integer",

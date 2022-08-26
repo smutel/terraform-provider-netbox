@@ -1,0 +1,91 @@
+--- swagger-v3.1.11.json.ori	2022-05-16 14:48:51.588387301 +0200
++++ swagger-v3.1.11.json	2022-05-16 14:53:12.116003672 +0200
+@@ -2369,7 +2369,7 @@
+                 },
+               "local_context_data" : { 
+                   "title" : "Local context data",
+-                  "type" : "string",
++                  "type" : "object",
+                   "x-nullable" : true
+                 },
+               "location" : { "$ref" : "#/definitions/NestedLocation" },
+@@ -2888,10 +2888,6 @@
+                   "type" : "string"
+                 },
+               "config_context" : { 
+-                  "additionalProperties" : { 
+-                      "type" : "string",
+-                      "x-nullable" : true
+-                    },
+                   "readOnly" : true,
+                   "title" : "Config context",
+                   "type" : "object"
+@@ -2951,7 +2947,7 @@
+                 },
+               "local_context_data" : { 
+                   "title" : "Local context data",
+-                  "type" : "string",
++                  "type" : "object",
+                   "x-nullable" : true
+                 },
+               "location" : { "$ref" : "#/definitions/NestedLocation" },
+@@ -11401,10 +11397,6 @@
+                   "type" : "string"
+                 },
+               "config_context" : { 
+-                  "additionalProperties" : { 
+-                      "type" : "string",
+-                      "x-nullable" : true
+-                    },
+                   "readOnly" : true,
+                   "title" : "Config context",
+                   "type" : "object"
+@@ -11445,7 +11437,7 @@
+                 },
+               "local_context_data" : { 
+                   "title" : "Local context data",
+-                  "type" : "string",
++                  "type" : "object",
+                   "x-nullable" : true
+                 },
+               "memory" : { 
+@@ -14251,10 +14243,6 @@
+                   "type" : "string"
+                 },
+               "config_context" : { 
+-                  "additionalProperties" : { 
+-                      "type" : "string",
+-                      "x-nullable" : true
+-                    },
+                   "readOnly" : true,
+                   "title" : "Config context",
+                   "type" : "object"
+@@ -14304,7 +14292,7 @@
+                 },
+               "local_context_data" : { 
+                   "title" : "Local context data",
+-                  "type" : "string",
++                  "type" : "object",
+                   "x-nullable" : true
+                 },
+               "location" : { 
+@@ -18739,10 +18727,6 @@
+                   "type" : "string"
+                 },
+               "config_context" : { 
+-                  "additionalProperties" : { 
+-                      "type" : "string",
+-                      "x-nullable" : true
+-                    },
+                   "readOnly" : true,
+                   "title" : "Config context",
+                   "type" : "object"
+@@ -18783,7 +18767,7 @@
+                 },
+               "local_context_data" : { 
+                   "title" : "Local context data",
+-                  "type" : "string",
++                  "type" : "object",
+                   "x-nullable" : true
+                 },
+               "memory" : { 

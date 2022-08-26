@@ -1,0 +1,13 @@
+#!/bin/bash
+
+CHANGELOG_FILE="$1"
+VERSION="$2"
+
+if [[ ${VERSION} =~ v.* ]]; then
+  VERSION=${VERSION:1}
+fi
+
+START=$(grep -n "## \[${VERSION}\]" "${CHANGELOG_FILE}" | cut -d : -f 1)
+END_VERSION=$(grep "## \[" "${CHANGELOG_FILE}" | cut -d"[" -f2 | cut -d"]" -f1 | grep -v ${VERSION} | head -1)
+END=$(grep -n "## \[${END_VERSION}\]" ${CHANGELOG_FILE} | cut -d : -f 1)
+cat "${CHANGELOG_FILE}" | tail -n +"$((START + 3))" | head -n "$((END - 9))"

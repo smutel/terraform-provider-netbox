@@ -324,6 +324,8 @@ github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMB
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/smutel/go-netbox v3.1.2+incompatible h1:Ku7N3ZbaoUMuhSqp8jxsBy3uiNmRdvJUkeWUjDKE0PA=
 github.com/smutel/go-netbox v3.1.2+incompatible/go.mod h1:UlNOimilX5qQkyVvFaDgajexiCRjVqzh1i0r9kQfr+M=
+github.com/smutel/go-netbox v3.2.0+incompatible h1:/O/Rg6qq+/memVmXe1yG2uTvqyavMPmFVRGtPiozHFo=
+github.com/smutel/go-netbox v3.2.0+incompatible/go.mod h1:UlNOimilX5qQkyVvFaDgajexiCRjVqzh1i0r9kQfr+M=
 github.com/spf13/cast v1.3.1/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
 github.com/spf13/cast v1.5.0 h1:rj3WzYc11XZaIZMPKmwP96zkFEnnAmV8s6XbB2aY32w=
 github.com/spf13/cast v1.5.0/go.mod h1:SpXXQ5YoyJw6s3/6cMTQuxvgRl3PCJiyaX9p6b155UU=

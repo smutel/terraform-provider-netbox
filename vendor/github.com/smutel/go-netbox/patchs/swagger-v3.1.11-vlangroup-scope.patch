@@ -1,0 +1,11 @@
+--- swagger-v3.1.11.json.ori	2022-06-16 07:07:58.733319323 +0200
++++ swagger-v3.1.11.json	2022-06-16 07:08:17.573555849 +0200
+@@ -11665,7 +11665,7 @@
+               "scope" : { 
+                   "readOnly" : true,
+                   "title" : "Scope",
+-                  "type" : "string"
++                  "type" : "object"
+                 },
+               "scope_id" : { 
+                   "title" : "Scope id",

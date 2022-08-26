@@ -1,0 +1,13 @@
+--- swagger-v3.2.9.json.ori	2022-08-24 17:33:22.468870615 +0200
++++ swagger-v3.2.9.json	2022-08-24 17:41:26.611554335 +0200
+@@ -5331,10 +5331,6 @@
+                   "type" : "string"
+                 },
+               "assigned_object" : { 
+-                  "additionalProperties" : { 
+-                      "type" : "string",
+-                      "x-nullable" : true
+-                    },
+                   "readOnly" : true,
+                   "title" : "Assigned object",
+                   "type" : "object"
