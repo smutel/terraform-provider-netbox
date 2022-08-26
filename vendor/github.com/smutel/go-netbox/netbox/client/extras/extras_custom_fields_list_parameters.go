@@ -75,6 +75,24 @@ func NewExtrasCustomFieldsListParamsWithHTTPClient(client *http.Client) *ExtrasC
 */
 type ExtrasCustomFieldsListParams struct {
 
+	// ContentTypeID.
+	ContentTypeID *string
+
+	// ContentTypeIDGt.
+	ContentTypeIDGt *string
+
+	// ContentTypeIDGte.
+	ContentTypeIDGte *string
+
+	// ContentTypeIDLt.
+	ContentTypeIDLt *string
+
+	// ContentTypeIDLte.
+	ContentTypeIDLte *string
+
+	// ContentTypeIDn.
+	ContentTypeIDn *string
+
 	// ContentTypes.
 	ContentTypes *string
 
@@ -107,9 +125,6 @@ type ExtrasCustomFieldsListParams struct {
 
 	// Description.
 	Description *string
-
-	// DescriptionEmpty.
-	DescriptionEmpty *string
 
 	// DescriptionIc.
 	DescriptionIc *string
@@ -171,9 +186,6 @@ type ExtrasCustomFieldsListParams struct {
 	// Name.
 	Name *string
 
-	// NameEmpty.
-	NameEmpty *string
-
 	// NameIc.
 	NameIc *string
 
@@ -212,6 +224,12 @@ type ExtrasCustomFieldsListParams struct {
 
 	// Required.
 	Required *string
+
+	// Type.
+	Type *string
+
+	// Typen.
+	Typen *string
 
 	// Weight.
 	Weight *string
@@ -282,6 +300,72 @@ func (o *ExtrasCustomFieldsListParams) WithHTTPClient(client *http.Client) *Extr
 // SetHTTPClient adds the HTTPClient to the extras custom fields list params
 func (o *ExtrasCustomFieldsListParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
+}
+
+// WithContentTypeID adds the contentTypeID to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) WithContentTypeID(contentTypeID *string) *ExtrasCustomFieldsListParams {
+	o.SetContentTypeID(contentTypeID)
+	return o
+}
+
+// SetContentTypeID adds the contentTypeId to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) SetContentTypeID(contentTypeID *string) {
+	o.ContentTypeID = contentTypeID
+}
+
+// WithContentTypeIDGt adds the contentTypeIDGt to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) WithContentTypeIDGt(contentTypeIDGt *string) *ExtrasCustomFieldsListParams {
+	o.SetContentTypeIDGt(contentTypeIDGt)
+	return o
+}
+
+// SetContentTypeIDGt adds the contentTypeIdGt to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) SetContentTypeIDGt(contentTypeIDGt *string) {
+	o.ContentTypeIDGt = contentTypeIDGt
+}
+
+// WithContentTypeIDGte adds the contentTypeIDGte to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) WithContentTypeIDGte(contentTypeIDGte *string) *ExtrasCustomFieldsListParams {
+	o.SetContentTypeIDGte(contentTypeIDGte)
+	return o
+}
+
+// SetContentTypeIDGte adds the contentTypeIdGte to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) SetContentTypeIDGte(contentTypeIDGte *string) {
+	o.ContentTypeIDGte = contentTypeIDGte
+}
+
+// WithContentTypeIDLt adds the contentTypeIDLt to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) WithContentTypeIDLt(contentTypeIDLt *string) *ExtrasCustomFieldsListParams {
+	o.SetContentTypeIDLt(contentTypeIDLt)
+	return o
+}
+
+// SetContentTypeIDLt adds the contentTypeIdLt to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) SetContentTypeIDLt(contentTypeIDLt *string) {
+	o.ContentTypeIDLt = contentTypeIDLt
+}
+
+// WithContentTypeIDLte adds the contentTypeIDLte to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) WithContentTypeIDLte(contentTypeIDLte *string) *ExtrasCustomFieldsListParams {
+	o.SetContentTypeIDLte(contentTypeIDLte)
+	return o
+}
+
+// SetContentTypeIDLte adds the contentTypeIdLte to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) SetContentTypeIDLte(contentTypeIDLte *string) {
+	o.ContentTypeIDLte = contentTypeIDLte
+}
+
+// WithContentTypeIDn adds the contentTypeIDn to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) WithContentTypeIDn(contentTypeIDn *string) *ExtrasCustomFieldsListParams {
+	o.SetContentTypeIDn(contentTypeIDn)
+	return o
+}
+
+// SetContentTypeIDn adds the contentTypeIdN to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) SetContentTypeIDn(contentTypeIDn *string) {
+	o.ContentTypeIDn = contentTypeIDn
 }
 
 // WithContentTypes adds the contentTypes to the extras custom fields list params
@@ -403,17 +487,6 @@ func (o *ExtrasCustomFieldsListParams) WithDescription(description *string) *Ext
 // SetDescription adds the description to the extras custom fields list params
 func (o *ExtrasCustomFieldsListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the extras custom fields list params
-func (o *ExtrasCustomFieldsListParams) WithDescriptionEmpty(descriptionEmpty *string) *ExtrasCustomFieldsListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the extras custom fields list params
-func (o *ExtrasCustomFieldsListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the extras custom fields list params
@@ -625,17 +698,6 @@ func (o *ExtrasCustomFieldsListParams) SetName(name *string) {
 	o.Name = name
 }
 
-// WithNameEmpty adds the nameEmpty to the extras custom fields list params
-func (o *ExtrasCustomFieldsListParams) WithNameEmpty(nameEmpty *string) *ExtrasCustomFieldsListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the extras custom fields list params
-func (o *ExtrasCustomFieldsListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
-}
-
 // WithNameIc adds the nameIc to the extras custom fields list params
 func (o *ExtrasCustomFieldsListParams) WithNameIc(nameIc *string) *ExtrasCustomFieldsListParams {
 	o.SetNameIc(nameIc)
@@ -768,6 +830,28 @@ func (o *ExtrasCustomFieldsListParams) SetRequired(required *string) {
 	o.Required = required
 }
 
+// WithType adds the typeVar to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) WithType(typeVar *string) *ExtrasCustomFieldsListParams {
+	o.SetType(typeVar)
+	return o
+}
+
+// SetType adds the type to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) SetType(typeVar *string) {
+	o.Type = typeVar
+}
+
+// WithTypen adds the typen to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) WithTypen(typen *string) *ExtrasCustomFieldsListParams {
+	o.SetTypen(typen)
+	return o
+}
+
+// SetTypen adds the typeN to the extras custom fields list params
+func (o *ExtrasCustomFieldsListParams) SetTypen(typen *string) {
+	o.Typen = typen
+}
+
 // WithWeight adds the weight to the extras custom fields list params
 func (o *ExtrasCustomFieldsListParams) WithWeight(weight *string) *ExtrasCustomFieldsListParams {
 	o.SetWeight(weight)
@@ -841,6 +925,108 @@ func (o *ExtrasCustomFieldsListParams) WriteToRequest(r runtime.ClientRequest, r
 		return err
 	}
 	var res []error
+
+	if o.ContentTypeID != nil {
+
+		// query param content_type_id
+		var qrContentTypeID string
+
+		if o.ContentTypeID != nil {
+			qrContentTypeID = *o.ContentTypeID
+		}
+		qContentTypeID := qrContentTypeID
+		if qContentTypeID != "" {
+
+			if err := r.SetQueryParam("content_type_id", qContentTypeID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDGt != nil {
+
+		// query param content_type_id__gt
+		var qrContentTypeIDGt string
+
+		if o.ContentTypeIDGt != nil {
+			qrContentTypeIDGt = *o.ContentTypeIDGt
+		}
+		qContentTypeIDGt := qrContentTypeIDGt
+		if qContentTypeIDGt != "" {
+
+			if err := r.SetQueryParam("content_type_id__gt", qContentTypeIDGt); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDGte != nil {
+
+		// query param content_type_id__gte
+		var qrContentTypeIDGte string
+
+		if o.ContentTypeIDGte != nil {
+			qrContentTypeIDGte = *o.ContentTypeIDGte
+		}
+		qContentTypeIDGte := qrContentTypeIDGte
+		if qContentTypeIDGte != "" {
+
+			if err := r.SetQueryParam("content_type_id__gte", qContentTypeIDGte); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDLt != nil {
+
+		// query param content_type_id__lt
+		var qrContentTypeIDLt string
+
+		if o.ContentTypeIDLt != nil {
+			qrContentTypeIDLt = *o.ContentTypeIDLt
+		}
+		qContentTypeIDLt := qrContentTypeIDLt
+		if qContentTypeIDLt != "" {
+
+			if err := r.SetQueryParam("content_type_id__lt", qContentTypeIDLt); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDLte != nil {
+
+		// query param content_type_id__lte
+		var qrContentTypeIDLte string
+
+		if o.ContentTypeIDLte != nil {
+			qrContentTypeIDLte = *o.ContentTypeIDLte
+		}
+		qContentTypeIDLte := qrContentTypeIDLte
+		if qContentTypeIDLte != "" {
+
+			if err := r.SetQueryParam("content_type_id__lte", qContentTypeIDLte); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContentTypeIDn != nil {
+
+		// query param content_type_id__n
+		var qrContentTypeIDn string
+
+		if o.ContentTypeIDn != nil {
+			qrContentTypeIDn = *o.ContentTypeIDn
+		}
+		qContentTypeIDn := qrContentTypeIDn
+		if qContentTypeIDn != "" {
+
+			if err := r.SetQueryParam("content_type_id__n", qContentTypeIDn); err != nil {
+				return err
+			}
+		}
+	}
 
 	if o.ContentTypes != nil {
 
@@ -1024,23 +1210,6 @@ func (o *ExtrasCustomFieldsListParams) WriteToRequest(r runtime.ClientRequest, r
 		if qDescription != "" {
 
 			if err := r.SetQueryParam("description", qDescription); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
 				return err
 			}
 		}
@@ -1369,23 +1538,6 @@ func (o *ExtrasCustomFieldsListParams) WriteToRequest(r runtime.ClientRequest, r
 		}
 	}
 
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.NameIc != nil {
 
 		// query param name__ic
@@ -1585,6 +1737,40 @@ func (o *ExtrasCustomFieldsListParams) WriteToRequest(r runtime.ClientRequest, r
 		if qRequired != "" {
 
 			if err := r.SetQueryParam("required", qRequired); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Type != nil {
+
+		// query param type
+		var qrType string
+
+		if o.Type != nil {
+			qrType = *o.Type
+		}
+		qType := qrType
+		if qType != "" {
+
+			if err := r.SetQueryParam("type", qType); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Typen != nil {
+
+		// query param type__n
+		var qrTypen string
+
+		if o.Typen != nil {
+			qrTypen = *o.Typen
+		}
+		qTypen := qrTypen
+		if qTypen != "" {
+
+			if err := r.SetQueryParam("type__n", qTypen); err != nil {
 				return err
 			}
 		}

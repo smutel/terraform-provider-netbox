@@ -78,9 +78,6 @@ type DcimRacksListParams struct {
 	// AssetTag.
 	AssetTag *string
 
-	// AssetTagEmpty.
-	AssetTagEmpty *string
-
 	// AssetTagIc.
 	AssetTagIc *string
 
@@ -114,6 +111,12 @@ type DcimRacksListParams struct {
 	// Contactn.
 	Contactn *string
 
+	// ContactGroup.
+	ContactGroup *string
+
+	// ContactGroupn.
+	ContactGroupn *string
+
 	// ContactRole.
 	ContactRole *string
 
@@ -134,9 +137,6 @@ type DcimRacksListParams struct {
 
 	// FacilityID.
 	FacilityID *string
-
-	// FacilityIDEmpty.
-	FacilityIDEmpty *string
 
 	// FacilityIDIc.
 	FacilityIDIc *string
@@ -212,9 +212,6 @@ type DcimRacksListParams struct {
 
 	// Name.
 	Name *string
-
-	// NameEmpty.
-	NameEmpty *string
 
 	// NameIc.
 	NameIc *string
@@ -320,6 +317,33 @@ type DcimRacksListParams struct {
 
 	// Serial.
 	Serial *string
+
+	// SerialIc.
+	SerialIc *string
+
+	// SerialIe.
+	SerialIe *string
+
+	// SerialIew.
+	SerialIew *string
+
+	// SerialIsw.
+	SerialIsw *string
+
+	// Serialn.
+	Serialn *string
+
+	// SerialNic.
+	SerialNic *string
+
+	// SerialNie.
+	SerialNie *string
+
+	// SerialNiew.
+	SerialNiew *string
+
+	// SerialNisw.
+	SerialNisw *string
 
 	// Site.
 	Site *string
@@ -475,17 +499,6 @@ func (o *DcimRacksListParams) SetAssetTag(assetTag *string) {
 	o.AssetTag = assetTag
 }
 
-// WithAssetTagEmpty adds the assetTagEmpty to the dcim racks list params
-func (o *DcimRacksListParams) WithAssetTagEmpty(assetTagEmpty *string) *DcimRacksListParams {
-	o.SetAssetTagEmpty(assetTagEmpty)
-	return o
-}
-
-// SetAssetTagEmpty adds the assetTagEmpty to the dcim racks list params
-func (o *DcimRacksListParams) SetAssetTagEmpty(assetTagEmpty *string) {
-	o.AssetTagEmpty = assetTagEmpty
-}
-
 // WithAssetTagIc adds the assetTagIc to the dcim racks list params
 func (o *DcimRacksListParams) WithAssetTagIc(assetTagIc *string) *DcimRacksListParams {
 	o.SetAssetTagIc(assetTagIc)
@@ -607,6 +620,28 @@ func (o *DcimRacksListParams) SetContactn(contactn *string) {
 	o.Contactn = contactn
 }
 
+// WithContactGroup adds the contactGroup to the dcim racks list params
+func (o *DcimRacksListParams) WithContactGroup(contactGroup *string) *DcimRacksListParams {
+	o.SetContactGroup(contactGroup)
+	return o
+}
+
+// SetContactGroup adds the contactGroup to the dcim racks list params
+func (o *DcimRacksListParams) SetContactGroup(contactGroup *string) {
+	o.ContactGroup = contactGroup
+}
+
+// WithContactGroupn adds the contactGroupn to the dcim racks list params
+func (o *DcimRacksListParams) WithContactGroupn(contactGroupn *string) *DcimRacksListParams {
+	o.SetContactGroupn(contactGroupn)
+	return o
+}
+
+// SetContactGroupn adds the contactGroupN to the dcim racks list params
+func (o *DcimRacksListParams) SetContactGroupn(contactGroupn *string) {
+	o.ContactGroupn = contactGroupn
+}
+
 // WithContactRole adds the contactRole to the dcim racks list params
 func (o *DcimRacksListParams) WithContactRole(contactRole *string) *DcimRacksListParams {
 	o.SetContactRole(contactRole)
@@ -682,17 +717,6 @@ func (o *DcimRacksListParams) WithFacilityID(facilityID *string) *DcimRacksListP
 // SetFacilityID adds the facilityId to the dcim racks list params
 func (o *DcimRacksListParams) SetFacilityID(facilityID *string) {
 	o.FacilityID = facilityID
-}
-
-// WithFacilityIDEmpty adds the facilityIDEmpty to the dcim racks list params
-func (o *DcimRacksListParams) WithFacilityIDEmpty(facilityIDEmpty *string) *DcimRacksListParams {
-	o.SetFacilityIDEmpty(facilityIDEmpty)
-	return o
-}
-
-// SetFacilityIDEmpty adds the facilityIdEmpty to the dcim racks list params
-func (o *DcimRacksListParams) SetFacilityIDEmpty(facilityIDEmpty *string) {
-	o.FacilityIDEmpty = facilityIDEmpty
 }
 
 // WithFacilityIDIc adds the facilityIDIc to the dcim racks list params
@@ -957,17 +981,6 @@ func (o *DcimRacksListParams) WithName(name *string) *DcimRacksListParams {
 // SetName adds the name to the dcim racks list params
 func (o *DcimRacksListParams) SetName(name *string) {
 	o.Name = name
-}
-
-// WithNameEmpty adds the nameEmpty to the dcim racks list params
-func (o *DcimRacksListParams) WithNameEmpty(nameEmpty *string) *DcimRacksListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the dcim racks list params
-func (o *DcimRacksListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
 }
 
 // WithNameIc adds the nameIc to the dcim racks list params
@@ -1344,6 +1357,105 @@ func (o *DcimRacksListParams) SetSerial(serial *string) {
 	o.Serial = serial
 }
 
+// WithSerialIc adds the serialIc to the dcim racks list params
+func (o *DcimRacksListParams) WithSerialIc(serialIc *string) *DcimRacksListParams {
+	o.SetSerialIc(serialIc)
+	return o
+}
+
+// SetSerialIc adds the serialIc to the dcim racks list params
+func (o *DcimRacksListParams) SetSerialIc(serialIc *string) {
+	o.SerialIc = serialIc
+}
+
+// WithSerialIe adds the serialIe to the dcim racks list params
+func (o *DcimRacksListParams) WithSerialIe(serialIe *string) *DcimRacksListParams {
+	o.SetSerialIe(serialIe)
+	return o
+}
+
+// SetSerialIe adds the serialIe to the dcim racks list params
+func (o *DcimRacksListParams) SetSerialIe(serialIe *string) {
+	o.SerialIe = serialIe
+}
+
+// WithSerialIew adds the serialIew to the dcim racks list params
+func (o *DcimRacksListParams) WithSerialIew(serialIew *string) *DcimRacksListParams {
+	o.SetSerialIew(serialIew)
+	return o
+}
+
+// SetSerialIew adds the serialIew to the dcim racks list params
+func (o *DcimRacksListParams) SetSerialIew(serialIew *string) {
+	o.SerialIew = serialIew
+}
+
+// WithSerialIsw adds the serialIsw to the dcim racks list params
+func (o *DcimRacksListParams) WithSerialIsw(serialIsw *string) *DcimRacksListParams {
+	o.SetSerialIsw(serialIsw)
+	return o
+}
+
+// SetSerialIsw adds the serialIsw to the dcim racks list params
+func (o *DcimRacksListParams) SetSerialIsw(serialIsw *string) {
+	o.SerialIsw = serialIsw
+}
+
+// WithSerialn adds the serialn to the dcim racks list params
+func (o *DcimRacksListParams) WithSerialn(serialn *string) *DcimRacksListParams {
+	o.SetSerialn(serialn)
+	return o
+}
+
+// SetSerialn adds the serialN to the dcim racks list params
+func (o *DcimRacksListParams) SetSerialn(serialn *string) {
+	o.Serialn = serialn
+}
+
+// WithSerialNic adds the serialNic to the dcim racks list params
+func (o *DcimRacksListParams) WithSerialNic(serialNic *string) *DcimRacksListParams {
+	o.SetSerialNic(serialNic)
+	return o
+}
+
+// SetSerialNic adds the serialNic to the dcim racks list params
+func (o *DcimRacksListParams) SetSerialNic(serialNic *string) {
+	o.SerialNic = serialNic
+}
+
+// WithSerialNie adds the serialNie to the dcim racks list params
+func (o *DcimRacksListParams) WithSerialNie(serialNie *string) *DcimRacksListParams {
+	o.SetSerialNie(serialNie)
+	return o
+}
+
+// SetSerialNie adds the serialNie to the dcim racks list params
+func (o *DcimRacksListParams) SetSerialNie(serialNie *string) {
+	o.SerialNie = serialNie
+}
+
+// WithSerialNiew adds the serialNiew to the dcim racks list params
+func (o *DcimRacksListParams) WithSerialNiew(serialNiew *string) *DcimRacksListParams {
+	o.SetSerialNiew(serialNiew)
+	return o
+}
+
+// SetSerialNiew adds the serialNiew to the dcim racks list params
+func (o *DcimRacksListParams) SetSerialNiew(serialNiew *string) {
+	o.SerialNiew = serialNiew
+}
+
+// WithSerialNisw adds the serialNisw to the dcim racks list params
+func (o *DcimRacksListParams) WithSerialNisw(serialNisw *string) *DcimRacksListParams {
+	o.SetSerialNisw(serialNisw)
+	return o
+}
+
+// SetSerialNisw adds the serialNisw to the dcim racks list params
+func (o *DcimRacksListParams) SetSerialNisw(serialNisw *string) {
+	o.SerialNisw = serialNisw
+}
+
 // WithSite adds the site to the dcim racks list params
 func (o *DcimRacksListParams) WithSite(site *string) *DcimRacksListParams {
 	o.SetSite(site)
@@ -1699,23 +1811,6 @@ func (o *DcimRacksListParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		}
 	}
 
-	if o.AssetTagEmpty != nil {
-
-		// query param asset_tag__empty
-		var qrAssetTagEmpty string
-
-		if o.AssetTagEmpty != nil {
-			qrAssetTagEmpty = *o.AssetTagEmpty
-		}
-		qAssetTagEmpty := qrAssetTagEmpty
-		if qAssetTagEmpty != "" {
-
-			if err := r.SetQueryParam("asset_tag__empty", qAssetTagEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.AssetTagIc != nil {
 
 		// query param asset_tag__ic
@@ -1903,6 +1998,40 @@ func (o *DcimRacksListParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		}
 	}
 
+	if o.ContactGroup != nil {
+
+		// query param contact_group
+		var qrContactGroup string
+
+		if o.ContactGroup != nil {
+			qrContactGroup = *o.ContactGroup
+		}
+		qContactGroup := qrContactGroup
+		if qContactGroup != "" {
+
+			if err := r.SetQueryParam("contact_group", qContactGroup); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContactGroupn != nil {
+
+		// query param contact_group__n
+		var qrContactGroupn string
+
+		if o.ContactGroupn != nil {
+			qrContactGroupn = *o.ContactGroupn
+		}
+		qContactGroupn := qrContactGroupn
+		if qContactGroupn != "" {
+
+			if err := r.SetQueryParam("contact_group__n", qContactGroupn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.ContactRole != nil {
 
 		// query param contact_role
@@ -2017,23 +2146,6 @@ func (o *DcimRacksListParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		if qFacilityID != "" {
 
 			if err := r.SetQueryParam("facility_id", qFacilityID); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.FacilityIDEmpty != nil {
-
-		// query param facility_id__empty
-		var qrFacilityIDEmpty string
-
-		if o.FacilityIDEmpty != nil {
-			qrFacilityIDEmpty = *o.FacilityIDEmpty
-		}
-		qFacilityIDEmpty := qrFacilityIDEmpty
-		if qFacilityIDEmpty != "" {
-
-			if err := r.SetQueryParam("facility_id__empty", qFacilityIDEmpty); err != nil {
 				return err
 			}
 		}
@@ -2442,23 +2554,6 @@ func (o *DcimRacksListParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		if qName != "" {
 
 			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
 				return err
 			}
 		}
@@ -3037,6 +3132,159 @@ func (o *DcimRacksListParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		if qSerial != "" {
 
 			if err := r.SetQueryParam("serial", qSerial); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SerialIc != nil {
+
+		// query param serial__ic
+		var qrSerialIc string
+
+		if o.SerialIc != nil {
+			qrSerialIc = *o.SerialIc
+		}
+		qSerialIc := qrSerialIc
+		if qSerialIc != "" {
+
+			if err := r.SetQueryParam("serial__ic", qSerialIc); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SerialIe != nil {
+
+		// query param serial__ie
+		var qrSerialIe string
+
+		if o.SerialIe != nil {
+			qrSerialIe = *o.SerialIe
+		}
+		qSerialIe := qrSerialIe
+		if qSerialIe != "" {
+
+			if err := r.SetQueryParam("serial__ie", qSerialIe); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SerialIew != nil {
+
+		// query param serial__iew
+		var qrSerialIew string
+
+		if o.SerialIew != nil {
+			qrSerialIew = *o.SerialIew
+		}
+		qSerialIew := qrSerialIew
+		if qSerialIew != "" {
+
+			if err := r.SetQueryParam("serial__iew", qSerialIew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SerialIsw != nil {
+
+		// query param serial__isw
+		var qrSerialIsw string
+
+		if o.SerialIsw != nil {
+			qrSerialIsw = *o.SerialIsw
+		}
+		qSerialIsw := qrSerialIsw
+		if qSerialIsw != "" {
+
+			if err := r.SetQueryParam("serial__isw", qSerialIsw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Serialn != nil {
+
+		// query param serial__n
+		var qrSerialn string
+
+		if o.Serialn != nil {
+			qrSerialn = *o.Serialn
+		}
+		qSerialn := qrSerialn
+		if qSerialn != "" {
+
+			if err := r.SetQueryParam("serial__n", qSerialn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SerialNic != nil {
+
+		// query param serial__nic
+		var qrSerialNic string
+
+		if o.SerialNic != nil {
+			qrSerialNic = *o.SerialNic
+		}
+		qSerialNic := qrSerialNic
+		if qSerialNic != "" {
+
+			if err := r.SetQueryParam("serial__nic", qSerialNic); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SerialNie != nil {
+
+		// query param serial__nie
+		var qrSerialNie string
+
+		if o.SerialNie != nil {
+			qrSerialNie = *o.SerialNie
+		}
+		qSerialNie := qrSerialNie
+		if qSerialNie != "" {
+
+			if err := r.SetQueryParam("serial__nie", qSerialNie); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SerialNiew != nil {
+
+		// query param serial__niew
+		var qrSerialNiew string
+
+		if o.SerialNiew != nil {
+			qrSerialNiew = *o.SerialNiew
+		}
+		qSerialNiew := qrSerialNiew
+		if qSerialNiew != "" {
+
+			if err := r.SetQueryParam("serial__niew", qSerialNiew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SerialNisw != nil {
+
+		// query param serial__nisw
+		var qrSerialNisw string
+
+		if o.SerialNisw != nil {
+			qrSerialNisw = *o.SerialNisw
+		}
+		qSerialNisw := qrSerialNisw
+		if qSerialNisw != "" {
+
+			if err := r.SetQueryParam("serial__nisw", qSerialNisw); err != nil {
 				return err
 			}
 		}

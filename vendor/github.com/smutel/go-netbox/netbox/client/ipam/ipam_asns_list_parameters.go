@@ -105,9 +105,6 @@ type IpamAsnsListParams struct {
 	// Description.
 	Description *string
 
-	// DescriptionEmpty.
-	DescriptionEmpty *string
-
 	// DescriptionIc.
 	DescriptionIc *string
 
@@ -200,6 +197,12 @@ type IpamAsnsListParams struct {
 
 	// SiteIDn.
 	SiteIDn *string
+
+	// Tag.
+	Tag *string
+
+	// Tagn.
+	Tagn *string
 
 	// Tenant.
 	Tenant *string
@@ -386,17 +389,6 @@ func (o *IpamAsnsListParams) WithDescription(description *string) *IpamAsnsListP
 // SetDescription adds the description to the ipam asns list params
 func (o *IpamAsnsListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the ipam asns list params
-func (o *IpamAsnsListParams) WithDescriptionEmpty(descriptionEmpty *string) *IpamAsnsListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the ipam asns list params
-func (o *IpamAsnsListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the ipam asns list params
@@ -718,6 +710,28 @@ func (o *IpamAsnsListParams) SetSiteIDn(siteIDn *string) {
 	o.SiteIDn = siteIDn
 }
 
+// WithTag adds the tag to the ipam asns list params
+func (o *IpamAsnsListParams) WithTag(tag *string) *IpamAsnsListParams {
+	o.SetTag(tag)
+	return o
+}
+
+// SetTag adds the tag to the ipam asns list params
+func (o *IpamAsnsListParams) SetTag(tag *string) {
+	o.Tag = tag
+}
+
+// WithTagn adds the tagn to the ipam asns list params
+func (o *IpamAsnsListParams) WithTagn(tagn *string) *IpamAsnsListParams {
+	o.SetTagn(tagn)
+	return o
+}
+
+// SetTagn adds the tagN to the ipam asns list params
+func (o *IpamAsnsListParams) SetTagn(tagn *string) {
+	o.Tagn = tagn
+}
+
 // WithTenant adds the tenant to the ipam asns list params
 func (o *IpamAsnsListParams) WithTenant(tenant *string) *IpamAsnsListParams {
 	o.SetTenant(tenant)
@@ -979,23 +993,6 @@ func (o *IpamAsnsListParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.
 		if qDescription != "" {
 
 			if err := r.SetQueryParam("description", qDescription); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
 				return err
 			}
 		}
@@ -1489,6 +1486,40 @@ func (o *IpamAsnsListParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.
 		if qSiteIDn != "" {
 
 			if err := r.SetQueryParam("site_id__n", qSiteIDn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Tag != nil {
+
+		// query param tag
+		var qrTag string
+
+		if o.Tag != nil {
+			qrTag = *o.Tag
+		}
+		qTag := qrTag
+		if qTag != "" {
+
+			if err := r.SetQueryParam("tag", qTag); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Tagn != nil {
+
+		// query param tag__n
+		var qrTagn string
+
+		if o.Tagn != nil {
+			qrTagn = *o.Tagn
+		}
+		qTagn := qrTagn
+		if qTagn != "" {
+
+			if err := r.SetQueryParam("tag__n", qTagn); err != nil {
 				return err
 			}
 		}

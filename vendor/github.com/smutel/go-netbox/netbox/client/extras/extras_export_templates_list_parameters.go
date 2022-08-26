@@ -84,9 +84,6 @@ type ExtrasExportTemplatesListParams struct {
 	// Description.
 	Description *string
 
-	// DescriptionEmpty.
-	DescriptionEmpty *string
-
 	// DescriptionIc.
 	DescriptionIc *string
 
@@ -140,9 +137,6 @@ type ExtrasExportTemplatesListParams struct {
 
 	// Name.
 	Name *string
-
-	// NameEmpty.
-	NameEmpty *string
 
 	// NameIc.
 	NameIc *string
@@ -264,17 +258,6 @@ func (o *ExtrasExportTemplatesListParams) WithDescription(description *string) *
 // SetDescription adds the description to the extras export templates list params
 func (o *ExtrasExportTemplatesListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the extras export templates list params
-func (o *ExtrasExportTemplatesListParams) WithDescriptionEmpty(descriptionEmpty *string) *ExtrasExportTemplatesListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the extras export templates list params
-func (o *ExtrasExportTemplatesListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the extras export templates list params
@@ -464,17 +447,6 @@ func (o *ExtrasExportTemplatesListParams) SetName(name *string) {
 	o.Name = name
 }
 
-// WithNameEmpty adds the nameEmpty to the extras export templates list params
-func (o *ExtrasExportTemplatesListParams) WithNameEmpty(nameEmpty *string) *ExtrasExportTemplatesListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the extras export templates list params
-func (o *ExtrasExportTemplatesListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
-}
-
 // WithNameIc adds the nameIc to the extras export templates list params
 func (o *ExtrasExportTemplatesListParams) WithNameIc(nameIc *string) *ExtrasExportTemplatesListParams {
 	o.SetNameIc(nameIc)
@@ -650,23 +622,6 @@ func (o *ExtrasExportTemplatesListParams) WriteToRequest(r runtime.ClientRequest
 		if qDescription != "" {
 
 			if err := r.SetQueryParam("description", qDescription); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
 				return err
 			}
 		}
@@ -956,23 +911,6 @@ func (o *ExtrasExportTemplatesListParams) WriteToRequest(r runtime.ClientRequest
 		if qName != "" {
 
 			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
 				return err
 			}
 		}

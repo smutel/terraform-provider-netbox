@@ -93,9 +93,6 @@ type DcimConsoleServerPortsListParams struct {
 	// Description.
 	Description *string
 
-	// DescriptionEmpty.
-	DescriptionEmpty *string
-
 	// DescriptionIc.
 	DescriptionIc *string
 
@@ -156,9 +153,6 @@ type DcimConsoleServerPortsListParams struct {
 	// Label.
 	Label *string
 
-	// LabelEmpty.
-	LabelEmpty *string
-
 	// LabelIc.
 	LabelIc *string
 
@@ -213,11 +207,14 @@ type DcimConsoleServerPortsListParams struct {
 	// LocationIDn.
 	LocationIDn *string
 
+	// ModuleID.
+	ModuleID *string
+
+	// ModuleIDn.
+	ModuleIDn *string
+
 	// Name.
 	Name *string
-
-	// NameEmpty.
-	NameEmpty *string
 
 	// NameIc.
 	NameIc *string
@@ -432,17 +429,6 @@ func (o *DcimConsoleServerPortsListParams) WithDescription(description *string) 
 // SetDescription adds the description to the dcim console server ports list params
 func (o *DcimConsoleServerPortsListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the dcim console server ports list params
-func (o *DcimConsoleServerPortsListParams) WithDescriptionEmpty(descriptionEmpty *string) *DcimConsoleServerPortsListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the dcim console server ports list params
-func (o *DcimConsoleServerPortsListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the dcim console server ports list params
@@ -665,17 +651,6 @@ func (o *DcimConsoleServerPortsListParams) SetLabel(label *string) {
 	o.Label = label
 }
 
-// WithLabelEmpty adds the labelEmpty to the dcim console server ports list params
-func (o *DcimConsoleServerPortsListParams) WithLabelEmpty(labelEmpty *string) *DcimConsoleServerPortsListParams {
-	o.SetLabelEmpty(labelEmpty)
-	return o
-}
-
-// SetLabelEmpty adds the labelEmpty to the dcim console server ports list params
-func (o *DcimConsoleServerPortsListParams) SetLabelEmpty(labelEmpty *string) {
-	o.LabelEmpty = labelEmpty
-}
-
 // WithLabelIc adds the labelIc to the dcim console server ports list params
 func (o *DcimConsoleServerPortsListParams) WithLabelIc(labelIc *string) *DcimConsoleServerPortsListParams {
 	o.SetLabelIc(labelIc)
@@ -863,6 +838,28 @@ func (o *DcimConsoleServerPortsListParams) SetLocationIDn(locationIDn *string) {
 	o.LocationIDn = locationIDn
 }
 
+// WithModuleID adds the moduleID to the dcim console server ports list params
+func (o *DcimConsoleServerPortsListParams) WithModuleID(moduleID *string) *DcimConsoleServerPortsListParams {
+	o.SetModuleID(moduleID)
+	return o
+}
+
+// SetModuleID adds the moduleId to the dcim console server ports list params
+func (o *DcimConsoleServerPortsListParams) SetModuleID(moduleID *string) {
+	o.ModuleID = moduleID
+}
+
+// WithModuleIDn adds the moduleIDn to the dcim console server ports list params
+func (o *DcimConsoleServerPortsListParams) WithModuleIDn(moduleIDn *string) *DcimConsoleServerPortsListParams {
+	o.SetModuleIDn(moduleIDn)
+	return o
+}
+
+// SetModuleIDn adds the moduleIdN to the dcim console server ports list params
+func (o *DcimConsoleServerPortsListParams) SetModuleIDn(moduleIDn *string) {
+	o.ModuleIDn = moduleIDn
+}
+
 // WithName adds the name to the dcim console server ports list params
 func (o *DcimConsoleServerPortsListParams) WithName(name *string) *DcimConsoleServerPortsListParams {
 	o.SetName(name)
@@ -872,17 +869,6 @@ func (o *DcimConsoleServerPortsListParams) WithName(name *string) *DcimConsoleSe
 // SetName adds the name to the dcim console server ports list params
 func (o *DcimConsoleServerPortsListParams) SetName(name *string) {
 	o.Name = name
-}
-
-// WithNameEmpty adds the nameEmpty to the dcim console server ports list params
-func (o *DcimConsoleServerPortsListParams) WithNameEmpty(nameEmpty *string) *DcimConsoleServerPortsListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the dcim console server ports list params
-func (o *DcimConsoleServerPortsListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
 }
 
 // WithNameIc adds the nameIc to the dcim console server ports list params
@@ -1336,23 +1322,6 @@ func (o *DcimConsoleServerPortsListParams) WriteToRequest(r runtime.ClientReques
 		}
 	}
 
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.DescriptionIc != nil {
 
 		// query param description__ic
@@ -1693,23 +1662,6 @@ func (o *DcimConsoleServerPortsListParams) WriteToRequest(r runtime.ClientReques
 		}
 	}
 
-	if o.LabelEmpty != nil {
-
-		// query param label__empty
-		var qrLabelEmpty string
-
-		if o.LabelEmpty != nil {
-			qrLabelEmpty = *o.LabelEmpty
-		}
-		qLabelEmpty := qrLabelEmpty
-		if qLabelEmpty != "" {
-
-			if err := r.SetQueryParam("label__empty", qLabelEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.LabelIc != nil {
 
 		// query param label__ic
@@ -1999,6 +1951,40 @@ func (o *DcimConsoleServerPortsListParams) WriteToRequest(r runtime.ClientReques
 		}
 	}
 
+	if o.ModuleID != nil {
+
+		// query param module_id
+		var qrModuleID string
+
+		if o.ModuleID != nil {
+			qrModuleID = *o.ModuleID
+		}
+		qModuleID := qrModuleID
+		if qModuleID != "" {
+
+			if err := r.SetQueryParam("module_id", qModuleID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ModuleIDn != nil {
+
+		// query param module_id__n
+		var qrModuleIDn string
+
+		if o.ModuleIDn != nil {
+			qrModuleIDn = *o.ModuleIDn
+		}
+		qModuleIDn := qrModuleIDn
+		if qModuleIDn != "" {
+
+			if err := r.SetQueryParam("module_id__n", qModuleIDn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.Name != nil {
 
 		// query param name
@@ -2011,23 +1997,6 @@ func (o *DcimConsoleServerPortsListParams) WriteToRequest(r runtime.ClientReques
 		if qName != "" {
 
 			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
 				return err
 			}
 		}

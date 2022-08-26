@@ -99,9 +99,6 @@ type DcimInterfacesListParams struct {
 	// Description.
 	Description *string
 
-	// DescriptionEmpty.
-	DescriptionEmpty *string
-
 	// DescriptionIc.
 	DescriptionIc *string
 
@@ -135,6 +132,12 @@ type DcimInterfacesListParams struct {
 	// DeviceID.
 	DeviceID *string
 
+	// Duplex.
+	Duplex *string
+
+	// Duplexn.
+	Duplexn *string
+
 	// Enabled.
 	Enabled *string
 
@@ -161,9 +164,6 @@ type DcimInterfacesListParams struct {
 
 	// Label.
 	Label *string
-
-	// LabelEmpty.
-	LabelEmpty *string
 
 	// LabelIc.
 	LabelIc *string
@@ -264,6 +264,12 @@ type DcimInterfacesListParams struct {
 	// Moden.
 	Moden *string
 
+	// ModuleID.
+	ModuleID *string
+
+	// ModuleIDn.
+	ModuleIDn *string
+
 	// Mtu.
 	Mtu *string
 
@@ -284,9 +290,6 @@ type DcimInterfacesListParams struct {
 
 	// Name.
 	Name *string
-
-	// NameEmpty.
-	NameEmpty *string
 
 	// NameIc.
 	NameIc *string
@@ -414,6 +417,24 @@ type DcimInterfacesListParams struct {
 	// SiteIDn.
 	SiteIDn *string
 
+	// Speed.
+	Speed *string
+
+	// SpeedGt.
+	SpeedGt *string
+
+	// SpeedGte.
+	SpeedGte *string
+
+	// SpeedLt.
+	SpeedLt *string
+
+	// SpeedLte.
+	SpeedLte *string
+
+	// Speedn.
+	Speedn *string
+
 	// Tag.
 	Tag *string
 
@@ -461,6 +482,18 @@ type DcimInterfacesListParams struct {
 
 	// VlanID.
 	VlanID *string
+
+	// Vrf.
+	Vrf *string
+
+	// Vrfn.
+	Vrfn *string
+
+	// VrfID.
+	VrfID *string
+
+	// VrfIDn.
+	VrfIDn *string
 
 	// Wwn.
 	Wwn *string
@@ -633,17 +666,6 @@ func (o *DcimInterfacesListParams) SetDescription(description *string) {
 	o.Description = description
 }
 
-// WithDescriptionEmpty adds the descriptionEmpty to the dcim interfaces list params
-func (o *DcimInterfacesListParams) WithDescriptionEmpty(descriptionEmpty *string) *DcimInterfacesListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the dcim interfaces list params
-func (o *DcimInterfacesListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
-}
-
 // WithDescriptionIc adds the descriptionIc to the dcim interfaces list params
 func (o *DcimInterfacesListParams) WithDescriptionIc(descriptionIc *string) *DcimInterfacesListParams {
 	o.SetDescriptionIc(descriptionIc)
@@ -765,6 +787,28 @@ func (o *DcimInterfacesListParams) SetDeviceID(deviceID *string) {
 	o.DeviceID = deviceID
 }
 
+// WithDuplex adds the duplex to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithDuplex(duplex *string) *DcimInterfacesListParams {
+	o.SetDuplex(duplex)
+	return o
+}
+
+// SetDuplex adds the duplex to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetDuplex(duplex *string) {
+	o.Duplex = duplex
+}
+
+// WithDuplexn adds the duplexn to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithDuplexn(duplexn *string) *DcimInterfacesListParams {
+	o.SetDuplexn(duplexn)
+	return o
+}
+
+// SetDuplexn adds the duplexN to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetDuplexn(duplexn *string) {
+	o.Duplexn = duplexn
+}
+
 // WithEnabled adds the enabled to the dcim interfaces list params
 func (o *DcimInterfacesListParams) WithEnabled(enabled *string) *DcimInterfacesListParams {
 	o.SetEnabled(enabled)
@@ -862,17 +906,6 @@ func (o *DcimInterfacesListParams) WithLabel(label *string) *DcimInterfacesListP
 // SetLabel adds the label to the dcim interfaces list params
 func (o *DcimInterfacesListParams) SetLabel(label *string) {
 	o.Label = label
-}
-
-// WithLabelEmpty adds the labelEmpty to the dcim interfaces list params
-func (o *DcimInterfacesListParams) WithLabelEmpty(labelEmpty *string) *DcimInterfacesListParams {
-	o.SetLabelEmpty(labelEmpty)
-	return o
-}
-
-// SetLabelEmpty adds the labelEmpty to the dcim interfaces list params
-func (o *DcimInterfacesListParams) SetLabelEmpty(labelEmpty *string) {
-	o.LabelEmpty = labelEmpty
 }
 
 // WithLabelIc adds the labelIc to the dcim interfaces list params
@@ -1227,6 +1260,28 @@ func (o *DcimInterfacesListParams) SetModen(moden *string) {
 	o.Moden = moden
 }
 
+// WithModuleID adds the moduleID to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithModuleID(moduleID *string) *DcimInterfacesListParams {
+	o.SetModuleID(moduleID)
+	return o
+}
+
+// SetModuleID adds the moduleId to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetModuleID(moduleID *string) {
+	o.ModuleID = moduleID
+}
+
+// WithModuleIDn adds the moduleIDn to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithModuleIDn(moduleIDn *string) *DcimInterfacesListParams {
+	o.SetModuleIDn(moduleIDn)
+	return o
+}
+
+// SetModuleIDn adds the moduleIdN to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetModuleIDn(moduleIDn *string) {
+	o.ModuleIDn = moduleIDn
+}
+
 // WithMtu adds the mtu to the dcim interfaces list params
 func (o *DcimInterfacesListParams) WithMtu(mtu *string) *DcimInterfacesListParams {
 	o.SetMtu(mtu)
@@ -1302,17 +1357,6 @@ func (o *DcimInterfacesListParams) WithName(name *string) *DcimInterfacesListPar
 // SetName adds the name to the dcim interfaces list params
 func (o *DcimInterfacesListParams) SetName(name *string) {
 	o.Name = name
-}
-
-// WithNameEmpty adds the nameEmpty to the dcim interfaces list params
-func (o *DcimInterfacesListParams) WithNameEmpty(nameEmpty *string) *DcimInterfacesListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the dcim interfaces list params
-func (o *DcimInterfacesListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
 }
 
 // WithNameIc adds the nameIc to the dcim interfaces list params
@@ -1766,6 +1810,72 @@ func (o *DcimInterfacesListParams) SetSiteIDn(siteIDn *string) {
 	o.SiteIDn = siteIDn
 }
 
+// WithSpeed adds the speed to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithSpeed(speed *string) *DcimInterfacesListParams {
+	o.SetSpeed(speed)
+	return o
+}
+
+// SetSpeed adds the speed to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetSpeed(speed *string) {
+	o.Speed = speed
+}
+
+// WithSpeedGt adds the speedGt to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithSpeedGt(speedGt *string) *DcimInterfacesListParams {
+	o.SetSpeedGt(speedGt)
+	return o
+}
+
+// SetSpeedGt adds the speedGt to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetSpeedGt(speedGt *string) {
+	o.SpeedGt = speedGt
+}
+
+// WithSpeedGte adds the speedGte to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithSpeedGte(speedGte *string) *DcimInterfacesListParams {
+	o.SetSpeedGte(speedGte)
+	return o
+}
+
+// SetSpeedGte adds the speedGte to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetSpeedGte(speedGte *string) {
+	o.SpeedGte = speedGte
+}
+
+// WithSpeedLt adds the speedLt to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithSpeedLt(speedLt *string) *DcimInterfacesListParams {
+	o.SetSpeedLt(speedLt)
+	return o
+}
+
+// SetSpeedLt adds the speedLt to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetSpeedLt(speedLt *string) {
+	o.SpeedLt = speedLt
+}
+
+// WithSpeedLte adds the speedLte to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithSpeedLte(speedLte *string) *DcimInterfacesListParams {
+	o.SetSpeedLte(speedLte)
+	return o
+}
+
+// SetSpeedLte adds the speedLte to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetSpeedLte(speedLte *string) {
+	o.SpeedLte = speedLte
+}
+
+// WithSpeedn adds the speedn to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithSpeedn(speedn *string) *DcimInterfacesListParams {
+	o.SetSpeedn(speedn)
+	return o
+}
+
+// SetSpeedn adds the speedN to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetSpeedn(speedn *string) {
+	o.Speedn = speedn
+}
+
 // WithTag adds the tag to the dcim interfaces list params
 func (o *DcimInterfacesListParams) WithTag(tag *string) *DcimInterfacesListParams {
 	o.SetTag(tag)
@@ -1940,6 +2050,50 @@ func (o *DcimInterfacesListParams) WithVlanID(vlanID *string) *DcimInterfacesLis
 // SetVlanID adds the vlanId to the dcim interfaces list params
 func (o *DcimInterfacesListParams) SetVlanID(vlanID *string) {
 	o.VlanID = vlanID
+}
+
+// WithVrf adds the vrf to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithVrf(vrf *string) *DcimInterfacesListParams {
+	o.SetVrf(vrf)
+	return o
+}
+
+// SetVrf adds the vrf to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetVrf(vrf *string) {
+	o.Vrf = vrf
+}
+
+// WithVrfn adds the vrfn to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithVrfn(vrfn *string) *DcimInterfacesListParams {
+	o.SetVrfn(vrfn)
+	return o
+}
+
+// SetVrfn adds the vrfN to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetVrfn(vrfn *string) {
+	o.Vrfn = vrfn
+}
+
+// WithVrfID adds the vrfID to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithVrfID(vrfID *string) *DcimInterfacesListParams {
+	o.SetVrfID(vrfID)
+	return o
+}
+
+// SetVrfID adds the vrfId to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetVrfID(vrfID *string) {
+	o.VrfID = vrfID
+}
+
+// WithVrfIDn adds the vrfIDn to the dcim interfaces list params
+func (o *DcimInterfacesListParams) WithVrfIDn(vrfIDn *string) *DcimInterfacesListParams {
+	o.SetVrfIDn(vrfIDn)
+	return o
+}
+
+// SetVrfIDn adds the vrfIdN to the dcim interfaces list params
+func (o *DcimInterfacesListParams) SetVrfIDn(vrfIDn *string) {
+	o.VrfIDn = vrfIDn
 }
 
 // WithWwn adds the wwn to the dcim interfaces list params
@@ -2196,23 +2350,6 @@ func (o *DcimInterfacesListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.DescriptionIc != nil {
 
 		// query param description__ic
@@ -2400,6 +2537,40 @@ func (o *DcimInterfacesListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
+	if o.Duplex != nil {
+
+		// query param duplex
+		var qrDuplex string
+
+		if o.Duplex != nil {
+			qrDuplex = *o.Duplex
+		}
+		qDuplex := qrDuplex
+		if qDuplex != "" {
+
+			if err := r.SetQueryParam("duplex", qDuplex); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Duplexn != nil {
+
+		// query param duplex__n
+		var qrDuplexn string
+
+		if o.Duplexn != nil {
+			qrDuplexn = *o.Duplexn
+		}
+		qDuplexn := qrDuplexn
+		if qDuplexn != "" {
+
+			if err := r.SetQueryParam("duplex__n", qDuplexn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.Enabled != nil {
 
 		// query param enabled
@@ -2548,23 +2719,6 @@ func (o *DcimInterfacesListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qLabel != "" {
 
 			if err := r.SetQueryParam("label", qLabel); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.LabelEmpty != nil {
-
-		// query param label__empty
-		var qrLabelEmpty string
-
-		if o.LabelEmpty != nil {
-			qrLabelEmpty = *o.LabelEmpty
-		}
-		qLabelEmpty := qrLabelEmpty
-		if qLabelEmpty != "" {
-
-			if err := r.SetQueryParam("label__empty", qLabelEmpty); err != nil {
 				return err
 			}
 		}
@@ -3114,6 +3268,40 @@ func (o *DcimInterfacesListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
+	if o.ModuleID != nil {
+
+		// query param module_id
+		var qrModuleID string
+
+		if o.ModuleID != nil {
+			qrModuleID = *o.ModuleID
+		}
+		qModuleID := qrModuleID
+		if qModuleID != "" {
+
+			if err := r.SetQueryParam("module_id", qModuleID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ModuleIDn != nil {
+
+		// query param module_id__n
+		var qrModuleIDn string
+
+		if o.ModuleIDn != nil {
+			qrModuleIDn = *o.ModuleIDn
+		}
+		qModuleIDn := qrModuleIDn
+		if qModuleIDn != "" {
+
+			if err := r.SetQueryParam("module_id__n", qModuleIDn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.Mtu != nil {
 
 		// query param mtu
@@ -3228,23 +3416,6 @@ func (o *DcimInterfacesListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qName != "" {
 
 			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
 				return err
 			}
 		}
@@ -3947,6 +4118,108 @@ func (o *DcimInterfacesListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		}
 	}
 
+	if o.Speed != nil {
+
+		// query param speed
+		var qrSpeed string
+
+		if o.Speed != nil {
+			qrSpeed = *o.Speed
+		}
+		qSpeed := qrSpeed
+		if qSpeed != "" {
+
+			if err := r.SetQueryParam("speed", qSpeed); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SpeedGt != nil {
+
+		// query param speed__gt
+		var qrSpeedGt string
+
+		if o.SpeedGt != nil {
+			qrSpeedGt = *o.SpeedGt
+		}
+		qSpeedGt := qrSpeedGt
+		if qSpeedGt != "" {
+
+			if err := r.SetQueryParam("speed__gt", qSpeedGt); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SpeedGte != nil {
+
+		// query param speed__gte
+		var qrSpeedGte string
+
+		if o.SpeedGte != nil {
+			qrSpeedGte = *o.SpeedGte
+		}
+		qSpeedGte := qrSpeedGte
+		if qSpeedGte != "" {
+
+			if err := r.SetQueryParam("speed__gte", qSpeedGte); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SpeedLt != nil {
+
+		// query param speed__lt
+		var qrSpeedLt string
+
+		if o.SpeedLt != nil {
+			qrSpeedLt = *o.SpeedLt
+		}
+		qSpeedLt := qrSpeedLt
+		if qSpeedLt != "" {
+
+			if err := r.SetQueryParam("speed__lt", qSpeedLt); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.SpeedLte != nil {
+
+		// query param speed__lte
+		var qrSpeedLte string
+
+		if o.SpeedLte != nil {
+			qrSpeedLte = *o.SpeedLte
+		}
+		qSpeedLte := qrSpeedLte
+		if qSpeedLte != "" {
+
+			if err := r.SetQueryParam("speed__lte", qSpeedLte); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Speedn != nil {
+
+		// query param speed__n
+		var qrSpeedn string
+
+		if o.Speedn != nil {
+			qrSpeedn = *o.Speedn
+		}
+		qSpeedn := qrSpeedn
+		if qSpeedn != "" {
+
+			if err := r.SetQueryParam("speed__n", qSpeedn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.Tag != nil {
 
 		// query param tag
@@ -4214,6 +4487,74 @@ func (o *DcimInterfacesListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qVlanID != "" {
 
 			if err := r.SetQueryParam("vlan_id", qVlanID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Vrf != nil {
+
+		// query param vrf
+		var qrVrf string
+
+		if o.Vrf != nil {
+			qrVrf = *o.Vrf
+		}
+		qVrf := qrVrf
+		if qVrf != "" {
+
+			if err := r.SetQueryParam("vrf", qVrf); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Vrfn != nil {
+
+		// query param vrf__n
+		var qrVrfn string
+
+		if o.Vrfn != nil {
+			qrVrfn = *o.Vrfn
+		}
+		qVrfn := qrVrfn
+		if qVrfn != "" {
+
+			if err := r.SetQueryParam("vrf__n", qVrfn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VrfID != nil {
+
+		// query param vrf_id
+		var qrVrfID string
+
+		if o.VrfID != nil {
+			qrVrfID = *o.VrfID
+		}
+		qVrfID := qrVrfID
+		if qVrfID != "" {
+
+			if err := r.SetQueryParam("vrf_id", qVrfID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.VrfIDn != nil {
+
+		// query param vrf_id__n
+		var qrVrfIDn string
+
+		if o.VrfIDn != nil {
+			qrVrfIDn = *o.VrfIDn
+		}
+		qVrfIDn := qrVrfIDn
+		if qVrfIDn != "" {
+
+			if err := r.SetQueryParam("vrf_id__n", qVrfIDn); err != nil {
 				return err
 			}
 		}

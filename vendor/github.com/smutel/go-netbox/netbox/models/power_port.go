@@ -68,8 +68,8 @@ type PowerPort struct {
 
 	// Created
 	// Read Only: true
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
+	// Format: date-time
+	Created strfmt.DateTime `json:"created,omitempty"`
 
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
@@ -86,7 +86,7 @@ type PowerPort struct {
 	// Read Only: true
 	Display string `json:"display,omitempty"`
 
-	// Id
+	// ID
 	// Read Only: true
 	ID int64 `json:"id,omitempty"`
 
@@ -124,6 +124,9 @@ type PowerPort struct {
 	// Maximum: 32767
 	// Minimum: 1
 	MaximumDraw *int64 `json:"maximum_draw,omitempty"`
+
+	// module
+	Module *ComponentNestedModule `json:"module,omitempty"`
 
 	// Name
 	// Required: true
@@ -176,6 +179,10 @@ func (m *PowerPort) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateMaximumDraw(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateModule(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -241,7 +248,7 @@ func (m *PowerPort) validateCreated(formats strfmt.Registry) error {
 		return nil
 	}
 
-	if err := validate.FormatOf("created", "body", "date", m.Created.String(), formats); err != nil {
+	if err := validate.FormatOf("created", "body", "date-time", m.Created.String(), formats); err != nil {
 		return err
 	}
 
@@ -315,6 +322,25 @@ func (m *PowerPort) validateMaximumDraw(formats strfmt.Registry) error {
 
 	if err := validate.MaximumInt("maximum_draw", "body", *m.MaximumDraw, 32767, false); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *PowerPort) validateModule(formats strfmt.Registry) error {
+	if swag.IsZero(m.Module) { // not required
+		return nil
+	}
+
+	if m.Module != nil {
+		if err := m.Module.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("module")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("module")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -446,6 +472,10 @@ func (m *PowerPort) ContextValidate(ctx context.Context, formats strfmt.Registry
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateModule(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateTags(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -514,7 +544,7 @@ func (m *PowerPort) contextValidateConnectedEndpointType(ctx context.Context, fo
 
 func (m *PowerPort) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.Date(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
 		return err
 	}
 
@@ -573,6 +603,22 @@ func (m *PowerPort) contextValidateLinkPeerType(ctx context.Context, formats str
 
 	if err := validate.ReadOnly(ctx, "link_peer_type", "body", string(m.LinkPeerType)); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *PowerPort) contextValidateModule(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Module != nil {
+		if err := m.Module.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("module")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("module")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -648,12 +694,12 @@ type PowerPortType struct {
 
 	// label
 	// Required: true
-	// Enum: [C6 C8 C14 C16 C20 C22 P+N+E 4H P+N+E 6H P+N+E 9H 2P+E 4H 2P+E 6H 2P+E 9H 3P+E 4H 3P+E 6H 3P+E 9H 3P+N+E 4H 3P+N+E 6H 3P+N+E 9H NEMA 1-15P NEMA 5-15P NEMA 5-20P NEMA 5-30P NEMA 5-50P NEMA 6-15P NEMA 6-20P NEMA 6-30P NEMA 6-50P NEMA 10-30P NEMA 10-50P NEMA 14-20P NEMA 14-30P NEMA 14-50P NEMA 14-60P NEMA 15-15P NEMA 15-20P NEMA 15-30P NEMA 15-50P NEMA 15-60P NEMA L1-15P NEMA L5-15P NEMA L5-20P NEMA L5-30P NEMA L5-50P NEMA L6-15P NEMA L6-20P NEMA L6-30P NEMA L6-50P NEMA L10-30P NEMA L14-20P NEMA L14-30P NEMA L14-50P NEMA L14-60P NEMA L15-20P NEMA L15-30P NEMA L15-50P NEMA L15-60P NEMA L21-20P NEMA L21-30P NEMA L22-30P CS6361C CS6365C CS8165C CS8265C CS8365C CS8465C ITA Type C (CEE 7/16) ITA Type E (CEE 7/6) ITA Type F (CEE 7/4) ITA Type E/F (CEE 7/7) ITA Type G (BS 1363) ITA Type H ITA Type I ITA Type J ITA Type K ITA Type L (CEI 23-50) ITA Type M (BS 546) ITA Type N ITA Type O USB Type A USB Type B USB Type C USB Mini A USB Mini B USB Micro A USB Micro B USB Micro AB USB 3.0 Type B USB 3.0 Micro B DC Terminal Saf-D-Grid Hardwired]
+	// Enum: [C6 C8 C14 C16 C20 C22 P+N+E 4H P+N+E 6H P+N+E 9H 2P+E 4H 2P+E 6H 2P+E 9H 3P+E 4H 3P+E 6H 3P+E 9H 3P+N+E 4H 3P+N+E 6H 3P+N+E 9H NEMA 1-15P NEMA 5-15P NEMA 5-20P NEMA 5-30P NEMA 5-50P NEMA 6-15P NEMA 6-20P NEMA 6-30P NEMA 6-50P NEMA 10-30P NEMA 10-50P NEMA 14-20P NEMA 14-30P NEMA 14-50P NEMA 14-60P NEMA 15-15P NEMA 15-20P NEMA 15-30P NEMA 15-50P NEMA 15-60P NEMA L1-15P NEMA L5-15P NEMA L5-20P NEMA L5-30P NEMA L5-50P NEMA L6-15P NEMA L6-20P NEMA L6-30P NEMA L6-50P NEMA L10-30P NEMA L14-20P NEMA L14-30P NEMA L14-50P NEMA L14-60P NEMA L15-20P NEMA L15-30P NEMA L15-50P NEMA L15-60P NEMA L21-20P NEMA L21-30P NEMA L22-30P CS6361C CS6365C CS8165C CS8265C CS8365C CS8465C ITA Type C (CEE 7/16) ITA Type E (CEE 7/6) ITA Type F (CEE 7/4) ITA Type E/F (CEE 7/7) ITA Type G (BS 1363) ITA Type H ITA Type I ITA Type J ITA Type K ITA Type L (CEI 23-50) ITA Type M (BS 546) ITA Type N ITA Type O USB Type A USB Type B USB Type C USB Mini A USB Mini B USB Micro A USB Micro B USB Micro AB USB 3.0 Type B USB 3.0 Micro B DC Terminal Saf-D-Grid Neutrik powerCON (20A) Neutrik powerCON (32A) Neutrik powerCON TRUE1 Neutrik powerCON TRUE1 TOP Ubiquiti SmartPower Hardwired Other]
 	Label *string `json:"label"`
 
 	// value
 	// Required: true
-	// Enum: [iec-60320-c6 iec-60320-c8 iec-60320-c14 iec-60320-c16 iec-60320-c20 iec-60320-c22 iec-60309-p-n-e-4h iec-60309-p-n-e-6h iec-60309-p-n-e-9h iec-60309-2p-e-4h iec-60309-2p-e-6h iec-60309-2p-e-9h iec-60309-3p-e-4h iec-60309-3p-e-6h iec-60309-3p-e-9h iec-60309-3p-n-e-4h iec-60309-3p-n-e-6h iec-60309-3p-n-e-9h nema-1-15p nema-5-15p nema-5-20p nema-5-30p nema-5-50p nema-6-15p nema-6-20p nema-6-30p nema-6-50p nema-10-30p nema-10-50p nema-14-20p nema-14-30p nema-14-50p nema-14-60p nema-15-15p nema-15-20p nema-15-30p nema-15-50p nema-15-60p nema-l1-15p nema-l5-15p nema-l5-20p nema-l5-30p nema-l5-50p nema-l6-15p nema-l6-20p nema-l6-30p nema-l6-50p nema-l10-30p nema-l14-20p nema-l14-30p nema-l14-50p nema-l14-60p nema-l15-20p nema-l15-30p nema-l15-50p nema-l15-60p nema-l21-20p nema-l21-30p nema-l22-30p cs6361c cs6365c cs8165c cs8265c cs8365c cs8465c ita-c ita-e ita-f ita-ef ita-g ita-h ita-i ita-j ita-k ita-l ita-m ita-n ita-o usb-a usb-b usb-c usb-mini-a usb-mini-b usb-micro-a usb-micro-b usb-micro-ab usb-3-b usb-3-micro-b dc-terminal saf-d-grid hardwired]
+	// Enum: [iec-60320-c6 iec-60320-c8 iec-60320-c14 iec-60320-c16 iec-60320-c20 iec-60320-c22 iec-60309-p-n-e-4h iec-60309-p-n-e-6h iec-60309-p-n-e-9h iec-60309-2p-e-4h iec-60309-2p-e-6h iec-60309-2p-e-9h iec-60309-3p-e-4h iec-60309-3p-e-6h iec-60309-3p-e-9h iec-60309-3p-n-e-4h iec-60309-3p-n-e-6h iec-60309-3p-n-e-9h nema-1-15p nema-5-15p nema-5-20p nema-5-30p nema-5-50p nema-6-15p nema-6-20p nema-6-30p nema-6-50p nema-10-30p nema-10-50p nema-14-20p nema-14-30p nema-14-50p nema-14-60p nema-15-15p nema-15-20p nema-15-30p nema-15-50p nema-15-60p nema-l1-15p nema-l5-15p nema-l5-20p nema-l5-30p nema-l5-50p nema-l6-15p nema-l6-20p nema-l6-30p nema-l6-50p nema-l10-30p nema-l14-20p nema-l14-30p nema-l14-50p nema-l14-60p nema-l15-20p nema-l15-30p nema-l15-50p nema-l15-60p nema-l21-20p nema-l21-30p nema-l22-30p cs6361c cs6365c cs8165c cs8265c cs8365c cs8465c ita-c ita-e ita-f ita-ef ita-g ita-h ita-i ita-j ita-k ita-l ita-m ita-n ita-o usb-a usb-b usb-c usb-mini-a usb-mini-b usb-micro-a usb-micro-b usb-micro-ab usb-3-b usb-3-micro-b dc-terminal saf-d-grid neutrik-powercon-20 neutrik-powercon-32 neutrik-powercon-true1 neutrik-powercon-true1-top ubiquiti-smartpower hardwired other]
 	Value *string `json:"value"`
 }
 
@@ -679,7 +725,7 @@ var powerPortTypeTypeLabelPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["C6","C8","C14","C16","C20","C22","P+N+E 4H","P+N+E 6H","P+N+E 9H","2P+E 4H","2P+E 6H","2P+E 9H","3P+E 4H","3P+E 6H","3P+E 9H","3P+N+E 4H","3P+N+E 6H","3P+N+E 9H","NEMA 1-15P","NEMA 5-15P","NEMA 5-20P","NEMA 5-30P","NEMA 5-50P","NEMA 6-15P","NEMA 6-20P","NEMA 6-30P","NEMA 6-50P","NEMA 10-30P","NEMA 10-50P","NEMA 14-20P","NEMA 14-30P","NEMA 14-50P","NEMA 14-60P","NEMA 15-15P","NEMA 15-20P","NEMA 15-30P","NEMA 15-50P","NEMA 15-60P","NEMA L1-15P","NEMA L5-15P","NEMA L5-20P","NEMA L5-30P","NEMA L5-50P","NEMA L6-15P","NEMA L6-20P","NEMA L6-30P","NEMA L6-50P","NEMA L10-30P","NEMA L14-20P","NEMA L14-30P","NEMA L14-50P","NEMA L14-60P","NEMA L15-20P","NEMA L15-30P","NEMA L15-50P","NEMA L15-60P","NEMA L21-20P","NEMA L21-30P","NEMA L22-30P","CS6361C","CS6365C","CS8165C","CS8265C","CS8365C","CS8465C","ITA Type C (CEE 7/16)","ITA Type E (CEE 7/6)","ITA Type F (CEE 7/4)","ITA Type E/F (CEE 7/7)","ITA Type G (BS 1363)","ITA Type H","ITA Type I","ITA Type J","ITA Type K","ITA Type L (CEI 23-50)","ITA Type M (BS 546)","ITA Type N","ITA Type O","USB Type A","USB Type B","USB Type C","USB Mini A","USB Mini B","USB Micro A","USB Micro B","USB Micro AB","USB 3.0 Type B","USB 3.0 Micro B","DC Terminal","Saf-D-Grid","Hardwired"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["C6","C8","C14","C16","C20","C22","P+N+E 4H","P+N+E 6H","P+N+E 9H","2P+E 4H","2P+E 6H","2P+E 9H","3P+E 4H","3P+E 6H","3P+E 9H","3P+N+E 4H","3P+N+E 6H","3P+N+E 9H","NEMA 1-15P","NEMA 5-15P","NEMA 5-20P","NEMA 5-30P","NEMA 5-50P","NEMA 6-15P","NEMA 6-20P","NEMA 6-30P","NEMA 6-50P","NEMA 10-30P","NEMA 10-50P","NEMA 14-20P","NEMA 14-30P","NEMA 14-50P","NEMA 14-60P","NEMA 15-15P","NEMA 15-20P","NEMA 15-30P","NEMA 15-50P","NEMA 15-60P","NEMA L1-15P","NEMA L5-15P","NEMA L5-20P","NEMA L5-30P","NEMA L5-50P","NEMA L6-15P","NEMA L6-20P","NEMA L6-30P","NEMA L6-50P","NEMA L10-30P","NEMA L14-20P","NEMA L14-30P","NEMA L14-50P","NEMA L14-60P","NEMA L15-20P","NEMA L15-30P","NEMA L15-50P","NEMA L15-60P","NEMA L21-20P","NEMA L21-30P","NEMA L22-30P","CS6361C","CS6365C","CS8165C","CS8265C","CS8365C","CS8465C","ITA Type C (CEE 7/16)","ITA Type E (CEE 7/6)","ITA Type F (CEE 7/4)","ITA Type E/F (CEE 7/7)","ITA Type G (BS 1363)","ITA Type H","ITA Type I","ITA Type J","ITA Type K","ITA Type L (CEI 23-50)","ITA Type M (BS 546)","ITA Type N","ITA Type O","USB Type A","USB Type B","USB Type C","USB Mini A","USB Mini B","USB Micro A","USB Micro B","USB Micro AB","USB 3.0 Type B","USB 3.0 Micro B","DC Terminal","Saf-D-Grid","Neutrik powerCON (20A)","Neutrik powerCON (32A)","Neutrik powerCON TRUE1","Neutrik powerCON TRUE1 TOP","Ubiquiti SmartPower","Hardwired","Other"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -959,8 +1005,26 @@ const (
 	// PowerPortTypeLabelSafDashDDashGrid captures enum value "Saf-D-Grid"
 	PowerPortTypeLabelSafDashDDashGrid string = "Saf-D-Grid"
 
+	// PowerPortTypeLabelNeutrikPowerCON20A captures enum value "Neutrik powerCON (20A)"
+	PowerPortTypeLabelNeutrikPowerCON20A string = "Neutrik powerCON (20A)"
+
+	// PowerPortTypeLabelNeutrikPowerCON32A captures enum value "Neutrik powerCON (32A)"
+	PowerPortTypeLabelNeutrikPowerCON32A string = "Neutrik powerCON (32A)"
+
+	// PowerPortTypeLabelNeutrikPowerCONTRUE1 captures enum value "Neutrik powerCON TRUE1"
+	PowerPortTypeLabelNeutrikPowerCONTRUE1 string = "Neutrik powerCON TRUE1"
+
+	// PowerPortTypeLabelNeutrikPowerCONTRUE1TOP captures enum value "Neutrik powerCON TRUE1 TOP"
+	PowerPortTypeLabelNeutrikPowerCONTRUE1TOP string = "Neutrik powerCON TRUE1 TOP"
+
+	// PowerPortTypeLabelUbiquitiSmartPower captures enum value "Ubiquiti SmartPower"
+	PowerPortTypeLabelUbiquitiSmartPower string = "Ubiquiti SmartPower"
+
 	// PowerPortTypeLabelHardwired captures enum value "Hardwired"
 	PowerPortTypeLabelHardwired string = "Hardwired"
+
+	// PowerPortTypeLabelOther captures enum value "Other"
+	PowerPortTypeLabelOther string = "Other"
 )
 
 // prop value enum
@@ -989,7 +1053,7 @@ var powerPortTypeTypeValuePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["iec-60320-c6","iec-60320-c8","iec-60320-c14","iec-60320-c16","iec-60320-c20","iec-60320-c22","iec-60309-p-n-e-4h","iec-60309-p-n-e-6h","iec-60309-p-n-e-9h","iec-60309-2p-e-4h","iec-60309-2p-e-6h","iec-60309-2p-e-9h","iec-60309-3p-e-4h","iec-60309-3p-e-6h","iec-60309-3p-e-9h","iec-60309-3p-n-e-4h","iec-60309-3p-n-e-6h","iec-60309-3p-n-e-9h","nema-1-15p","nema-5-15p","nema-5-20p","nema-5-30p","nema-5-50p","nema-6-15p","nema-6-20p","nema-6-30p","nema-6-50p","nema-10-30p","nema-10-50p","nema-14-20p","nema-14-30p","nema-14-50p","nema-14-60p","nema-15-15p","nema-15-20p","nema-15-30p","nema-15-50p","nema-15-60p","nema-l1-15p","nema-l5-15p","nema-l5-20p","nema-l5-30p","nema-l5-50p","nema-l6-15p","nema-l6-20p","nema-l6-30p","nema-l6-50p","nema-l10-30p","nema-l14-20p","nema-l14-30p","nema-l14-50p","nema-l14-60p","nema-l15-20p","nema-l15-30p","nema-l15-50p","nema-l15-60p","nema-l21-20p","nema-l21-30p","nema-l22-30p","cs6361c","cs6365c","cs8165c","cs8265c","cs8365c","cs8465c","ita-c","ita-e","ita-f","ita-ef","ita-g","ita-h","ita-i","ita-j","ita-k","ita-l","ita-m","ita-n","ita-o","usb-a","usb-b","usb-c","usb-mini-a","usb-mini-b","usb-micro-a","usb-micro-b","usb-micro-ab","usb-3-b","usb-3-micro-b","dc-terminal","saf-d-grid","hardwired"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["iec-60320-c6","iec-60320-c8","iec-60320-c14","iec-60320-c16","iec-60320-c20","iec-60320-c22","iec-60309-p-n-e-4h","iec-60309-p-n-e-6h","iec-60309-p-n-e-9h","iec-60309-2p-e-4h","iec-60309-2p-e-6h","iec-60309-2p-e-9h","iec-60309-3p-e-4h","iec-60309-3p-e-6h","iec-60309-3p-e-9h","iec-60309-3p-n-e-4h","iec-60309-3p-n-e-6h","iec-60309-3p-n-e-9h","nema-1-15p","nema-5-15p","nema-5-20p","nema-5-30p","nema-5-50p","nema-6-15p","nema-6-20p","nema-6-30p","nema-6-50p","nema-10-30p","nema-10-50p","nema-14-20p","nema-14-30p","nema-14-50p","nema-14-60p","nema-15-15p","nema-15-20p","nema-15-30p","nema-15-50p","nema-15-60p","nema-l1-15p","nema-l5-15p","nema-l5-20p","nema-l5-30p","nema-l5-50p","nema-l6-15p","nema-l6-20p","nema-l6-30p","nema-l6-50p","nema-l10-30p","nema-l14-20p","nema-l14-30p","nema-l14-50p","nema-l14-60p","nema-l15-20p","nema-l15-30p","nema-l15-50p","nema-l15-60p","nema-l21-20p","nema-l21-30p","nema-l22-30p","cs6361c","cs6365c","cs8165c","cs8265c","cs8365c","cs8465c","ita-c","ita-e","ita-f","ita-ef","ita-g","ita-h","ita-i","ita-j","ita-k","ita-l","ita-m","ita-n","ita-o","usb-a","usb-b","usb-c","usb-mini-a","usb-mini-b","usb-micro-a","usb-micro-b","usb-micro-ab","usb-3-b","usb-3-micro-b","dc-terminal","saf-d-grid","neutrik-powercon-20","neutrik-powercon-32","neutrik-powercon-true1","neutrik-powercon-true1-top","ubiquiti-smartpower","hardwired","other"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -1269,8 +1333,26 @@ const (
 	// PowerPortTypeValueSafDashdDashGrid captures enum value "saf-d-grid"
 	PowerPortTypeValueSafDashdDashGrid string = "saf-d-grid"
 
+	// PowerPortTypeValueNeutrikDashPowerconDash20 captures enum value "neutrik-powercon-20"
+	PowerPortTypeValueNeutrikDashPowerconDash20 string = "neutrik-powercon-20"
+
+	// PowerPortTypeValueNeutrikDashPowerconDash32 captures enum value "neutrik-powercon-32"
+	PowerPortTypeValueNeutrikDashPowerconDash32 string = "neutrik-powercon-32"
+
+	// PowerPortTypeValueNeutrikDashPowerconDashTrue1 captures enum value "neutrik-powercon-true1"
+	PowerPortTypeValueNeutrikDashPowerconDashTrue1 string = "neutrik-powercon-true1"
+
+	// PowerPortTypeValueNeutrikDashPowerconDashTrue1DashTop captures enum value "neutrik-powercon-true1-top"
+	PowerPortTypeValueNeutrikDashPowerconDashTrue1DashTop string = "neutrik-powercon-true1-top"
+
+	// PowerPortTypeValueUbiquitiDashSmartpower captures enum value "ubiquiti-smartpower"
+	PowerPortTypeValueUbiquitiDashSmartpower string = "ubiquiti-smartpower"
+
 	// PowerPortTypeValueHardwired captures enum value "hardwired"
 	PowerPortTypeValueHardwired string = "hardwired"
+
+	// PowerPortTypeValueOther captures enum value "other"
+	PowerPortTypeValueOther string = "other"
 )
 
 // prop value enum

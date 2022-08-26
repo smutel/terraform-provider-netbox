@@ -87,9 +87,6 @@ type TenancyContactRolesListParams struct {
 	// Description.
 	Description *string
 
-	// DescriptionEmpty.
-	DescriptionEmpty *string
-
 	// DescriptionIc.
 	DescriptionIc *string
 
@@ -153,9 +150,6 @@ type TenancyContactRolesListParams struct {
 	// Name.
 	Name *string
 
-	// NameEmpty.
-	NameEmpty *string
-
 	// NameIc.
 	NameIc *string
 
@@ -194,9 +188,6 @@ type TenancyContactRolesListParams struct {
 
 	// Slug.
 	Slug *string
-
-	// SlugEmpty.
-	SlugEmpty *string
 
 	// SlugIc.
 	SlugIc *string
@@ -326,17 +317,6 @@ func (o *TenancyContactRolesListParams) WithDescription(description *string) *Te
 // SetDescription adds the description to the tenancy contact roles list params
 func (o *TenancyContactRolesListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the tenancy contact roles list params
-func (o *TenancyContactRolesListParams) WithDescriptionEmpty(descriptionEmpty *string) *TenancyContactRolesListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the tenancy contact roles list params
-func (o *TenancyContactRolesListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the tenancy contact roles list params
@@ -559,17 +539,6 @@ func (o *TenancyContactRolesListParams) SetName(name *string) {
 	o.Name = name
 }
 
-// WithNameEmpty adds the nameEmpty to the tenancy contact roles list params
-func (o *TenancyContactRolesListParams) WithNameEmpty(nameEmpty *string) *TenancyContactRolesListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the tenancy contact roles list params
-func (o *TenancyContactRolesListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
-}
-
 // WithNameIc adds the nameIc to the tenancy contact roles list params
 func (o *TenancyContactRolesListParams) WithNameIc(nameIc *string) *TenancyContactRolesListParams {
 	o.SetNameIc(nameIc)
@@ -700,17 +669,6 @@ func (o *TenancyContactRolesListParams) WithSlug(slug *string) *TenancyContactRo
 // SetSlug adds the slug to the tenancy contact roles list params
 func (o *TenancyContactRolesListParams) SetSlug(slug *string) {
 	o.Slug = slug
-}
-
-// WithSlugEmpty adds the slugEmpty to the tenancy contact roles list params
-func (o *TenancyContactRolesListParams) WithSlugEmpty(slugEmpty *string) *TenancyContactRolesListParams {
-	o.SetSlugEmpty(slugEmpty)
-	return o
-}
-
-// SetSlugEmpty adds the slugEmpty to the tenancy contact roles list params
-func (o *TenancyContactRolesListParams) SetSlugEmpty(slugEmpty *string) {
-	o.SlugEmpty = slugEmpty
 }
 
 // WithSlugIc adds the slugIc to the tenancy contact roles list params
@@ -905,23 +863,6 @@ func (o *TenancyContactRolesListParams) WriteToRequest(r runtime.ClientRequest, 
 		if qDescription != "" {
 
 			if err := r.SetQueryParam("description", qDescription); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
 				return err
 			}
 		}
@@ -1267,23 +1208,6 @@ func (o *TenancyContactRolesListParams) WriteToRequest(r runtime.ClientRequest, 
 		}
 	}
 
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.NameIc != nil {
 
 		// query param name__ic
@@ -1483,23 +1407,6 @@ func (o *TenancyContactRolesListParams) WriteToRequest(r runtime.ClientRequest, 
 		if qSlug != "" {
 
 			if err := r.SetQueryParam("slug", qSlug); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.SlugEmpty != nil {
-
-		// query param slug__empty
-		var qrSlugEmpty string
-
-		if o.SlugEmpty != nil {
-			qrSlugEmpty = *o.SlugEmpty
-		}
-		qSlugEmpty := qrSlugEmpty
-		if qSlugEmpty != "" {
-
-			if err := r.SetQueryParam("slug__empty", qSlugEmpty); err != nil {
 				return err
 			}
 		}

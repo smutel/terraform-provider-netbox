@@ -81,6 +81,12 @@ type DcimLocationsListParams struct {
 	// Contactn.
 	Contactn *string
 
+	// ContactGroup.
+	ContactGroup *string
+
+	// ContactGroupn.
+	ContactGroupn *string
+
 	// ContactRole.
 	ContactRole *string
 
@@ -98,9 +104,6 @@ type DcimLocationsListParams struct {
 
 	// Description.
 	Description *string
-
-	// DescriptionEmpty.
-	DescriptionEmpty *string
 
 	// DescriptionIc.
 	DescriptionIc *string
@@ -164,9 +167,6 @@ type DcimLocationsListParams struct {
 
 	// Name.
 	Name *string
-
-	// NameEmpty.
-	NameEmpty *string
 
 	// NameIc.
 	NameIc *string
@@ -254,9 +254,6 @@ type DcimLocationsListParams struct {
 
 	// Slug.
 	Slug *string
-
-	// SlugEmpty.
-	SlugEmpty *string
 
 	// SlugIc.
 	SlugIc *string
@@ -390,6 +387,28 @@ func (o *DcimLocationsListParams) SetContactn(contactn *string) {
 	o.Contactn = contactn
 }
 
+// WithContactGroup adds the contactGroup to the dcim locations list params
+func (o *DcimLocationsListParams) WithContactGroup(contactGroup *string) *DcimLocationsListParams {
+	o.SetContactGroup(contactGroup)
+	return o
+}
+
+// SetContactGroup adds the contactGroup to the dcim locations list params
+func (o *DcimLocationsListParams) SetContactGroup(contactGroup *string) {
+	o.ContactGroup = contactGroup
+}
+
+// WithContactGroupn adds the contactGroupn to the dcim locations list params
+func (o *DcimLocationsListParams) WithContactGroupn(contactGroupn *string) *DcimLocationsListParams {
+	o.SetContactGroupn(contactGroupn)
+	return o
+}
+
+// SetContactGroupn adds the contactGroupN to the dcim locations list params
+func (o *DcimLocationsListParams) SetContactGroupn(contactGroupn *string) {
+	o.ContactGroupn = contactGroupn
+}
+
 // WithContactRole adds the contactRole to the dcim locations list params
 func (o *DcimLocationsListParams) WithContactRole(contactRole *string) *DcimLocationsListParams {
 	o.SetContactRole(contactRole)
@@ -454,17 +473,6 @@ func (o *DcimLocationsListParams) WithDescription(description *string) *DcimLoca
 // SetDescription adds the description to the dcim locations list params
 func (o *DcimLocationsListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the dcim locations list params
-func (o *DcimLocationsListParams) WithDescriptionEmpty(descriptionEmpty *string) *DcimLocationsListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the dcim locations list params
-func (o *DcimLocationsListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the dcim locations list params
@@ -685,17 +693,6 @@ func (o *DcimLocationsListParams) WithName(name *string) *DcimLocationsListParam
 // SetName adds the name to the dcim locations list params
 func (o *DcimLocationsListParams) SetName(name *string) {
 	o.Name = name
-}
-
-// WithNameEmpty adds the nameEmpty to the dcim locations list params
-func (o *DcimLocationsListParams) WithNameEmpty(nameEmpty *string) *DcimLocationsListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the dcim locations list params
-func (o *DcimLocationsListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
 }
 
 // WithNameIc adds the nameIc to the dcim locations list params
@@ -1006,17 +1003,6 @@ func (o *DcimLocationsListParams) SetSlug(slug *string) {
 	o.Slug = slug
 }
 
-// WithSlugEmpty adds the slugEmpty to the dcim locations list params
-func (o *DcimLocationsListParams) WithSlugEmpty(slugEmpty *string) *DcimLocationsListParams {
-	o.SetSlugEmpty(slugEmpty)
-	return o
-}
-
-// SetSlugEmpty adds the slugEmpty to the dcim locations list params
-func (o *DcimLocationsListParams) SetSlugEmpty(slugEmpty *string) {
-	o.SlugEmpty = slugEmpty
-}
-
 // WithSlugIc adds the slugIc to the dcim locations list params
 func (o *DcimLocationsListParams) WithSlugIc(slugIc *string) *DcimLocationsListParams {
 	o.SetSlugIc(slugIc)
@@ -1268,6 +1254,40 @@ func (o *DcimLocationsListParams) WriteToRequest(r runtime.ClientRequest, reg st
 		}
 	}
 
+	if o.ContactGroup != nil {
+
+		// query param contact_group
+		var qrContactGroup string
+
+		if o.ContactGroup != nil {
+			qrContactGroup = *o.ContactGroup
+		}
+		qContactGroup := qrContactGroup
+		if qContactGroup != "" {
+
+			if err := r.SetQueryParam("contact_group", qContactGroup); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContactGroupn != nil {
+
+		// query param contact_group__n
+		var qrContactGroupn string
+
+		if o.ContactGroupn != nil {
+			qrContactGroupn = *o.ContactGroupn
+		}
+		qContactGroupn := qrContactGroupn
+		if qContactGroupn != "" {
+
+			if err := r.SetQueryParam("contact_group__n", qContactGroupn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.ContactRole != nil {
 
 		// query param contact_role
@@ -1365,23 +1385,6 @@ func (o *DcimLocationsListParams) WriteToRequest(r runtime.ClientRequest, reg st
 		if qDescription != "" {
 
 			if err := r.SetQueryParam("description", qDescription); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
 				return err
 			}
 		}
@@ -1722,23 +1725,6 @@ func (o *DcimLocationsListParams) WriteToRequest(r runtime.ClientRequest, reg st
 		if qName != "" {
 
 			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
 				return err
 			}
 		}
@@ -2215,23 +2201,6 @@ func (o *DcimLocationsListParams) WriteToRequest(r runtime.ClientRequest, reg st
 		if qSlug != "" {
 
 			if err := r.SetQueryParam("slug", qSlug); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.SlugEmpty != nil {
-
-		// query param slug__empty
-		var qrSlugEmpty string
-
-		if o.SlugEmpty != nil {
-			qrSlugEmpty = *o.SlugEmpty
-		}
-		qSlugEmpty := qrSlugEmpty
-		if qSlugEmpty != "" {
-
-			if err := r.SetQueryParam("slug__empty", qSlugEmpty); err != nil {
 				return err
 			}
 		}

@@ -87,9 +87,6 @@ type CircuitsProviderNetworksListParams struct {
 	// Description.
 	Description *string
 
-	// DescriptionEmpty.
-	DescriptionEmpty *string
-
 	// DescriptionIc.
 	DescriptionIc *string
 
@@ -153,9 +150,6 @@ type CircuitsProviderNetworksListParams struct {
 	// Name.
 	Name *string
 
-	// NameEmpty.
-	NameEmpty *string
-
 	// NameIc.
 	NameIc *string
 
@@ -203,6 +197,36 @@ type CircuitsProviderNetworksListParams struct {
 
 	// Q.
 	Q *string
+
+	// ServiceID.
+	ServiceID *string
+
+	// ServiceIDIc.
+	ServiceIDIc *string
+
+	// ServiceIDIe.
+	ServiceIDIe *string
+
+	// ServiceIDIew.
+	ServiceIDIew *string
+
+	// ServiceIDIsw.
+	ServiceIDIsw *string
+
+	// ServiceIDn.
+	ServiceIDn *string
+
+	// ServiceIDNic.
+	ServiceIDNic *string
+
+	// ServiceIDNie.
+	ServiceIDNie *string
+
+	// ServiceIDNiew.
+	ServiceIDNiew *string
+
+	// ServiceIDNisw.
+	ServiceIDNisw *string
 
 	// Tag.
 	Tag *string
@@ -305,17 +329,6 @@ func (o *CircuitsProviderNetworksListParams) WithDescription(description *string
 // SetDescription adds the description to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the circuits provider networks list params
-func (o *CircuitsProviderNetworksListParams) WithDescriptionEmpty(descriptionEmpty *string) *CircuitsProviderNetworksListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the circuits provider networks list params
-func (o *CircuitsProviderNetworksListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the circuits provider networks list params
@@ -538,17 +551,6 @@ func (o *CircuitsProviderNetworksListParams) SetName(name *string) {
 	o.Name = name
 }
 
-// WithNameEmpty adds the nameEmpty to the circuits provider networks list params
-func (o *CircuitsProviderNetworksListParams) WithNameEmpty(nameEmpty *string) *CircuitsProviderNetworksListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the circuits provider networks list params
-func (o *CircuitsProviderNetworksListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
-}
-
 // WithNameIc adds the nameIc to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) WithNameIc(nameIc *string) *CircuitsProviderNetworksListParams {
 	o.SetNameIc(nameIc)
@@ -714,6 +716,116 @@ func (o *CircuitsProviderNetworksListParams) SetQ(q *string) {
 	o.Q = q
 }
 
+// WithServiceID adds the serviceID to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceID(serviceID *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceID(serviceID)
+	return o
+}
+
+// SetServiceID adds the serviceId to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceID(serviceID *string) {
+	o.ServiceID = serviceID
+}
+
+// WithServiceIDIc adds the serviceIDIc to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceIDIc(serviceIDIc *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceIDIc(serviceIDIc)
+	return o
+}
+
+// SetServiceIDIc adds the serviceIdIc to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceIDIc(serviceIDIc *string) {
+	o.ServiceIDIc = serviceIDIc
+}
+
+// WithServiceIDIe adds the serviceIDIe to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceIDIe(serviceIDIe *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceIDIe(serviceIDIe)
+	return o
+}
+
+// SetServiceIDIe adds the serviceIdIe to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceIDIe(serviceIDIe *string) {
+	o.ServiceIDIe = serviceIDIe
+}
+
+// WithServiceIDIew adds the serviceIDIew to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceIDIew(serviceIDIew *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceIDIew(serviceIDIew)
+	return o
+}
+
+// SetServiceIDIew adds the serviceIdIew to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceIDIew(serviceIDIew *string) {
+	o.ServiceIDIew = serviceIDIew
+}
+
+// WithServiceIDIsw adds the serviceIDIsw to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceIDIsw(serviceIDIsw *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceIDIsw(serviceIDIsw)
+	return o
+}
+
+// SetServiceIDIsw adds the serviceIdIsw to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceIDIsw(serviceIDIsw *string) {
+	o.ServiceIDIsw = serviceIDIsw
+}
+
+// WithServiceIDn adds the serviceIDn to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceIDn(serviceIDn *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceIDn(serviceIDn)
+	return o
+}
+
+// SetServiceIDn adds the serviceIdN to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceIDn(serviceIDn *string) {
+	o.ServiceIDn = serviceIDn
+}
+
+// WithServiceIDNic adds the serviceIDNic to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceIDNic(serviceIDNic *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceIDNic(serviceIDNic)
+	return o
+}
+
+// SetServiceIDNic adds the serviceIdNic to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceIDNic(serviceIDNic *string) {
+	o.ServiceIDNic = serviceIDNic
+}
+
+// WithServiceIDNie adds the serviceIDNie to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceIDNie(serviceIDNie *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceIDNie(serviceIDNie)
+	return o
+}
+
+// SetServiceIDNie adds the serviceIdNie to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceIDNie(serviceIDNie *string) {
+	o.ServiceIDNie = serviceIDNie
+}
+
+// WithServiceIDNiew adds the serviceIDNiew to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceIDNiew(serviceIDNiew *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceIDNiew(serviceIDNiew)
+	return o
+}
+
+// SetServiceIDNiew adds the serviceIdNiew to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceIDNiew(serviceIDNiew *string) {
+	o.ServiceIDNiew = serviceIDNiew
+}
+
+// WithServiceIDNisw adds the serviceIDNisw to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithServiceIDNisw(serviceIDNisw *string) *CircuitsProviderNetworksListParams {
+	o.SetServiceIDNisw(serviceIDNisw)
+	return o
+}
+
+// SetServiceIDNisw adds the serviceIdNisw to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetServiceIDNisw(serviceIDNisw *string) {
+	o.ServiceIDNisw = serviceIDNisw
+}
+
 // WithTag adds the tag to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) WithTag(tag *string) *CircuitsProviderNetworksListParams {
 	o.SetTag(tag)
@@ -807,23 +919,6 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		if qDescription != "" {
 
 			if err := r.SetQueryParam("description", qDescription); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
 				return err
 			}
 		}
@@ -1169,23 +1264,6 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		}
 	}
 
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.NameIc != nil {
 
 		// query param name__ic
@@ -1436,6 +1514,176 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		if qQ != "" {
 
 			if err := r.SetQueryParam("q", qQ); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceID != nil {
+
+		// query param service_id
+		var qrServiceID string
+
+		if o.ServiceID != nil {
+			qrServiceID = *o.ServiceID
+		}
+		qServiceID := qrServiceID
+		if qServiceID != "" {
+
+			if err := r.SetQueryParam("service_id", qServiceID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceIDIc != nil {
+
+		// query param service_id__ic
+		var qrServiceIDIc string
+
+		if o.ServiceIDIc != nil {
+			qrServiceIDIc = *o.ServiceIDIc
+		}
+		qServiceIDIc := qrServiceIDIc
+		if qServiceIDIc != "" {
+
+			if err := r.SetQueryParam("service_id__ic", qServiceIDIc); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceIDIe != nil {
+
+		// query param service_id__ie
+		var qrServiceIDIe string
+
+		if o.ServiceIDIe != nil {
+			qrServiceIDIe = *o.ServiceIDIe
+		}
+		qServiceIDIe := qrServiceIDIe
+		if qServiceIDIe != "" {
+
+			if err := r.SetQueryParam("service_id__ie", qServiceIDIe); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceIDIew != nil {
+
+		// query param service_id__iew
+		var qrServiceIDIew string
+
+		if o.ServiceIDIew != nil {
+			qrServiceIDIew = *o.ServiceIDIew
+		}
+		qServiceIDIew := qrServiceIDIew
+		if qServiceIDIew != "" {
+
+			if err := r.SetQueryParam("service_id__iew", qServiceIDIew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceIDIsw != nil {
+
+		// query param service_id__isw
+		var qrServiceIDIsw string
+
+		if o.ServiceIDIsw != nil {
+			qrServiceIDIsw = *o.ServiceIDIsw
+		}
+		qServiceIDIsw := qrServiceIDIsw
+		if qServiceIDIsw != "" {
+
+			if err := r.SetQueryParam("service_id__isw", qServiceIDIsw); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceIDn != nil {
+
+		// query param service_id__n
+		var qrServiceIDn string
+
+		if o.ServiceIDn != nil {
+			qrServiceIDn = *o.ServiceIDn
+		}
+		qServiceIDn := qrServiceIDn
+		if qServiceIDn != "" {
+
+			if err := r.SetQueryParam("service_id__n", qServiceIDn); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceIDNic != nil {
+
+		// query param service_id__nic
+		var qrServiceIDNic string
+
+		if o.ServiceIDNic != nil {
+			qrServiceIDNic = *o.ServiceIDNic
+		}
+		qServiceIDNic := qrServiceIDNic
+		if qServiceIDNic != "" {
+
+			if err := r.SetQueryParam("service_id__nic", qServiceIDNic); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceIDNie != nil {
+
+		// query param service_id__nie
+		var qrServiceIDNie string
+
+		if o.ServiceIDNie != nil {
+			qrServiceIDNie = *o.ServiceIDNie
+		}
+		qServiceIDNie := qrServiceIDNie
+		if qServiceIDNie != "" {
+
+			if err := r.SetQueryParam("service_id__nie", qServiceIDNie); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceIDNiew != nil {
+
+		// query param service_id__niew
+		var qrServiceIDNiew string
+
+		if o.ServiceIDNiew != nil {
+			qrServiceIDNiew = *o.ServiceIDNiew
+		}
+		qServiceIDNiew := qrServiceIDNiew
+		if qServiceIDNiew != "" {
+
+			if err := r.SetQueryParam("service_id__niew", qServiceIDNiew); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ServiceIDNisw != nil {
+
+		// query param service_id__nisw
+		var qrServiceIDNisw string
+
+		if o.ServiceIDNisw != nil {
+			qrServiceIDNisw = *o.ServiceIDNisw
+		}
+		qServiceIDNisw := qrServiceIDNisw
+		if qServiceIDNisw != "" {
+
+			if err := r.SetQueryParam("service_id__nisw", qServiceIDNisw); err != nil {
 				return err
 			}
 		}

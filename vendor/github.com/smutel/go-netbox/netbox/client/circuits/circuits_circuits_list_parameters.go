@@ -78,9 +78,6 @@ type CircuitsCircuitsListParams struct {
 	// Cid.
 	Cid *string
 
-	// CidEmpty.
-	CidEmpty *string
-
 	// CidIc.
 	CidIc *string
 
@@ -132,6 +129,12 @@ type CircuitsCircuitsListParams struct {
 	// Contactn.
 	Contactn *string
 
+	// ContactGroup.
+	ContactGroup *string
+
+	// ContactGroupn.
+	ContactGroupn *string
+
 	// ContactRole.
 	ContactRole *string
 
@@ -149,9 +152,6 @@ type CircuitsCircuitsListParams struct {
 
 	// Description.
 	Description *string
-
-	// DescriptionEmpty.
-	DescriptionEmpty *string
 
 	// DescriptionIc.
 	DescriptionIc *string
@@ -406,17 +406,6 @@ func (o *CircuitsCircuitsListParams) SetCid(cid *string) {
 	o.Cid = cid
 }
 
-// WithCidEmpty adds the cidEmpty to the circuits circuits list params
-func (o *CircuitsCircuitsListParams) WithCidEmpty(cidEmpty *string) *CircuitsCircuitsListParams {
-	o.SetCidEmpty(cidEmpty)
-	return o
-}
-
-// SetCidEmpty adds the cidEmpty to the circuits circuits list params
-func (o *CircuitsCircuitsListParams) SetCidEmpty(cidEmpty *string) {
-	o.CidEmpty = cidEmpty
-}
-
 // WithCidIc adds the cidIc to the circuits circuits list params
 func (o *CircuitsCircuitsListParams) WithCidIc(cidIc *string) *CircuitsCircuitsListParams {
 	o.SetCidIc(cidIc)
@@ -604,6 +593,28 @@ func (o *CircuitsCircuitsListParams) SetContactn(contactn *string) {
 	o.Contactn = contactn
 }
 
+// WithContactGroup adds the contactGroup to the circuits circuits list params
+func (o *CircuitsCircuitsListParams) WithContactGroup(contactGroup *string) *CircuitsCircuitsListParams {
+	o.SetContactGroup(contactGroup)
+	return o
+}
+
+// SetContactGroup adds the contactGroup to the circuits circuits list params
+func (o *CircuitsCircuitsListParams) SetContactGroup(contactGroup *string) {
+	o.ContactGroup = contactGroup
+}
+
+// WithContactGroupn adds the contactGroupn to the circuits circuits list params
+func (o *CircuitsCircuitsListParams) WithContactGroupn(contactGroupn *string) *CircuitsCircuitsListParams {
+	o.SetContactGroupn(contactGroupn)
+	return o
+}
+
+// SetContactGroupn adds the contactGroupN to the circuits circuits list params
+func (o *CircuitsCircuitsListParams) SetContactGroupn(contactGroupn *string) {
+	o.ContactGroupn = contactGroupn
+}
+
 // WithContactRole adds the contactRole to the circuits circuits list params
 func (o *CircuitsCircuitsListParams) WithContactRole(contactRole *string) *CircuitsCircuitsListParams {
 	o.SetContactRole(contactRole)
@@ -668,17 +679,6 @@ func (o *CircuitsCircuitsListParams) WithDescription(description *string) *Circu
 // SetDescription adds the description to the circuits circuits list params
 func (o *CircuitsCircuitsListParams) SetDescription(description *string) {
 	o.Description = description
-}
-
-// WithDescriptionEmpty adds the descriptionEmpty to the circuits circuits list params
-func (o *CircuitsCircuitsListParams) WithDescriptionEmpty(descriptionEmpty *string) *CircuitsCircuitsListParams {
-	o.SetDescriptionEmpty(descriptionEmpty)
-	return o
-}
-
-// SetDescriptionEmpty adds the descriptionEmpty to the circuits circuits list params
-func (o *CircuitsCircuitsListParams) SetDescriptionEmpty(descriptionEmpty *string) {
-	o.DescriptionEmpty = descriptionEmpty
 }
 
 // WithDescriptionIc adds the descriptionIc to the circuits circuits list params
@@ -1377,23 +1377,6 @@ func (o *CircuitsCircuitsListParams) WriteToRequest(r runtime.ClientRequest, reg
 		}
 	}
 
-	if o.CidEmpty != nil {
-
-		// query param cid__empty
-		var qrCidEmpty string
-
-		if o.CidEmpty != nil {
-			qrCidEmpty = *o.CidEmpty
-		}
-		qCidEmpty := qrCidEmpty
-		if qCidEmpty != "" {
-
-			if err := r.SetQueryParam("cid__empty", qCidEmpty); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.CidIc != nil {
 
 		// query param cid__ic
@@ -1683,6 +1666,40 @@ func (o *CircuitsCircuitsListParams) WriteToRequest(r runtime.ClientRequest, reg
 		}
 	}
 
+	if o.ContactGroup != nil {
+
+		// query param contact_group
+		var qrContactGroup string
+
+		if o.ContactGroup != nil {
+			qrContactGroup = *o.ContactGroup
+		}
+		qContactGroup := qrContactGroup
+		if qContactGroup != "" {
+
+			if err := r.SetQueryParam("contact_group", qContactGroup); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContactGroupn != nil {
+
+		// query param contact_group__n
+		var qrContactGroupn string
+
+		if o.ContactGroupn != nil {
+			qrContactGroupn = *o.ContactGroupn
+		}
+		qContactGroupn := qrContactGroupn
+		if qContactGroupn != "" {
+
+			if err := r.SetQueryParam("contact_group__n", qContactGroupn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.ContactRole != nil {
 
 		// query param contact_role
@@ -1780,23 +1797,6 @@ func (o *CircuitsCircuitsListParams) WriteToRequest(r runtime.ClientRequest, reg
 		if qDescription != "" {
 
 			if err := r.SetQueryParam("description", qDescription); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.DescriptionEmpty != nil {
-
-		// query param description__empty
-		var qrDescriptionEmpty string
-
-		if o.DescriptionEmpty != nil {
-			qrDescriptionEmpty = *o.DescriptionEmpty
-		}
-		qDescriptionEmpty := qrDescriptionEmpty
-		if qDescriptionEmpty != "" {
-
-			if err := r.SetQueryParam("description__empty", qDescriptionEmpty); err != nil {
 				return err
 			}
 		}

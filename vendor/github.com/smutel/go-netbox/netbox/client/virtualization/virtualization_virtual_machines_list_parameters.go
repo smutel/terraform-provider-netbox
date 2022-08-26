@@ -117,6 +117,12 @@ type VirtualizationVirtualMachinesListParams struct {
 	// Contactn.
 	Contactn *string
 
+	// ContactGroup.
+	ContactGroup *string
+
+	// ContactGroupn.
+	ContactGroupn *string
+
 	// ContactRole.
 	ContactRole *string
 
@@ -239,9 +245,6 @@ type VirtualizationVirtualMachinesListParams struct {
 
 	// Name.
 	Name *string
-
-	// NameEmpty.
-	NameEmpty *string
 
 	// NameIc.
 	NameIc *string
@@ -598,6 +601,28 @@ func (o *VirtualizationVirtualMachinesListParams) WithContactn(contactn *string)
 // SetContactn adds the contactN to the virtualization virtual machines list params
 func (o *VirtualizationVirtualMachinesListParams) SetContactn(contactn *string) {
 	o.Contactn = contactn
+}
+
+// WithContactGroup adds the contactGroup to the virtualization virtual machines list params
+func (o *VirtualizationVirtualMachinesListParams) WithContactGroup(contactGroup *string) *VirtualizationVirtualMachinesListParams {
+	o.SetContactGroup(contactGroup)
+	return o
+}
+
+// SetContactGroup adds the contactGroup to the virtualization virtual machines list params
+func (o *VirtualizationVirtualMachinesListParams) SetContactGroup(contactGroup *string) {
+	o.ContactGroup = contactGroup
+}
+
+// WithContactGroupn adds the contactGroupn to the virtualization virtual machines list params
+func (o *VirtualizationVirtualMachinesListParams) WithContactGroupn(contactGroupn *string) *VirtualizationVirtualMachinesListParams {
+	o.SetContactGroupn(contactGroupn)
+	return o
+}
+
+// SetContactGroupn adds the contactGroupN to the virtualization virtual machines list params
+func (o *VirtualizationVirtualMachinesListParams) SetContactGroupn(contactGroupn *string) {
+	o.ContactGroupn = contactGroupn
 }
 
 // WithContactRole adds the contactRole to the virtualization virtual machines list params
@@ -1038,17 +1063,6 @@ func (o *VirtualizationVirtualMachinesListParams) WithName(name *string) *Virtua
 // SetName adds the name to the virtualization virtual machines list params
 func (o *VirtualizationVirtualMachinesListParams) SetName(name *string) {
 	o.Name = name
-}
-
-// WithNameEmpty adds the nameEmpty to the virtualization virtual machines list params
-func (o *VirtualizationVirtualMachinesListParams) WithNameEmpty(nameEmpty *string) *VirtualizationVirtualMachinesListParams {
-	o.SetNameEmpty(nameEmpty)
-	return o
-}
-
-// SetNameEmpty adds the nameEmpty to the virtualization virtual machines list params
-func (o *VirtualizationVirtualMachinesListParams) SetNameEmpty(nameEmpty *string) {
-	o.NameEmpty = nameEmpty
 }
 
 // WithNameIc adds the nameIc to the virtualization virtual machines list params
@@ -1836,6 +1850,40 @@ func (o *VirtualizationVirtualMachinesListParams) WriteToRequest(r runtime.Clien
 		}
 	}
 
+	if o.ContactGroup != nil {
+
+		// query param contact_group
+		var qrContactGroup string
+
+		if o.ContactGroup != nil {
+			qrContactGroup = *o.ContactGroup
+		}
+		qContactGroup := qrContactGroup
+		if qContactGroup != "" {
+
+			if err := r.SetQueryParam("contact_group", qContactGroup); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.ContactGroupn != nil {
+
+		// query param contact_group__n
+		var qrContactGroupn string
+
+		if o.ContactGroupn != nil {
+			qrContactGroupn = *o.ContactGroupn
+		}
+		qContactGroupn := qrContactGroupn
+		if qContactGroupn != "" {
+
+			if err := r.SetQueryParam("contact_group__n", qContactGroupn); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.ContactRole != nil {
 
 		// query param contact_role
@@ -2511,23 +2559,6 @@ func (o *VirtualizationVirtualMachinesListParams) WriteToRequest(r runtime.Clien
 		if qName != "" {
 
 			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.NameEmpty != nil {
-
-		// query param name__empty
-		var qrNameEmpty string
-
-		if o.NameEmpty != nil {
-			qrNameEmpty = *o.NameEmpty
-		}
-		qNameEmpty := qrNameEmpty
-		if qNameEmpty != "" {
-
-			if err := r.SetQueryParam("name__empty", qNameEmpty); err != nil {
 				return err
 			}
 		}

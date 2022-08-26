@@ -78,9 +78,6 @@ type IpamFhrpGroupsListParams struct {
 	// AuthKey.
 	AuthKey *string
 
-	// AuthKeyEmpty.
-	AuthKeyEmpty *string
-
 	// AuthKeyIc.
 	AuthKeyIc *string
 
@@ -260,17 +257,6 @@ func (o *IpamFhrpGroupsListParams) WithAuthKey(authKey *string) *IpamFhrpGroupsL
 // SetAuthKey adds the authKey to the ipam fhrp groups list params
 func (o *IpamFhrpGroupsListParams) SetAuthKey(authKey *string) {
 	o.AuthKey = authKey
-}
-
-// WithAuthKeyEmpty adds the authKeyEmpty to the ipam fhrp groups list params
-func (o *IpamFhrpGroupsListParams) WithAuthKeyEmpty(authKeyEmpty *string) *IpamFhrpGroupsListParams {
-	o.SetAuthKeyEmpty(authKeyEmpty)
-	return o
-}
-
-// SetAuthKeyEmpty adds the authKeyEmpty to the ipam fhrp groups list params
-func (o *IpamFhrpGroupsListParams) SetAuthKeyEmpty(authKeyEmpty *string) {
-	o.AuthKeyEmpty = authKeyEmpty
 }
 
 // WithAuthKeyIc adds the authKeyIc to the ipam fhrp groups list params
@@ -700,23 +686,6 @@ func (o *IpamFhrpGroupsListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qAuthKey != "" {
 
 			if err := r.SetQueryParam("auth_key", qAuthKey); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.AuthKeyEmpty != nil {
-
-		// query param auth_key__empty
-		var qrAuthKeyEmpty string
-
-		if o.AuthKeyEmpty != nil {
-			qrAuthKeyEmpty = *o.AuthKeyEmpty
-		}
-		qAuthKeyEmpty := qrAuthKeyEmpty
-		if qAuthKeyEmpty != "" {
-
-			if err := r.SetQueryParam("auth_key__empty", qAuthKeyEmpty); err != nil {
 				return err
 			}
 		}

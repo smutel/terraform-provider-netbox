@@ -63,8 +63,8 @@ type Webhook struct {
 
 	// Created
 	// Read Only: true
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
+	// Format: date-time
+	Created strfmt.DateTime `json:"created,omitempty"`
 
 	// Display
 	// Read Only: true
@@ -84,7 +84,7 @@ type Webhook struct {
 	// Enum: [GET POST PUT PATCH DELETE]
 	HTTPMethod string `json:"http_method,omitempty"`
 
-	// Id
+	// ID
 	// Read Only: true
 	ID int64 `json:"id,omitempty"`
 
@@ -101,7 +101,7 @@ type Webhook struct {
 
 	// URL
 	//
-	// A POST will be sent to this URL when the webhook is called.
+	// This URL will be called using the HTTP method defined when the webhook is called. Jinja2 template processing is supported with the same context as the request body.
 	// Required: true
 	// Max Length: 500
 	// Min Length: 1
@@ -219,7 +219,7 @@ func (m *Webhook) validateCreated(formats strfmt.Registry) error {
 		return nil
 	}
 
-	if err := validate.FormatOf("created", "body", "date", m.Created.String(), formats); err != nil {
+	if err := validate.FormatOf("created", "body", "date-time", m.Created.String(), formats); err != nil {
 		return err
 	}
 
@@ -395,7 +395,7 @@ func (m *Webhook) ContextValidate(ctx context.Context, formats strfmt.Registry) 
 
 func (m *Webhook) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.Date(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
 		return err
 	}
 
