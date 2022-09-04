@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/users"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONUsersPermissionsList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the users_permissions_list Netbox endpoint.",
-		Read:        dataNetboxJSONUsersPermissionsListRead,
+		ReadContext: dataNetboxJSONUsersPermissionsListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONUsersPermissionsList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONUsersPermissionsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONUsersPermissionsListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := users.NewUsersPermissionsListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONUsersPermissionsListRead(d *schema.ResourceData, m interface{
 
 	list, err := client.Users.UsersPermissionsList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	j, _ := json.Marshal(list.Payload.Results)

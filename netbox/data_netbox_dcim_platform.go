@@ -1,10 +1,11 @@
 package netbox
 
 import (
-	"fmt"
+	"context"
 	"regexp"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -14,7 +15,7 @@ import (
 func dataNetboxDcimPlatform() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get info about platform (dcim module) from netbox.",
-		Read:        dataNetboxDcimPlatformRead,
+		ReadContext: dataNetboxDcimPlatformRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
@@ -34,7 +35,7 @@ func dataNetboxDcimPlatform() *schema.Resource {
 	}
 }
 
-func dataNetboxDcimPlatformRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxDcimPlatformRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	slug := d.Get("slug").(string)
@@ -43,14 +44,14 @@ func dataNetboxDcimPlatformRead(d *schema.ResourceData, m interface{}) error {
 
 	list, err := client.Dcim.DcimPlatformsList(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if *list.Payload.Count < 1 {
-		return fmt.Errorf("Your query returned no results. " +
+		return diag.Errorf("Your query returned no results. " + 
 			"Please change your search criteria and try again.")
 	} else if *list.Payload.Count > 1 {
-		return fmt.Errorf("Your query returned more than one result. " +
+		return diag.Errorf("Your query returned more than one result. " +
 			"Please try a more specific search criteria.")
 	}
 

@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/virtualization"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONVirtualizationClusterTypesList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the virtualization_cluster_types_list Netbox endpoint.",
-		Read:        dataNetboxJSONVirtualizationClusterTypesListRead,
+		ReadContext: dataNetboxJSONVirtualizationClusterTypesListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONVirtualizationClusterTypesList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONVirtualizationClusterTypesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONVirtualizationClusterTypesListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := virtualization.NewVirtualizationClusterTypesListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONVirtualizationClusterTypesListRead(d *schema.ResourceData, m 
 
 	list, err := client.Virtualization.VirtualizationClusterTypesList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	j, _ := json.Marshal(list.Payload.Results)

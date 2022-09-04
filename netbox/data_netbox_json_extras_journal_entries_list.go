@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/extras"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONExtrasJournalEntriesList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the extras_journal_entries_list Netbox endpoint.",
-		Read:        dataNetboxJSONExtrasJournalEntriesListRead,
+		ReadContext: dataNetboxJSONExtrasJournalEntriesListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONExtrasJournalEntriesList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONExtrasJournalEntriesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasJournalEntriesListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := extras.NewExtrasJournalEntriesListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONExtrasJournalEntriesListRead(d *schema.ResourceData, m interf
 
 	list, err := client.Extras.ExtrasJournalEntriesList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	j, _ := json.Marshal(list.Payload.Results)

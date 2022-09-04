@@ -1,9 +1,10 @@
 package netbox
 
 import (
-	"fmt"
+	"context"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -13,12 +14,12 @@ import (
 
 func resourceNetboxIpamService() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage an service (ipam module) within Netbox.",
-		Create:      resourceNetboxIpamServiceCreate,
-		Read:        resourceNetboxIpamServiceRead,
-		Update:      resourceNetboxIpamServiceUpdate,
-		Delete:      resourceNetboxIpamServiceDelete,
-		Exists:      resourceNetboxIpamServiceExists,
+		Description:   "Manage an service (ipam module) within Netbox.",
+		CreateContext: resourceNetboxIpamServiceCreate,
+		ReadContext:   resourceNetboxIpamServiceRead,
+		UpdateContext: resourceNetboxIpamServiceUpdate,
+		DeleteContext: resourceNetboxIpamServiceDelete,
+		Exists:        resourceNetboxIpamServiceExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -124,8 +125,8 @@ func resourceNetboxIpamService() *schema.Resource {
 	}
 }
 
-func resourceNetboxIpamServiceCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamServiceCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
@@ -171,35 +172,35 @@ func resourceNetboxIpamServiceCreate(d *schema.ResourceData,
 
 	resourceCreated, err := client.Ipam.IpamServicesCreate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
-	return resourceNetboxIpamServiceRead(d, m)
+	return resourceNetboxIpamServiceRead(ctx, d, m)
 }
 
-func resourceNetboxIpamServiceRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamServiceRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := ipam.NewIpamServicesListParams().WithID(&resourceID)
 	resources, err := client.Ipam.IpamServicesList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var description interface{}
@@ -210,16 +211,16 @@ func resourceNetboxIpamServiceRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("description", description); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.Device == nil {
 				if err = d.Set("device_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("device_id", resource.Device.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
@@ -229,33 +230,33 @@ func resourceNetboxIpamServiceRead(d *schema.ResourceData,
 				IPaddressesInt = append(IPaddressesInt, ip.ID)
 			}
 			if err = d.Set("ip_addresses_id", IPaddressesInt); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("name", resource.Name); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			ports := resource.Ports
 			if err = d.Set("ports", ports); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("protocol", resource.Protocol.Value); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.VirtualMachine == nil {
 				if err = d.Set("virtualmachine_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("virtualmachine_id", resource.VirtualMachine.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
@@ -267,8 +268,8 @@ func resourceNetboxIpamServiceRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxIpamServiceUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamServiceUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableService{}
 
@@ -327,25 +328,25 @@ func resourceNetboxIpamServiceUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
 
 	_, err = client.Ipam.IpamServicesPartialUpdate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxIpamServiceRead(d, m)
+	return resourceNetboxIpamServiceRead(ctx, d, m)
 }
 
-func resourceNetboxIpamServiceDelete(d *schema.ResourceData, m interface{}) error {
+func resourceNetboxIpamServiceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxIpamServiceExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -354,12 +355,12 @@ func resourceNetboxIpamServiceDelete(d *schema.ResourceData, m interface{}) erro
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource := ipam.NewIpamServicesDeleteParams().WithID(id)
 	if _, err := client.Ipam.IpamServicesDelete(resource, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil

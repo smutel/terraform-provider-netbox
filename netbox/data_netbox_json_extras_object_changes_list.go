@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/extras"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONExtrasObjectChangesList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the extras_object_changes_list Netbox endpoint.",
-		Read:        dataNetboxJSONExtrasObjectChangesListRead,
+		ReadContext: dataNetboxJSONExtrasObjectChangesListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONExtrasObjectChangesList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONExtrasObjectChangesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasObjectChangesListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := extras.NewExtrasObjectChangesListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONExtrasObjectChangesListRead(d *schema.ResourceData, m interfa
 
 	list, err := client.Extras.ExtrasObjectChangesList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	j, _ := json.Marshal(list.Payload.Results)

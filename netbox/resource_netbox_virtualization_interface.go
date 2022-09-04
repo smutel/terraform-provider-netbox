@@ -1,10 +1,11 @@
 package netbox
 
 import (
-	"fmt"
+	"context"
 	"regexp"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -14,12 +15,12 @@ import (
 
 func resourceNetboxVirtualizationInterface() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage an interface (virtualization module) resource within Netbox.",
-		Create:      resourceNetboxVirtualizationInterfaceCreate,
-		Read:        resourceNetboxVirtualizationInterfaceRead,
-		Update:      resourceNetboxVirtualizationInterfaceUpdate,
-		Delete:      resourceNetboxVirtualizationInterfaceDelete,
-		Exists:      resourceNetboxVirtualizationInterfaceExists,
+		Description:   "Manage an interface (virtualization module) resource within Netbox.",
+		CreateContext: resourceNetboxVirtualizationInterfaceCreate,
+		ReadContext:   resourceNetboxVirtualizationInterfaceRead,
+		UpdateContext: resourceNetboxVirtualizationInterfaceUpdate,
+		DeleteContext: resourceNetboxVirtualizationInterfaceDelete,
+		Exists:        resourceNetboxVirtualizationInterfaceExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -145,8 +146,8 @@ func resourceNetboxVirtualizationInterface() *schema.Resource {
 	}
 }
 
-func resourceNetboxVirtualizationInterfaceCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxVirtualizationInterfaceCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
@@ -191,16 +192,16 @@ func resourceNetboxVirtualizationInterfaceCreate(d *schema.ResourceData,
 		resource, nil)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	return resourceNetboxVirtualizationInterfaceRead(d, m)
+	return resourceNetboxVirtualizationInterfaceRead(ctx, d, m)
 }
 
-func resourceNetboxVirtualizationInterfaceRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxVirtualizationInterfaceRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
@@ -210,20 +211,20 @@ func resourceNetboxVirtualizationInterfaceRead(d *schema.ResourceData,
 		params, nil)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var description interface{}
@@ -234,61 +235,61 @@ func resourceNetboxVirtualizationInterfaceRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("description", description); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("enabled", resource.Enabled); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("mac_address", resource.MacAddress); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.Mode == nil {
 				if err = d.Set("mode", ""); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("mode", resource.Mode.Value); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if err = d.Set("mtu", resource.Mtu); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("name", resource.Name); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tagged_vlans", resource.TaggedVlans); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(
 				resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("untagged_vlan", resource.UntaggedVlan); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.VirtualMachine == nil {
 				if err = d.Set("virtualmachine_id", 0); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("virtualmachine_id",
 					resource.VirtualMachine.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if err = d.Set("type", VMInterfaceType); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			return nil
@@ -299,8 +300,8 @@ func resourceNetboxVirtualizationInterfaceRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxVirtualizationInterfaceUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxVirtualizationInterfaceUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableVMInterface{}
 
@@ -358,7 +359,7 @@ func resourceNetboxVirtualizationInterfaceUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
@@ -366,19 +367,19 @@ func resourceNetboxVirtualizationInterfaceUpdate(d *schema.ResourceData,
 	_, err = client.Virtualization.VirtualizationInterfacesPartialUpdate(
 		resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxVirtualizationInterfaceRead(d, m)
+	return resourceNetboxVirtualizationInterfaceRead(ctx, d, m)
 }
 
-func resourceNetboxVirtualizationInterfaceDelete(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxVirtualizationInterfaceDelete(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxVirtualizationInterfaceExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -387,13 +388,13 @@ func resourceNetboxVirtualizationInterfaceDelete(d *schema.ResourceData,
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	p := virtualization.NewVirtualizationInterfacesDeleteParams().WithID(id)
 	if _, err := client.Virtualization.VirtualizationInterfacesDelete(
 		p, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil

@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/ipam"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONIpamAsnsList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the ipam_asns_list Netbox endpoint.",
-		Read:        dataNetboxJSONIpamAsnsListRead,
+		ReadContext: dataNetboxJSONIpamAsnsListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONIpamAsnsList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONIpamAsnsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONIpamAsnsListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := ipam.NewIpamAsnsListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONIpamAsnsListRead(d *schema.ResourceData, m interface{}) error
 
 	list, err := client.Ipam.IpamAsnsList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	j, _ := json.Marshal(list.Payload.Results)

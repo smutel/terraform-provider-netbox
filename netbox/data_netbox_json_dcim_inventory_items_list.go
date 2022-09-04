@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/dcim"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONDcimInventoryItemsList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the dcim_inventory_items_list Netbox endpoint.",
-		Read:        dataNetboxJSONDcimInventoryItemsListRead,
+		ReadContext: dataNetboxJSONDcimInventoryItemsListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONDcimInventoryItemsList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONDcimInventoryItemsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONDcimInventoryItemsListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := dcim.NewDcimInventoryItemsListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONDcimInventoryItemsListRead(d *schema.ResourceData, m interfac
 
 	list, err := client.Dcim.DcimInventoryItemsList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	j, _ := json.Marshal(list.Payload.Results)

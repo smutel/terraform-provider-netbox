@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/circuits"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONCircuitsCircuitTerminationsList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the circuits_circuit_terminations_list Netbox endpoint.",
-		Read:        dataNetboxJSONCircuitsCircuitTerminationsListRead,
+		ReadContext: dataNetboxJSONCircuitsCircuitTerminationsListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONCircuitsCircuitTerminationsList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONCircuitsCircuitTerminationsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONCircuitsCircuitTerminationsListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := circuits.NewCircuitsCircuitTerminationsListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONCircuitsCircuitTerminationsListRead(d *schema.ResourceData, m
 
 	list, err := client.Circuits.CircuitsCircuitTerminationsList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	j, _ := json.Marshal(list.Payload.Results)

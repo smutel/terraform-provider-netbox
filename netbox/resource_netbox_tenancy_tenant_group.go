@@ -1,10 +1,11 @@
 package netbox
 
 import (
-	"fmt"
+	"context"
 	"regexp"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -14,12 +15,12 @@ import (
 
 func resourceNetboxTenancyTenantGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage a tenant group (tenancy module) within Netbox.",
-		Create:      resourceNetboxTenancyTenantGroupCreate,
-		Read:        resourceNetboxTenancyTenantGroupRead,
-		Update:      resourceNetboxTenancyTenantGroupUpdate,
-		Delete:      resourceNetboxTenancyTenantGroupDelete,
-		Exists:      resourceNetboxTenancyTenantGroupExists,
+		Description:   "Manage a tenant group (tenancy module) within Netbox.",
+		CreateContext: resourceNetboxTenancyTenantGroupCreate,
+		ReadContext:   resourceNetboxTenancyTenantGroupRead,
+		UpdateContext: resourceNetboxTenancyTenantGroupUpdate,
+		DeleteContext: resourceNetboxTenancyTenantGroupDelete,
+		Exists:        resourceNetboxTenancyTenantGroupExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -67,8 +68,8 @@ func resourceNetboxTenancyTenantGroup() *schema.Resource {
 	}
 }
 
-func resourceNetboxTenancyTenantGroupCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyTenantGroupCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	groupName := d.Get("name").(string)
@@ -85,41 +86,41 @@ func resourceNetboxTenancyTenantGroupCreate(d *schema.ResourceData,
 
 	resourceCreated, err := client.Tenancy.TenancyTenantGroupsCreate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	return resourceNetboxTenancyTenantGroupRead(d, m)
+	return resourceNetboxTenancyTenantGroupRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyTenantGroupRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyTenantGroupRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := tenancy.NewTenancyTenantGroupsListParams().WithID(&resourceID)
 	resources, err := client.Tenancy.TenancyTenantGroupsList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("name", resource.Name); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("slug", resource.Slug); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			return nil
@@ -131,8 +132,8 @@ func resourceNetboxTenancyTenantGroupRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxTenancyTenantGroupUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyTenantGroupUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableTenantGroup{}
 
@@ -151,26 +152,26 @@ func resourceNetboxTenancyTenantGroupUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
 
 	_, err = client.Tenancy.TenancyTenantGroupsPartialUpdate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxTenancyTenantGroupRead(d, m)
+	return resourceNetboxTenancyTenantGroupRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyTenantGroupDelete(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyTenantGroupDelete(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxTenancyTenantGroupExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -179,12 +180,12 @@ func resourceNetboxTenancyTenantGroupDelete(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert tenant ID into int64")
+		return diag.Errorf("Unable to convert tenant ID into int64")
 	}
 
 	resource := tenancy.NewTenancyTenantGroupsDeleteParams().WithID(resourceID)
 	if _, err := client.Tenancy.TenancyTenantGroupsDelete(resource, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil

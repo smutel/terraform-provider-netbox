@@ -1,10 +1,11 @@
 package netbox
 
 import (
-	"fmt"
+	"context"
 	"regexp"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -14,12 +15,12 @@ import (
 
 func resourceNetboxIpamIPAddresses() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage an IP address (ipam module) within Netbox.",
-		Create:      resourceNetboxIpamIPAddressesCreate,
-		Read:        resourceNetboxIpamIPAddressesRead,
-		Update:      resourceNetboxIpamIPAddressesUpdate,
-		Delete:      resourceNetboxIpamIPAddressesDelete,
-		Exists:      resourceNetboxIpamIPAddressesExists,
+		Description:   "Manage an IP address (ipam module) within Netbox.",
+		CreateContext: resourceNetboxIpamIPAddressesCreate,
+		ReadContext:   resourceNetboxIpamIPAddressesRead,
+		UpdateContext: resourceNetboxIpamIPAddressesUpdate,
+		DeleteContext: resourceNetboxIpamIPAddressesDelete,
+		Exists:        resourceNetboxIpamIPAddressesExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -154,8 +155,8 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 	}
 }
 
-func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	address := d.Get("address").(string)
@@ -193,7 +194,7 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 			var err error
 			info, err = getInfoForPrimary(m, objectID)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 	}
@@ -215,45 +216,45 @@ func resourceNetboxIpamIPAddressesCreate(d *schema.ResourceData,
 
 	resourceCreated, err := client.Ipam.IpamIPAddressesCreate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
 	err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxIpamIPAddressesRead(d, m)
+	return resourceNetboxIpamIPAddressesRead(ctx, d, m)
 }
 
-func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := ipam.NewIpamIPAddressesListParams().WithID(&resourceID)
 	resources, err := client.Ipam.IpamIPAddressesList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("address", resource.Address); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var description interface{}
@@ -264,7 +265,7 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("description", description); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var dnsName interface{}
@@ -275,30 +276,30 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("dns_name", dnsName); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.NatInside == nil {
 				if err = d.Set("nat_inside_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("nat_inside_id", resource.NatInside.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if resource.AssignedObjectID == nil {
 				if err = d.Set("object_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 
 				if err = d.Set("primary_ip4", false); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 
 				var info InfosForPrimary
@@ -307,16 +308,16 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 						var err error
 						info, err = getInfoForPrimary(m, *resource.AssignedObjectID)
 						if err != nil {
-							return err
+							return diag.FromErr(err)
 						}
 
 						if info.vmPrimaryIP4ID == resource.ID {
 							if err = d.Set("primary_ip4", true); err != nil {
-								return err
+								return diag.FromErr(err)
 							}
 						} else {
 							if err = d.Set("primary_ip4", false); err != nil {
-								return err
+								return diag.FromErr(err)
 							}
 						}
 					}
@@ -328,55 +329,55 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 				*objectType = VMInterfaceType
 
 				if err = d.Set("object_type", *objectType); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("object_type", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if resource.Role == nil {
 				if err = d.Set("role", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("role", resource.Role.Value); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if resource.Status == nil {
 				if err = d.Set("status", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("status", resource.Status.Value); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.Tenant == nil {
 				if err = d.Set("tenant_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if resource.Vrf == nil {
 				if err = d.Set("vrf_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("vrf_id", resource.Vrf.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
@@ -389,8 +390,8 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableIPAddress{}
 	// primary_ip4 := false
@@ -474,14 +475,14 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
 
 	_, err = client.Ipam.IpamIPAddressesPartialUpdate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	/*
@@ -495,7 +496,7 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 	 *         var err error
 	 *         info, err = getInfoForPrimary(m, objectID)
 	 *         if err != nil {
-	 *           return err
+	 *           return diag.FromErr(err)
 	 *         }
 	 *       }
 	 *     }
@@ -505,26 +506,26 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 	 *     if isPrimary {
 	 *       ipID, err = strconv.ParseInt(d.Id(), 10, 64)
 	 *       if err != nil {
-	 *         return fmt.Errorf("Unable to convert ID into int64")
+	 *         return diag.Errorf("Unable to convert ID into int64")
 	 *       }
 	 *     }
 	 *     err = updatePrimaryStatus(client, info, ipID)
 	 *     if err != nil {
-	 *       return err
+	 *       return diag.FromErr(err)
 	 *     }
 	 *   }
 	 */
 
-	return resourceNetboxIpamIPAddressesRead(d, m)
+	return resourceNetboxIpamIPAddressesRead(ctx, d, m)
 }
 
-func resourceNetboxIpamIPAddressesDelete(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamIPAddressesDelete(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxIpamIPAddressesExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -533,12 +534,12 @@ func resourceNetboxIpamIPAddressesDelete(d *schema.ResourceData,
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource := ipam.NewIpamIPAddressesDeleteParams().WithID(id)
 	if _, err := client.Ipam.IpamIPAddressesDelete(resource, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil
