@@ -49,3 +49,4 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
     type = "multiple"
     value = "0,1"
   }
+}

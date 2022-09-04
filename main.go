@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"flag"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox"
 )
@@ -13,11 +14,16 @@ import (
 //go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 
 func main() {
-	opts := &plugin.ServeOpts{
-		ProviderFunc: func() *schema.Provider {
-			return netbox.Provider()
-		},
-	}
+    var debug bool
 
-	plugin.Serve(opts)
+    flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
+    flag.Parse()
+
+    opts := &plugin.ServeOpts{
+        Debug:        debug,
+        ProviderAddr: "registry.terraform.io/smutel/netbox",
+        ProviderFunc: netbox.Provider,
+    }
+
+    plugin.Serve(opts)
 }
