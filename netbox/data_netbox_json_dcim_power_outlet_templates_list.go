@@ -41,7 +41,30 @@ func dataNetboxJSONDcimPowerOutletTemplatesListRead(d *schema.ResourceData, m in
 		return err
 	}
 
-	j, _ := json.Marshal(list.Payload.Results)
+	tmp := list.Payload.Results
+	resultLength := int64(len(tmp))
+	desiredLength := *list.Payload.Count
+	if limit > 0 && limit < desiredLength {
+		desiredLength = limit
+	}
+	if limit == 0 || resultLength < desiredLength {
+		limit = resultLength
+	}
+	offset := limit
+	params.Offset = &offset
+	for int64(len(tmp)) < desiredLength {
+		offset = int64(len(tmp))
+		if limit > desiredLength - offset {
+			limit = desiredLength - offset
+		}
+		list, err = client.Dcim.DcimPowerOutletTemplatesList(params, nil)
+		if err != nil {
+			return err
+		}
+		tmp = append(tmp, list.Payload.Results...)
+	}
+
+	j, _ := json.Marshal(tmp)
 
 	d.Set("json", string(j))
 	d.SetId("NetboxJSONDcimPowerOutletTemplatesList")
