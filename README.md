@@ -49,6 +49,33 @@ $ cd $GOPATH/src/github.com/smutel/terraform-provider-netbox
 $ make build
 ```
 
+# Debugging the provider
+
+To run this provider in delve run:
+```bash
+$ dlv exec --accept-multiclient --continue --headless ./terraform-provider-netbox -- -debug
+```
+For Visual Studio Code a config is provided in this repo. Pressing <F5> should run the provider in debug mode.
+
+This will output a value for TF_REATTACH_PROVIDER:
+```
+Starting: /home/andy/go/bin/dlv dap --check-go-version=false --listen=127.0.0.1:43501 --log-dest=3 from /home/andy/terraform/terraform-provider-netbox
+DAP server listening at: 127.0.0.1:43501
+Type 'dlv help' for list of commands.
+{"@level":"debug","@message":"plugin address","@timestamp":"2022-09-04T19:19:00.482554+02:00","address":"/tmp/plugin2734508527","network":"unix"}
+Provider started. To attach Terraform CLI, set the TF_REATTACH_PROVIDERS environment variable with the following:
+
+	TF_REATTACH_PROVIDERS='{"registry.terraform.io/smutel/netbox":{"Protocol":"grpc","ProtocolVersion":5,"Pid":2519102,"Test":true,"Addr":{"Network":"unix","String":"/tmp/plugin2734508527"}}}'
+```
+
+In your terrafom directory run the following:
+```bash
+$ export TF_REATTACH_PROVIDER=(Value from above)
+$ terraform plan
+```
+
+More information about debugging a terraform provider can be found in the terraform [documentation](https://www.terraform.io/plugin/debugging#starting-a-provider-in-debug-mode)
+
 ## Installing the provider
 
 ---
