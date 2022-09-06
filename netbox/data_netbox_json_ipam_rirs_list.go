@@ -54,7 +54,7 @@ func dataNetboxJSONIpamRirsListRead(d *schema.ResourceData, m interface{}) error
 	params.Offset = &offset
 	for int64(len(tmp)) < desiredLength {
 		offset = int64(len(tmp))
-		if limit > desiredLength - offset {
+		if limit > desiredLength-offset {
 			limit = desiredLength - offset
 		}
 		list, err = client.Ipam.IpamRirsList(params, nil)
