@@ -1,10 +1,12 @@
 package netbox
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 
 	"github.com/go-openapi/strfmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -14,12 +16,12 @@ import (
 
 func resourceNetboxTenancyContact() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage a contact (tenancy module) within Netbox.",
-		Create:      resourceNetboxTenancyContactCreate,
-		Read:        resourceNetboxTenancyContactRead,
-		Update:      resourceNetboxTenancyContactUpdate,
-		Delete:      resourceNetboxTenancyContactDelete,
-		Exists:      resourceNetboxTenancyContactExists,
+		Description:   "Manage a contact (tenancy module) within Netbox.",
+		CreateContext: resourceNetboxTenancyContactCreate,
+		ReadContext:   resourceNetboxTenancyContactRead,
+		UpdateContext: resourceNetboxTenancyContactUpdate,
+		DeleteContext: resourceNetboxTenancyContactDelete,
+		Exists:        resourceNetboxTenancyContactExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -133,8 +135,8 @@ func resourceNetboxTenancyContact() *schema.Resource {
 	}
 }
 
-func resourceNetboxTenancyContactCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyContactCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	address := d.Get("address").(string)
@@ -167,23 +169,23 @@ func resourceNetboxTenancyContactCreate(d *schema.ResourceData,
 
 	resourceCreated, err := client.Tenancy.TenancyContactsCreate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	return resourceNetboxTenancyContactRead(d, m)
+	return resourceNetboxTenancyContactRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyContactRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyContactRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := tenancy.NewTenancyContactsListParams().WithID(&resourceID)
 	resources, err := client.Tenancy.TenancyContactsList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
@@ -196,7 +198,7 @@ func resourceNetboxTenancyContactRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("address", address); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var comments interface{}
@@ -207,28 +209,28 @@ func resourceNetboxTenancyContactRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("comments", comments); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.Group == nil {
 				if err = d.Set("contact_group_id", 0); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("contact_group_id", resource.Group.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var email interface{}
@@ -239,11 +241,11 @@ func resourceNetboxTenancyContactRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("email", email); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("name", resource.Name); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var phone interface{}
@@ -254,11 +256,11 @@ func resourceNetboxTenancyContactRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("phone", phone); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var title interface{}
@@ -269,7 +271,7 @@ func resourceNetboxTenancyContactRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("title", title); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			return nil
@@ -280,8 +282,8 @@ func resourceNetboxTenancyContactRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxTenancyContactUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableContact{}
 
@@ -351,26 +353,26 @@ func resourceNetboxTenancyContactUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
 
 	_, err = client.Tenancy.TenancyContactsPartialUpdate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxTenancyContactRead(d, m)
+	return resourceNetboxTenancyContactRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyContactDelete(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyContactDelete(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxTenancyContactExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -379,12 +381,12 @@ func resourceNetboxTenancyContactDelete(d *schema.ResourceData,
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	p := tenancy.NewTenancyContactsDeleteParams().WithID(id)
 	if _, err := client.Tenancy.TenancyContactsDelete(p, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil

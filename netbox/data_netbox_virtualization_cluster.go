@@ -1,9 +1,10 @@
 package netbox
 
 import (
-	"fmt"
+	"context"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -12,7 +13,7 @@ import (
 
 func dataNetboxVirtualizationCluster() *schema.Resource {
 	return &schema.Resource{
-		Read: dataNetboxVirtualizationClusterRead,
+		ReadContext: dataNetboxVirtualizationClusterRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
@@ -28,8 +29,8 @@ func dataNetboxVirtualizationCluster() *schema.Resource {
 	}
 }
 
-func dataNetboxVirtualizationClusterRead(d *schema.ResourceData,
-	m interface{}) error {
+func dataNetboxVirtualizationClusterRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	name := d.Get("name").(string)
@@ -39,14 +40,14 @@ func dataNetboxVirtualizationClusterRead(d *schema.ResourceData,
 
 	list, err := client.Virtualization.VirtualizationClustersList(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if *list.Payload.Count < 1 {
-		return fmt.Errorf("Your query returned no results. " +
+		return diag.Errorf("Your query returned no results. " +
 			"Please change your search criteria and try again.")
 	} else if *list.Payload.Count > 1 {
-		return fmt.Errorf("Your query returned more than one result. " +
+		return diag.Errorf("Your query returned more than one result. " +
 			"Please try a more specific search criteria.")
 	}
 

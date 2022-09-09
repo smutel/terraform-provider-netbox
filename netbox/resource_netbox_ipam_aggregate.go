@@ -1,11 +1,13 @@
 package netbox
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/go-openapi/strfmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -15,12 +17,12 @@ import (
 
 func resourceNetboxIpamAggregate() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage an aggregate (ipam module) within Netbox.",
-		Create:      resourceNetboxIpamAggregateCreate,
-		Read:        resourceNetboxIpamAggregateRead,
-		Update:      resourceNetboxIpamAggregateUpdate,
-		Delete:      resourceNetboxIpamAggregateDelete,
-		Exists:      resourceNetboxIpamAggregateExists,
+		Description:   "Manage an aggregate (ipam module) within Netbox.",
+		CreateContext: resourceNetboxIpamAggregateCreate,
+		ReadContext:   resourceNetboxIpamAggregateRead,
+		UpdateContext: resourceNetboxIpamAggregateUpdate,
+		DeleteContext: resourceNetboxIpamAggregateDelete,
+		Exists:        resourceNetboxIpamAggregateExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -112,8 +114,8 @@ func resourceNetboxIpamAggregate() *schema.Resource {
 	}
 }
 
-func resourceNetboxIpamAggregateCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamAggregateCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
@@ -138,7 +140,7 @@ func resourceNetboxIpamAggregateCreate(d *schema.ResourceData,
 	if dateAdded != "" {
 		dateAddedTime, err := time.Parse("2006-01-02", dateAdded)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		dateAddedFmt := strfmt.Date(dateAddedTime)
@@ -149,36 +151,36 @@ func resourceNetboxIpamAggregateCreate(d *schema.ResourceData,
 
 	resourceCreated, err := client.Ipam.IpamAggregatesCreate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	return resourceNetboxIpamAggregateRead(d, m)
+	return resourceNetboxIpamAggregateRead(ctx, d, m)
 }
 
-func resourceNetboxIpamAggregateRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamAggregateRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := ipam.NewIpamAggregatesListParams().WithID(&resourceID)
 	resources, err := client.Ipam.IpamAggregatesList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var dateAdded string
@@ -189,7 +191,7 @@ func resourceNetboxIpamAggregateRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("date_added", dateAdded); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var description interface{}
@@ -200,24 +202,24 @@ func resourceNetboxIpamAggregateRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("description", description); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("prefix", resource.Prefix); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.Rir == nil {
 				if err = d.Set("rir_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("rir_id", resource.Rir.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
@@ -229,8 +231,8 @@ func resourceNetboxIpamAggregateRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxIpamAggregateUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamAggregateUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableAggregate{}
 
@@ -253,7 +255,7 @@ func resourceNetboxIpamAggregateUpdate(d *schema.ResourceData,
 		if dateAdded != "" {
 			dateAddedTime, err := time.Parse("2006-01-02", dateAdded)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			dateAddedFmt := strfmt.Date(dateAddedTime)
@@ -276,26 +278,26 @@ func resourceNetboxIpamAggregateUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
 
 	_, err = client.Ipam.IpamAggregatesPartialUpdate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxIpamAggregateRead(d, m)
+	return resourceNetboxIpamAggregateRead(ctx, d, m)
 }
 
-func resourceNetboxIpamAggregateDelete(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamAggregateDelete(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxIpamAggregateExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -304,12 +306,12 @@ func resourceNetboxIpamAggregateDelete(d *schema.ResourceData,
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource := ipam.NewIpamAggregatesDeleteParams().WithID(id)
 	if _, err := client.Ipam.IpamAggregatesDelete(resource, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil

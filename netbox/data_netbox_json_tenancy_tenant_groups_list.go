@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/tenancy"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONTenancyTenantGroupsList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the tenancy_tenant_groups_list Netbox endpoint.",
-		Read:        dataNetboxJSONTenancyTenantGroupsListRead,
+		ReadContext: dataNetboxJSONTenancyTenantGroupsListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONTenancyTenantGroupsList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONTenancyTenantGroupsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONTenancyTenantGroupsListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := tenancy.NewTenancyTenantGroupsListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONTenancyTenantGroupsListRead(d *schema.ResourceData, m interfa
 
 	list, err := client.Tenancy.TenancyTenantGroupsList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	tmp := list.Payload.Results

@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/virtualization"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONVirtualizationVirtualMachinesList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the virtualization_virtual_machines_list Netbox endpoint.",
-		Read:        dataNetboxJSONVirtualizationVirtualMachinesListRead,
+		ReadContext: dataNetboxJSONVirtualizationVirtualMachinesListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONVirtualizationVirtualMachinesList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONVirtualizationVirtualMachinesListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONVirtualizationVirtualMachinesListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := virtualization.NewVirtualizationVirtualMachinesListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONVirtualizationVirtualMachinesListRead(d *schema.ResourceData,
 
 	list, err := client.Virtualization.VirtualizationVirtualMachinesList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	tmp := list.Payload.Results

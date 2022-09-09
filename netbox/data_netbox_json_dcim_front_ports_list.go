@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/dcim"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONDcimFrontPortsList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the dcim_front_ports_list Netbox endpoint.",
-		Read:        dataNetboxJSONDcimFrontPortsListRead,
+		ReadContext: dataNetboxJSONDcimFrontPortsListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONDcimFrontPortsList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONDcimFrontPortsListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONDcimFrontPortsListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := dcim.NewDcimFrontPortsListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONDcimFrontPortsListRead(d *schema.ResourceData, m interface{})
 
 	list, err := client.Dcim.DcimFrontPortsList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	tmp := list.Payload.Results

@@ -1,12 +1,14 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -16,12 +18,12 @@ import (
 
 func resourceNetboxVirtualizationVM() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage a VM (virtualization module) resource within Netbox.",
-		Create:      resourceNetboxVirtualizationVMCreate,
-		Read:        resourceNetboxVirtualizationVMRead,
-		Update:      resourceNetboxVirtualizationVMUpdate,
-		Delete:      resourceNetboxVirtualizationVMDelete,
-		Exists:      resourceNetboxVirtualizationVMExists,
+		Description:   "Manage a VM (virtualization module) resource within Netbox.",
+		CreateContext: resourceNetboxVirtualizationVMCreate,
+		ReadContext:   resourceNetboxVirtualizationVMRead,
+		UpdateContext: resourceNetboxVirtualizationVMUpdate,
+		DeleteContext: resourceNetboxVirtualizationVMDelete,
+		Exists:        resourceNetboxVirtualizationVMExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -154,8 +156,8 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 	}
 }
 
-func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	clusterID := int64(d.Get("cluster_id").(int))
@@ -197,7 +199,7 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 	if localContextData != "" {
 		var localContextDataMap map[string]*interface{}
 		if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		newResource.LocalContextData = localContextDataMap
 	}
@@ -223,16 +225,16 @@ func resourceNetboxVirtualizationVMCreate(d *schema.ResourceData,
 
 	resourceCreated, err := client.Virtualization.VirtualizationVirtualMachinesCreate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	return resourceNetboxVirtualizationVMRead(d, m)
+	return resourceNetboxVirtualizationVMRead(ctx, d, m)
 }
 
-func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
@@ -242,13 +244,13 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 		params, nil)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("cluster_id", resource.Cluster.ID); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var comments interface{}
@@ -259,85 +261,85 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("comments", comments); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("disk", resource.Disk); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.LocalContextData != nil {
 				localContextDataJSON, err := json.Marshal(resource.LocalContextData)
 				if err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 				if err = d.Set("local_context_data",
 					string(localContextDataJSON)); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				d.Set("local_context_data", "")
 			}
 
 			if err = d.Set("memory", resource.Memory); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("name", resource.Name); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.Platform == nil {
 				if err = d.Set("platform_id", 0); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("platform_id", resource.Platform.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if resource.Role == nil {
 				if err = d.Set("role_id", 0); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("role_id", resource.Role.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if err = d.Set("status", resource.Status.Value); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.Tenant == nil {
 				if err = d.Set("tenant_id", 0); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if err = d.Set("vcpus", fmt.Sprintf("%v", *resource.Vcpus)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			return nil
@@ -348,8 +350,8 @@ func resourceNetboxVirtualizationVMRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableVirtualMachineWithConfigContext{}
 
@@ -384,7 +386,7 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 		if localContextData == "" {
 			localContextDataMap = nil
 		} else if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		params.LocalContextData = localContextDataMap
 	}
@@ -432,7 +434,7 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
@@ -440,19 +442,19 @@ func resourceNetboxVirtualizationVMUpdate(d *schema.ResourceData,
 	_, err = client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
 		resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxVirtualizationVMRead(d, m)
+	return resourceNetboxVirtualizationVMRead(ctx, d, m)
 }
 
-func resourceNetboxVirtualizationVMDelete(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxVirtualizationVMDelete(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxVirtualizationVMExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -461,13 +463,13 @@ func resourceNetboxVirtualizationVMDelete(d *schema.ResourceData,
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	p := virtualization.NewVirtualizationVirtualMachinesDeleteParams().WithID(id)
 	if _, err := client.Virtualization.VirtualizationVirtualMachinesDelete(
 		p, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil

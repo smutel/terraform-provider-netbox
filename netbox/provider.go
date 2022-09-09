@@ -1,12 +1,14 @@
 package netbox
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"net/http"
 
 	runtimeclient "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/smutel/go-netbox/netbox/client"
 )
@@ -169,11 +171,11 @@ func Provider() *schema.Provider {
 			"netbox_virtualization_interface":   resourceNetboxVirtualizationInterface(),
 			"netbox_virtualization_vm":          resourceNetboxVirtualizationVM(),
 		},
-		ConfigureFunc: configureProvider,
+		ConfigureContextFunc: configureProvider,
 	}
 }
 
-func configureProvider(d *schema.ResourceData) (interface{}, error) {
+func configureProvider(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	url := d.Get("url").(string)
 	basepath := d.Get("basepath").(string)
 	token := d.Get("token").(string)

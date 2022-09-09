@@ -1,10 +1,11 @@
 package netbox
 
 import (
-	"fmt"
+	"context"
 	"regexp"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -14,12 +15,12 @@ import (
 
 func resourceNetboxIpamVlanGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage a vlan group (ipam module) within Netbox.",
-		Create:      resourceNetboxIpamVlanGroupCreate,
-		Read:        resourceNetboxIpamVlanGroupRead,
-		Update:      resourceNetboxIpamVlanGroupUpdate,
-		Delete:      resourceNetboxIpamVlanGroupDelete,
-		Exists:      resourceNetboxIpamVlanGroupExists,
+		Description:   "Manage a vlan group (ipam module) within Netbox.",
+		CreateContext: resourceNetboxIpamVlanGroupCreate,
+		ReadContext:   resourceNetboxIpamVlanGroupRead,
+		UpdateContext: resourceNetboxIpamVlanGroupUpdate,
+		DeleteContext: resourceNetboxIpamVlanGroupDelete,
+		Exists:        resourceNetboxIpamVlanGroupExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -67,8 +68,8 @@ func resourceNetboxIpamVlanGroup() *schema.Resource {
 	}
 }
 
-func resourceNetboxIpamVlanGroupCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamVlanGroupCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	groupName := d.Get("name").(string)
@@ -85,40 +86,40 @@ func resourceNetboxIpamVlanGroupCreate(d *schema.ResourceData,
 
 	resourceCreated, err := client.Ipam.IpamVlanGroupsCreate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
-	return resourceNetboxIpamVlanGroupRead(d, m)
+	return resourceNetboxIpamVlanGroupRead(ctx, d, m)
 }
 
-func resourceNetboxIpamVlanGroupRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamVlanGroupRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := ipam.NewIpamVlanGroupsListParams().WithID(&resourceID)
 	resources, err := client.Ipam.IpamVlanGroupsList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("name", resource.Name); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("slug", resource.Slug); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			return nil
@@ -129,8 +130,8 @@ func resourceNetboxIpamVlanGroupRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxIpamVlanGroupUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamVlanGroupUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.VLANGroup{}
 
@@ -149,25 +150,25 @@ func resourceNetboxIpamVlanGroupUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
 
 	_, err = client.Ipam.IpamVlanGroupsPartialUpdate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxIpamVlanGroupRead(d, m)
+	return resourceNetboxIpamVlanGroupRead(ctx, d, m)
 }
 
-func resourceNetboxIpamVlanGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceNetboxIpamVlanGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxIpamVlanGroupExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -176,12 +177,12 @@ func resourceNetboxIpamVlanGroupDelete(d *schema.ResourceData, m interface{}) er
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource := ipam.NewIpamVlanGroupsDeleteParams().WithID(id)
 	if _, err := client.Ipam.IpamVlanGroupsDelete(resource, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil

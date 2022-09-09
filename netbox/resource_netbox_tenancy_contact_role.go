@@ -1,10 +1,11 @@
 package netbox
 
 import (
-	"fmt"
+	"context"
 	"regexp"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -14,12 +15,12 @@ import (
 
 func resourceNetboxTenancyContactRole() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage a contact role (tenancy module) within Netbox.",
-		Create:      resourceNetboxTenancyContactRoleCreate,
-		Read:        resourceNetboxTenancyContactRoleRead,
-		Update:      resourceNetboxTenancyContactRoleUpdate,
-		Delete:      resourceNetboxTenancyContactRoleDelete,
-		Exists:      resourceNetboxTenancyContactRoleExists,
+		Description:   "Manage a contact role (tenancy module) within Netbox.",
+		CreateContext: resourceNetboxTenancyContactRoleCreate,
+		ReadContext:   resourceNetboxTenancyContactRoleRead,
+		UpdateContext: resourceNetboxTenancyContactRoleUpdate,
+		DeleteContext: resourceNetboxTenancyContactRoleDelete,
+		Exists:        resourceNetboxTenancyContactRoleExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -100,8 +101,8 @@ func resourceNetboxTenancyContactRole() *schema.Resource {
 	}
 }
 
-func resourceNetboxTenancyContactRoleCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyContactRoleCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
@@ -123,36 +124,36 @@ func resourceNetboxTenancyContactRoleCreate(d *schema.ResourceData,
 
 	resourceCreated, err := client.Tenancy.TenancyContactRolesCreate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	return resourceNetboxTenancyContactRoleRead(d, m)
+	return resourceNetboxTenancyContactRoleRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyContactRoleRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyContactRoleRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := tenancy.NewTenancyContactRolesListParams().WithID(&resourceID)
 	resources, err := client.Tenancy.TenancyContactRolesList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var description interface{}
@@ -163,19 +164,19 @@ func resourceNetboxTenancyContactRoleRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("description", description); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("name", resource.Name); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("slug", resource.Slug); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			return nil
@@ -186,8 +187,8 @@ func resourceNetboxTenancyContactRoleRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxTenancyContactRoleUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyContactRoleUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.ContactRole{}
 
@@ -219,26 +220,26 @@ func resourceNetboxTenancyContactRoleUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
 
 	_, err = client.Tenancy.TenancyContactRolesPartialUpdate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxTenancyContactRoleRead(d, m)
+	return resourceNetboxTenancyContactRoleRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyContactRoleDelete(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxTenancyContactRoleDelete(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxTenancyContactRoleExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -247,12 +248,12 @@ func resourceNetboxTenancyContactRoleDelete(d *schema.ResourceData,
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	p := tenancy.NewTenancyContactRolesDeleteParams().WithID(id)
 	if _, err := client.Tenancy.TenancyContactRolesDelete(p, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil

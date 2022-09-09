@@ -1,8 +1,10 @@
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/extras"
@@ -11,7 +13,7 @@ import (
 func dataNetboxJSONExtrasCustomLinksList() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the extras_custom_links_list Netbox endpoint.",
-		Read:        dataNetboxJSONExtrasCustomLinksListRead,
+		ReadContext: dataNetboxJSONExtrasCustomLinksListRead,
 
 		Schema: map[string]*schema.Schema{
 			"limit": {
@@ -29,7 +31,7 @@ func dataNetboxJSONExtrasCustomLinksList() *schema.Resource {
 	}
 }
 
-func dataNetboxJSONExtrasCustomLinksListRead(d *schema.ResourceData, m interface{}) error {
+func dataNetboxJSONExtrasCustomLinksListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	params := extras.NewExtrasCustomLinksListParams()
@@ -38,7 +40,7 @@ func dataNetboxJSONExtrasCustomLinksListRead(d *schema.ResourceData, m interface
 
 	list, err := client.Extras.ExtrasCustomLinksList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	tmp := list.Payload.Results

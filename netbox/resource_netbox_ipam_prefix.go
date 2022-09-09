@@ -1,9 +1,10 @@
 package netbox
 
 import (
-	"fmt"
+	"context"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
@@ -13,12 +14,12 @@ import (
 
 func resourceNetboxIpamPrefix() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manage a prefix (ipam module) within Netbox.",
-		Create:      resourceNetboxIpamPrefixCreate,
-		Read:        resourceNetboxIpamPrefixRead,
-		Update:      resourceNetboxIpamPrefixUpdate,
-		Delete:      resourceNetboxIpamPrefixDelete,
-		Exists:      resourceNetboxIpamPrefixExists,
+		Description:   "Manage a prefix (ipam module) within Netbox.",
+		CreateContext: resourceNetboxIpamPrefixCreate,
+		ReadContext:   resourceNetboxIpamPrefixRead,
+		UpdateContext: resourceNetboxIpamPrefixUpdate,
+		DeleteContext: resourceNetboxIpamPrefixDelete,
+		Exists:        resourceNetboxIpamPrefixExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -130,8 +131,8 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 	}
 }
 
-func resourceNetboxIpamPrefixCreate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamPrefixCreate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
@@ -180,36 +181,36 @@ func resourceNetboxIpamPrefixCreate(d *schema.ResourceData,
 
 	resourceCreated, err := client.Ipam.IpamPrefixesCreate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
 
-	return resourceNetboxIpamPrefixRead(d, m)
+	return resourceNetboxIpamPrefixRead(ctx, d, m)
 }
 
-func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamPrefixRead(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceID := d.Id()
 	params := ipam.NewIpamPrefixesListParams().WithID(&resourceID)
 	resources, err := client.Ipam.IpamPrefixesList(params, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	for _, resource := range resources.Payload.Results {
 		if strconv.FormatInt(resource.ID, 10) == d.Id() {
 			if err = d.Set("content_type", convertURIContentType(resource.URL)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var description interface{}
@@ -220,78 +221,78 @@ func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 			}
 
 			if err = d.Set("description", description); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("is_pool", resource.IsPool); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("prefix", resource.Prefix); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.Role == nil {
 				if err = d.Set("role_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("role_id", resource.Role.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if resource.Site == nil {
 				if err = d.Set("site_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("site_id", resource.Site.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if resource.Status == nil {
 				if err = d.Set("status", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("status", resource.Status.Value); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if resource.Tenant == nil {
 				if err = d.Set("tenant_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if resource.Vlan == nil {
 				if err = d.Set("vlan_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("vlan_id", resource.Vlan.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
 			if resource.Vrf == nil {
 				if err = d.Set("vrf_id", nil); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			} else {
 				if err = d.Set("vrf_id", resource.Vrf.ID); err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 
@@ -303,8 +304,8 @@ func resourceNetboxIpamPrefixRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamPrefixUpdate(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritablePrefix{}
 
@@ -374,26 +375,26 @@ func resourceNetboxIpamPrefixUpdate(d *schema.ResourceData,
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource.SetID(resourceID)
 
 	_, err = client.Ipam.IpamPrefixesPartialUpdate(resource, nil)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceNetboxIpamPrefixRead(d, m)
+	return resourceNetboxIpamPrefixRead(ctx, d, m)
 }
 
-func resourceNetboxIpamPrefixDelete(d *schema.ResourceData,
-	m interface{}) error {
+func resourceNetboxIpamPrefixDelete(ctx context.Context, d *schema.ResourceData,
+	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceExists, err := resourceNetboxIpamPrefixExists(d, m)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if !resourceExists {
@@ -402,12 +403,12 @@ func resourceNetboxIpamPrefixDelete(d *schema.ResourceData,
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return fmt.Errorf("Unable to convert ID into int64")
+		return diag.Errorf("Unable to convert ID into int64")
 	}
 
 	resource := ipam.NewIpamPrefixesDeleteParams().WithID(id)
 	if _, err := client.Ipam.IpamPrefixesDelete(resource, nil); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil
