@@ -56,7 +56,7 @@ func dataNetboxJSONUsersGroupsListRead(ctx context.Context, d *schema.ResourceDa
 	params.Offset = &offset
 	for int64(len(tmp)) < desiredLength {
 		offset = int64(len(tmp))
-		if limit > desiredLength - offset {
+		if limit > desiredLength-offset {
 			limit = desiredLength - offset
 		}
 		list, err = client.Users.UsersGroupsList(params, nil)

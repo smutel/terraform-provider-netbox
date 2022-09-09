@@ -56,7 +56,7 @@ func dataNetboxJSONIpamFhrpGroupsListRead(ctx context.Context, d *schema.Resourc
 	params.Offset = &offset
 	for int64(len(tmp)) < desiredLength {
 		offset = int64(len(tmp))
-		if limit > desiredLength - offset {
+		if limit > desiredLength-offset {
 			limit = desiredLength - offset
 		}
 		list, err = client.Ipam.IpamFhrpGroupsList(params, nil)

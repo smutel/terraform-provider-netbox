@@ -56,7 +56,7 @@ func dataNetboxJSONDcimConsoleServerPortTemplatesListRead(ctx context.Context, d
 	params.Offset = &offset
 	for int64(len(tmp)) < desiredLength {
 		offset = int64(len(tmp))
-		if limit > desiredLength - offset {
+		if limit > desiredLength-offset {
 			limit = desiredLength - offset
 		}
 		list, err = client.Dcim.DcimConsoleServerPortTemplatesList(params, nil)

@@ -48,7 +48,7 @@ func dataNetboxDcimPlatformRead(ctx context.Context, d *schema.ResourceData, m i
 	}
 
 	if *list.Payload.Count < 1 {
-		return diag.Errorf("Your query returned no results. " + 
+		return diag.Errorf("Your query returned no results. " +
 			"Please change your search criteria and try again.")
 	} else if *list.Payload.Count > 1 {
 		return diag.Errorf("Your query returned more than one result. " +
