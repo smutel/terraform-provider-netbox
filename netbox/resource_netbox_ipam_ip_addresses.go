@@ -279,28 +279,20 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 				return diag.FromErr(err)
 			}
 
-			if resource.NatInside == nil {
-				if err = d.Set("nat_inside_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("nat_inside_id", resource.NatInside.ID); err != nil {
-					return diag.FromErr(err)
-				}
+			var natInsideID *int64
+			natInsideID = nil
+			if resource.NatInside != nil {
+				natInsideID = &resource.NatInside.ID
 			}
 
-			if resource.AssignedObjectID == nil {
-				if err = d.Set("object_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
+			if err = d.Set("nat_inside_id", natInsideID); err != nil {
+				return diag.FromErr(err)
+			}
 
-				if err = d.Set("primary_ip4", false); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
-					return diag.FromErr(err)
-				}
+			var assignedObjectID *int64
+			assignedObjectID = nil
+			if resource.AssignedObjectID != nil {
+				assignedObjectID = resource.AssignedObjectID
 
 				var info InfosForPrimary
 				if *resource.AssignedObjectID != 0 {
@@ -322,6 +314,12 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 						}
 					}
 				}
+			} else if err = d.Set("primary_ip4", false); err != nil {
+				return diag.FromErr(err)
+			}
+
+			if err = d.Set("object_id", assignedObjectID); err != nil {
+				return diag.FromErr(err)
 			}
 
 			objectType := resource.AssignedObjectType
@@ -337,48 +335,44 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 				}
 			}
 
-			if resource.Role == nil {
-				if err = d.Set("role", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("role", resource.Role.Value); err != nil {
-					return diag.FromErr(err)
-				}
+			var roleValue *string
+			roleValue = nil
+			if resource.Role != nil {
+				roleValue = resource.Role.Value
+			}
+			if err = d.Set("role", roleValue); err != nil {
+				return diag.FromErr(err)
 			}
 
-			if resource.Status == nil {
-				if err = d.Set("status", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("status", resource.Status.Value); err != nil {
-					return diag.FromErr(err)
-				}
+			var resourceStatus *string
+			resourceStatus = nil
+			if resource.Status != nil {
+				resourceStatus = resource.Status.Value
+			}
+			if err = d.Set("status", resourceStatus); err != nil {
+				return diag.FromErr(err)
 			}
 
 			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
-			if resource.Tenant == nil {
-				if err = d.Set("tenant_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
-					return diag.FromErr(err)
-				}
+			var tenantID *int64
+			tenantID = nil
+			if resource.Tenant != nil {
+				tenantID = &resource.Tenant.ID
+			}
+			if err = d.Set("tenant_id", tenantID); err != nil {
+				return diag.FromErr(err)
 			}
 
-			if resource.Vrf == nil {
-				if err = d.Set("vrf_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("vrf_id", resource.Vrf.ID); err != nil {
-					return diag.FromErr(err)
-				}
+			var vrfID *int64
+			vrfID = nil
+			if resource.Vrf != nil {
+				vrfID = &resource.Vrf.ID
+			}
+			if err = d.Set("vrf_id", vrfID); err != nil {
+				return diag.FromErr(err)
 			}
 
 			return nil
