@@ -56,12 +56,12 @@ func dataNetboxJSONDcimManufacturersListRead(ctx context.Context, d *schema.Reso
 	params.Offset = &offset
 	for int64(len(tmp)) < desiredLength {
 		offset = int64(len(tmp))
-		if limit > desiredLength-offset {
+		if limit > desiredLength - offset {
 			limit = desiredLength - offset
 		}
 		list, err = client.Dcim.DcimManufacturersList(params, nil)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		tmp = append(tmp, list.Payload.Results...)
 	}

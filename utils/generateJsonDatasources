@@ -84,8 +84,10 @@ cat << EOF > ${SCRIPT_PATH}/../netbox/data_netbox_json_${ENDPOINT}_list.go
 package netbox
 
 import (
+	"context"
 	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/netbox/client"
 	"github.com/smutel/go-netbox/netbox/client/${SECTION,}"
@@ -142,7 +144,7 @@ func dataNetboxJSON${SECTION}${ITEM}ListRead(ctx context.Context, d *schema.Reso
 		}
 		list, err = client.${SECTION}.${SECTION}${ITEM}List(params, nil)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		tmp = append(tmp, list.Payload.Results...)
 	}
