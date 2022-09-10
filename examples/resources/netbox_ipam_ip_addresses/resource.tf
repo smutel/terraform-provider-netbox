@@ -50,3 +50,15 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
     value = "0,1"
   }
 }
+
+resource "netbox_ipam_ip_addresses" "dynamic_ip_from_prefix" {
+  prefix = netbox_ipam_prefix.dynamic_prefix_test.id
+  description = "Dynamic IP in dynamic prefix created by terraform"
+  status = "active"
+}
+
+resource "netbox_ipam_ip_addresses" "dynamic_ip_from_ip_range" {
+  ip_range = netbox_ipam_ip_range.range_test.id
+  description = "Dynamic IP in IP range created by terraform"
+  status = "active"
+}

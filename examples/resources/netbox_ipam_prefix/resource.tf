@@ -53,3 +53,11 @@ resource "netbox_ipam_prefix" "prefix_test" {
     value = "0,1"
   }
 }
+
+resource "netbox_ipam_prefix" "dynamic_prefix_test" {
+  parent_prefix {
+    prefix = netbox_ipam_prefix.prefix_test.id
+    prefix_length = 26
+  } 
+  description = "Dynamic prefix created by terraform"
+}
