@@ -71,9 +71,32 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 			},
 			"prefix": {
 				Type:         schema.TypeString,
-				Required:     true,
+				Optional:     true,
+				Computed:     true,
 				ValidateFunc: validation.IsCIDRNetwork(0, 256),
-				Description:  "The prefix (IP address/mask) used for this prefix (ipam module).",
+				ExactlyOneOf: []string{"prefix", "parent_prefix"},
+				Description:  "The prefix (IP address/mask) used for this prefix (ipam module). Required if parent_prefix is not set.",
+			},
+			"parent_prefix": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				MaxItems:    1,
+				Description: "Parent prefix and length used for new prefix. Required if prefix is not set",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"prefix": {
+							Type:        schema.TypeInt,
+							Required:    true,
+							Description: "Id of parent prefix",
+						},
+						"prefix_length": {
+							Type:             schema.TypeInt,
+							Required:         true,
+							Description:      "Length of new prefix",
+							ValidateDiagFunc: validation.ToDiagFunc(validation.IntBetween(0, 128)),
+						},
+					},
+				},
 			},
 			"role_id": {
 				Type:        schema.TypeInt,
@@ -135,11 +158,29 @@ func resourceNetboxIpamPrefixCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
+	var prefix string
+	var prefixid *int64
+	if stateprefix, ok := d.GetOk("prefix"); ok {
+		prefix = stateprefix.(string)
+	} else if pprefix, ok := d.GetOk("parent_prefix"); ok {
+		set := pprefix.(*schema.Set)
+		mappreffix := set.List()[0].(map[string]interface{})
+		parentPrefix := int64(mappreffix["prefix"].(int))
+		prefixlength := int64(mappreffix["prefix_length"].(int))
+		p, err := getNewAvailablePrefix(client, parentPrefix, prefixlength)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		prefix = *p.Prefix
+		prefixid = &p.ID
+	} else {
+		return diag.Errorf("exactly one of (prefix, parent_prefix) must be specified")
+	}
+
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	isPool := d.Get("is_pool").(bool)
-	prefix := d.Get("prefix").(string)
 	roleID := int64(d.Get("role_id").(int))
 	siteID := int64(d.Get("site_id").(int))
 	status := d.Get("status").(string)
@@ -177,14 +218,27 @@ func resourceNetboxIpamPrefixCreate(ctx context.Context, d *schema.ResourceData,
 		newResource.Vrf = &vrfID
 	}
 
-	resource := ipam.NewIpamPrefixesCreateParams().WithData(newResource)
+	if prefixid == nil {
+		resource := ipam.NewIpamPrefixesCreateParams().WithData(newResource)
 
-	resourceCreated, err := client.Ipam.IpamPrefixesCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+		resourceCreated, err := client.Ipam.IpamPrefixesCreate(resource, nil)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		prefixid = &resourceCreated.Payload.ID
+	} else {
+		resource := ipam.NewIpamPrefixesUpdateParams().WithID(*prefixid).WithData(newResource)
+
+		resourceCreated, err := client.Ipam.IpamPrefixesUpdate(resource, nil)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		prefixid = &resourceCreated.Payload.ID
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(strconv.FormatInt(*prefixid, 10))
 
 	return resourceNetboxIpamPrefixRead(ctx, d, m)
 }
