@@ -2,7 +2,7 @@ resource "netbox_ipam_ip_range" "range_test" {
   start_address = "192.168.56.1/24"
   end_address = "192.168.56.100/24"
   description = "Range created by terraform"
-  role_id = data.netbox_ipam_roles.vlan_role_production.id
+  role_id = data.netbox_ipam_role.vlan_role_production.id
   status = "active"
 
   tag {

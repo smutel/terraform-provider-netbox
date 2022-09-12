@@ -3,7 +3,7 @@ resource "netbox_ipam_prefix" "prefix_test" {
   vlan_id = netbox_ipam_vlan.vlan_test.id
   description = "Prefix created by terraform"
   site_id = netbox_ipam_vlan_group.vlan_group_test.site_id
-  role_id = data.netbox_ipam_roles.vlan_role_production.id
+  role_id = data.netbox_ipam_role.vlan_role_production.id
   status = "active"
 
   tag {

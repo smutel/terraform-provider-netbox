@@ -5,7 +5,7 @@ resource "netbox_ipam_vlan" "vlan_test" {
   description = "VLAN created by terraform"
   vlan_group_id = netbox_ipam_vlan_group.vlan_group_test.id
   tenant_id = netbox_tenancy_tenant.tenant_test.id
-  role_id = data.netbox_ipam_roles.vlan_role_production.id
+  role_id = data.netbox_ipam_role.vlan_role_production.id
 
   tag {
     name = "tag1"
