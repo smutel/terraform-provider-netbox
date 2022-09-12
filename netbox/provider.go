@@ -158,6 +158,7 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"netbox_ipam_aggregate":             resourceNetboxIpamAggregate(),
 			"netbox_ipam_ip_addresses":          resourceNetboxIpamIPAddresses(),
+			"netbox_ipam_ip_range":              resourceNetboxIpamIPRange(),
 			"netbox_ipam_prefix":                resourceNetboxIpamPrefix(),
 			"netbox_ipam_service":               resourceNetboxIpamService(),
 			"netbox_ipam_vlan":                  resourceNetboxIpamVlan(),

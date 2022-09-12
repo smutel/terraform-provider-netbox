@@ -1,11 +1,9 @@
-resource "netbox_ipam_vlan" "vlan_test" {
-  vlan_id = 100
-  name = "TestVlan"
-  site_id = netbox_ipam_vlan_group.vlan_group_test.site_id
-  description = "VLAN created by terraform"
-  vlan_group_id = netbox_ipam_vlan_group.vlan_group_test.id
-  tenant_id = netbox_tenancy_tenant.tenant_test.id
+resource "netbox_ipam_ip_range" "range_test" {
+  start_address = "192.168.56.1/24"
+  end_address = "192.168.56.100/24"
+  description = "Range created by terraform"
   role_id = data.netbox_ipam_role.vlan_role_production.id
+  status = "active"
 
   tag {
     name = "tag1"
