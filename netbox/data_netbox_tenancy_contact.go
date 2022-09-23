@@ -7,8 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/netbox/client"
-	"github.com/smutel/go-netbox/netbox/client/tenancy"
+	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
+	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
 )
 
 func dataNetboxTenancyContact() *schema.Resource {

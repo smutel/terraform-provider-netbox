@@ -7,7 +7,7 @@ require (
 	github.com/go-openapi/strfmt v0.21.3
 	github.com/hashicorp/terraform-plugin-docs v0.10.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.21.0
-	github.com/smutel/go-netbox v3.2.0+incompatible
+	github.com/smutel/go-netbox/v3 v3.2.2
 )
 
 require (

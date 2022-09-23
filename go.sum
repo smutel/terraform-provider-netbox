@@ -286,8 +286,8 @@ github.com/shopspring/decimal v1.3.1/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFR
 github.com/sirupsen/logrus v1.4.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMBDgk/93Q=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
-github.com/smutel/go-netbox v3.2.0+incompatible h1:/O/Rg6qq+/memVmXe1yG2uTvqyavMPmFVRGtPiozHFo=
-github.com/smutel/go-netbox v3.2.0+incompatible/go.mod h1:UlNOimilX5qQkyVvFaDgajexiCRjVqzh1i0r9kQfr+M=
+github.com/smutel/go-netbox/v3 v3.2.2 h1:iFHaPBsrd7/j5zL/tM1A02+5bgxM4igk6OwSz5YjvVY=
+github.com/smutel/go-netbox/v3 v3.2.2/go.mod h1:JhFZZHyBu2ePquMEakDmlcCnPzHF4/Ji8wq6cwlCtio=
 github.com/spf13/cast v1.3.1/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
 github.com/spf13/cast v1.5.0 h1:rj3WzYc11XZaIZMPKmwP96zkFEnnAmV8s6XbB2aY32w=
 github.com/spf13/cast v1.5.0/go.mod h1:SpXXQ5YoyJw6s3/6cMTQuxvgRl3PCJiyaX9p6b155UU=

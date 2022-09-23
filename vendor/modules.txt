@@ -273,19 +273,19 @@ github.com/russross/blackfriday
 # github.com/shopspring/decimal v1.3.1
 ## explicit; go 1.13
 github.com/shopspring/decimal
-# github.com/smutel/go-netbox v3.2.0+incompatible
-## explicit
-github.com/smutel/go-netbox/netbox/client
-github.com/smutel/go-netbox/netbox/client/circuits
-github.com/smutel/go-netbox/netbox/client/dcim
-github.com/smutel/go-netbox/netbox/client/extras
-github.com/smutel/go-netbox/netbox/client/ipam
-github.com/smutel/go-netbox/netbox/client/status
-github.com/smutel/go-netbox/netbox/client/tenancy
-github.com/smutel/go-netbox/netbox/client/users
-github.com/smutel/go-netbox/netbox/client/virtualization
-github.com/smutel/go-netbox/netbox/client/wireless
-github.com/smutel/go-netbox/netbox/models
+# github.com/smutel/go-netbox/v3 v3.2.2
+## explicit; go 1.16
+github.com/smutel/go-netbox/v3/netbox/client
+github.com/smutel/go-netbox/v3/netbox/client/circuits
+github.com/smutel/go-netbox/v3/netbox/client/dcim
+github.com/smutel/go-netbox/v3/netbox/client/extras
+github.com/smutel/go-netbox/v3/netbox/client/ipam
+github.com/smutel/go-netbox/v3/netbox/client/status
+github.com/smutel/go-netbox/v3/netbox/client/tenancy
+github.com/smutel/go-netbox/v3/netbox/client/users
+github.com/smutel/go-netbox/v3/netbox/client/virtualization
+github.com/smutel/go-netbox/v3/netbox/client/wireless
+github.com/smutel/go-netbox/v3/netbox/models
 # github.com/spf13/cast v1.5.0
 ## explicit; go 1.18
 github.com/spf13/cast
