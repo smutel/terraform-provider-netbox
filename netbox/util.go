@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/go-openapi/strfmt"
-	netboxclient "github.com/smutel/go-netbox/netbox/client"
-	"github.com/smutel/go-netbox/netbox/client/virtualization"
-	"github.com/smutel/go-netbox/netbox/models"
+	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
+	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
+	"github.com/smutel/go-netbox/v3/netbox/models"
 )
 
 // InfosForPrimary is used to store info about primary IP

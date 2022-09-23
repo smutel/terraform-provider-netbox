@@ -6,8 +6,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	netboxclient "github.com/smutel/go-netbox/netbox/client"
-	"github.com/smutel/go-netbox/netbox/client/dcim"
+	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
+	"github.com/smutel/go-netbox/v3/netbox/client/dcim"
 )
 
 func dataNetboxJSONDcimRackRolesList() *schema.Resource {

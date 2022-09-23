@@ -3,7 +3,7 @@
 SCRIPT_PATH=$(dirname "$0")
 FILE="${SCRIPT_PATH}/netbox_list_endpoints.txt"
 
-find ${SCRIPT_PATH}/../vendor/github.com/smutel/go-netbox/netbox/client -mindepth 1 -name "*_list_parameters.go" | while read line; do
+find ${SCRIPT_PATH}/../vendor/github.com/smutel/go-netbox/v3/netbox/client -mindepth 1 -name "*_list_parameters.go" | while read line; do
   OPERATION_ID=0
   EXCLUDE=0
 
@@ -89,8 +89,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	netboxclient "github.com/smutel/go-netbox/netbox/client"
-	"github.com/smutel/go-netbox/netbox/client/${SECTION,}"
+	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
+	"github.com/smutel/go-netbox/v3/netbox/client/${SECTION,}"
 )
 
 func dataNetboxJSON${SECTION}${ITEM}List() *schema.Resource {
@@ -139,7 +139,7 @@ func dataNetboxJSON${SECTION}${ITEM}ListRead(ctx context.Context, d *schema.Reso
 	params.Offset = &offset
 	for int64(len(tmp)) < desiredLength {
 		offset = int64(len(tmp))
-		if limit > desiredLength - offset {
+		if limit > desiredLength-offset {
 			limit = desiredLength - offset
 		}
 		list, err = client.${SECTION}.${SECTION}${ITEM}List(params, nil)
