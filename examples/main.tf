@@ -219,6 +219,14 @@ resource "netbox_ipam_prefix" "prefix_test" {
   }
 }
 
+resource "netbox_ipam_prefix" "dynamic_prefix_test" {
+  parent_prefix {
+    prefix = netbox_ipam_prefix.prefix_test.id
+    prefix_length = 26
+  } 
+  description = "Dynamic prefix created by terraform"
+}
+
 resource "netbox_ipam_ip_range" "range_test" {
   start_address = "192.168.56.1/24"
   end_address = "192.168.56.100/24"
@@ -333,6 +341,18 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
     type = "multiple"
     value = "0,1"
   }
+}
+
+resource "netbox_ipam_ip_addresses" "dynamic_ip_from_prefix" {
+  prefix = netbox_ipam_prefix.dynamic_prefix_test.id
+  description = "Dynamic IP in dynamic prefix created by terraform"
+  status = "active"
+}
+
+resource "netbox_ipam_ip_addresses" "dynamic_ip_from_ip_range" {
+  ip_range = netbox_ipam_ip_range.range_test.id
+  description = "Dynamic IP in IP range created by terraform"
+  status = "active"
 }
 
 data "netbox_virtualization_cluster" "cluster_test" {

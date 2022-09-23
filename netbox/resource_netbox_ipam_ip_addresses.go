@@ -28,9 +28,23 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"address": {
 				Type:         schema.TypeString,
-				Required:     true,
+				Computed:     true,
+				Optional:     true,
+				ExactlyOneOf: []string{"address", "prefix", "ip_range"},
 				ValidateFunc: validation.IsCIDR,
-				Description:  "The IP address (with mask) used for this IP address (ipam module).",
+				Description:  "The IP address (with mask) used for this IP address (ipam module). Required if both prefix and ip_range are not set.",
+			},
+			"ip_range": {
+				Type:        schema.TypeInt,
+				ForceNew:    true,
+				Optional:    true,
+				Description: "The ip-range id for automatic IP assignment. Required if both prefix and address are not set.",
+			},
+			"prefix": {
+				Type:        schema.TypeInt,
+				ForceNew:    true,
+				Optional:    true,
+				Description: "The prefix id for automatic IP assignment. Required if both address and ip_range are not set.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
@@ -159,7 +173,30 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 
-	address := d.Get("address").(string)
+	var address string
+	var addressid *int64
+	if stateaddress, ok := d.GetOk("address"); ok {
+		address = stateaddress.(string)
+	} else if prefixid, ok := d.GetOk("prefix"); ok {
+		ip, err := getNewAvailableIPForPrefix(client, int64(prefixid.(int)))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		address = *ip.Address
+		addressid = &ip.ID
+		d.Set("address", address)
+	} else if rangeid, ok := d.GetOk("ip_range"); ok {
+		ip, err := getNewAvailableIPForIPRange(client, int64(rangeid.(int)))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		address = *ip.Address
+		addressid = &ip.ID
+		d.Set("address", address)
+	} else {
+		return diag.Errorf("exactly one of (address, ip_range, prefix) must be specified")
+	}
+
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
@@ -212,16 +249,26 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		newResource.Vrf = &vrfID
 	}
 
-	resource := ipam.NewIpamIPAddressesCreateParams().WithData(newResource)
+	if addressid == nil {
+		resource := ipam.NewIpamIPAddressesCreateParams().WithData(newResource)
 
-	resourceCreated, err := client.Ipam.IpamIPAddressesCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+		resourceCreated, err := client.Ipam.IpamIPAddressesCreate(resource, nil)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		addressid = &resourceCreated.Payload.ID
+	} else {
+		resource := ipam.NewIpamIPAddressesUpdateParams().WithID(*addressid).WithData(newResource)
+
+		_, err := client.Ipam.IpamIPAddressesUpdate(resource, nil)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
-
-	err = updatePrimaryStatus(client, info, resourceCreated.Payload.ID)
+	d.SetId(strconv.FormatInt(*addressid, 10))
+	err := updatePrimaryStatus(client, info, *addressid)
 	if err != nil {
 		return diag.FromErr(err)
 	}
