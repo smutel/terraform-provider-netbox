@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v5.0.0...v5.1.0) (2022-09-24)
+
+
+### Features
+
+* Add debug config for VS Code ([e71fd8f](https://github.com/smutel/terraform-provider-netbox/commit/e71fd8fca6414a0c2b31637250ec996df9bd82f4))
+* Add debug option to main() ([f52ffe6](https://github.com/smutel/terraform-provider-netbox/commit/f52ffe6e12f250c042279f5bcae835f5b9a23719))
+* Add IP Range resource type ([35d31a6](https://github.com/smutel/terraform-provider-netbox/commit/35d31a6f878d66c905777167037102982263a6ed))
+* Allow prefix and ip to be dynamically assigned ([88cf8e9](https://github.com/smutel/terraform-provider-netbox/commit/88cf8e92d4002c3ae9ebedf5bb1b8eb2e5c6b0a6))
+* Change go-netbox major version ([87797d4](https://github.com/smutel/terraform-provider-netbox/commit/87797d471b3d689a49ef33800bcffcbb35af9b68))
+
+
+### Bug Fixes
+
+* Get all objects with json data sources ([58c2a11](https://github.com/smutel/terraform-provider-netbox/commit/58c2a11313fb24d7767017535bff0e8fe598c2f2))
+* Replace deprecated functions with context aware functions ([f8460bf](https://github.com/smutel/terraform-provider-netbox/commit/f8460bfaf38e1dae5a8efedfee553e6120aa041b))
+
+
+### Enhancements
+
+* Use context aware functions ([b2b8943](https://github.com/smutel/terraform-provider-netbox/commit/b2b89432e7b51d374afb3d9c2dc3f7af4d016752))
+
 ## [5.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v4.0.1...v5.0.0) (2022-08-26)
 
 
