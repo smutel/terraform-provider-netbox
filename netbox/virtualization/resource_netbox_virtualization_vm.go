@@ -102,6 +102,11 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 				Default:     nil,
 				Description: "ID of the role for this VM (virtualization module).",
 			},
+			"site_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the site where this VM (virtualization module) is attached. If cluster_id is set and the cluster resides in a site, this must be set and the same as the cluster's site",
+			},
 			"status": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -186,6 +191,10 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 
 	if roleID != 0 {
 		newResource.Role = &roleID
+	}
+
+	if siteID := int64(d.Get("site_id").(int)); siteID != 0 {
+		newResource.Site = &siteID
 	}
 
 	if tenantID != 0 {
@@ -282,6 +291,9 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 		return diag.FromErr(err)
 	}
 	if err = d.Set("role_id", util.GetNestedRoleID(resource.Role)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("site_id", util.GetNestedSiteID(resource.Site)); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -388,6 +400,14 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 			params.Role = &roleID
 		} else {
 			emptyFields["role"] = nil
+		}
+	}
+
+	if d.HasChange("site_id") {
+		siteID := int64(d.Get("site_id").(int))
+		params.Site = &siteID
+		if siteID == 0 {
+			emptyFields["site"] = nil
 		}
 	}
 

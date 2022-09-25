@@ -26,6 +26,10 @@ func DataNetboxVirtualizationCluster() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
+			"site_id": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -55,6 +59,9 @@ func dataNetboxVirtualizationClusterRead(ctx context.Context, d *schema.Resource
 	r := list.Payload.Results[0]
 	d.SetId(strconv.FormatInt(r.ID, 10))
 	if err = d.Set("content_type", util.ConvertURIContentType(r.URL)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("site_id", util.GetNestedSiteID(r.Site)); err != nil {
 		return diag.FromErr(err)
 	}
 
