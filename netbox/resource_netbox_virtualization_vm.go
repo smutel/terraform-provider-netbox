@@ -175,10 +175,6 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 	tenantID := int64(d.Get("tenant_id").(int))
 	vcpus := d.Get("vcpus").(string)
 
-	if !strings.Contains(vcpus, ".") {
-		vcpus = vcpus + ".00"
-	}
-
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:      &clusterID,
 		Comments:     comments,
@@ -338,7 +334,13 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 				}
 			}
 
-			if err = d.Set("vcpus", fmt.Sprintf("%v", *resource.Vcpus)); err != nil {
+			var vcpus string
+			if resource.Vcpus == nil {
+				vcpus = ""
+			} else {
+				vcpus = fmt.Sprintf("%v", *resource.Vcpus)
+			}
+			if err = d.Set("vcpus", vcpus); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -419,7 +421,7 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 		params.Tenant = &tenantID
 	}
 
-	if d.HasChange("vcpus") {
+	if _, ok := d.GetOk("vcpus"); d.HasChange("vcpus") && ok {
 		vcpus := d.Get("vcpus").(string)
 
 		if !strings.Contains(vcpus, ".") {
