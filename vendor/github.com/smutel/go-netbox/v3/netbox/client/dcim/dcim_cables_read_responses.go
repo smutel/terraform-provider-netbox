@@ -54,7 +54,8 @@ func NewDcimCablesReadOK() *DcimCablesReadOK {
 	return &DcimCablesReadOK{}
 }
 
-/* DcimCablesReadOK describes a response with status code 200, with default header values.
+/*
+DcimCablesReadOK describes a response with status code 200, with default header values.
 
 DcimCablesReadOK dcim cables read o k
 */
@@ -62,9 +63,39 @@ type DcimCablesReadOK struct {
 	Payload *models.Cable
 }
 
+// IsSuccess returns true when this dcim cables read o k response has a 2xx status code
+func (o *DcimCablesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim cables read o k response has a 3xx status code
+func (o *DcimCablesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim cables read o k response has a 4xx status code
+func (o *DcimCablesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim cables read o k response has a 5xx status code
+func (o *DcimCablesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim cables read o k response a status code equal to that given
+func (o *DcimCablesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimCablesReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/cables/{id}/][%d] dcimCablesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimCablesReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/cables/{id}/][%d] dcimCablesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimCablesReadOK) GetPayload() *models.Cable {
 	return o.Payload
 }

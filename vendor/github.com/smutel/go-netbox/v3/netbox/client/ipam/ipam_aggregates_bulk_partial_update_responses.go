@@ -54,7 +54,8 @@ func NewIpamAggregatesBulkPartialUpdateOK() *IpamAggregatesBulkPartialUpdateOK {
 	return &IpamAggregatesBulkPartialUpdateOK{}
 }
 
-/* IpamAggregatesBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamAggregatesBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 IpamAggregatesBulkPartialUpdateOK ipam aggregates bulk partial update o k
 */
@@ -62,9 +63,39 @@ type IpamAggregatesBulkPartialUpdateOK struct {
 	Payload *models.Aggregate
 }
 
+// IsSuccess returns true when this ipam aggregates bulk partial update o k response has a 2xx status code
+func (o *IpamAggregatesBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam aggregates bulk partial update o k response has a 3xx status code
+func (o *IpamAggregatesBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam aggregates bulk partial update o k response has a 4xx status code
+func (o *IpamAggregatesBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam aggregates bulk partial update o k response has a 5xx status code
+func (o *IpamAggregatesBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam aggregates bulk partial update o k response a status code equal to that given
+func (o *IpamAggregatesBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamAggregatesBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /ipam/aggregates/][%d] ipamAggregatesBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamAggregatesBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /ipam/aggregates/][%d] ipamAggregatesBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamAggregatesBulkPartialUpdateOK) GetPayload() *models.Aggregate {
 	return o.Payload
 }

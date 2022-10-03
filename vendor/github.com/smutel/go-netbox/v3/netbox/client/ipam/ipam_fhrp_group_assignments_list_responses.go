@@ -59,7 +59,8 @@ func NewIpamFhrpGroupAssignmentsListOK() *IpamFhrpGroupAssignmentsListOK {
 	return &IpamFhrpGroupAssignmentsListOK{}
 }
 
-/* IpamFhrpGroupAssignmentsListOK describes a response with status code 200, with default header values.
+/*
+IpamFhrpGroupAssignmentsListOK describes a response with status code 200, with default header values.
 
 IpamFhrpGroupAssignmentsListOK ipam fhrp group assignments list o k
 */
@@ -67,9 +68,39 @@ type IpamFhrpGroupAssignmentsListOK struct {
 	Payload *IpamFhrpGroupAssignmentsListOKBody
 }
 
+// IsSuccess returns true when this ipam fhrp group assignments list o k response has a 2xx status code
+func (o *IpamFhrpGroupAssignmentsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam fhrp group assignments list o k response has a 3xx status code
+func (o *IpamFhrpGroupAssignmentsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam fhrp group assignments list o k response has a 4xx status code
+func (o *IpamFhrpGroupAssignmentsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam fhrp group assignments list o k response has a 5xx status code
+func (o *IpamFhrpGroupAssignmentsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam fhrp group assignments list o k response a status code equal to that given
+func (o *IpamFhrpGroupAssignmentsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamFhrpGroupAssignmentsListOK) Error() string {
 	return fmt.Sprintf("[GET /ipam/fhrp-group-assignments/][%d] ipamFhrpGroupAssignmentsListOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamFhrpGroupAssignmentsListOK) String() string {
+	return fmt.Sprintf("[GET /ipam/fhrp-group-assignments/][%d] ipamFhrpGroupAssignmentsListOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamFhrpGroupAssignmentsListOK) GetPayload() *IpamFhrpGroupAssignmentsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *IpamFhrpGroupAssignmentsListOK) readResponse(response runtime.ClientRes
 	return nil
 }
 
-/*IpamFhrpGroupAssignmentsListOKBody ipam fhrp group assignments list o k body
+/*
+IpamFhrpGroupAssignmentsListOKBody ipam fhrp group assignments list o k body
 swagger:model IpamFhrpGroupAssignmentsListOKBody
 */
 type IpamFhrpGroupAssignmentsListOKBody struct {

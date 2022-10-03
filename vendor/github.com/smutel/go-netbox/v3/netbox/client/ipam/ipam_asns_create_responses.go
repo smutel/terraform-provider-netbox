@@ -54,7 +54,8 @@ func NewIpamAsnsCreateCreated() *IpamAsnsCreateCreated {
 	return &IpamAsnsCreateCreated{}
 }
 
-/* IpamAsnsCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamAsnsCreateCreated describes a response with status code 201, with default header values.
 
 IpamAsnsCreateCreated ipam asns create created
 */
@@ -62,9 +63,39 @@ type IpamAsnsCreateCreated struct {
 	Payload *models.ASN
 }
 
+// IsSuccess returns true when this ipam asns create created response has a 2xx status code
+func (o *IpamAsnsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam asns create created response has a 3xx status code
+func (o *IpamAsnsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam asns create created response has a 4xx status code
+func (o *IpamAsnsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam asns create created response has a 5xx status code
+func (o *IpamAsnsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam asns create created response a status code equal to that given
+func (o *IpamAsnsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamAsnsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/asns/][%d] ipamAsnsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamAsnsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/asns/][%d] ipamAsnsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamAsnsCreateCreated) GetPayload() *models.ASN {
 	return o.Payload
 }

@@ -59,7 +59,8 @@ func NewDcimInventoryItemRolesListOK() *DcimInventoryItemRolesListOK {
 	return &DcimInventoryItemRolesListOK{}
 }
 
-/* DcimInventoryItemRolesListOK describes a response with status code 200, with default header values.
+/*
+DcimInventoryItemRolesListOK describes a response with status code 200, with default header values.
 
 DcimInventoryItemRolesListOK dcim inventory item roles list o k
 */
@@ -67,9 +68,39 @@ type DcimInventoryItemRolesListOK struct {
 	Payload *DcimInventoryItemRolesListOKBody
 }
 
+// IsSuccess returns true when this dcim inventory item roles list o k response has a 2xx status code
+func (o *DcimInventoryItemRolesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory item roles list o k response has a 3xx status code
+func (o *DcimInventoryItemRolesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory item roles list o k response has a 4xx status code
+func (o *DcimInventoryItemRolesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory item roles list o k response has a 5xx status code
+func (o *DcimInventoryItemRolesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory item roles list o k response a status code equal to that given
+func (o *DcimInventoryItemRolesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInventoryItemRolesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/inventory-item-roles/][%d] dcimInventoryItemRolesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInventoryItemRolesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/inventory-item-roles/][%d] dcimInventoryItemRolesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInventoryItemRolesListOK) GetPayload() *DcimInventoryItemRolesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimInventoryItemRolesListOK) readResponse(response runtime.ClientRespo
 	return nil
 }
 
-/*DcimInventoryItemRolesListOKBody dcim inventory item roles list o k body
+/*
+DcimInventoryItemRolesListOKBody dcim inventory item roles list o k body
 swagger:model DcimInventoryItemRolesListOKBody
 */
 type DcimInventoryItemRolesListOKBody struct {

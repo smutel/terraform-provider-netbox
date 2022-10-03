@@ -51,14 +51,44 @@ func NewVirtualizationVirtualMachinesBulkDeleteNoContent() *VirtualizationVirtua
 	return &VirtualizationVirtualMachinesBulkDeleteNoContent{}
 }
 
-/* VirtualizationVirtualMachinesBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+VirtualizationVirtualMachinesBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 VirtualizationVirtualMachinesBulkDeleteNoContent virtualization virtual machines bulk delete no content
 */
 type VirtualizationVirtualMachinesBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this virtualization virtual machines bulk delete no content response has a 2xx status code
+func (o *VirtualizationVirtualMachinesBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization virtual machines bulk delete no content response has a 3xx status code
+func (o *VirtualizationVirtualMachinesBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization virtual machines bulk delete no content response has a 4xx status code
+func (o *VirtualizationVirtualMachinesBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization virtual machines bulk delete no content response has a 5xx status code
+func (o *VirtualizationVirtualMachinesBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization virtual machines bulk delete no content response a status code equal to that given
+func (o *VirtualizationVirtualMachinesBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *VirtualizationVirtualMachinesBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /virtualization/virtual-machines/][%d] virtualizationVirtualMachinesBulkDeleteNoContent ", 204)
+}
+
+func (o *VirtualizationVirtualMachinesBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /virtualization/virtual-machines/][%d] virtualizationVirtualMachinesBulkDeleteNoContent ", 204)
 }
 

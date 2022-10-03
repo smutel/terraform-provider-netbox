@@ -51,14 +51,44 @@ func NewVirtualizationClusterTypesBulkDeleteNoContent() *VirtualizationClusterTy
 	return &VirtualizationClusterTypesBulkDeleteNoContent{}
 }
 
-/* VirtualizationClusterTypesBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+VirtualizationClusterTypesBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 VirtualizationClusterTypesBulkDeleteNoContent virtualization cluster types bulk delete no content
 */
 type VirtualizationClusterTypesBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this virtualization cluster types bulk delete no content response has a 2xx status code
+func (o *VirtualizationClusterTypesBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization cluster types bulk delete no content response has a 3xx status code
+func (o *VirtualizationClusterTypesBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization cluster types bulk delete no content response has a 4xx status code
+func (o *VirtualizationClusterTypesBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization cluster types bulk delete no content response has a 5xx status code
+func (o *VirtualizationClusterTypesBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization cluster types bulk delete no content response a status code equal to that given
+func (o *VirtualizationClusterTypesBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *VirtualizationClusterTypesBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /virtualization/cluster-types/][%d] virtualizationClusterTypesBulkDeleteNoContent ", 204)
+}
+
+func (o *VirtualizationClusterTypesBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /virtualization/cluster-types/][%d] virtualizationClusterTypesBulkDeleteNoContent ", 204)
 }
 

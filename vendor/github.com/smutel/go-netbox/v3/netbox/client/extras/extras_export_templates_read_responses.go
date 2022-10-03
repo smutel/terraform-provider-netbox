@@ -54,7 +54,8 @@ func NewExtrasExportTemplatesReadOK() *ExtrasExportTemplatesReadOK {
 	return &ExtrasExportTemplatesReadOK{}
 }
 
-/* ExtrasExportTemplatesReadOK describes a response with status code 200, with default header values.
+/*
+ExtrasExportTemplatesReadOK describes a response with status code 200, with default header values.
 
 ExtrasExportTemplatesReadOK extras export templates read o k
 */
@@ -62,9 +63,39 @@ type ExtrasExportTemplatesReadOK struct {
 	Payload *models.ExportTemplate
 }
 
+// IsSuccess returns true when this extras export templates read o k response has a 2xx status code
+func (o *ExtrasExportTemplatesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras export templates read o k response has a 3xx status code
+func (o *ExtrasExportTemplatesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras export templates read o k response has a 4xx status code
+func (o *ExtrasExportTemplatesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras export templates read o k response has a 5xx status code
+func (o *ExtrasExportTemplatesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras export templates read o k response a status code equal to that given
+func (o *ExtrasExportTemplatesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasExportTemplatesReadOK) Error() string {
 	return fmt.Sprintf("[GET /extras/export-templates/{id}/][%d] extrasExportTemplatesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasExportTemplatesReadOK) String() string {
+	return fmt.Sprintf("[GET /extras/export-templates/{id}/][%d] extrasExportTemplatesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasExportTemplatesReadOK) GetPayload() *models.ExportTemplate {
 	return o.Payload
 }

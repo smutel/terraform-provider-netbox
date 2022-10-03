@@ -54,7 +54,8 @@ func NewDcimRacksElevationOK() *DcimRacksElevationOK {
 	return &DcimRacksElevationOK{}
 }
 
-/* DcimRacksElevationOK describes a response with status code 200, with default header values.
+/*
+DcimRacksElevationOK describes a response with status code 200, with default header values.
 
 DcimRacksElevationOK dcim racks elevation o k
 */
@@ -62,9 +63,39 @@ type DcimRacksElevationOK struct {
 	Payload []*models.RackUnit
 }
 
+// IsSuccess returns true when this dcim racks elevation o k response has a 2xx status code
+func (o *DcimRacksElevationOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim racks elevation o k response has a 3xx status code
+func (o *DcimRacksElevationOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim racks elevation o k response has a 4xx status code
+func (o *DcimRacksElevationOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim racks elevation o k response has a 5xx status code
+func (o *DcimRacksElevationOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim racks elevation o k response a status code equal to that given
+func (o *DcimRacksElevationOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimRacksElevationOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/racks/{id}/elevation/][%d] dcimRacksElevationOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimRacksElevationOK) String() string {
+	return fmt.Sprintf("[GET /dcim/racks/{id}/elevation/][%d] dcimRacksElevationOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimRacksElevationOK) GetPayload() []*models.RackUnit {
 	return o.Payload
 }

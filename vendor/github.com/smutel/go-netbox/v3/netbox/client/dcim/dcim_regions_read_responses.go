@@ -54,7 +54,8 @@ func NewDcimRegionsReadOK() *DcimRegionsReadOK {
 	return &DcimRegionsReadOK{}
 }
 
-/* DcimRegionsReadOK describes a response with status code 200, with default header values.
+/*
+DcimRegionsReadOK describes a response with status code 200, with default header values.
 
 DcimRegionsReadOK dcim regions read o k
 */
@@ -62,9 +63,39 @@ type DcimRegionsReadOK struct {
 	Payload *models.Region
 }
 
+// IsSuccess returns true when this dcim regions read o k response has a 2xx status code
+func (o *DcimRegionsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim regions read o k response has a 3xx status code
+func (o *DcimRegionsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim regions read o k response has a 4xx status code
+func (o *DcimRegionsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim regions read o k response has a 5xx status code
+func (o *DcimRegionsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim regions read o k response a status code equal to that given
+func (o *DcimRegionsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimRegionsReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/regions/{id}/][%d] dcimRegionsReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimRegionsReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/regions/{id}/][%d] dcimRegionsReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimRegionsReadOK) GetPayload() *models.Region {
 	return o.Payload
 }

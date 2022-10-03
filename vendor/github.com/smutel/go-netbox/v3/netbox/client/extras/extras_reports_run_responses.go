@@ -51,14 +51,44 @@ func NewExtrasReportsRunCreated() *ExtrasReportsRunCreated {
 	return &ExtrasReportsRunCreated{}
 }
 
-/* ExtrasReportsRunCreated describes a response with status code 201, with default header values.
+/*
+ExtrasReportsRunCreated describes a response with status code 201, with default header values.
 
 ExtrasReportsRunCreated extras reports run created
 */
 type ExtrasReportsRunCreated struct {
 }
 
+// IsSuccess returns true when this extras reports run created response has a 2xx status code
+func (o *ExtrasReportsRunCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras reports run created response has a 3xx status code
+func (o *ExtrasReportsRunCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras reports run created response has a 4xx status code
+func (o *ExtrasReportsRunCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras reports run created response has a 5xx status code
+func (o *ExtrasReportsRunCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras reports run created response a status code equal to that given
+func (o *ExtrasReportsRunCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *ExtrasReportsRunCreated) Error() string {
+	return fmt.Sprintf("[POST /extras/reports/{id}/run/][%d] extrasReportsRunCreated ", 201)
+}
+
+func (o *ExtrasReportsRunCreated) String() string {
 	return fmt.Sprintf("[POST /extras/reports/{id}/run/][%d] extrasReportsRunCreated ", 201)
 }
 

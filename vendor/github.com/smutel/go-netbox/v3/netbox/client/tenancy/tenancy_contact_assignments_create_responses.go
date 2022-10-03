@@ -54,7 +54,8 @@ func NewTenancyContactAssignmentsCreateCreated() *TenancyContactAssignmentsCreat
 	return &TenancyContactAssignmentsCreateCreated{}
 }
 
-/* TenancyContactAssignmentsCreateCreated describes a response with status code 201, with default header values.
+/*
+TenancyContactAssignmentsCreateCreated describes a response with status code 201, with default header values.
 
 TenancyContactAssignmentsCreateCreated tenancy contact assignments create created
 */
@@ -62,9 +63,39 @@ type TenancyContactAssignmentsCreateCreated struct {
 	Payload *models.ContactAssignment
 }
 
+// IsSuccess returns true when this tenancy contact assignments create created response has a 2xx status code
+func (o *TenancyContactAssignmentsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy contact assignments create created response has a 3xx status code
+func (o *TenancyContactAssignmentsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy contact assignments create created response has a 4xx status code
+func (o *TenancyContactAssignmentsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy contact assignments create created response has a 5xx status code
+func (o *TenancyContactAssignmentsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy contact assignments create created response a status code equal to that given
+func (o *TenancyContactAssignmentsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *TenancyContactAssignmentsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /tenancy/contact-assignments/][%d] tenancyContactAssignmentsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *TenancyContactAssignmentsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /tenancy/contact-assignments/][%d] tenancyContactAssignmentsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *TenancyContactAssignmentsCreateCreated) GetPayload() *models.ContactAssignment {
 	return o.Payload
 }

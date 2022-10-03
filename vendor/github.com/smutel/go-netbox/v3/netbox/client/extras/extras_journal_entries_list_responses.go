@@ -59,7 +59,8 @@ func NewExtrasJournalEntriesListOK() *ExtrasJournalEntriesListOK {
 	return &ExtrasJournalEntriesListOK{}
 }
 
-/* ExtrasJournalEntriesListOK describes a response with status code 200, with default header values.
+/*
+ExtrasJournalEntriesListOK describes a response with status code 200, with default header values.
 
 ExtrasJournalEntriesListOK extras journal entries list o k
 */
@@ -67,9 +68,39 @@ type ExtrasJournalEntriesListOK struct {
 	Payload *ExtrasJournalEntriesListOKBody
 }
 
+// IsSuccess returns true when this extras journal entries list o k response has a 2xx status code
+func (o *ExtrasJournalEntriesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras journal entries list o k response has a 3xx status code
+func (o *ExtrasJournalEntriesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras journal entries list o k response has a 4xx status code
+func (o *ExtrasJournalEntriesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras journal entries list o k response has a 5xx status code
+func (o *ExtrasJournalEntriesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras journal entries list o k response a status code equal to that given
+func (o *ExtrasJournalEntriesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasJournalEntriesListOK) Error() string {
 	return fmt.Sprintf("[GET /extras/journal-entries/][%d] extrasJournalEntriesListOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasJournalEntriesListOK) String() string {
+	return fmt.Sprintf("[GET /extras/journal-entries/][%d] extrasJournalEntriesListOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasJournalEntriesListOK) GetPayload() *ExtrasJournalEntriesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *ExtrasJournalEntriesListOK) readResponse(response runtime.ClientRespons
 	return nil
 }
 
-/*ExtrasJournalEntriesListOKBody extras journal entries list o k body
+/*
+ExtrasJournalEntriesListOKBody extras journal entries list o k body
 swagger:model ExtrasJournalEntriesListOKBody
 */
 type ExtrasJournalEntriesListOKBody struct {

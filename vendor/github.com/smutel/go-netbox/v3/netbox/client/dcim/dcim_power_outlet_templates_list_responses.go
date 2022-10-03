@@ -59,7 +59,8 @@ func NewDcimPowerOutletTemplatesListOK() *DcimPowerOutletTemplatesListOK {
 	return &DcimPowerOutletTemplatesListOK{}
 }
 
-/* DcimPowerOutletTemplatesListOK describes a response with status code 200, with default header values.
+/*
+DcimPowerOutletTemplatesListOK describes a response with status code 200, with default header values.
 
 DcimPowerOutletTemplatesListOK dcim power outlet templates list o k
 */
@@ -67,9 +68,39 @@ type DcimPowerOutletTemplatesListOK struct {
 	Payload *DcimPowerOutletTemplatesListOKBody
 }
 
+// IsSuccess returns true when this dcim power outlet templates list o k response has a 2xx status code
+func (o *DcimPowerOutletTemplatesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power outlet templates list o k response has a 3xx status code
+func (o *DcimPowerOutletTemplatesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power outlet templates list o k response has a 4xx status code
+func (o *DcimPowerOutletTemplatesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power outlet templates list o k response has a 5xx status code
+func (o *DcimPowerOutletTemplatesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power outlet templates list o k response a status code equal to that given
+func (o *DcimPowerOutletTemplatesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerOutletTemplatesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/power-outlet-templates/][%d] dcimPowerOutletTemplatesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerOutletTemplatesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/power-outlet-templates/][%d] dcimPowerOutletTemplatesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerOutletTemplatesListOK) GetPayload() *DcimPowerOutletTemplatesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimPowerOutletTemplatesListOK) readResponse(response runtime.ClientRes
 	return nil
 }
 
-/*DcimPowerOutletTemplatesListOKBody dcim power outlet templates list o k body
+/*
+DcimPowerOutletTemplatesListOKBody dcim power outlet templates list o k body
 swagger:model DcimPowerOutletTemplatesListOKBody
 */
 type DcimPowerOutletTemplatesListOKBody struct {

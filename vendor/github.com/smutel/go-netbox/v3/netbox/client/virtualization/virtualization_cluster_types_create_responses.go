@@ -54,7 +54,8 @@ func NewVirtualizationClusterTypesCreateCreated() *VirtualizationClusterTypesCre
 	return &VirtualizationClusterTypesCreateCreated{}
 }
 
-/* VirtualizationClusterTypesCreateCreated describes a response with status code 201, with default header values.
+/*
+VirtualizationClusterTypesCreateCreated describes a response with status code 201, with default header values.
 
 VirtualizationClusterTypesCreateCreated virtualization cluster types create created
 */
@@ -62,9 +63,39 @@ type VirtualizationClusterTypesCreateCreated struct {
 	Payload *models.ClusterType
 }
 
+// IsSuccess returns true when this virtualization cluster types create created response has a 2xx status code
+func (o *VirtualizationClusterTypesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization cluster types create created response has a 3xx status code
+func (o *VirtualizationClusterTypesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization cluster types create created response has a 4xx status code
+func (o *VirtualizationClusterTypesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization cluster types create created response has a 5xx status code
+func (o *VirtualizationClusterTypesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization cluster types create created response a status code equal to that given
+func (o *VirtualizationClusterTypesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *VirtualizationClusterTypesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /virtualization/cluster-types/][%d] virtualizationClusterTypesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *VirtualizationClusterTypesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /virtualization/cluster-types/][%d] virtualizationClusterTypesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *VirtualizationClusterTypesCreateCreated) GetPayload() *models.ClusterType {
 	return o.Payload
 }

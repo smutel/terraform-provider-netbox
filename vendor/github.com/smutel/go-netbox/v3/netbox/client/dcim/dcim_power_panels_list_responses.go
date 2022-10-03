@@ -59,7 +59,8 @@ func NewDcimPowerPanelsListOK() *DcimPowerPanelsListOK {
 	return &DcimPowerPanelsListOK{}
 }
 
-/* DcimPowerPanelsListOK describes a response with status code 200, with default header values.
+/*
+DcimPowerPanelsListOK describes a response with status code 200, with default header values.
 
 DcimPowerPanelsListOK dcim power panels list o k
 */
@@ -67,9 +68,39 @@ type DcimPowerPanelsListOK struct {
 	Payload *DcimPowerPanelsListOKBody
 }
 
+// IsSuccess returns true when this dcim power panels list o k response has a 2xx status code
+func (o *DcimPowerPanelsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power panels list o k response has a 3xx status code
+func (o *DcimPowerPanelsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power panels list o k response has a 4xx status code
+func (o *DcimPowerPanelsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power panels list o k response has a 5xx status code
+func (o *DcimPowerPanelsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power panels list o k response a status code equal to that given
+func (o *DcimPowerPanelsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerPanelsListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/power-panels/][%d] dcimPowerPanelsListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerPanelsListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/power-panels/][%d] dcimPowerPanelsListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerPanelsListOK) GetPayload() *DcimPowerPanelsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimPowerPanelsListOK) readResponse(response runtime.ClientResponse, co
 	return nil
 }
 
-/*DcimPowerPanelsListOKBody dcim power panels list o k body
+/*
+DcimPowerPanelsListOKBody dcim power panels list o k body
 swagger:model DcimPowerPanelsListOKBody
 */
 type DcimPowerPanelsListOKBody struct {

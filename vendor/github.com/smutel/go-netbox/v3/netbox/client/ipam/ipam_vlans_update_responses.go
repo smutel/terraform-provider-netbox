@@ -54,7 +54,8 @@ func NewIpamVlansUpdateOK() *IpamVlansUpdateOK {
 	return &IpamVlansUpdateOK{}
 }
 
-/* IpamVlansUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamVlansUpdateOK describes a response with status code 200, with default header values.
 
 IpamVlansUpdateOK ipam vlans update o k
 */
@@ -62,9 +63,39 @@ type IpamVlansUpdateOK struct {
 	Payload *models.VLAN
 }
 
+// IsSuccess returns true when this ipam vlans update o k response has a 2xx status code
+func (o *IpamVlansUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam vlans update o k response has a 3xx status code
+func (o *IpamVlansUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam vlans update o k response has a 4xx status code
+func (o *IpamVlansUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam vlans update o k response has a 5xx status code
+func (o *IpamVlansUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam vlans update o k response a status code equal to that given
+func (o *IpamVlansUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamVlansUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /ipam/vlans/{id}/][%d] ipamVlansUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamVlansUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /ipam/vlans/{id}/][%d] ipamVlansUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamVlansUpdateOK) GetPayload() *models.VLAN {
 	return o.Payload
 }

@@ -116,7 +116,6 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				ForceNew:    true,
 				Description: "Set this resource as primary IPv4 (false by default).",
 			},
 			"role": {
@@ -204,7 +203,6 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 	natInsideID := int64(d.Get("nat_inside_id").(int))
 	objectID := int64(d.Get("object_id").(int))
 	objectType := d.Get("object_type").(string)
-	primaryIP4 := d.Get("primary_ip4").(bool)
 	role := d.Get("role").(string)
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
@@ -223,17 +221,6 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 
 	if natInsideID != 0 {
 		newResource.NatInside = &natInsideID
-	}
-
-	var info InfosForPrimary
-	if primaryIP4 && objectID != 0 {
-		if objectType == VMInterfaceType {
-			var err error
-			info, err = getInfoForPrimary(m, objectID)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-		}
 	}
 
 	if objectID != 0 {
@@ -268,9 +255,15 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 	}
 
 	d.SetId(strconv.FormatInt(*addressid, 10))
-	err := updatePrimaryStatus(client, info, *addressid)
-	if err != nil {
-		return diag.FromErr(err)
+	if primaryIP := d.Get("primary_ip4").(bool); primaryIP {
+		vmID, err := getVMIDForInterface(client, objectID)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = updatePrimaryStatus(client, vmID, *addressid, primaryIP)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	return resourceNetboxIpamIPAddressesRead(ctx, d, m)
@@ -336,36 +329,15 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 				return diag.FromErr(err)
 			}
 
-			var assignedObjectID *int64
-			assignedObjectID = nil
-			if resource.AssignedObjectID != nil {
-				assignedObjectID = resource.AssignedObjectID
-
-				var info InfosForPrimary
-				if *resource.AssignedObjectID != 0 {
-					if *resource.AssignedObjectType == VMInterfaceType {
-						var err error
-						info, err = getInfoForPrimary(m, *resource.AssignedObjectID)
-						if err != nil {
-							return diag.FromErr(err)
-						}
-
-						if info.vmPrimaryIP4ID == resource.ID {
-							if err = d.Set("primary_ip4", true); err != nil {
-								return diag.FromErr(err)
-							}
-						} else {
-							if err = d.Set("primary_ip4", false); err != nil {
-								return diag.FromErr(err)
-							}
-						}
-					}
-				}
-			} else if err = d.Set("primary_ip4", false); err != nil {
+			isPrimary, err := isprimary(m, resource.AssignedObjectID, resource.ID, (*resource.Family.Value == 4))
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			if err = d.Set("primary_ip4", isPrimary); err != nil {
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("object_id", assignedObjectID); err != nil {
+			if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -526,36 +498,19 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 
-	/*
-	 *   if primary_ip4 || d.HasChange("primary_ip4") {
-	 *     var info InfosForPrimary
-	 *     objectID := int64(d.Get("object_id").(int))
-	 *     objectType := d.Get("object_type").(string)
-	 *     isPrimary := d.Get("primary_ip4").(bool)
-	 *     if objectID != 0 {
-	 *       if objectType == VMInterfaceType {
-	 *         var err error
-	 *         info, err = getInfoForPrimary(m, objectID)
-	 *         if err != nil {
-	 *           return diag.FromErr(err)
-	 *         }
-	 *       }
-	 *     }
-	 *
-	 *     var ipID int64
-	 *     ipID = 0
-	 *     if isPrimary {
-	 *       ipID, err = strconv.ParseInt(d.Id(), 10, 64)
-	 *       if err != nil {
-	 *         return diag.Errorf("Unable to convert ID into int64")
-	 *       }
-	 *     }
-	 *     err = updatePrimaryStatus(client, info, ipID)
-	 *     if err != nil {
-	 *       return diag.FromErr(err)
-	 *     }
-	 *   }
-	 */
+	if (d.HasChange("object_id") && d.Get("primary_ip4").(bool)) ||
+		(!d.HasChange("object_id") && d.HasChange("primary_ip4")) ||
+		(d.HasChange("primary_ip4") && d.Get("primary_ip4").(bool)) {
+		objectID := int64(d.Get("object_id").(int))
+		vmID, err := getVMIDForInterface(client, objectID)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = updatePrimaryStatus(client, vmID, resourceID, d.Get("primary_ip4").(bool))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
 
 	return resourceNetboxIpamIPAddressesRead(ctx, d, m)
 }

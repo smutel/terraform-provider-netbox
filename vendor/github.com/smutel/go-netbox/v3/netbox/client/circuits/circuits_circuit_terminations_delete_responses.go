@@ -51,14 +51,44 @@ func NewCircuitsCircuitTerminationsDeleteNoContent() *CircuitsCircuitTermination
 	return &CircuitsCircuitTerminationsDeleteNoContent{}
 }
 
-/* CircuitsCircuitTerminationsDeleteNoContent describes a response with status code 204, with default header values.
+/*
+CircuitsCircuitTerminationsDeleteNoContent describes a response with status code 204, with default header values.
 
 CircuitsCircuitTerminationsDeleteNoContent circuits circuit terminations delete no content
 */
 type CircuitsCircuitTerminationsDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this circuits circuit terminations delete no content response has a 2xx status code
+func (o *CircuitsCircuitTerminationsDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit terminations delete no content response has a 3xx status code
+func (o *CircuitsCircuitTerminationsDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit terminations delete no content response has a 4xx status code
+func (o *CircuitsCircuitTerminationsDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit terminations delete no content response has a 5xx status code
+func (o *CircuitsCircuitTerminationsDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit terminations delete no content response a status code equal to that given
+func (o *CircuitsCircuitTerminationsDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *CircuitsCircuitTerminationsDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /circuits/circuit-terminations/{id}/][%d] circuitsCircuitTerminationsDeleteNoContent ", 204)
+}
+
+func (o *CircuitsCircuitTerminationsDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /circuits/circuit-terminations/{id}/][%d] circuitsCircuitTerminationsDeleteNoContent ", 204)
 }
 

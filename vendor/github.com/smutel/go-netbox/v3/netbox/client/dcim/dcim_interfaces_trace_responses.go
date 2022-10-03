@@ -54,7 +54,8 @@ func NewDcimInterfacesTraceOK() *DcimInterfacesTraceOK {
 	return &DcimInterfacesTraceOK{}
 }
 
-/* DcimInterfacesTraceOK describes a response with status code 200, with default header values.
+/*
+DcimInterfacesTraceOK describes a response with status code 200, with default header values.
 
 DcimInterfacesTraceOK dcim interfaces trace o k
 */
@@ -62,9 +63,39 @@ type DcimInterfacesTraceOK struct {
 	Payload *models.Interface
 }
 
+// IsSuccess returns true when this dcim interfaces trace o k response has a 2xx status code
+func (o *DcimInterfacesTraceOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim interfaces trace o k response has a 3xx status code
+func (o *DcimInterfacesTraceOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim interfaces trace o k response has a 4xx status code
+func (o *DcimInterfacesTraceOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim interfaces trace o k response has a 5xx status code
+func (o *DcimInterfacesTraceOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim interfaces trace o k response a status code equal to that given
+func (o *DcimInterfacesTraceOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInterfacesTraceOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/interfaces/{id}/trace/][%d] dcimInterfacesTraceOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInterfacesTraceOK) String() string {
+	return fmt.Sprintf("[GET /dcim/interfaces/{id}/trace/][%d] dcimInterfacesTraceOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInterfacesTraceOK) GetPayload() *models.Interface {
 	return o.Payload
 }

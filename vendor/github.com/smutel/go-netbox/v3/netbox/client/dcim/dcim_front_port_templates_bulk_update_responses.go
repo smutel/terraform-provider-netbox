@@ -54,7 +54,8 @@ func NewDcimFrontPortTemplatesBulkUpdateOK() *DcimFrontPortTemplatesBulkUpdateOK
 	return &DcimFrontPortTemplatesBulkUpdateOK{}
 }
 
-/* DcimFrontPortTemplatesBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimFrontPortTemplatesBulkUpdateOK describes a response with status code 200, with default header values.
 
 DcimFrontPortTemplatesBulkUpdateOK dcim front port templates bulk update o k
 */
@@ -62,9 +63,39 @@ type DcimFrontPortTemplatesBulkUpdateOK struct {
 	Payload *models.FrontPortTemplate
 }
 
+// IsSuccess returns true when this dcim front port templates bulk update o k response has a 2xx status code
+func (o *DcimFrontPortTemplatesBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim front port templates bulk update o k response has a 3xx status code
+func (o *DcimFrontPortTemplatesBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim front port templates bulk update o k response has a 4xx status code
+func (o *DcimFrontPortTemplatesBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim front port templates bulk update o k response has a 5xx status code
+func (o *DcimFrontPortTemplatesBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim front port templates bulk update o k response a status code equal to that given
+func (o *DcimFrontPortTemplatesBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimFrontPortTemplatesBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/front-port-templates/][%d] dcimFrontPortTemplatesBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimFrontPortTemplatesBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/front-port-templates/][%d] dcimFrontPortTemplatesBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimFrontPortTemplatesBulkUpdateOK) GetPayload() *models.FrontPortTemplate {
 	return o.Payload
 }

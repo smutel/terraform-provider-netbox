@@ -54,7 +54,8 @@ func NewIpamVlanGroupsCreateCreated() *IpamVlanGroupsCreateCreated {
 	return &IpamVlanGroupsCreateCreated{}
 }
 
-/* IpamVlanGroupsCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamVlanGroupsCreateCreated describes a response with status code 201, with default header values.
 
 IpamVlanGroupsCreateCreated ipam vlan groups create created
 */
@@ -62,9 +63,39 @@ type IpamVlanGroupsCreateCreated struct {
 	Payload *models.VLANGroup
 }
 
+// IsSuccess returns true when this ipam vlan groups create created response has a 2xx status code
+func (o *IpamVlanGroupsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam vlan groups create created response has a 3xx status code
+func (o *IpamVlanGroupsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam vlan groups create created response has a 4xx status code
+func (o *IpamVlanGroupsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam vlan groups create created response has a 5xx status code
+func (o *IpamVlanGroupsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam vlan groups create created response a status code equal to that given
+func (o *IpamVlanGroupsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamVlanGroupsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/vlan-groups/][%d] ipamVlanGroupsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamVlanGroupsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/vlan-groups/][%d] ipamVlanGroupsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamVlanGroupsCreateCreated) GetPayload() *models.VLANGroup {
 	return o.Payload
 }

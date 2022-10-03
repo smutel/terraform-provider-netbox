@@ -54,7 +54,8 @@ func NewDcimInventoryItemRolesPartialUpdateOK() *DcimInventoryItemRolesPartialUp
 	return &DcimInventoryItemRolesPartialUpdateOK{}
 }
 
-/* DcimInventoryItemRolesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimInventoryItemRolesPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimInventoryItemRolesPartialUpdateOK dcim inventory item roles partial update o k
 */
@@ -62,9 +63,39 @@ type DcimInventoryItemRolesPartialUpdateOK struct {
 	Payload *models.InventoryItemRole
 }
 
+// IsSuccess returns true when this dcim inventory item roles partial update o k response has a 2xx status code
+func (o *DcimInventoryItemRolesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory item roles partial update o k response has a 3xx status code
+func (o *DcimInventoryItemRolesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory item roles partial update o k response has a 4xx status code
+func (o *DcimInventoryItemRolesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory item roles partial update o k response has a 5xx status code
+func (o *DcimInventoryItemRolesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory item roles partial update o k response a status code equal to that given
+func (o *DcimInventoryItemRolesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInventoryItemRolesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/inventory-item-roles/{id}/][%d] dcimInventoryItemRolesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInventoryItemRolesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/inventory-item-roles/{id}/][%d] dcimInventoryItemRolesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInventoryItemRolesPartialUpdateOK) GetPayload() *models.InventoryItemRole {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewCircuitsProviderNetworksCreateCreated() *CircuitsProviderNetworksCreateC
 	return &CircuitsProviderNetworksCreateCreated{}
 }
 
-/* CircuitsProviderNetworksCreateCreated describes a response with status code 201, with default header values.
+/*
+CircuitsProviderNetworksCreateCreated describes a response with status code 201, with default header values.
 
 CircuitsProviderNetworksCreateCreated circuits provider networks create created
 */
@@ -62,9 +63,39 @@ type CircuitsProviderNetworksCreateCreated struct {
 	Payload *models.ProviderNetwork
 }
 
+// IsSuccess returns true when this circuits provider networks create created response has a 2xx status code
+func (o *CircuitsProviderNetworksCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits provider networks create created response has a 3xx status code
+func (o *CircuitsProviderNetworksCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits provider networks create created response has a 4xx status code
+func (o *CircuitsProviderNetworksCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits provider networks create created response has a 5xx status code
+func (o *CircuitsProviderNetworksCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits provider networks create created response a status code equal to that given
+func (o *CircuitsProviderNetworksCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *CircuitsProviderNetworksCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /circuits/provider-networks/][%d] circuitsProviderNetworksCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *CircuitsProviderNetworksCreateCreated) String() string {
+	return fmt.Sprintf("[POST /circuits/provider-networks/][%d] circuitsProviderNetworksCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *CircuitsProviderNetworksCreateCreated) GetPayload() *models.ProviderNetwork {
 	return o.Payload
 }

@@ -59,7 +59,8 @@ func NewIpamAggregatesListOK() *IpamAggregatesListOK {
 	return &IpamAggregatesListOK{}
 }
 
-/* IpamAggregatesListOK describes a response with status code 200, with default header values.
+/*
+IpamAggregatesListOK describes a response with status code 200, with default header values.
 
 IpamAggregatesListOK ipam aggregates list o k
 */
@@ -67,9 +68,39 @@ type IpamAggregatesListOK struct {
 	Payload *IpamAggregatesListOKBody
 }
 
+// IsSuccess returns true when this ipam aggregates list o k response has a 2xx status code
+func (o *IpamAggregatesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam aggregates list o k response has a 3xx status code
+func (o *IpamAggregatesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam aggregates list o k response has a 4xx status code
+func (o *IpamAggregatesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam aggregates list o k response has a 5xx status code
+func (o *IpamAggregatesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam aggregates list o k response a status code equal to that given
+func (o *IpamAggregatesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamAggregatesListOK) Error() string {
 	return fmt.Sprintf("[GET /ipam/aggregates/][%d] ipamAggregatesListOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamAggregatesListOK) String() string {
+	return fmt.Sprintf("[GET /ipam/aggregates/][%d] ipamAggregatesListOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamAggregatesListOK) GetPayload() *IpamAggregatesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *IpamAggregatesListOK) readResponse(response runtime.ClientResponse, con
 	return nil
 }
 
-/*IpamAggregatesListOKBody ipam aggregates list o k body
+/*
+IpamAggregatesListOKBody ipam aggregates list o k body
 swagger:model IpamAggregatesListOKBody
 */
 type IpamAggregatesListOKBody struct {

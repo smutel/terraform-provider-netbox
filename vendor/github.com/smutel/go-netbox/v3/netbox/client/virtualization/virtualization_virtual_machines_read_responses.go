@@ -54,7 +54,8 @@ func NewVirtualizationVirtualMachinesReadOK() *VirtualizationVirtualMachinesRead
 	return &VirtualizationVirtualMachinesReadOK{}
 }
 
-/* VirtualizationVirtualMachinesReadOK describes a response with status code 200, with default header values.
+/*
+VirtualizationVirtualMachinesReadOK describes a response with status code 200, with default header values.
 
 VirtualizationVirtualMachinesReadOK virtualization virtual machines read o k
 */
@@ -62,9 +63,39 @@ type VirtualizationVirtualMachinesReadOK struct {
 	Payload *models.VirtualMachineWithConfigContext
 }
 
+// IsSuccess returns true when this virtualization virtual machines read o k response has a 2xx status code
+func (o *VirtualizationVirtualMachinesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization virtual machines read o k response has a 3xx status code
+func (o *VirtualizationVirtualMachinesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization virtual machines read o k response has a 4xx status code
+func (o *VirtualizationVirtualMachinesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization virtual machines read o k response has a 5xx status code
+func (o *VirtualizationVirtualMachinesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization virtual machines read o k response a status code equal to that given
+func (o *VirtualizationVirtualMachinesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationVirtualMachinesReadOK) Error() string {
 	return fmt.Sprintf("[GET /virtualization/virtual-machines/{id}/][%d] virtualizationVirtualMachinesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationVirtualMachinesReadOK) String() string {
+	return fmt.Sprintf("[GET /virtualization/virtual-machines/{id}/][%d] virtualizationVirtualMachinesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationVirtualMachinesReadOK) GetPayload() *models.VirtualMachineWithConfigContext {
 	return o.Payload
 }

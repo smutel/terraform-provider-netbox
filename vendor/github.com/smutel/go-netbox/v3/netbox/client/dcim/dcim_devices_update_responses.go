@@ -54,7 +54,8 @@ func NewDcimDevicesUpdateOK() *DcimDevicesUpdateOK {
 	return &DcimDevicesUpdateOK{}
 }
 
-/* DcimDevicesUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimDevicesUpdateOK describes a response with status code 200, with default header values.
 
 DcimDevicesUpdateOK dcim devices update o k
 */
@@ -62,9 +63,39 @@ type DcimDevicesUpdateOK struct {
 	Payload *models.DeviceWithConfigContext
 }
 
+// IsSuccess returns true when this dcim devices update o k response has a 2xx status code
+func (o *DcimDevicesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim devices update o k response has a 3xx status code
+func (o *DcimDevicesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim devices update o k response has a 4xx status code
+func (o *DcimDevicesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim devices update o k response has a 5xx status code
+func (o *DcimDevicesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim devices update o k response a status code equal to that given
+func (o *DcimDevicesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimDevicesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/devices/{id}/][%d] dcimDevicesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimDevicesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/devices/{id}/][%d] dcimDevicesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimDevicesUpdateOK) GetPayload() *models.DeviceWithConfigContext {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewVirtualizationClusterGroupsUpdateOK() *VirtualizationClusterGroupsUpdate
 	return &VirtualizationClusterGroupsUpdateOK{}
 }
 
-/* VirtualizationClusterGroupsUpdateOK describes a response with status code 200, with default header values.
+/*
+VirtualizationClusterGroupsUpdateOK describes a response with status code 200, with default header values.
 
 VirtualizationClusterGroupsUpdateOK virtualization cluster groups update o k
 */
@@ -62,9 +63,39 @@ type VirtualizationClusterGroupsUpdateOK struct {
 	Payload *models.ClusterGroup
 }
 
+// IsSuccess returns true when this virtualization cluster groups update o k response has a 2xx status code
+func (o *VirtualizationClusterGroupsUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization cluster groups update o k response has a 3xx status code
+func (o *VirtualizationClusterGroupsUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization cluster groups update o k response has a 4xx status code
+func (o *VirtualizationClusterGroupsUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization cluster groups update o k response has a 5xx status code
+func (o *VirtualizationClusterGroupsUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization cluster groups update o k response a status code equal to that given
+func (o *VirtualizationClusterGroupsUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationClusterGroupsUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /virtualization/cluster-groups/{id}/][%d] virtualizationClusterGroupsUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationClusterGroupsUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /virtualization/cluster-groups/{id}/][%d] virtualizationClusterGroupsUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationClusterGroupsUpdateOK) GetPayload() *models.ClusterGroup {
 	return o.Payload
 }

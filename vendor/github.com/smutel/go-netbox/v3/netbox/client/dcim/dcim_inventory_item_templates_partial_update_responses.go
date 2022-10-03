@@ -54,7 +54,8 @@ func NewDcimInventoryItemTemplatesPartialUpdateOK() *DcimInventoryItemTemplatesP
 	return &DcimInventoryItemTemplatesPartialUpdateOK{}
 }
 
-/* DcimInventoryItemTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimInventoryItemTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimInventoryItemTemplatesPartialUpdateOK dcim inventory item templates partial update o k
 */
@@ -62,9 +63,39 @@ type DcimInventoryItemTemplatesPartialUpdateOK struct {
 	Payload *models.InventoryItemTemplate
 }
 
+// IsSuccess returns true when this dcim inventory item templates partial update o k response has a 2xx status code
+func (o *DcimInventoryItemTemplatesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory item templates partial update o k response has a 3xx status code
+func (o *DcimInventoryItemTemplatesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory item templates partial update o k response has a 4xx status code
+func (o *DcimInventoryItemTemplatesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory item templates partial update o k response has a 5xx status code
+func (o *DcimInventoryItemTemplatesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory item templates partial update o k response a status code equal to that given
+func (o *DcimInventoryItemTemplatesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInventoryItemTemplatesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/inventory-item-templates/{id}/][%d] dcimInventoryItemTemplatesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInventoryItemTemplatesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/inventory-item-templates/{id}/][%d] dcimInventoryItemTemplatesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInventoryItemTemplatesPartialUpdateOK) GetPayload() *models.InventoryItemTemplate {
 	return o.Payload
 }

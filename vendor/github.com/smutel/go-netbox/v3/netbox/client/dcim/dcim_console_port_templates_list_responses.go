@@ -59,7 +59,8 @@ func NewDcimConsolePortTemplatesListOK() *DcimConsolePortTemplatesListOK {
 	return &DcimConsolePortTemplatesListOK{}
 }
 
-/* DcimConsolePortTemplatesListOK describes a response with status code 200, with default header values.
+/*
+DcimConsolePortTemplatesListOK describes a response with status code 200, with default header values.
 
 DcimConsolePortTemplatesListOK dcim console port templates list o k
 */
@@ -67,9 +68,39 @@ type DcimConsolePortTemplatesListOK struct {
 	Payload *DcimConsolePortTemplatesListOKBody
 }
 
+// IsSuccess returns true when this dcim console port templates list o k response has a 2xx status code
+func (o *DcimConsolePortTemplatesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console port templates list o k response has a 3xx status code
+func (o *DcimConsolePortTemplatesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console port templates list o k response has a 4xx status code
+func (o *DcimConsolePortTemplatesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console port templates list o k response has a 5xx status code
+func (o *DcimConsolePortTemplatesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console port templates list o k response a status code equal to that given
+func (o *DcimConsolePortTemplatesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimConsolePortTemplatesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/console-port-templates/][%d] dcimConsolePortTemplatesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimConsolePortTemplatesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/console-port-templates/][%d] dcimConsolePortTemplatesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimConsolePortTemplatesListOK) GetPayload() *DcimConsolePortTemplatesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimConsolePortTemplatesListOK) readResponse(response runtime.ClientRes
 	return nil
 }
 
-/*DcimConsolePortTemplatesListOKBody dcim console port templates list o k body
+/*
+DcimConsolePortTemplatesListOKBody dcim console port templates list o k body
 swagger:model DcimConsolePortTemplatesListOKBody
 */
 type DcimConsolePortTemplatesListOKBody struct {

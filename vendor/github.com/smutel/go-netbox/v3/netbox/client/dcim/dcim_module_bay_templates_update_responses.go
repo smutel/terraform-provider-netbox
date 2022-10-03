@@ -54,7 +54,8 @@ func NewDcimModuleBayTemplatesUpdateOK() *DcimModuleBayTemplatesUpdateOK {
 	return &DcimModuleBayTemplatesUpdateOK{}
 }
 
-/* DcimModuleBayTemplatesUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimModuleBayTemplatesUpdateOK describes a response with status code 200, with default header values.
 
 DcimModuleBayTemplatesUpdateOK dcim module bay templates update o k
 */
@@ -62,9 +63,39 @@ type DcimModuleBayTemplatesUpdateOK struct {
 	Payload *models.ModuleBayTemplate
 }
 
+// IsSuccess returns true when this dcim module bay templates update o k response has a 2xx status code
+func (o *DcimModuleBayTemplatesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim module bay templates update o k response has a 3xx status code
+func (o *DcimModuleBayTemplatesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim module bay templates update o k response has a 4xx status code
+func (o *DcimModuleBayTemplatesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim module bay templates update o k response has a 5xx status code
+func (o *DcimModuleBayTemplatesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim module bay templates update o k response a status code equal to that given
+func (o *DcimModuleBayTemplatesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimModuleBayTemplatesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/module-bay-templates/{id}/][%d] dcimModuleBayTemplatesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimModuleBayTemplatesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/module-bay-templates/{id}/][%d] dcimModuleBayTemplatesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimModuleBayTemplatesUpdateOK) GetPayload() *models.ModuleBayTemplate {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewDcimPowerFeedsTraceOK() *DcimPowerFeedsTraceOK {
 	return &DcimPowerFeedsTraceOK{}
 }
 
-/* DcimPowerFeedsTraceOK describes a response with status code 200, with default header values.
+/*
+DcimPowerFeedsTraceOK describes a response with status code 200, with default header values.
 
 DcimPowerFeedsTraceOK dcim power feeds trace o k
 */
@@ -62,9 +63,39 @@ type DcimPowerFeedsTraceOK struct {
 	Payload *models.PowerFeed
 }
 
+// IsSuccess returns true when this dcim power feeds trace o k response has a 2xx status code
+func (o *DcimPowerFeedsTraceOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power feeds trace o k response has a 3xx status code
+func (o *DcimPowerFeedsTraceOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power feeds trace o k response has a 4xx status code
+func (o *DcimPowerFeedsTraceOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power feeds trace o k response has a 5xx status code
+func (o *DcimPowerFeedsTraceOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power feeds trace o k response a status code equal to that given
+func (o *DcimPowerFeedsTraceOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerFeedsTraceOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/power-feeds/{id}/trace/][%d] dcimPowerFeedsTraceOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerFeedsTraceOK) String() string {
+	return fmt.Sprintf("[GET /dcim/power-feeds/{id}/trace/][%d] dcimPowerFeedsTraceOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerFeedsTraceOK) GetPayload() *models.PowerFeed {
 	return o.Payload
 }

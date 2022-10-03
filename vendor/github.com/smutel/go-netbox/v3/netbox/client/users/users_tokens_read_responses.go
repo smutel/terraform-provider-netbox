@@ -54,7 +54,8 @@ func NewUsersTokensReadOK() *UsersTokensReadOK {
 	return &UsersTokensReadOK{}
 }
 
-/* UsersTokensReadOK describes a response with status code 200, with default header values.
+/*
+UsersTokensReadOK describes a response with status code 200, with default header values.
 
 UsersTokensReadOK users tokens read o k
 */
@@ -62,9 +63,39 @@ type UsersTokensReadOK struct {
 	Payload *models.Token
 }
 
+// IsSuccess returns true when this users tokens read o k response has a 2xx status code
+func (o *UsersTokensReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users tokens read o k response has a 3xx status code
+func (o *UsersTokensReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users tokens read o k response has a 4xx status code
+func (o *UsersTokensReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users tokens read o k response has a 5xx status code
+func (o *UsersTokensReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users tokens read o k response a status code equal to that given
+func (o *UsersTokensReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *UsersTokensReadOK) Error() string {
 	return fmt.Sprintf("[GET /users/tokens/{id}/][%d] usersTokensReadOK  %+v", 200, o.Payload)
 }
+
+func (o *UsersTokensReadOK) String() string {
+	return fmt.Sprintf("[GET /users/tokens/{id}/][%d] usersTokensReadOK  %+v", 200, o.Payload)
+}
+
 func (o *UsersTokensReadOK) GetPayload() *models.Token {
 	return o.Payload
 }

@@ -51,14 +51,44 @@ func NewDcimVirtualChassisBulkDeleteNoContent() *DcimVirtualChassisBulkDeleteNoC
 	return &DcimVirtualChassisBulkDeleteNoContent{}
 }
 
-/* DcimVirtualChassisBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimVirtualChassisBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimVirtualChassisBulkDeleteNoContent dcim virtual chassis bulk delete no content
 */
 type DcimVirtualChassisBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim virtual chassis bulk delete no content response has a 2xx status code
+func (o *DcimVirtualChassisBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim virtual chassis bulk delete no content response has a 3xx status code
+func (o *DcimVirtualChassisBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim virtual chassis bulk delete no content response has a 4xx status code
+func (o *DcimVirtualChassisBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim virtual chassis bulk delete no content response has a 5xx status code
+func (o *DcimVirtualChassisBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim virtual chassis bulk delete no content response a status code equal to that given
+func (o *DcimVirtualChassisBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimVirtualChassisBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/virtual-chassis/][%d] dcimVirtualChassisBulkDeleteNoContent ", 204)
+}
+
+func (o *DcimVirtualChassisBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/virtual-chassis/][%d] dcimVirtualChassisBulkDeleteNoContent ", 204)
 }
 

@@ -54,7 +54,8 @@ func NewUsersUsersUpdateOK() *UsersUsersUpdateOK {
 	return &UsersUsersUpdateOK{}
 }
 
-/* UsersUsersUpdateOK describes a response with status code 200, with default header values.
+/*
+UsersUsersUpdateOK describes a response with status code 200, with default header values.
 
 UsersUsersUpdateOK users users update o k
 */
@@ -62,9 +63,39 @@ type UsersUsersUpdateOK struct {
 	Payload *models.User
 }
 
+// IsSuccess returns true when this users users update o k response has a 2xx status code
+func (o *UsersUsersUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users users update o k response has a 3xx status code
+func (o *UsersUsersUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users users update o k response has a 4xx status code
+func (o *UsersUsersUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users users update o k response has a 5xx status code
+func (o *UsersUsersUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users users update o k response a status code equal to that given
+func (o *UsersUsersUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *UsersUsersUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /users/users/{id}/][%d] usersUsersUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *UsersUsersUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /users/users/{id}/][%d] usersUsersUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *UsersUsersUpdateOK) GetPayload() *models.User {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewIpamPrefixesUpdateOK() *IpamPrefixesUpdateOK {
 	return &IpamPrefixesUpdateOK{}
 }
 
-/* IpamPrefixesUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamPrefixesUpdateOK describes a response with status code 200, with default header values.
 
 IpamPrefixesUpdateOK ipam prefixes update o k
 */
@@ -62,9 +63,39 @@ type IpamPrefixesUpdateOK struct {
 	Payload *models.Prefix
 }
 
+// IsSuccess returns true when this ipam prefixes update o k response has a 2xx status code
+func (o *IpamPrefixesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam prefixes update o k response has a 3xx status code
+func (o *IpamPrefixesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam prefixes update o k response has a 4xx status code
+func (o *IpamPrefixesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam prefixes update o k response has a 5xx status code
+func (o *IpamPrefixesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam prefixes update o k response a status code equal to that given
+func (o *IpamPrefixesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamPrefixesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /ipam/prefixes/{id}/][%d] ipamPrefixesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamPrefixesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /ipam/prefixes/{id}/][%d] ipamPrefixesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamPrefixesUpdateOK) GetPayload() *models.Prefix {
 	return o.Payload
 }

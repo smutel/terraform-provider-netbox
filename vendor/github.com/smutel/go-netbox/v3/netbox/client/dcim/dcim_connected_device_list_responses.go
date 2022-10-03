@@ -54,7 +54,8 @@ func NewDcimConnectedDeviceListOK() *DcimConnectedDeviceListOK {
 	return &DcimConnectedDeviceListOK{}
 }
 
-/* DcimConnectedDeviceListOK describes a response with status code 200, with default header values.
+/*
+DcimConnectedDeviceListOK describes a response with status code 200, with default header values.
 
 DcimConnectedDeviceListOK dcim connected device list o k
 */
@@ -62,9 +63,39 @@ type DcimConnectedDeviceListOK struct {
 	Payload *models.Device
 }
 
+// IsSuccess returns true when this dcim connected device list o k response has a 2xx status code
+func (o *DcimConnectedDeviceListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim connected device list o k response has a 3xx status code
+func (o *DcimConnectedDeviceListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim connected device list o k response has a 4xx status code
+func (o *DcimConnectedDeviceListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim connected device list o k response has a 5xx status code
+func (o *DcimConnectedDeviceListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim connected device list o k response a status code equal to that given
+func (o *DcimConnectedDeviceListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimConnectedDeviceListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/connected-device/][%d] dcimConnectedDeviceListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimConnectedDeviceListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/connected-device/][%d] dcimConnectedDeviceListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimConnectedDeviceListOK) GetPayload() *models.Device {
 	return o.Payload
 }

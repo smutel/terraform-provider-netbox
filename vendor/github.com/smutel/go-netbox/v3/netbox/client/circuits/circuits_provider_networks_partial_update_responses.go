@@ -54,7 +54,8 @@ func NewCircuitsProviderNetworksPartialUpdateOK() *CircuitsProviderNetworksParti
 	return &CircuitsProviderNetworksPartialUpdateOK{}
 }
 
-/* CircuitsProviderNetworksPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+CircuitsProviderNetworksPartialUpdateOK describes a response with status code 200, with default header values.
 
 CircuitsProviderNetworksPartialUpdateOK circuits provider networks partial update o k
 */
@@ -62,9 +63,39 @@ type CircuitsProviderNetworksPartialUpdateOK struct {
 	Payload *models.ProviderNetwork
 }
 
+// IsSuccess returns true when this circuits provider networks partial update o k response has a 2xx status code
+func (o *CircuitsProviderNetworksPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits provider networks partial update o k response has a 3xx status code
+func (o *CircuitsProviderNetworksPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits provider networks partial update o k response has a 4xx status code
+func (o *CircuitsProviderNetworksPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits provider networks partial update o k response has a 5xx status code
+func (o *CircuitsProviderNetworksPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits provider networks partial update o k response a status code equal to that given
+func (o *CircuitsProviderNetworksPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsProviderNetworksPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /circuits/provider-networks/{id}/][%d] circuitsProviderNetworksPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsProviderNetworksPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /circuits/provider-networks/{id}/][%d] circuitsProviderNetworksPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsProviderNetworksPartialUpdateOK) GetPayload() *models.ProviderNetwork {
 	return o.Payload
 }

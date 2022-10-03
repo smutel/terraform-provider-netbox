@@ -54,7 +54,8 @@ func NewTenancyContactGroupsCreateCreated() *TenancyContactGroupsCreateCreated {
 	return &TenancyContactGroupsCreateCreated{}
 }
 
-/* TenancyContactGroupsCreateCreated describes a response with status code 201, with default header values.
+/*
+TenancyContactGroupsCreateCreated describes a response with status code 201, with default header values.
 
 TenancyContactGroupsCreateCreated tenancy contact groups create created
 */
@@ -62,9 +63,39 @@ type TenancyContactGroupsCreateCreated struct {
 	Payload *models.ContactGroup
 }
 
+// IsSuccess returns true when this tenancy contact groups create created response has a 2xx status code
+func (o *TenancyContactGroupsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy contact groups create created response has a 3xx status code
+func (o *TenancyContactGroupsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy contact groups create created response has a 4xx status code
+func (o *TenancyContactGroupsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy contact groups create created response has a 5xx status code
+func (o *TenancyContactGroupsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy contact groups create created response a status code equal to that given
+func (o *TenancyContactGroupsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *TenancyContactGroupsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /tenancy/contact-groups/][%d] tenancyContactGroupsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *TenancyContactGroupsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /tenancy/contact-groups/][%d] tenancyContactGroupsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *TenancyContactGroupsCreateCreated) GetPayload() *models.ContactGroup {
 	return o.Payload
 }

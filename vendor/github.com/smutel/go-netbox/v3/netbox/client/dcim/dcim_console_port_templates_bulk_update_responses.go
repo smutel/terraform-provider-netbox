@@ -54,7 +54,8 @@ func NewDcimConsolePortTemplatesBulkUpdateOK() *DcimConsolePortTemplatesBulkUpda
 	return &DcimConsolePortTemplatesBulkUpdateOK{}
 }
 
-/* DcimConsolePortTemplatesBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimConsolePortTemplatesBulkUpdateOK describes a response with status code 200, with default header values.
 
 DcimConsolePortTemplatesBulkUpdateOK dcim console port templates bulk update o k
 */
@@ -62,9 +63,39 @@ type DcimConsolePortTemplatesBulkUpdateOK struct {
 	Payload *models.ConsolePortTemplate
 }
 
+// IsSuccess returns true when this dcim console port templates bulk update o k response has a 2xx status code
+func (o *DcimConsolePortTemplatesBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console port templates bulk update o k response has a 3xx status code
+func (o *DcimConsolePortTemplatesBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console port templates bulk update o k response has a 4xx status code
+func (o *DcimConsolePortTemplatesBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console port templates bulk update o k response has a 5xx status code
+func (o *DcimConsolePortTemplatesBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console port templates bulk update o k response a status code equal to that given
+func (o *DcimConsolePortTemplatesBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimConsolePortTemplatesBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/console-port-templates/][%d] dcimConsolePortTemplatesBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimConsolePortTemplatesBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/console-port-templates/][%d] dcimConsolePortTemplatesBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimConsolePortTemplatesBulkUpdateOK) GetPayload() *models.ConsolePortTemplate {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewDcimFrontPortTemplatesPartialUpdateOK() *DcimFrontPortTemplatesPartialUp
 	return &DcimFrontPortTemplatesPartialUpdateOK{}
 }
 
-/* DcimFrontPortTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimFrontPortTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimFrontPortTemplatesPartialUpdateOK dcim front port templates partial update o k
 */
@@ -62,9 +63,39 @@ type DcimFrontPortTemplatesPartialUpdateOK struct {
 	Payload *models.FrontPortTemplate
 }
 
+// IsSuccess returns true when this dcim front port templates partial update o k response has a 2xx status code
+func (o *DcimFrontPortTemplatesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim front port templates partial update o k response has a 3xx status code
+func (o *DcimFrontPortTemplatesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim front port templates partial update o k response has a 4xx status code
+func (o *DcimFrontPortTemplatesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim front port templates partial update o k response has a 5xx status code
+func (o *DcimFrontPortTemplatesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim front port templates partial update o k response a status code equal to that given
+func (o *DcimFrontPortTemplatesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimFrontPortTemplatesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/front-port-templates/{id}/][%d] dcimFrontPortTemplatesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimFrontPortTemplatesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/front-port-templates/{id}/][%d] dcimFrontPortTemplatesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimFrontPortTemplatesPartialUpdateOK) GetPayload() *models.FrontPortTemplate {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewVirtualizationInterfacesCreateCreated() *VirtualizationInterfacesCreateC
 	return &VirtualizationInterfacesCreateCreated{}
 }
 
-/* VirtualizationInterfacesCreateCreated describes a response with status code 201, with default header values.
+/*
+VirtualizationInterfacesCreateCreated describes a response with status code 201, with default header values.
 
 VirtualizationInterfacesCreateCreated virtualization interfaces create created
 */
@@ -62,9 +63,39 @@ type VirtualizationInterfacesCreateCreated struct {
 	Payload *models.VMInterface
 }
 
+// IsSuccess returns true when this virtualization interfaces create created response has a 2xx status code
+func (o *VirtualizationInterfacesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization interfaces create created response has a 3xx status code
+func (o *VirtualizationInterfacesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization interfaces create created response has a 4xx status code
+func (o *VirtualizationInterfacesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization interfaces create created response has a 5xx status code
+func (o *VirtualizationInterfacesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization interfaces create created response a status code equal to that given
+func (o *VirtualizationInterfacesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *VirtualizationInterfacesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /virtualization/interfaces/][%d] virtualizationInterfacesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *VirtualizationInterfacesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /virtualization/interfaces/][%d] virtualizationInterfacesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *VirtualizationInterfacesCreateCreated) GetPayload() *models.VMInterface {
 	return o.Payload
 }

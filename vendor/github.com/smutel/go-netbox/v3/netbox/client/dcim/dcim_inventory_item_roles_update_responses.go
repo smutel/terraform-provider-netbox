@@ -54,7 +54,8 @@ func NewDcimInventoryItemRolesUpdateOK() *DcimInventoryItemRolesUpdateOK {
 	return &DcimInventoryItemRolesUpdateOK{}
 }
 
-/* DcimInventoryItemRolesUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimInventoryItemRolesUpdateOK describes a response with status code 200, with default header values.
 
 DcimInventoryItemRolesUpdateOK dcim inventory item roles update o k
 */
@@ -62,9 +63,39 @@ type DcimInventoryItemRolesUpdateOK struct {
 	Payload *models.InventoryItemRole
 }
 
+// IsSuccess returns true when this dcim inventory item roles update o k response has a 2xx status code
+func (o *DcimInventoryItemRolesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory item roles update o k response has a 3xx status code
+func (o *DcimInventoryItemRolesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory item roles update o k response has a 4xx status code
+func (o *DcimInventoryItemRolesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory item roles update o k response has a 5xx status code
+func (o *DcimInventoryItemRolesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory item roles update o k response a status code equal to that given
+func (o *DcimInventoryItemRolesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInventoryItemRolesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/inventory-item-roles/{id}/][%d] dcimInventoryItemRolesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInventoryItemRolesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/inventory-item-roles/{id}/][%d] dcimInventoryItemRolesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInventoryItemRolesUpdateOK) GetPayload() *models.InventoryItemRole {
 	return o.Payload
 }

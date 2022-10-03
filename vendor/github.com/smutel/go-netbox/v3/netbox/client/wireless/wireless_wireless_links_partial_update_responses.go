@@ -54,7 +54,8 @@ func NewWirelessWirelessLinksPartialUpdateOK() *WirelessWirelessLinksPartialUpda
 	return &WirelessWirelessLinksPartialUpdateOK{}
 }
 
-/* WirelessWirelessLinksPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+WirelessWirelessLinksPartialUpdateOK describes a response with status code 200, with default header values.
 
 WirelessWirelessLinksPartialUpdateOK wireless wireless links partial update o k
 */
@@ -62,9 +63,39 @@ type WirelessWirelessLinksPartialUpdateOK struct {
 	Payload *models.WirelessLink
 }
 
+// IsSuccess returns true when this wireless wireless links partial update o k response has a 2xx status code
+func (o *WirelessWirelessLinksPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this wireless wireless links partial update o k response has a 3xx status code
+func (o *WirelessWirelessLinksPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this wireless wireless links partial update o k response has a 4xx status code
+func (o *WirelessWirelessLinksPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this wireless wireless links partial update o k response has a 5xx status code
+func (o *WirelessWirelessLinksPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this wireless wireless links partial update o k response a status code equal to that given
+func (o *WirelessWirelessLinksPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *WirelessWirelessLinksPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /wireless/wireless-links/{id}/][%d] wirelessWirelessLinksPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *WirelessWirelessLinksPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /wireless/wireless-links/{id}/][%d] wirelessWirelessLinksPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *WirelessWirelessLinksPartialUpdateOK) GetPayload() *models.WirelessLink {
 	return o.Payload
 }

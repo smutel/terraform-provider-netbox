@@ -54,7 +54,8 @@ func NewIpamAggregatesCreateCreated() *IpamAggregatesCreateCreated {
 	return &IpamAggregatesCreateCreated{}
 }
 
-/* IpamAggregatesCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamAggregatesCreateCreated describes a response with status code 201, with default header values.
 
 IpamAggregatesCreateCreated ipam aggregates create created
 */
@@ -62,9 +63,39 @@ type IpamAggregatesCreateCreated struct {
 	Payload *models.Aggregate
 }
 
+// IsSuccess returns true when this ipam aggregates create created response has a 2xx status code
+func (o *IpamAggregatesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam aggregates create created response has a 3xx status code
+func (o *IpamAggregatesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam aggregates create created response has a 4xx status code
+func (o *IpamAggregatesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam aggregates create created response has a 5xx status code
+func (o *IpamAggregatesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam aggregates create created response a status code equal to that given
+func (o *IpamAggregatesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamAggregatesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/aggregates/][%d] ipamAggregatesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamAggregatesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/aggregates/][%d] ipamAggregatesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamAggregatesCreateCreated) GetPayload() *models.Aggregate {
 	return o.Payload
 }

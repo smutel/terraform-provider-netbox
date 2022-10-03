@@ -54,7 +54,8 @@ func NewDcimVirtualChassisBulkPartialUpdateOK() *DcimVirtualChassisBulkPartialUp
 	return &DcimVirtualChassisBulkPartialUpdateOK{}
 }
 
-/* DcimVirtualChassisBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimVirtualChassisBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimVirtualChassisBulkPartialUpdateOK dcim virtual chassis bulk partial update o k
 */
@@ -62,9 +63,39 @@ type DcimVirtualChassisBulkPartialUpdateOK struct {
 	Payload *models.VirtualChassis
 }
 
+// IsSuccess returns true when this dcim virtual chassis bulk partial update o k response has a 2xx status code
+func (o *DcimVirtualChassisBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim virtual chassis bulk partial update o k response has a 3xx status code
+func (o *DcimVirtualChassisBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim virtual chassis bulk partial update o k response has a 4xx status code
+func (o *DcimVirtualChassisBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim virtual chassis bulk partial update o k response has a 5xx status code
+func (o *DcimVirtualChassisBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim virtual chassis bulk partial update o k response a status code equal to that given
+func (o *DcimVirtualChassisBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimVirtualChassisBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/virtual-chassis/][%d] dcimVirtualChassisBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimVirtualChassisBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/virtual-chassis/][%d] dcimVirtualChassisBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimVirtualChassisBulkPartialUpdateOK) GetPayload() *models.VirtualChassis {
 	return o.Payload
 }

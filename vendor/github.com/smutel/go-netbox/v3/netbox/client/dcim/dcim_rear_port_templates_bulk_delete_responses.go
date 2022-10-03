@@ -51,14 +51,44 @@ func NewDcimRearPortTemplatesBulkDeleteNoContent() *DcimRearPortTemplatesBulkDel
 	return &DcimRearPortTemplatesBulkDeleteNoContent{}
 }
 
-/* DcimRearPortTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimRearPortTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimRearPortTemplatesBulkDeleteNoContent dcim rear port templates bulk delete no content
 */
 type DcimRearPortTemplatesBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim rear port templates bulk delete no content response has a 2xx status code
+func (o *DcimRearPortTemplatesBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rear port templates bulk delete no content response has a 3xx status code
+func (o *DcimRearPortTemplatesBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rear port templates bulk delete no content response has a 4xx status code
+func (o *DcimRearPortTemplatesBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rear port templates bulk delete no content response has a 5xx status code
+func (o *DcimRearPortTemplatesBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rear port templates bulk delete no content response a status code equal to that given
+func (o *DcimRearPortTemplatesBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimRearPortTemplatesBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/rear-port-templates/][%d] dcimRearPortTemplatesBulkDeleteNoContent ", 204)
+}
+
+func (o *DcimRearPortTemplatesBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/rear-port-templates/][%d] dcimRearPortTemplatesBulkDeleteNoContent ", 204)
 }
 

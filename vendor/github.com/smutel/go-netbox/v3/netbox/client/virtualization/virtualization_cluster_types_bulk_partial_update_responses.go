@@ -54,7 +54,8 @@ func NewVirtualizationClusterTypesBulkPartialUpdateOK() *VirtualizationClusterTy
 	return &VirtualizationClusterTypesBulkPartialUpdateOK{}
 }
 
-/* VirtualizationClusterTypesBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+VirtualizationClusterTypesBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 VirtualizationClusterTypesBulkPartialUpdateOK virtualization cluster types bulk partial update o k
 */
@@ -62,9 +63,39 @@ type VirtualizationClusterTypesBulkPartialUpdateOK struct {
 	Payload *models.ClusterType
 }
 
+// IsSuccess returns true when this virtualization cluster types bulk partial update o k response has a 2xx status code
+func (o *VirtualizationClusterTypesBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization cluster types bulk partial update o k response has a 3xx status code
+func (o *VirtualizationClusterTypesBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization cluster types bulk partial update o k response has a 4xx status code
+func (o *VirtualizationClusterTypesBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization cluster types bulk partial update o k response has a 5xx status code
+func (o *VirtualizationClusterTypesBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization cluster types bulk partial update o k response a status code equal to that given
+func (o *VirtualizationClusterTypesBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationClusterTypesBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /virtualization/cluster-types/][%d] virtualizationClusterTypesBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationClusterTypesBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /virtualization/cluster-types/][%d] virtualizationClusterTypesBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationClusterTypesBulkPartialUpdateOK) GetPayload() *models.ClusterType {
 	return o.Payload
 }

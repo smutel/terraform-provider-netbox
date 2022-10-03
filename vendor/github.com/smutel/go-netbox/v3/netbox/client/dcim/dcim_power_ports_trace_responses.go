@@ -54,7 +54,8 @@ func NewDcimPowerPortsTraceOK() *DcimPowerPortsTraceOK {
 	return &DcimPowerPortsTraceOK{}
 }
 
-/* DcimPowerPortsTraceOK describes a response with status code 200, with default header values.
+/*
+DcimPowerPortsTraceOK describes a response with status code 200, with default header values.
 
 DcimPowerPortsTraceOK dcim power ports trace o k
 */
@@ -62,9 +63,39 @@ type DcimPowerPortsTraceOK struct {
 	Payload *models.PowerPort
 }
 
+// IsSuccess returns true when this dcim power ports trace o k response has a 2xx status code
+func (o *DcimPowerPortsTraceOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power ports trace o k response has a 3xx status code
+func (o *DcimPowerPortsTraceOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power ports trace o k response has a 4xx status code
+func (o *DcimPowerPortsTraceOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power ports trace o k response has a 5xx status code
+func (o *DcimPowerPortsTraceOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power ports trace o k response a status code equal to that given
+func (o *DcimPowerPortsTraceOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerPortsTraceOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/power-ports/{id}/trace/][%d] dcimPowerPortsTraceOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerPortsTraceOK) String() string {
+	return fmt.Sprintf("[GET /dcim/power-ports/{id}/trace/][%d] dcimPowerPortsTraceOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerPortsTraceOK) GetPayload() *models.PowerPort {
 	return o.Payload
 }

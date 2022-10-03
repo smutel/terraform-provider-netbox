@@ -54,7 +54,8 @@ func NewIpamVrfsCreateCreated() *IpamVrfsCreateCreated {
 	return &IpamVrfsCreateCreated{}
 }
 
-/* IpamVrfsCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamVrfsCreateCreated describes a response with status code 201, with default header values.
 
 IpamVrfsCreateCreated ipam vrfs create created
 */
@@ -62,9 +63,39 @@ type IpamVrfsCreateCreated struct {
 	Payload *models.VRF
 }
 
+// IsSuccess returns true when this ipam vrfs create created response has a 2xx status code
+func (o *IpamVrfsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam vrfs create created response has a 3xx status code
+func (o *IpamVrfsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam vrfs create created response has a 4xx status code
+func (o *IpamVrfsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam vrfs create created response has a 5xx status code
+func (o *IpamVrfsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam vrfs create created response a status code equal to that given
+func (o *IpamVrfsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamVrfsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/vrfs/][%d] ipamVrfsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamVrfsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/vrfs/][%d] ipamVrfsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamVrfsCreateCreated) GetPayload() *models.VRF {
 	return o.Payload
 }

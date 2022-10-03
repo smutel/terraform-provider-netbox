@@ -51,14 +51,44 @@ func NewIpamServiceTemplatesDeleteNoContent() *IpamServiceTemplatesDeleteNoConte
 	return &IpamServiceTemplatesDeleteNoContent{}
 }
 
-/* IpamServiceTemplatesDeleteNoContent describes a response with status code 204, with default header values.
+/*
+IpamServiceTemplatesDeleteNoContent describes a response with status code 204, with default header values.
 
 IpamServiceTemplatesDeleteNoContent ipam service templates delete no content
 */
 type IpamServiceTemplatesDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this ipam service templates delete no content response has a 2xx status code
+func (o *IpamServiceTemplatesDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam service templates delete no content response has a 3xx status code
+func (o *IpamServiceTemplatesDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam service templates delete no content response has a 4xx status code
+func (o *IpamServiceTemplatesDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam service templates delete no content response has a 5xx status code
+func (o *IpamServiceTemplatesDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam service templates delete no content response a status code equal to that given
+func (o *IpamServiceTemplatesDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *IpamServiceTemplatesDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /ipam/service-templates/{id}/][%d] ipamServiceTemplatesDeleteNoContent ", 204)
+}
+
+func (o *IpamServiceTemplatesDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /ipam/service-templates/{id}/][%d] ipamServiceTemplatesDeleteNoContent ", 204)
 }
 

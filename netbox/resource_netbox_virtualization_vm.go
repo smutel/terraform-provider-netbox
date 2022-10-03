@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -32,6 +31,7 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 			"cluster_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
+				Default:     nil,
 				Description: "ID of the cluster which host this VM (virtualization module).",
 			},
 			"comments": {
@@ -74,7 +74,7 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 			"disk": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default:     0,
+				Default:     nil,
 				Description: "The size in GB of the disk for this VM (virtualization module).",
 			},
 			"local_context_data": {
@@ -85,7 +85,7 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 			"memory": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default:     0,
+				Default:     nil,
 				Description: "The size in MB of the memory of this VM (virtualization module).",
 			},
 			"name": {
@@ -97,13 +97,13 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 			"platform_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default:     0,
+				Default:     nil,
 				Description: "ID of the platform for this VM (virtualization module).",
 			},
 			"role_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default:     0,
+				Default:     nil,
 				Description: "ID of the role for this VM (virtualization module).",
 			},
 			"status": {
@@ -136,11 +136,13 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
+				Default:     nil,
 				Description: "ID of the tenant where this VM (virtualization module) is attached.",
 			},
 			"vcpus": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:     nil,
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[0-9]+((.[0-9]){0,1}[0-9]{0,1})$"),
 					"Must be like ^[0-9]+((.[0-9]){0,1}[0-9]{0,1})$"),
@@ -355,19 +357,34 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
+	dropFields := []string{
+		"created",
+		"last_updated",
+	}
+	emptyFields := make(map[string]interface{})
+
 	params := &models.WritableVirtualMachineWithConfigContext{}
 
 	// Required parameters
-	name := d.Get("name").(string)
-	params.Name = &name
-	clusterID := int64(d.Get("cluster_id").(int))
-	params.Cluster = &clusterID
+	if d.HasChange("name") {
+		name := d.Get("name").(string)
+		params.Name = &name
+	} else {
+		dropFields = append(dropFields, "name")
+	}
+	if d.HasChange("cluster_id") {
+		clusterID := int64(d.Get("cluster_id").(int))
+		params.Cluster = &clusterID
+	} else {
+		dropFields = append(dropFields, "cluster")
+	}
 
 	if d.HasChange("comments") {
-		if comments, exist := d.GetOk("comments"); exist {
+		comments := d.Get("comments")
+		if comments != "" {
 			params.Comments = comments.(string)
 		} else {
-			params.Comments = " "
+			emptyFields["comments"] = ""
 		}
 	}
 
@@ -379,7 +396,11 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 
 	if d.HasChange("disk") {
 		disk := int64(d.Get("disk").(int))
-		params.Disk = &disk
+		if disk != 0 {
+			params.Disk = &disk
+		} else {
+			emptyFields["disk"] = nil
+		}
 	}
 
 	if d.HasChange("local_context_data") {
@@ -395,17 +416,29 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 
 	if d.HasChange("memory") {
 		memory := int64(d.Get("memory").(int))
-		params.Memory = &memory
+		if memory != 0 {
+			params.Memory = &memory
+		} else {
+			emptyFields["memory"] = nil
+		}
 	}
 
 	if d.HasChange("platform_id") {
 		platformID := int64(d.Get("platform_id").(int))
-		params.Platform = &platformID
+		if platformID != 0 {
+			params.Platform = &platformID
+		} else {
+			emptyFields["platform"] = nil
+		}
 	}
 
 	if d.HasChange("role_id") {
 		roleID := int64(d.Get("role_id").(int))
-		params.Role = &roleID
+		if roleID != 0 {
+			params.Role = &roleID
+		} else {
+			emptyFields["role"] = nil
+		}
 	}
 
 	if d.HasChange("status") {
@@ -413,23 +446,30 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 		params.Status = status
 	}
 
-	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		params.Tags = convertTagsToNestedTags(tags)
+	} else {
+		dropFields = append(dropFields, "tags")
+	}
 
 	if d.HasChange("tenant_id") {
 		tenantID := int64(d.Get("tenant_id").(int))
-		params.Tenant = &tenantID
+		if tenantID != 0 {
+			params.Tenant = &tenantID
+		} else {
+			emptyFields["tenant"] = nil
+		}
 	}
 
-	if _, ok := d.GetOk("vcpus"); d.HasChange("vcpus") && ok {
+	if d.HasChange("vcpus") {
 		vcpus := d.Get("vcpus").(string)
-
-		if !strings.Contains(vcpus, ".") {
-			vcpus = vcpus + ".00"
+		if vcpus != "" {
+			vcpusFloat, _ := strconv.ParseFloat(vcpus, 32)
+			params.Vcpus = &vcpusFloat
+		} else {
+			emptyFields["vcpus"] = nil
 		}
-
-		vcpusFloat, _ := strconv.ParseFloat(vcpus, 32)
-		params.Vcpus = &vcpusFloat
 	}
 
 	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
@@ -442,7 +482,7 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 	resource.SetID(resourceID)
 
 	_, err = client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
-		resource, nil)
+		resource, nil, newRequestModifierOperation(emptyFields, dropFields))
 	if err != nil {
 		return diag.FromErr(err)
 	}

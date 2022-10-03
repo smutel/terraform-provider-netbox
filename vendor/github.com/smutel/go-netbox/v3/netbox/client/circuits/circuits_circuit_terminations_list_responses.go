@@ -59,7 +59,8 @@ func NewCircuitsCircuitTerminationsListOK() *CircuitsCircuitTerminationsListOK {
 	return &CircuitsCircuitTerminationsListOK{}
 }
 
-/* CircuitsCircuitTerminationsListOK describes a response with status code 200, with default header values.
+/*
+CircuitsCircuitTerminationsListOK describes a response with status code 200, with default header values.
 
 CircuitsCircuitTerminationsListOK circuits circuit terminations list o k
 */
@@ -67,9 +68,39 @@ type CircuitsCircuitTerminationsListOK struct {
 	Payload *CircuitsCircuitTerminationsListOKBody
 }
 
+// IsSuccess returns true when this circuits circuit terminations list o k response has a 2xx status code
+func (o *CircuitsCircuitTerminationsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit terminations list o k response has a 3xx status code
+func (o *CircuitsCircuitTerminationsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit terminations list o k response has a 4xx status code
+func (o *CircuitsCircuitTerminationsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit terminations list o k response has a 5xx status code
+func (o *CircuitsCircuitTerminationsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit terminations list o k response a status code equal to that given
+func (o *CircuitsCircuitTerminationsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsCircuitTerminationsListOK) Error() string {
 	return fmt.Sprintf("[GET /circuits/circuit-terminations/][%d] circuitsCircuitTerminationsListOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsCircuitTerminationsListOK) String() string {
+	return fmt.Sprintf("[GET /circuits/circuit-terminations/][%d] circuitsCircuitTerminationsListOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsCircuitTerminationsListOK) GetPayload() *CircuitsCircuitTerminationsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *CircuitsCircuitTerminationsListOK) readResponse(response runtime.Client
 	return nil
 }
 
-/*CircuitsCircuitTerminationsListOKBody circuits circuit terminations list o k body
+/*
+CircuitsCircuitTerminationsListOKBody circuits circuit terminations list o k body
 swagger:model CircuitsCircuitTerminationsListOKBody
 */
 type CircuitsCircuitTerminationsListOKBody struct {

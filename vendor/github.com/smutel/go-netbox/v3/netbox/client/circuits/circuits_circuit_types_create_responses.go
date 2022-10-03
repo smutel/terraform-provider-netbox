@@ -54,7 +54,8 @@ func NewCircuitsCircuitTypesCreateCreated() *CircuitsCircuitTypesCreateCreated {
 	return &CircuitsCircuitTypesCreateCreated{}
 }
 
-/* CircuitsCircuitTypesCreateCreated describes a response with status code 201, with default header values.
+/*
+CircuitsCircuitTypesCreateCreated describes a response with status code 201, with default header values.
 
 CircuitsCircuitTypesCreateCreated circuits circuit types create created
 */
@@ -62,9 +63,39 @@ type CircuitsCircuitTypesCreateCreated struct {
 	Payload *models.CircuitType
 }
 
+// IsSuccess returns true when this circuits circuit types create created response has a 2xx status code
+func (o *CircuitsCircuitTypesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit types create created response has a 3xx status code
+func (o *CircuitsCircuitTypesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit types create created response has a 4xx status code
+func (o *CircuitsCircuitTypesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit types create created response has a 5xx status code
+func (o *CircuitsCircuitTypesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit types create created response a status code equal to that given
+func (o *CircuitsCircuitTypesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *CircuitsCircuitTypesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /circuits/circuit-types/][%d] circuitsCircuitTypesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *CircuitsCircuitTypesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /circuits/circuit-types/][%d] circuitsCircuitTypesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *CircuitsCircuitTypesCreateCreated) GetPayload() *models.CircuitType {
 	return o.Payload
 }

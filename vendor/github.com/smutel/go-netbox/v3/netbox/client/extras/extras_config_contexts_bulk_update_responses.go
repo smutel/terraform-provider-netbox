@@ -54,7 +54,8 @@ func NewExtrasConfigContextsBulkUpdateOK() *ExtrasConfigContextsBulkUpdateOK {
 	return &ExtrasConfigContextsBulkUpdateOK{}
 }
 
-/* ExtrasConfigContextsBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasConfigContextsBulkUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasConfigContextsBulkUpdateOK extras config contexts bulk update o k
 */
@@ -62,9 +63,39 @@ type ExtrasConfigContextsBulkUpdateOK struct {
 	Payload *models.ConfigContext
 }
 
+// IsSuccess returns true when this extras config contexts bulk update o k response has a 2xx status code
+func (o *ExtrasConfigContextsBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras config contexts bulk update o k response has a 3xx status code
+func (o *ExtrasConfigContextsBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras config contexts bulk update o k response has a 4xx status code
+func (o *ExtrasConfigContextsBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras config contexts bulk update o k response has a 5xx status code
+func (o *ExtrasConfigContextsBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras config contexts bulk update o k response a status code equal to that given
+func (o *ExtrasConfigContextsBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasConfigContextsBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /extras/config-contexts/][%d] extrasConfigContextsBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasConfigContextsBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /extras/config-contexts/][%d] extrasConfigContextsBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasConfigContextsBulkUpdateOK) GetPayload() *models.ConfigContext {
 	return o.Payload
 }

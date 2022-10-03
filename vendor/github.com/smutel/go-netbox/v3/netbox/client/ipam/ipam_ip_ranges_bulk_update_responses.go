@@ -54,7 +54,8 @@ func NewIpamIPRangesBulkUpdateOK() *IpamIPRangesBulkUpdateOK {
 	return &IpamIPRangesBulkUpdateOK{}
 }
 
-/* IpamIPRangesBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamIPRangesBulkUpdateOK describes a response with status code 200, with default header values.
 
 IpamIPRangesBulkUpdateOK ipam Ip ranges bulk update o k
 */
@@ -62,9 +63,39 @@ type IpamIPRangesBulkUpdateOK struct {
 	Payload *models.IPRange
 }
 
+// IsSuccess returns true when this ipam Ip ranges bulk update o k response has a 2xx status code
+func (o *IpamIPRangesBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam Ip ranges bulk update o k response has a 3xx status code
+func (o *IpamIPRangesBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam Ip ranges bulk update o k response has a 4xx status code
+func (o *IpamIPRangesBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam Ip ranges bulk update o k response has a 5xx status code
+func (o *IpamIPRangesBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam Ip ranges bulk update o k response a status code equal to that given
+func (o *IpamIPRangesBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamIPRangesBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /ipam/ip-ranges/][%d] ipamIpRangesBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamIPRangesBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /ipam/ip-ranges/][%d] ipamIpRangesBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamIPRangesBulkUpdateOK) GetPayload() *models.IPRange {
 	return o.Payload
 }

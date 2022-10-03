@@ -54,7 +54,8 @@ func NewDcimInterfaceTemplatesReadOK() *DcimInterfaceTemplatesReadOK {
 	return &DcimInterfaceTemplatesReadOK{}
 }
 
-/* DcimInterfaceTemplatesReadOK describes a response with status code 200, with default header values.
+/*
+DcimInterfaceTemplatesReadOK describes a response with status code 200, with default header values.
 
 DcimInterfaceTemplatesReadOK dcim interface templates read o k
 */
@@ -62,9 +63,39 @@ type DcimInterfaceTemplatesReadOK struct {
 	Payload *models.InterfaceTemplate
 }
 
+// IsSuccess returns true when this dcim interface templates read o k response has a 2xx status code
+func (o *DcimInterfaceTemplatesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim interface templates read o k response has a 3xx status code
+func (o *DcimInterfaceTemplatesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim interface templates read o k response has a 4xx status code
+func (o *DcimInterfaceTemplatesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim interface templates read o k response has a 5xx status code
+func (o *DcimInterfaceTemplatesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim interface templates read o k response a status code equal to that given
+func (o *DcimInterfaceTemplatesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInterfaceTemplatesReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/interface-templates/{id}/][%d] dcimInterfaceTemplatesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInterfaceTemplatesReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/interface-templates/{id}/][%d] dcimInterfaceTemplatesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInterfaceTemplatesReadOK) GetPayload() *models.InterfaceTemplate {
 	return o.Payload
 }

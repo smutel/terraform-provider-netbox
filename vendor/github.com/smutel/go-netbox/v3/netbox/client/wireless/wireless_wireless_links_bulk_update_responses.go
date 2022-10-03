@@ -54,7 +54,8 @@ func NewWirelessWirelessLinksBulkUpdateOK() *WirelessWirelessLinksBulkUpdateOK {
 	return &WirelessWirelessLinksBulkUpdateOK{}
 }
 
-/* WirelessWirelessLinksBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+WirelessWirelessLinksBulkUpdateOK describes a response with status code 200, with default header values.
 
 WirelessWirelessLinksBulkUpdateOK wireless wireless links bulk update o k
 */
@@ -62,9 +63,39 @@ type WirelessWirelessLinksBulkUpdateOK struct {
 	Payload *models.WirelessLink
 }
 
+// IsSuccess returns true when this wireless wireless links bulk update o k response has a 2xx status code
+func (o *WirelessWirelessLinksBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this wireless wireless links bulk update o k response has a 3xx status code
+func (o *WirelessWirelessLinksBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this wireless wireless links bulk update o k response has a 4xx status code
+func (o *WirelessWirelessLinksBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this wireless wireless links bulk update o k response has a 5xx status code
+func (o *WirelessWirelessLinksBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this wireless wireless links bulk update o k response a status code equal to that given
+func (o *WirelessWirelessLinksBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *WirelessWirelessLinksBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /wireless/wireless-links/][%d] wirelessWirelessLinksBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *WirelessWirelessLinksBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /wireless/wireless-links/][%d] wirelessWirelessLinksBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *WirelessWirelessLinksBulkUpdateOK) GetPayload() *models.WirelessLink {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewIpamServiceTemplatesPartialUpdateOK() *IpamServiceTemplatesPartialUpdate
 	return &IpamServiceTemplatesPartialUpdateOK{}
 }
 
-/* IpamServiceTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamServiceTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
 
 IpamServiceTemplatesPartialUpdateOK ipam service templates partial update o k
 */
@@ -62,9 +63,39 @@ type IpamServiceTemplatesPartialUpdateOK struct {
 	Payload *models.ServiceTemplate
 }
 
+// IsSuccess returns true when this ipam service templates partial update o k response has a 2xx status code
+func (o *IpamServiceTemplatesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam service templates partial update o k response has a 3xx status code
+func (o *IpamServiceTemplatesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam service templates partial update o k response has a 4xx status code
+func (o *IpamServiceTemplatesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam service templates partial update o k response has a 5xx status code
+func (o *IpamServiceTemplatesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam service templates partial update o k response a status code equal to that given
+func (o *IpamServiceTemplatesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamServiceTemplatesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /ipam/service-templates/{id}/][%d] ipamServiceTemplatesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamServiceTemplatesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /ipam/service-templates/{id}/][%d] ipamServiceTemplatesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamServiceTemplatesPartialUpdateOK) GetPayload() *models.ServiceTemplate {
 	return o.Payload
 }

@@ -59,7 +59,8 @@ func NewVirtualizationClustersListOK() *VirtualizationClustersListOK {
 	return &VirtualizationClustersListOK{}
 }
 
-/* VirtualizationClustersListOK describes a response with status code 200, with default header values.
+/*
+VirtualizationClustersListOK describes a response with status code 200, with default header values.
 
 VirtualizationClustersListOK virtualization clusters list o k
 */
@@ -67,9 +68,39 @@ type VirtualizationClustersListOK struct {
 	Payload *VirtualizationClustersListOKBody
 }
 
+// IsSuccess returns true when this virtualization clusters list o k response has a 2xx status code
+func (o *VirtualizationClustersListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization clusters list o k response has a 3xx status code
+func (o *VirtualizationClustersListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization clusters list o k response has a 4xx status code
+func (o *VirtualizationClustersListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization clusters list o k response has a 5xx status code
+func (o *VirtualizationClustersListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization clusters list o k response a status code equal to that given
+func (o *VirtualizationClustersListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationClustersListOK) Error() string {
 	return fmt.Sprintf("[GET /virtualization/clusters/][%d] virtualizationClustersListOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationClustersListOK) String() string {
+	return fmt.Sprintf("[GET /virtualization/clusters/][%d] virtualizationClustersListOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationClustersListOK) GetPayload() *VirtualizationClustersListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *VirtualizationClustersListOK) readResponse(response runtime.ClientRespo
 	return nil
 }
 
-/*VirtualizationClustersListOKBody virtualization clusters list o k body
+/*
+VirtualizationClustersListOKBody virtualization clusters list o k body
 swagger:model VirtualizationClustersListOKBody
 */
 type VirtualizationClustersListOKBody struct {

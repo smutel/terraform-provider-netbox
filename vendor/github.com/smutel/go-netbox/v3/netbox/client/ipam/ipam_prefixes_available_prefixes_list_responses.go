@@ -54,7 +54,8 @@ func NewIpamPrefixesAvailablePrefixesListOK() *IpamPrefixesAvailablePrefixesList
 	return &IpamPrefixesAvailablePrefixesListOK{}
 }
 
-/* IpamPrefixesAvailablePrefixesListOK describes a response with status code 200, with default header values.
+/*
+IpamPrefixesAvailablePrefixesListOK describes a response with status code 200, with default header values.
 
 IpamPrefixesAvailablePrefixesListOK ipam prefixes available prefixes list o k
 */
@@ -62,9 +63,39 @@ type IpamPrefixesAvailablePrefixesListOK struct {
 	Payload []*models.AvailablePrefix
 }
 
+// IsSuccess returns true when this ipam prefixes available prefixes list o k response has a 2xx status code
+func (o *IpamPrefixesAvailablePrefixesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam prefixes available prefixes list o k response has a 3xx status code
+func (o *IpamPrefixesAvailablePrefixesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam prefixes available prefixes list o k response has a 4xx status code
+func (o *IpamPrefixesAvailablePrefixesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam prefixes available prefixes list o k response has a 5xx status code
+func (o *IpamPrefixesAvailablePrefixesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam prefixes available prefixes list o k response a status code equal to that given
+func (o *IpamPrefixesAvailablePrefixesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamPrefixesAvailablePrefixesListOK) Error() string {
 	return fmt.Sprintf("[GET /ipam/prefixes/{id}/available-prefixes/][%d] ipamPrefixesAvailablePrefixesListOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamPrefixesAvailablePrefixesListOK) String() string {
+	return fmt.Sprintf("[GET /ipam/prefixes/{id}/available-prefixes/][%d] ipamPrefixesAvailablePrefixesListOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamPrefixesAvailablePrefixesListOK) GetPayload() []*models.AvailablePrefix {
 	return o.Payload
 }

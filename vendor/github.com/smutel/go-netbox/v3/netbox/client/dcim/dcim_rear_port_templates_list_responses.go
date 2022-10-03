@@ -59,7 +59,8 @@ func NewDcimRearPortTemplatesListOK() *DcimRearPortTemplatesListOK {
 	return &DcimRearPortTemplatesListOK{}
 }
 
-/* DcimRearPortTemplatesListOK describes a response with status code 200, with default header values.
+/*
+DcimRearPortTemplatesListOK describes a response with status code 200, with default header values.
 
 DcimRearPortTemplatesListOK dcim rear port templates list o k
 */
@@ -67,9 +68,39 @@ type DcimRearPortTemplatesListOK struct {
 	Payload *DcimRearPortTemplatesListOKBody
 }
 
+// IsSuccess returns true when this dcim rear port templates list o k response has a 2xx status code
+func (o *DcimRearPortTemplatesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rear port templates list o k response has a 3xx status code
+func (o *DcimRearPortTemplatesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rear port templates list o k response has a 4xx status code
+func (o *DcimRearPortTemplatesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rear port templates list o k response has a 5xx status code
+func (o *DcimRearPortTemplatesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rear port templates list o k response a status code equal to that given
+func (o *DcimRearPortTemplatesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimRearPortTemplatesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/rear-port-templates/][%d] dcimRearPortTemplatesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimRearPortTemplatesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/rear-port-templates/][%d] dcimRearPortTemplatesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimRearPortTemplatesListOK) GetPayload() *DcimRearPortTemplatesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimRearPortTemplatesListOK) readResponse(response runtime.ClientRespon
 	return nil
 }
 
-/*DcimRearPortTemplatesListOKBody dcim rear port templates list o k body
+/*
+DcimRearPortTemplatesListOKBody dcim rear port templates list o k body
 swagger:model DcimRearPortTemplatesListOKBody
 */
 type DcimRearPortTemplatesListOKBody struct {

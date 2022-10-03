@@ -59,7 +59,8 @@ func NewExtrasTagsListOK() *ExtrasTagsListOK {
 	return &ExtrasTagsListOK{}
 }
 
-/* ExtrasTagsListOK describes a response with status code 200, with default header values.
+/*
+ExtrasTagsListOK describes a response with status code 200, with default header values.
 
 ExtrasTagsListOK extras tags list o k
 */
@@ -67,9 +68,39 @@ type ExtrasTagsListOK struct {
 	Payload *ExtrasTagsListOKBody
 }
 
+// IsSuccess returns true when this extras tags list o k response has a 2xx status code
+func (o *ExtrasTagsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras tags list o k response has a 3xx status code
+func (o *ExtrasTagsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras tags list o k response has a 4xx status code
+func (o *ExtrasTagsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras tags list o k response has a 5xx status code
+func (o *ExtrasTagsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras tags list o k response a status code equal to that given
+func (o *ExtrasTagsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasTagsListOK) Error() string {
 	return fmt.Sprintf("[GET /extras/tags/][%d] extrasTagsListOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasTagsListOK) String() string {
+	return fmt.Sprintf("[GET /extras/tags/][%d] extrasTagsListOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasTagsListOK) GetPayload() *ExtrasTagsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *ExtrasTagsListOK) readResponse(response runtime.ClientResponse, consume
 	return nil
 }
 
-/*ExtrasTagsListOKBody extras tags list o k body
+/*
+ExtrasTagsListOKBody extras tags list o k body
 swagger:model ExtrasTagsListOKBody
 */
 type ExtrasTagsListOKBody struct {

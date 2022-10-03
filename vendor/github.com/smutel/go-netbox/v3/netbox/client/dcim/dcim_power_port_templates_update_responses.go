@@ -54,7 +54,8 @@ func NewDcimPowerPortTemplatesUpdateOK() *DcimPowerPortTemplatesUpdateOK {
 	return &DcimPowerPortTemplatesUpdateOK{}
 }
 
-/* DcimPowerPortTemplatesUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimPowerPortTemplatesUpdateOK describes a response with status code 200, with default header values.
 
 DcimPowerPortTemplatesUpdateOK dcim power port templates update o k
 */
@@ -62,9 +63,39 @@ type DcimPowerPortTemplatesUpdateOK struct {
 	Payload *models.PowerPortTemplate
 }
 
+// IsSuccess returns true when this dcim power port templates update o k response has a 2xx status code
+func (o *DcimPowerPortTemplatesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power port templates update o k response has a 3xx status code
+func (o *DcimPowerPortTemplatesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power port templates update o k response has a 4xx status code
+func (o *DcimPowerPortTemplatesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power port templates update o k response has a 5xx status code
+func (o *DcimPowerPortTemplatesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power port templates update o k response a status code equal to that given
+func (o *DcimPowerPortTemplatesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerPortTemplatesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/power-port-templates/{id}/][%d] dcimPowerPortTemplatesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerPortTemplatesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/power-port-templates/{id}/][%d] dcimPowerPortTemplatesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerPortTemplatesUpdateOK) GetPayload() *models.PowerPortTemplate {
 	return o.Payload
 }

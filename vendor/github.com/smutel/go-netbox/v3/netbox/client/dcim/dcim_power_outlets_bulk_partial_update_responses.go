@@ -54,7 +54,8 @@ func NewDcimPowerOutletsBulkPartialUpdateOK() *DcimPowerOutletsBulkPartialUpdate
 	return &DcimPowerOutletsBulkPartialUpdateOK{}
 }
 
-/* DcimPowerOutletsBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimPowerOutletsBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimPowerOutletsBulkPartialUpdateOK dcim power outlets bulk partial update o k
 */
@@ -62,9 +63,39 @@ type DcimPowerOutletsBulkPartialUpdateOK struct {
 	Payload *models.PowerOutlet
 }
 
+// IsSuccess returns true when this dcim power outlets bulk partial update o k response has a 2xx status code
+func (o *DcimPowerOutletsBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power outlets bulk partial update o k response has a 3xx status code
+func (o *DcimPowerOutletsBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power outlets bulk partial update o k response has a 4xx status code
+func (o *DcimPowerOutletsBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power outlets bulk partial update o k response has a 5xx status code
+func (o *DcimPowerOutletsBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power outlets bulk partial update o k response a status code equal to that given
+func (o *DcimPowerOutletsBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerOutletsBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/power-outlets/][%d] dcimPowerOutletsBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerOutletsBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/power-outlets/][%d] dcimPowerOutletsBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerOutletsBulkPartialUpdateOK) GetPayload() *models.PowerOutlet {
 	return o.Payload
 }

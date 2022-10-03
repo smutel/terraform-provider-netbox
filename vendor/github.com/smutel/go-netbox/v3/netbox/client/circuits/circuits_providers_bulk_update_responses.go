@@ -54,7 +54,8 @@ func NewCircuitsProvidersBulkUpdateOK() *CircuitsProvidersBulkUpdateOK {
 	return &CircuitsProvidersBulkUpdateOK{}
 }
 
-/* CircuitsProvidersBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+CircuitsProvidersBulkUpdateOK describes a response with status code 200, with default header values.
 
 CircuitsProvidersBulkUpdateOK circuits providers bulk update o k
 */
@@ -62,9 +63,39 @@ type CircuitsProvidersBulkUpdateOK struct {
 	Payload *models.Provider
 }
 
+// IsSuccess returns true when this circuits providers bulk update o k response has a 2xx status code
+func (o *CircuitsProvidersBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits providers bulk update o k response has a 3xx status code
+func (o *CircuitsProvidersBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits providers bulk update o k response has a 4xx status code
+func (o *CircuitsProvidersBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits providers bulk update o k response has a 5xx status code
+func (o *CircuitsProvidersBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits providers bulk update o k response a status code equal to that given
+func (o *CircuitsProvidersBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsProvidersBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /circuits/providers/][%d] circuitsProvidersBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsProvidersBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /circuits/providers/][%d] circuitsProvidersBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsProvidersBulkUpdateOK) GetPayload() *models.Provider {
 	return o.Payload
 }

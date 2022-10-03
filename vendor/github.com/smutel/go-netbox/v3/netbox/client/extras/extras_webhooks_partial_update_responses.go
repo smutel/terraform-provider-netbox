@@ -54,7 +54,8 @@ func NewExtrasWebhooksPartialUpdateOK() *ExtrasWebhooksPartialUpdateOK {
 	return &ExtrasWebhooksPartialUpdateOK{}
 }
 
-/* ExtrasWebhooksPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasWebhooksPartialUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasWebhooksPartialUpdateOK extras webhooks partial update o k
 */
@@ -62,9 +63,39 @@ type ExtrasWebhooksPartialUpdateOK struct {
 	Payload *models.Webhook
 }
 
+// IsSuccess returns true when this extras webhooks partial update o k response has a 2xx status code
+func (o *ExtrasWebhooksPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras webhooks partial update o k response has a 3xx status code
+func (o *ExtrasWebhooksPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras webhooks partial update o k response has a 4xx status code
+func (o *ExtrasWebhooksPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras webhooks partial update o k response has a 5xx status code
+func (o *ExtrasWebhooksPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras webhooks partial update o k response a status code equal to that given
+func (o *ExtrasWebhooksPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasWebhooksPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /extras/webhooks/{id}/][%d] extrasWebhooksPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasWebhooksPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /extras/webhooks/{id}/][%d] extrasWebhooksPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasWebhooksPartialUpdateOK) GetPayload() *models.Webhook {
 	return o.Payload
 }

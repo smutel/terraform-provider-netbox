@@ -54,7 +54,8 @@ func NewIpamVlanGroupsAvailableVlansListOK() *IpamVlanGroupsAvailableVlansListOK
 	return &IpamVlanGroupsAvailableVlansListOK{}
 }
 
-/* IpamVlanGroupsAvailableVlansListOK describes a response with status code 200, with default header values.
+/*
+IpamVlanGroupsAvailableVlansListOK describes a response with status code 200, with default header values.
 
 IpamVlanGroupsAvailableVlansListOK ipam vlan groups available vlans list o k
 */
@@ -62,9 +63,39 @@ type IpamVlanGroupsAvailableVlansListOK struct {
 	Payload []*models.AvailableVLAN
 }
 
+// IsSuccess returns true when this ipam vlan groups available vlans list o k response has a 2xx status code
+func (o *IpamVlanGroupsAvailableVlansListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam vlan groups available vlans list o k response has a 3xx status code
+func (o *IpamVlanGroupsAvailableVlansListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam vlan groups available vlans list o k response has a 4xx status code
+func (o *IpamVlanGroupsAvailableVlansListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam vlan groups available vlans list o k response has a 5xx status code
+func (o *IpamVlanGroupsAvailableVlansListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam vlan groups available vlans list o k response a status code equal to that given
+func (o *IpamVlanGroupsAvailableVlansListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamVlanGroupsAvailableVlansListOK) Error() string {
 	return fmt.Sprintf("[GET /ipam/vlan-groups/{id}/available-vlans/][%d] ipamVlanGroupsAvailableVlansListOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamVlanGroupsAvailableVlansListOK) String() string {
+	return fmt.Sprintf("[GET /ipam/vlan-groups/{id}/available-vlans/][%d] ipamVlanGroupsAvailableVlansListOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamVlanGroupsAvailableVlansListOK) GetPayload() []*models.AvailableVLAN {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewIpamServiceTemplatesBulkUpdateOK() *IpamServiceTemplatesBulkUpdateOK {
 	return &IpamServiceTemplatesBulkUpdateOK{}
 }
 
-/* IpamServiceTemplatesBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamServiceTemplatesBulkUpdateOK describes a response with status code 200, with default header values.
 
 IpamServiceTemplatesBulkUpdateOK ipam service templates bulk update o k
 */
@@ -62,9 +63,39 @@ type IpamServiceTemplatesBulkUpdateOK struct {
 	Payload *models.ServiceTemplate
 }
 
+// IsSuccess returns true when this ipam service templates bulk update o k response has a 2xx status code
+func (o *IpamServiceTemplatesBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam service templates bulk update o k response has a 3xx status code
+func (o *IpamServiceTemplatesBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam service templates bulk update o k response has a 4xx status code
+func (o *IpamServiceTemplatesBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam service templates bulk update o k response has a 5xx status code
+func (o *IpamServiceTemplatesBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam service templates bulk update o k response a status code equal to that given
+func (o *IpamServiceTemplatesBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamServiceTemplatesBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /ipam/service-templates/][%d] ipamServiceTemplatesBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamServiceTemplatesBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /ipam/service-templates/][%d] ipamServiceTemplatesBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamServiceTemplatesBulkUpdateOK) GetPayload() *models.ServiceTemplate {
 	return o.Payload
 }

@@ -51,14 +51,44 @@ func NewVirtualizationClusterTypesDeleteNoContent() *VirtualizationClusterTypesD
 	return &VirtualizationClusterTypesDeleteNoContent{}
 }
 
-/* VirtualizationClusterTypesDeleteNoContent describes a response with status code 204, with default header values.
+/*
+VirtualizationClusterTypesDeleteNoContent describes a response with status code 204, with default header values.
 
 VirtualizationClusterTypesDeleteNoContent virtualization cluster types delete no content
 */
 type VirtualizationClusterTypesDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this virtualization cluster types delete no content response has a 2xx status code
+func (o *VirtualizationClusterTypesDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization cluster types delete no content response has a 3xx status code
+func (o *VirtualizationClusterTypesDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization cluster types delete no content response has a 4xx status code
+func (o *VirtualizationClusterTypesDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization cluster types delete no content response has a 5xx status code
+func (o *VirtualizationClusterTypesDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization cluster types delete no content response a status code equal to that given
+func (o *VirtualizationClusterTypesDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *VirtualizationClusterTypesDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /virtualization/cluster-types/{id}/][%d] virtualizationClusterTypesDeleteNoContent ", 204)
+}
+
+func (o *VirtualizationClusterTypesDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /virtualization/cluster-types/{id}/][%d] virtualizationClusterTypesDeleteNoContent ", 204)
 }
 

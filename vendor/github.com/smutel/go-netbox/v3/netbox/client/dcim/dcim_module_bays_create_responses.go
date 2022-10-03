@@ -54,7 +54,8 @@ func NewDcimModuleBaysCreateCreated() *DcimModuleBaysCreateCreated {
 	return &DcimModuleBaysCreateCreated{}
 }
 
-/* DcimModuleBaysCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimModuleBaysCreateCreated describes a response with status code 201, with default header values.
 
 DcimModuleBaysCreateCreated dcim module bays create created
 */
@@ -62,9 +63,39 @@ type DcimModuleBaysCreateCreated struct {
 	Payload *models.ModuleBay
 }
 
+// IsSuccess returns true when this dcim module bays create created response has a 2xx status code
+func (o *DcimModuleBaysCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim module bays create created response has a 3xx status code
+func (o *DcimModuleBaysCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim module bays create created response has a 4xx status code
+func (o *DcimModuleBaysCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim module bays create created response has a 5xx status code
+func (o *DcimModuleBaysCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim module bays create created response a status code equal to that given
+func (o *DcimModuleBaysCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimModuleBaysCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/module-bays/][%d] dcimModuleBaysCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimModuleBaysCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/module-bays/][%d] dcimModuleBaysCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimModuleBaysCreateCreated) GetPayload() *models.ModuleBay {
 	return o.Payload
 }

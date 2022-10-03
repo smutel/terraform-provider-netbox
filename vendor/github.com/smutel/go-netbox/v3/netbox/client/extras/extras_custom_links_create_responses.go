@@ -54,7 +54,8 @@ func NewExtrasCustomLinksCreateCreated() *ExtrasCustomLinksCreateCreated {
 	return &ExtrasCustomLinksCreateCreated{}
 }
 
-/* ExtrasCustomLinksCreateCreated describes a response with status code 201, with default header values.
+/*
+ExtrasCustomLinksCreateCreated describes a response with status code 201, with default header values.
 
 ExtrasCustomLinksCreateCreated extras custom links create created
 */
@@ -62,9 +63,39 @@ type ExtrasCustomLinksCreateCreated struct {
 	Payload *models.CustomLink
 }
 
+// IsSuccess returns true when this extras custom links create created response has a 2xx status code
+func (o *ExtrasCustomLinksCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras custom links create created response has a 3xx status code
+func (o *ExtrasCustomLinksCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras custom links create created response has a 4xx status code
+func (o *ExtrasCustomLinksCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras custom links create created response has a 5xx status code
+func (o *ExtrasCustomLinksCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras custom links create created response a status code equal to that given
+func (o *ExtrasCustomLinksCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *ExtrasCustomLinksCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /extras/custom-links/][%d] extrasCustomLinksCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *ExtrasCustomLinksCreateCreated) String() string {
+	return fmt.Sprintf("[POST /extras/custom-links/][%d] extrasCustomLinksCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *ExtrasCustomLinksCreateCreated) GetPayload() *models.CustomLink {
 	return o.Payload
 }

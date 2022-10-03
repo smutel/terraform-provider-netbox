@@ -51,14 +51,44 @@ func NewVirtualizationInterfacesDeleteNoContent() *VirtualizationInterfacesDelet
 	return &VirtualizationInterfacesDeleteNoContent{}
 }
 
-/* VirtualizationInterfacesDeleteNoContent describes a response with status code 204, with default header values.
+/*
+VirtualizationInterfacesDeleteNoContent describes a response with status code 204, with default header values.
 
 VirtualizationInterfacesDeleteNoContent virtualization interfaces delete no content
 */
 type VirtualizationInterfacesDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this virtualization interfaces delete no content response has a 2xx status code
+func (o *VirtualizationInterfacesDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization interfaces delete no content response has a 3xx status code
+func (o *VirtualizationInterfacesDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization interfaces delete no content response has a 4xx status code
+func (o *VirtualizationInterfacesDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization interfaces delete no content response has a 5xx status code
+func (o *VirtualizationInterfacesDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization interfaces delete no content response a status code equal to that given
+func (o *VirtualizationInterfacesDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *VirtualizationInterfacesDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /virtualization/interfaces/{id}/][%d] virtualizationInterfacesDeleteNoContent ", 204)
+}
+
+func (o *VirtualizationInterfacesDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /virtualization/interfaces/{id}/][%d] virtualizationInterfacesDeleteNoContent ", 204)
 }
 

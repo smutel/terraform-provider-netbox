@@ -54,7 +54,8 @@ func NewDcimPowerPanelsCreateCreated() *DcimPowerPanelsCreateCreated {
 	return &DcimPowerPanelsCreateCreated{}
 }
 
-/* DcimPowerPanelsCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimPowerPanelsCreateCreated describes a response with status code 201, with default header values.
 
 DcimPowerPanelsCreateCreated dcim power panels create created
 */
@@ -62,9 +63,39 @@ type DcimPowerPanelsCreateCreated struct {
 	Payload *models.PowerPanel
 }
 
+// IsSuccess returns true when this dcim power panels create created response has a 2xx status code
+func (o *DcimPowerPanelsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power panels create created response has a 3xx status code
+func (o *DcimPowerPanelsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power panels create created response has a 4xx status code
+func (o *DcimPowerPanelsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power panels create created response has a 5xx status code
+func (o *DcimPowerPanelsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power panels create created response a status code equal to that given
+func (o *DcimPowerPanelsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimPowerPanelsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/power-panels/][%d] dcimPowerPanelsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimPowerPanelsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/power-panels/][%d] dcimPowerPanelsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimPowerPanelsCreateCreated) GetPayload() *models.PowerPanel {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewVirtualizationClusterGroupsCreateCreated() *VirtualizationClusterGroupsC
 	return &VirtualizationClusterGroupsCreateCreated{}
 }
 
-/* VirtualizationClusterGroupsCreateCreated describes a response with status code 201, with default header values.
+/*
+VirtualizationClusterGroupsCreateCreated describes a response with status code 201, with default header values.
 
 VirtualizationClusterGroupsCreateCreated virtualization cluster groups create created
 */
@@ -62,9 +63,39 @@ type VirtualizationClusterGroupsCreateCreated struct {
 	Payload *models.ClusterGroup
 }
 
+// IsSuccess returns true when this virtualization cluster groups create created response has a 2xx status code
+func (o *VirtualizationClusterGroupsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization cluster groups create created response has a 3xx status code
+func (o *VirtualizationClusterGroupsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization cluster groups create created response has a 4xx status code
+func (o *VirtualizationClusterGroupsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization cluster groups create created response has a 5xx status code
+func (o *VirtualizationClusterGroupsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization cluster groups create created response a status code equal to that given
+func (o *VirtualizationClusterGroupsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *VirtualizationClusterGroupsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /virtualization/cluster-groups/][%d] virtualizationClusterGroupsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *VirtualizationClusterGroupsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /virtualization/cluster-groups/][%d] virtualizationClusterGroupsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *VirtualizationClusterGroupsCreateCreated) GetPayload() *models.ClusterGroup {
 	return o.Payload
 }

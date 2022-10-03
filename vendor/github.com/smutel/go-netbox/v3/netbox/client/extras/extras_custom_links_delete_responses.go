@@ -51,14 +51,44 @@ func NewExtrasCustomLinksDeleteNoContent() *ExtrasCustomLinksDeleteNoContent {
 	return &ExtrasCustomLinksDeleteNoContent{}
 }
 
-/* ExtrasCustomLinksDeleteNoContent describes a response with status code 204, with default header values.
+/*
+ExtrasCustomLinksDeleteNoContent describes a response with status code 204, with default header values.
 
 ExtrasCustomLinksDeleteNoContent extras custom links delete no content
 */
 type ExtrasCustomLinksDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this extras custom links delete no content response has a 2xx status code
+func (o *ExtrasCustomLinksDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras custom links delete no content response has a 3xx status code
+func (o *ExtrasCustomLinksDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras custom links delete no content response has a 4xx status code
+func (o *ExtrasCustomLinksDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras custom links delete no content response has a 5xx status code
+func (o *ExtrasCustomLinksDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras custom links delete no content response a status code equal to that given
+func (o *ExtrasCustomLinksDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *ExtrasCustomLinksDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /extras/custom-links/{id}/][%d] extrasCustomLinksDeleteNoContent ", 204)
+}
+
+func (o *ExtrasCustomLinksDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /extras/custom-links/{id}/][%d] extrasCustomLinksDeleteNoContent ", 204)
 }
 

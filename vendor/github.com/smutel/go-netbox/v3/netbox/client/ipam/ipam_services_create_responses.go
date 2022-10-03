@@ -54,7 +54,8 @@ func NewIpamServicesCreateCreated() *IpamServicesCreateCreated {
 	return &IpamServicesCreateCreated{}
 }
 
-/* IpamServicesCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamServicesCreateCreated describes a response with status code 201, with default header values.
 
 IpamServicesCreateCreated ipam services create created
 */
@@ -62,9 +63,39 @@ type IpamServicesCreateCreated struct {
 	Payload *models.Service
 }
 
+// IsSuccess returns true when this ipam services create created response has a 2xx status code
+func (o *IpamServicesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam services create created response has a 3xx status code
+func (o *IpamServicesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam services create created response has a 4xx status code
+func (o *IpamServicesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam services create created response has a 5xx status code
+func (o *IpamServicesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam services create created response a status code equal to that given
+func (o *IpamServicesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamServicesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/services/][%d] ipamServicesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamServicesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/services/][%d] ipamServicesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamServicesCreateCreated) GetPayload() *models.Service {
 	return o.Payload
 }

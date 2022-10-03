@@ -51,14 +51,44 @@ func NewExtrasExportTemplatesBulkDeleteNoContent() *ExtrasExportTemplatesBulkDel
 	return &ExtrasExportTemplatesBulkDeleteNoContent{}
 }
 
-/* ExtrasExportTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+ExtrasExportTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 ExtrasExportTemplatesBulkDeleteNoContent extras export templates bulk delete no content
 */
 type ExtrasExportTemplatesBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this extras export templates bulk delete no content response has a 2xx status code
+func (o *ExtrasExportTemplatesBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras export templates bulk delete no content response has a 3xx status code
+func (o *ExtrasExportTemplatesBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras export templates bulk delete no content response has a 4xx status code
+func (o *ExtrasExportTemplatesBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras export templates bulk delete no content response has a 5xx status code
+func (o *ExtrasExportTemplatesBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras export templates bulk delete no content response a status code equal to that given
+func (o *ExtrasExportTemplatesBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *ExtrasExportTemplatesBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /extras/export-templates/][%d] extrasExportTemplatesBulkDeleteNoContent ", 204)
+}
+
+func (o *ExtrasExportTemplatesBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /extras/export-templates/][%d] extrasExportTemplatesBulkDeleteNoContent ", 204)
 }
 

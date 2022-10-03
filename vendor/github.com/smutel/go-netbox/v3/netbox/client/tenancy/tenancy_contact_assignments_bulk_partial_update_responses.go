@@ -54,7 +54,8 @@ func NewTenancyContactAssignmentsBulkPartialUpdateOK() *TenancyContactAssignment
 	return &TenancyContactAssignmentsBulkPartialUpdateOK{}
 }
 
-/* TenancyContactAssignmentsBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+TenancyContactAssignmentsBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 TenancyContactAssignmentsBulkPartialUpdateOK tenancy contact assignments bulk partial update o k
 */
@@ -62,9 +63,39 @@ type TenancyContactAssignmentsBulkPartialUpdateOK struct {
 	Payload *models.ContactAssignment
 }
 
+// IsSuccess returns true when this tenancy contact assignments bulk partial update o k response has a 2xx status code
+func (o *TenancyContactAssignmentsBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy contact assignments bulk partial update o k response has a 3xx status code
+func (o *TenancyContactAssignmentsBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy contact assignments bulk partial update o k response has a 4xx status code
+func (o *TenancyContactAssignmentsBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy contact assignments bulk partial update o k response has a 5xx status code
+func (o *TenancyContactAssignmentsBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy contact assignments bulk partial update o k response a status code equal to that given
+func (o *TenancyContactAssignmentsBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *TenancyContactAssignmentsBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /tenancy/contact-assignments/][%d] tenancyContactAssignmentsBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *TenancyContactAssignmentsBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /tenancy/contact-assignments/][%d] tenancyContactAssignmentsBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *TenancyContactAssignmentsBulkPartialUpdateOK) GetPayload() *models.ContactAssignment {
 	return o.Payload
 }

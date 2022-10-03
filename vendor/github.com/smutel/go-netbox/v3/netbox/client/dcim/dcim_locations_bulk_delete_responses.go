@@ -51,14 +51,44 @@ func NewDcimLocationsBulkDeleteNoContent() *DcimLocationsBulkDeleteNoContent {
 	return &DcimLocationsBulkDeleteNoContent{}
 }
 
-/* DcimLocationsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimLocationsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimLocationsBulkDeleteNoContent dcim locations bulk delete no content
 */
 type DcimLocationsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim locations bulk delete no content response has a 2xx status code
+func (o *DcimLocationsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim locations bulk delete no content response has a 3xx status code
+func (o *DcimLocationsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim locations bulk delete no content response has a 4xx status code
+func (o *DcimLocationsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim locations bulk delete no content response has a 5xx status code
+func (o *DcimLocationsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim locations bulk delete no content response a status code equal to that given
+func (o *DcimLocationsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimLocationsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/locations/][%d] dcimLocationsBulkDeleteNoContent ", 204)
+}
+
+func (o *DcimLocationsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/locations/][%d] dcimLocationsBulkDeleteNoContent ", 204)
 }
 

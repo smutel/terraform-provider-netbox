@@ -54,7 +54,8 @@ func NewDcimModuleBayTemplatesCreateCreated() *DcimModuleBayTemplatesCreateCreat
 	return &DcimModuleBayTemplatesCreateCreated{}
 }
 
-/* DcimModuleBayTemplatesCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimModuleBayTemplatesCreateCreated describes a response with status code 201, with default header values.
 
 DcimModuleBayTemplatesCreateCreated dcim module bay templates create created
 */
@@ -62,9 +63,39 @@ type DcimModuleBayTemplatesCreateCreated struct {
 	Payload *models.ModuleBayTemplate
 }
 
+// IsSuccess returns true when this dcim module bay templates create created response has a 2xx status code
+func (o *DcimModuleBayTemplatesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim module bay templates create created response has a 3xx status code
+func (o *DcimModuleBayTemplatesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim module bay templates create created response has a 4xx status code
+func (o *DcimModuleBayTemplatesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim module bay templates create created response has a 5xx status code
+func (o *DcimModuleBayTemplatesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim module bay templates create created response a status code equal to that given
+func (o *DcimModuleBayTemplatesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimModuleBayTemplatesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/module-bay-templates/][%d] dcimModuleBayTemplatesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimModuleBayTemplatesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/module-bay-templates/][%d] dcimModuleBayTemplatesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimModuleBayTemplatesCreateCreated) GetPayload() *models.ModuleBayTemplate {
 	return o.Payload
 }

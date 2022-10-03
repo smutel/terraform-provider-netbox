@@ -51,14 +51,44 @@ func NewCircuitsProvidersBulkDeleteNoContent() *CircuitsProvidersBulkDeleteNoCon
 	return &CircuitsProvidersBulkDeleteNoContent{}
 }
 
-/* CircuitsProvidersBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+CircuitsProvidersBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 CircuitsProvidersBulkDeleteNoContent circuits providers bulk delete no content
 */
 type CircuitsProvidersBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this circuits providers bulk delete no content response has a 2xx status code
+func (o *CircuitsProvidersBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits providers bulk delete no content response has a 3xx status code
+func (o *CircuitsProvidersBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits providers bulk delete no content response has a 4xx status code
+func (o *CircuitsProvidersBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits providers bulk delete no content response has a 5xx status code
+func (o *CircuitsProvidersBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits providers bulk delete no content response a status code equal to that given
+func (o *CircuitsProvidersBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *CircuitsProvidersBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /circuits/providers/][%d] circuitsProvidersBulkDeleteNoContent ", 204)
+}
+
+func (o *CircuitsProvidersBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /circuits/providers/][%d] circuitsProvidersBulkDeleteNoContent ", 204)
 }
 

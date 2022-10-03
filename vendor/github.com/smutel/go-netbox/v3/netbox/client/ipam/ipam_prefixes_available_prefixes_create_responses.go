@@ -54,7 +54,8 @@ func NewIpamPrefixesAvailablePrefixesCreateCreated() *IpamPrefixesAvailablePrefi
 	return &IpamPrefixesAvailablePrefixesCreateCreated{}
 }
 
-/* IpamPrefixesAvailablePrefixesCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamPrefixesAvailablePrefixesCreateCreated describes a response with status code 201, with default header values.
 
 IpamPrefixesAvailablePrefixesCreateCreated ipam prefixes available prefixes create created
 */
@@ -62,9 +63,39 @@ type IpamPrefixesAvailablePrefixesCreateCreated struct {
 	Payload []*models.Prefix
 }
 
+// IsSuccess returns true when this ipam prefixes available prefixes create created response has a 2xx status code
+func (o *IpamPrefixesAvailablePrefixesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam prefixes available prefixes create created response has a 3xx status code
+func (o *IpamPrefixesAvailablePrefixesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam prefixes available prefixes create created response has a 4xx status code
+func (o *IpamPrefixesAvailablePrefixesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam prefixes available prefixes create created response has a 5xx status code
+func (o *IpamPrefixesAvailablePrefixesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam prefixes available prefixes create created response a status code equal to that given
+func (o *IpamPrefixesAvailablePrefixesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamPrefixesAvailablePrefixesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/prefixes/{id}/available-prefixes/][%d] ipamPrefixesAvailablePrefixesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamPrefixesAvailablePrefixesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/prefixes/{id}/available-prefixes/][%d] ipamPrefixesAvailablePrefixesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamPrefixesAvailablePrefixesCreateCreated) GetPayload() []*models.Prefix {
 	return o.Payload
 }

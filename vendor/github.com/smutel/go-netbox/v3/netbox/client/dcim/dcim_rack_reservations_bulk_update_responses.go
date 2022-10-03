@@ -54,7 +54,8 @@ func NewDcimRackReservationsBulkUpdateOK() *DcimRackReservationsBulkUpdateOK {
 	return &DcimRackReservationsBulkUpdateOK{}
 }
 
-/* DcimRackReservationsBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimRackReservationsBulkUpdateOK describes a response with status code 200, with default header values.
 
 DcimRackReservationsBulkUpdateOK dcim rack reservations bulk update o k
 */
@@ -62,9 +63,39 @@ type DcimRackReservationsBulkUpdateOK struct {
 	Payload *models.RackReservation
 }
 
+// IsSuccess returns true when this dcim rack reservations bulk update o k response has a 2xx status code
+func (o *DcimRackReservationsBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rack reservations bulk update o k response has a 3xx status code
+func (o *DcimRackReservationsBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rack reservations bulk update o k response has a 4xx status code
+func (o *DcimRackReservationsBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rack reservations bulk update o k response has a 5xx status code
+func (o *DcimRackReservationsBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rack reservations bulk update o k response a status code equal to that given
+func (o *DcimRackReservationsBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimRackReservationsBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/rack-reservations/][%d] dcimRackReservationsBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimRackReservationsBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/rack-reservations/][%d] dcimRackReservationsBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimRackReservationsBulkUpdateOK) GetPayload() *models.RackReservation {
 	return o.Payload
 }

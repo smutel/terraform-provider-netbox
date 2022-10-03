@@ -54,7 +54,8 @@ func NewExtrasWebhooksBulkUpdateOK() *ExtrasWebhooksBulkUpdateOK {
 	return &ExtrasWebhooksBulkUpdateOK{}
 }
 
-/* ExtrasWebhooksBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasWebhooksBulkUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasWebhooksBulkUpdateOK extras webhooks bulk update o k
 */
@@ -62,9 +63,39 @@ type ExtrasWebhooksBulkUpdateOK struct {
 	Payload *models.Webhook
 }
 
+// IsSuccess returns true when this extras webhooks bulk update o k response has a 2xx status code
+func (o *ExtrasWebhooksBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras webhooks bulk update o k response has a 3xx status code
+func (o *ExtrasWebhooksBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras webhooks bulk update o k response has a 4xx status code
+func (o *ExtrasWebhooksBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras webhooks bulk update o k response has a 5xx status code
+func (o *ExtrasWebhooksBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras webhooks bulk update o k response a status code equal to that given
+func (o *ExtrasWebhooksBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasWebhooksBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /extras/webhooks/][%d] extrasWebhooksBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasWebhooksBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /extras/webhooks/][%d] extrasWebhooksBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasWebhooksBulkUpdateOK) GetPayload() *models.Webhook {
 	return o.Payload
 }

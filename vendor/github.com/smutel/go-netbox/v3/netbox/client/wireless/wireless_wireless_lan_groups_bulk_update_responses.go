@@ -54,7 +54,8 @@ func NewWirelessWirelessLanGroupsBulkUpdateOK() *WirelessWirelessLanGroupsBulkUp
 	return &WirelessWirelessLanGroupsBulkUpdateOK{}
 }
 
-/* WirelessWirelessLanGroupsBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+WirelessWirelessLanGroupsBulkUpdateOK describes a response with status code 200, with default header values.
 
 WirelessWirelessLanGroupsBulkUpdateOK wireless wireless lan groups bulk update o k
 */
@@ -62,9 +63,39 @@ type WirelessWirelessLanGroupsBulkUpdateOK struct {
 	Payload *models.WirelessLANGroup
 }
 
+// IsSuccess returns true when this wireless wireless lan groups bulk update o k response has a 2xx status code
+func (o *WirelessWirelessLanGroupsBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this wireless wireless lan groups bulk update o k response has a 3xx status code
+func (o *WirelessWirelessLanGroupsBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this wireless wireless lan groups bulk update o k response has a 4xx status code
+func (o *WirelessWirelessLanGroupsBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this wireless wireless lan groups bulk update o k response has a 5xx status code
+func (o *WirelessWirelessLanGroupsBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this wireless wireless lan groups bulk update o k response a status code equal to that given
+func (o *WirelessWirelessLanGroupsBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *WirelessWirelessLanGroupsBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /wireless/wireless-lan-groups/][%d] wirelessWirelessLanGroupsBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *WirelessWirelessLanGroupsBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /wireless/wireless-lan-groups/][%d] wirelessWirelessLanGroupsBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *WirelessWirelessLanGroupsBulkUpdateOK) GetPayload() *models.WirelessLANGroup {
 	return o.Payload
 }

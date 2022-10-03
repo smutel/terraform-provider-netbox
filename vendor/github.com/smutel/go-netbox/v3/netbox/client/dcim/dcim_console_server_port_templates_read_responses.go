@@ -54,7 +54,8 @@ func NewDcimConsoleServerPortTemplatesReadOK() *DcimConsoleServerPortTemplatesRe
 	return &DcimConsoleServerPortTemplatesReadOK{}
 }
 
-/* DcimConsoleServerPortTemplatesReadOK describes a response with status code 200, with default header values.
+/*
+DcimConsoleServerPortTemplatesReadOK describes a response with status code 200, with default header values.
 
 DcimConsoleServerPortTemplatesReadOK dcim console server port templates read o k
 */
@@ -62,9 +63,39 @@ type DcimConsoleServerPortTemplatesReadOK struct {
 	Payload *models.ConsoleServerPortTemplate
 }
 
+// IsSuccess returns true when this dcim console server port templates read o k response has a 2xx status code
+func (o *DcimConsoleServerPortTemplatesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console server port templates read o k response has a 3xx status code
+func (o *DcimConsoleServerPortTemplatesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console server port templates read o k response has a 4xx status code
+func (o *DcimConsoleServerPortTemplatesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console server port templates read o k response has a 5xx status code
+func (o *DcimConsoleServerPortTemplatesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console server port templates read o k response a status code equal to that given
+func (o *DcimConsoleServerPortTemplatesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimConsoleServerPortTemplatesReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/console-server-port-templates/{id}/][%d] dcimConsoleServerPortTemplatesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimConsoleServerPortTemplatesReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/console-server-port-templates/{id}/][%d] dcimConsoleServerPortTemplatesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimConsoleServerPortTemplatesReadOK) GetPayload() *models.ConsoleServerPortTemplate {
 	return o.Payload
 }

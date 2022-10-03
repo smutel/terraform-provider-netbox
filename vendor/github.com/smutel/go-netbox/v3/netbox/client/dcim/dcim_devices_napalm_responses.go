@@ -54,7 +54,8 @@ func NewDcimDevicesNapalmOK() *DcimDevicesNapalmOK {
 	return &DcimDevicesNapalmOK{}
 }
 
-/* DcimDevicesNapalmOK describes a response with status code 200, with default header values.
+/*
+DcimDevicesNapalmOK describes a response with status code 200, with default header values.
 
 DcimDevicesNapalmOK dcim devices napalm o k
 */
@@ -62,9 +63,39 @@ type DcimDevicesNapalmOK struct {
 	Payload *models.DeviceNAPALM
 }
 
+// IsSuccess returns true when this dcim devices napalm o k response has a 2xx status code
+func (o *DcimDevicesNapalmOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim devices napalm o k response has a 3xx status code
+func (o *DcimDevicesNapalmOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim devices napalm o k response has a 4xx status code
+func (o *DcimDevicesNapalmOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim devices napalm o k response has a 5xx status code
+func (o *DcimDevicesNapalmOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim devices napalm o k response a status code equal to that given
+func (o *DcimDevicesNapalmOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimDevicesNapalmOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/devices/{id}/napalm/][%d] dcimDevicesNapalmOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimDevicesNapalmOK) String() string {
+	return fmt.Sprintf("[GET /dcim/devices/{id}/napalm/][%d] dcimDevicesNapalmOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimDevicesNapalmOK) GetPayload() *models.DeviceNAPALM {
 	return o.Payload
 }

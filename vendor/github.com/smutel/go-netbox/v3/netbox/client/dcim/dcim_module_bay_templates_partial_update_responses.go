@@ -54,7 +54,8 @@ func NewDcimModuleBayTemplatesPartialUpdateOK() *DcimModuleBayTemplatesPartialUp
 	return &DcimModuleBayTemplatesPartialUpdateOK{}
 }
 
-/* DcimModuleBayTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimModuleBayTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimModuleBayTemplatesPartialUpdateOK dcim module bay templates partial update o k
 */
@@ -62,9 +63,39 @@ type DcimModuleBayTemplatesPartialUpdateOK struct {
 	Payload *models.ModuleBayTemplate
 }
 
+// IsSuccess returns true when this dcim module bay templates partial update o k response has a 2xx status code
+func (o *DcimModuleBayTemplatesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim module bay templates partial update o k response has a 3xx status code
+func (o *DcimModuleBayTemplatesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim module bay templates partial update o k response has a 4xx status code
+func (o *DcimModuleBayTemplatesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim module bay templates partial update o k response has a 5xx status code
+func (o *DcimModuleBayTemplatesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim module bay templates partial update o k response a status code equal to that given
+func (o *DcimModuleBayTemplatesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimModuleBayTemplatesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/module-bay-templates/{id}/][%d] dcimModuleBayTemplatesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimModuleBayTemplatesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/module-bay-templates/{id}/][%d] dcimModuleBayTemplatesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimModuleBayTemplatesPartialUpdateOK) GetPayload() *models.ModuleBayTemplate {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewDcimConsoleServerPortsPartialUpdateOK() *DcimConsoleServerPortsPartialUp
 	return &DcimConsoleServerPortsPartialUpdateOK{}
 }
 
-/* DcimConsoleServerPortsPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimConsoleServerPortsPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimConsoleServerPortsPartialUpdateOK dcim console server ports partial update o k
 */
@@ -62,9 +63,39 @@ type DcimConsoleServerPortsPartialUpdateOK struct {
 	Payload *models.ConsoleServerPort
 }
 
+// IsSuccess returns true when this dcim console server ports partial update o k response has a 2xx status code
+func (o *DcimConsoleServerPortsPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console server ports partial update o k response has a 3xx status code
+func (o *DcimConsoleServerPortsPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console server ports partial update o k response has a 4xx status code
+func (o *DcimConsoleServerPortsPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console server ports partial update o k response has a 5xx status code
+func (o *DcimConsoleServerPortsPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console server ports partial update o k response a status code equal to that given
+func (o *DcimConsoleServerPortsPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimConsoleServerPortsPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/console-server-ports/{id}/][%d] dcimConsoleServerPortsPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimConsoleServerPortsPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/console-server-ports/{id}/][%d] dcimConsoleServerPortsPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimConsoleServerPortsPartialUpdateOK) GetPayload() *models.ConsoleServerPort {
 	return o.Payload
 }

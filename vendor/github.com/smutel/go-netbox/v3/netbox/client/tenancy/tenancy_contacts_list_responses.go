@@ -59,7 +59,8 @@ func NewTenancyContactsListOK() *TenancyContactsListOK {
 	return &TenancyContactsListOK{}
 }
 
-/* TenancyContactsListOK describes a response with status code 200, with default header values.
+/*
+TenancyContactsListOK describes a response with status code 200, with default header values.
 
 TenancyContactsListOK tenancy contacts list o k
 */
@@ -67,9 +68,39 @@ type TenancyContactsListOK struct {
 	Payload *TenancyContactsListOKBody
 }
 
+// IsSuccess returns true when this tenancy contacts list o k response has a 2xx status code
+func (o *TenancyContactsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy contacts list o k response has a 3xx status code
+func (o *TenancyContactsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy contacts list o k response has a 4xx status code
+func (o *TenancyContactsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy contacts list o k response has a 5xx status code
+func (o *TenancyContactsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy contacts list o k response a status code equal to that given
+func (o *TenancyContactsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *TenancyContactsListOK) Error() string {
 	return fmt.Sprintf("[GET /tenancy/contacts/][%d] tenancyContactsListOK  %+v", 200, o.Payload)
 }
+
+func (o *TenancyContactsListOK) String() string {
+	return fmt.Sprintf("[GET /tenancy/contacts/][%d] tenancyContactsListOK  %+v", 200, o.Payload)
+}
+
 func (o *TenancyContactsListOK) GetPayload() *TenancyContactsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *TenancyContactsListOK) readResponse(response runtime.ClientResponse, co
 	return nil
 }
 
-/*TenancyContactsListOKBody tenancy contacts list o k body
+/*
+TenancyContactsListOKBody tenancy contacts list o k body
 swagger:model TenancyContactsListOKBody
 */
 type TenancyContactsListOKBody struct {

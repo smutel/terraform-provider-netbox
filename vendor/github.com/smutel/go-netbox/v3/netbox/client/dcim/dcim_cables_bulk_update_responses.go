@@ -54,7 +54,8 @@ func NewDcimCablesBulkUpdateOK() *DcimCablesBulkUpdateOK {
 	return &DcimCablesBulkUpdateOK{}
 }
 
-/* DcimCablesBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimCablesBulkUpdateOK describes a response with status code 200, with default header values.
 
 DcimCablesBulkUpdateOK dcim cables bulk update o k
 */
@@ -62,9 +63,39 @@ type DcimCablesBulkUpdateOK struct {
 	Payload *models.Cable
 }
 
+// IsSuccess returns true when this dcim cables bulk update o k response has a 2xx status code
+func (o *DcimCablesBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim cables bulk update o k response has a 3xx status code
+func (o *DcimCablesBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim cables bulk update o k response has a 4xx status code
+func (o *DcimCablesBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim cables bulk update o k response has a 5xx status code
+func (o *DcimCablesBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim cables bulk update o k response a status code equal to that given
+func (o *DcimCablesBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimCablesBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/cables/][%d] dcimCablesBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimCablesBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/cables/][%d] dcimCablesBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimCablesBulkUpdateOK) GetPayload() *models.Cable {
 	return o.Payload
 }

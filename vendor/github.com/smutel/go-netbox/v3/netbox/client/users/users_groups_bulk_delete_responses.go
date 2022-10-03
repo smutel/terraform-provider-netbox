@@ -51,14 +51,44 @@ func NewUsersGroupsBulkDeleteNoContent() *UsersGroupsBulkDeleteNoContent {
 	return &UsersGroupsBulkDeleteNoContent{}
 }
 
-/* UsersGroupsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+UsersGroupsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 UsersGroupsBulkDeleteNoContent users groups bulk delete no content
 */
 type UsersGroupsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this users groups bulk delete no content response has a 2xx status code
+func (o *UsersGroupsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users groups bulk delete no content response has a 3xx status code
+func (o *UsersGroupsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users groups bulk delete no content response has a 4xx status code
+func (o *UsersGroupsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users groups bulk delete no content response has a 5xx status code
+func (o *UsersGroupsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users groups bulk delete no content response a status code equal to that given
+func (o *UsersGroupsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *UsersGroupsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /users/groups/][%d] usersGroupsBulkDeleteNoContent ", 204)
+}
+
+func (o *UsersGroupsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /users/groups/][%d] usersGroupsBulkDeleteNoContent ", 204)
 }
 

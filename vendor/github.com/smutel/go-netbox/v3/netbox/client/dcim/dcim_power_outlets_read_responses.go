@@ -54,7 +54,8 @@ func NewDcimPowerOutletsReadOK() *DcimPowerOutletsReadOK {
 	return &DcimPowerOutletsReadOK{}
 }
 
-/* DcimPowerOutletsReadOK describes a response with status code 200, with default header values.
+/*
+DcimPowerOutletsReadOK describes a response with status code 200, with default header values.
 
 DcimPowerOutletsReadOK dcim power outlets read o k
 */
@@ -62,9 +63,39 @@ type DcimPowerOutletsReadOK struct {
 	Payload *models.PowerOutlet
 }
 
+// IsSuccess returns true when this dcim power outlets read o k response has a 2xx status code
+func (o *DcimPowerOutletsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power outlets read o k response has a 3xx status code
+func (o *DcimPowerOutletsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power outlets read o k response has a 4xx status code
+func (o *DcimPowerOutletsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power outlets read o k response has a 5xx status code
+func (o *DcimPowerOutletsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power outlets read o k response a status code equal to that given
+func (o *DcimPowerOutletsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerOutletsReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/power-outlets/{id}/][%d] dcimPowerOutletsReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerOutletsReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/power-outlets/{id}/][%d] dcimPowerOutletsReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerOutletsReadOK) GetPayload() *models.PowerOutlet {
 	return o.Payload
 }

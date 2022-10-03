@@ -54,7 +54,8 @@ func NewIpamFhrpGroupsBulkPartialUpdateOK() *IpamFhrpGroupsBulkPartialUpdateOK {
 	return &IpamFhrpGroupsBulkPartialUpdateOK{}
 }
 
-/* IpamFhrpGroupsBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamFhrpGroupsBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 IpamFhrpGroupsBulkPartialUpdateOK ipam fhrp groups bulk partial update o k
 */
@@ -62,9 +63,39 @@ type IpamFhrpGroupsBulkPartialUpdateOK struct {
 	Payload *models.FHRPGroup
 }
 
+// IsSuccess returns true when this ipam fhrp groups bulk partial update o k response has a 2xx status code
+func (o *IpamFhrpGroupsBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam fhrp groups bulk partial update o k response has a 3xx status code
+func (o *IpamFhrpGroupsBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam fhrp groups bulk partial update o k response has a 4xx status code
+func (o *IpamFhrpGroupsBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam fhrp groups bulk partial update o k response has a 5xx status code
+func (o *IpamFhrpGroupsBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam fhrp groups bulk partial update o k response a status code equal to that given
+func (o *IpamFhrpGroupsBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamFhrpGroupsBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /ipam/fhrp-groups/][%d] ipamFhrpGroupsBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamFhrpGroupsBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /ipam/fhrp-groups/][%d] ipamFhrpGroupsBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamFhrpGroupsBulkPartialUpdateOK) GetPayload() *models.FHRPGroup {
 	return o.Payload
 }

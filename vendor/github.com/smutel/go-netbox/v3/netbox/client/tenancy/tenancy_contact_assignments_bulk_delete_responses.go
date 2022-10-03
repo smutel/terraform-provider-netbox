@@ -51,14 +51,44 @@ func NewTenancyContactAssignmentsBulkDeleteNoContent() *TenancyContactAssignment
 	return &TenancyContactAssignmentsBulkDeleteNoContent{}
 }
 
-/* TenancyContactAssignmentsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+TenancyContactAssignmentsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 TenancyContactAssignmentsBulkDeleteNoContent tenancy contact assignments bulk delete no content
 */
 type TenancyContactAssignmentsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this tenancy contact assignments bulk delete no content response has a 2xx status code
+func (o *TenancyContactAssignmentsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy contact assignments bulk delete no content response has a 3xx status code
+func (o *TenancyContactAssignmentsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy contact assignments bulk delete no content response has a 4xx status code
+func (o *TenancyContactAssignmentsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy contact assignments bulk delete no content response has a 5xx status code
+func (o *TenancyContactAssignmentsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy contact assignments bulk delete no content response a status code equal to that given
+func (o *TenancyContactAssignmentsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *TenancyContactAssignmentsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /tenancy/contact-assignments/][%d] tenancyContactAssignmentsBulkDeleteNoContent ", 204)
+}
+
+func (o *TenancyContactAssignmentsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /tenancy/contact-assignments/][%d] tenancyContactAssignmentsBulkDeleteNoContent ", 204)
 }
 

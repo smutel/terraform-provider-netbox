@@ -273,7 +273,7 @@ github.com/russross/blackfriday
 # github.com/shopspring/decimal v1.3.1
 ## explicit; go 1.13
 github.com/shopspring/decimal
-# github.com/smutel/go-netbox/v3 v3.2.2
+# github.com/smutel/go-netbox/v3 v3.2.3
 ## explicit; go 1.16
 github.com/smutel/go-netbox/v3/netbox/client
 github.com/smutel/go-netbox/v3/netbox/client/circuits

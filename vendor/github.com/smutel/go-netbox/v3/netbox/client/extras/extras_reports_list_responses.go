@@ -51,14 +51,44 @@ func NewExtrasReportsListOK() *ExtrasReportsListOK {
 	return &ExtrasReportsListOK{}
 }
 
-/* ExtrasReportsListOK describes a response with status code 200, with default header values.
+/*
+ExtrasReportsListOK describes a response with status code 200, with default header values.
 
 ExtrasReportsListOK extras reports list o k
 */
 type ExtrasReportsListOK struct {
 }
 
+// IsSuccess returns true when this extras reports list o k response has a 2xx status code
+func (o *ExtrasReportsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras reports list o k response has a 3xx status code
+func (o *ExtrasReportsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras reports list o k response has a 4xx status code
+func (o *ExtrasReportsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras reports list o k response has a 5xx status code
+func (o *ExtrasReportsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras reports list o k response a status code equal to that given
+func (o *ExtrasReportsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasReportsListOK) Error() string {
+	return fmt.Sprintf("[GET /extras/reports/][%d] extrasReportsListOK ", 200)
+}
+
+func (o *ExtrasReportsListOK) String() string {
 	return fmt.Sprintf("[GET /extras/reports/][%d] extrasReportsListOK ", 200)
 }
 

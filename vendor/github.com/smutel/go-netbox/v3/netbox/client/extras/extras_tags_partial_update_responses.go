@@ -54,7 +54,8 @@ func NewExtrasTagsPartialUpdateOK() *ExtrasTagsPartialUpdateOK {
 	return &ExtrasTagsPartialUpdateOK{}
 }
 
-/* ExtrasTagsPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasTagsPartialUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasTagsPartialUpdateOK extras tags partial update o k
 */
@@ -62,9 +63,39 @@ type ExtrasTagsPartialUpdateOK struct {
 	Payload *models.Tag
 }
 
+// IsSuccess returns true when this extras tags partial update o k response has a 2xx status code
+func (o *ExtrasTagsPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras tags partial update o k response has a 3xx status code
+func (o *ExtrasTagsPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras tags partial update o k response has a 4xx status code
+func (o *ExtrasTagsPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras tags partial update o k response has a 5xx status code
+func (o *ExtrasTagsPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras tags partial update o k response a status code equal to that given
+func (o *ExtrasTagsPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasTagsPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /extras/tags/{id}/][%d] extrasTagsPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasTagsPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /extras/tags/{id}/][%d] extrasTagsPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasTagsPartialUpdateOK) GetPayload() *models.Tag {
 	return o.Payload
 }

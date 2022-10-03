@@ -54,7 +54,8 @@ func NewDcimConsolePortTemplatesReadOK() *DcimConsolePortTemplatesReadOK {
 	return &DcimConsolePortTemplatesReadOK{}
 }
 
-/* DcimConsolePortTemplatesReadOK describes a response with status code 200, with default header values.
+/*
+DcimConsolePortTemplatesReadOK describes a response with status code 200, with default header values.
 
 DcimConsolePortTemplatesReadOK dcim console port templates read o k
 */
@@ -62,9 +63,39 @@ type DcimConsolePortTemplatesReadOK struct {
 	Payload *models.ConsolePortTemplate
 }
 
+// IsSuccess returns true when this dcim console port templates read o k response has a 2xx status code
+func (o *DcimConsolePortTemplatesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console port templates read o k response has a 3xx status code
+func (o *DcimConsolePortTemplatesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console port templates read o k response has a 4xx status code
+func (o *DcimConsolePortTemplatesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console port templates read o k response has a 5xx status code
+func (o *DcimConsolePortTemplatesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console port templates read o k response a status code equal to that given
+func (o *DcimConsolePortTemplatesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimConsolePortTemplatesReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/console-port-templates/{id}/][%d] dcimConsolePortTemplatesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimConsolePortTemplatesReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/console-port-templates/{id}/][%d] dcimConsolePortTemplatesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimConsolePortTemplatesReadOK) GetPayload() *models.ConsolePortTemplate {
 	return o.Payload
 }

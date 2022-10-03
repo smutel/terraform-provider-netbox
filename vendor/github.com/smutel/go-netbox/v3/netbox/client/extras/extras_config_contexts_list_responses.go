@@ -59,7 +59,8 @@ func NewExtrasConfigContextsListOK() *ExtrasConfigContextsListOK {
 	return &ExtrasConfigContextsListOK{}
 }
 
-/* ExtrasConfigContextsListOK describes a response with status code 200, with default header values.
+/*
+ExtrasConfigContextsListOK describes a response with status code 200, with default header values.
 
 ExtrasConfigContextsListOK extras config contexts list o k
 */
@@ -67,9 +68,39 @@ type ExtrasConfigContextsListOK struct {
 	Payload *ExtrasConfigContextsListOKBody
 }
 
+// IsSuccess returns true when this extras config contexts list o k response has a 2xx status code
+func (o *ExtrasConfigContextsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras config contexts list o k response has a 3xx status code
+func (o *ExtrasConfigContextsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras config contexts list o k response has a 4xx status code
+func (o *ExtrasConfigContextsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras config contexts list o k response has a 5xx status code
+func (o *ExtrasConfigContextsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras config contexts list o k response a status code equal to that given
+func (o *ExtrasConfigContextsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasConfigContextsListOK) Error() string {
 	return fmt.Sprintf("[GET /extras/config-contexts/][%d] extrasConfigContextsListOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasConfigContextsListOK) String() string {
+	return fmt.Sprintf("[GET /extras/config-contexts/][%d] extrasConfigContextsListOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasConfigContextsListOK) GetPayload() *ExtrasConfigContextsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *ExtrasConfigContextsListOK) readResponse(response runtime.ClientRespons
 	return nil
 }
 
-/*ExtrasConfigContextsListOKBody extras config contexts list o k body
+/*
+ExtrasConfigContextsListOKBody extras config contexts list o k body
 swagger:model ExtrasConfigContextsListOKBody
 */
 type ExtrasConfigContextsListOKBody struct {

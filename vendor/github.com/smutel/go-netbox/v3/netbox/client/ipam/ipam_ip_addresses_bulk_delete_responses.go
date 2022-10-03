@@ -51,14 +51,44 @@ func NewIpamIPAddressesBulkDeleteNoContent() *IpamIPAddressesBulkDeleteNoContent
 	return &IpamIPAddressesBulkDeleteNoContent{}
 }
 
-/* IpamIPAddressesBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+IpamIPAddressesBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 IpamIPAddressesBulkDeleteNoContent ipam Ip addresses bulk delete no content
 */
 type IpamIPAddressesBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this ipam Ip addresses bulk delete no content response has a 2xx status code
+func (o *IpamIPAddressesBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam Ip addresses bulk delete no content response has a 3xx status code
+func (o *IpamIPAddressesBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam Ip addresses bulk delete no content response has a 4xx status code
+func (o *IpamIPAddressesBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam Ip addresses bulk delete no content response has a 5xx status code
+func (o *IpamIPAddressesBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam Ip addresses bulk delete no content response a status code equal to that given
+func (o *IpamIPAddressesBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *IpamIPAddressesBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /ipam/ip-addresses/][%d] ipamIpAddressesBulkDeleteNoContent ", 204)
+}
+
+func (o *IpamIPAddressesBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /ipam/ip-addresses/][%d] ipamIpAddressesBulkDeleteNoContent ", 204)
 }
 

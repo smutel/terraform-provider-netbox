@@ -54,7 +54,8 @@ func NewIpamRouteTargetsReadOK() *IpamRouteTargetsReadOK {
 	return &IpamRouteTargetsReadOK{}
 }
 
-/* IpamRouteTargetsReadOK describes a response with status code 200, with default header values.
+/*
+IpamRouteTargetsReadOK describes a response with status code 200, with default header values.
 
 IpamRouteTargetsReadOK ipam route targets read o k
 */
@@ -62,9 +63,39 @@ type IpamRouteTargetsReadOK struct {
 	Payload *models.RouteTarget
 }
 
+// IsSuccess returns true when this ipam route targets read o k response has a 2xx status code
+func (o *IpamRouteTargetsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam route targets read o k response has a 3xx status code
+func (o *IpamRouteTargetsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam route targets read o k response has a 4xx status code
+func (o *IpamRouteTargetsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam route targets read o k response has a 5xx status code
+func (o *IpamRouteTargetsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam route targets read o k response a status code equal to that given
+func (o *IpamRouteTargetsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamRouteTargetsReadOK) Error() string {
 	return fmt.Sprintf("[GET /ipam/route-targets/{id}/][%d] ipamRouteTargetsReadOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamRouteTargetsReadOK) String() string {
+	return fmt.Sprintf("[GET /ipam/route-targets/{id}/][%d] ipamRouteTargetsReadOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamRouteTargetsReadOK) GetPayload() *models.RouteTarget {
 	return o.Payload
 }

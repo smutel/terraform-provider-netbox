@@ -51,14 +51,44 @@ func NewExtrasTagsBulkDeleteNoContent() *ExtrasTagsBulkDeleteNoContent {
 	return &ExtrasTagsBulkDeleteNoContent{}
 }
 
-/* ExtrasTagsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+ExtrasTagsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 ExtrasTagsBulkDeleteNoContent extras tags bulk delete no content
 */
 type ExtrasTagsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this extras tags bulk delete no content response has a 2xx status code
+func (o *ExtrasTagsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras tags bulk delete no content response has a 3xx status code
+func (o *ExtrasTagsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras tags bulk delete no content response has a 4xx status code
+func (o *ExtrasTagsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras tags bulk delete no content response has a 5xx status code
+func (o *ExtrasTagsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras tags bulk delete no content response a status code equal to that given
+func (o *ExtrasTagsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *ExtrasTagsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /extras/tags/][%d] extrasTagsBulkDeleteNoContent ", 204)
+}
+
+func (o *ExtrasTagsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /extras/tags/][%d] extrasTagsBulkDeleteNoContent ", 204)
 }
 

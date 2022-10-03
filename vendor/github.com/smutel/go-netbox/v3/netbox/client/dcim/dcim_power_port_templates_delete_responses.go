@@ -51,14 +51,44 @@ func NewDcimPowerPortTemplatesDeleteNoContent() *DcimPowerPortTemplatesDeleteNoC
 	return &DcimPowerPortTemplatesDeleteNoContent{}
 }
 
-/* DcimPowerPortTemplatesDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimPowerPortTemplatesDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimPowerPortTemplatesDeleteNoContent dcim power port templates delete no content
 */
 type DcimPowerPortTemplatesDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim power port templates delete no content response has a 2xx status code
+func (o *DcimPowerPortTemplatesDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power port templates delete no content response has a 3xx status code
+func (o *DcimPowerPortTemplatesDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power port templates delete no content response has a 4xx status code
+func (o *DcimPowerPortTemplatesDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power port templates delete no content response has a 5xx status code
+func (o *DcimPowerPortTemplatesDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power port templates delete no content response a status code equal to that given
+func (o *DcimPowerPortTemplatesDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimPowerPortTemplatesDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/power-port-templates/{id}/][%d] dcimPowerPortTemplatesDeleteNoContent ", 204)
+}
+
+func (o *DcimPowerPortTemplatesDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/power-port-templates/{id}/][%d] dcimPowerPortTemplatesDeleteNoContent ", 204)
 }
 

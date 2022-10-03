@@ -54,7 +54,8 @@ func NewExtrasCustomLinksBulkPartialUpdateOK() *ExtrasCustomLinksBulkPartialUpda
 	return &ExtrasCustomLinksBulkPartialUpdateOK{}
 }
 
-/* ExtrasCustomLinksBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasCustomLinksBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasCustomLinksBulkPartialUpdateOK extras custom links bulk partial update o k
 */
@@ -62,9 +63,39 @@ type ExtrasCustomLinksBulkPartialUpdateOK struct {
 	Payload *models.CustomLink
 }
 
+// IsSuccess returns true when this extras custom links bulk partial update o k response has a 2xx status code
+func (o *ExtrasCustomLinksBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras custom links bulk partial update o k response has a 3xx status code
+func (o *ExtrasCustomLinksBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras custom links bulk partial update o k response has a 4xx status code
+func (o *ExtrasCustomLinksBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras custom links bulk partial update o k response has a 5xx status code
+func (o *ExtrasCustomLinksBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras custom links bulk partial update o k response a status code equal to that given
+func (o *ExtrasCustomLinksBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasCustomLinksBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /extras/custom-links/][%d] extrasCustomLinksBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasCustomLinksBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /extras/custom-links/][%d] extrasCustomLinksBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasCustomLinksBulkPartialUpdateOK) GetPayload() *models.CustomLink {
 	return o.Payload
 }

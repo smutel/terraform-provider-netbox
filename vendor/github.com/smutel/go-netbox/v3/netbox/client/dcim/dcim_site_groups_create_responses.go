@@ -54,7 +54,8 @@ func NewDcimSiteGroupsCreateCreated() *DcimSiteGroupsCreateCreated {
 	return &DcimSiteGroupsCreateCreated{}
 }
 
-/* DcimSiteGroupsCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimSiteGroupsCreateCreated describes a response with status code 201, with default header values.
 
 DcimSiteGroupsCreateCreated dcim site groups create created
 */
@@ -62,9 +63,39 @@ type DcimSiteGroupsCreateCreated struct {
 	Payload *models.SiteGroup
 }
 
+// IsSuccess returns true when this dcim site groups create created response has a 2xx status code
+func (o *DcimSiteGroupsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim site groups create created response has a 3xx status code
+func (o *DcimSiteGroupsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim site groups create created response has a 4xx status code
+func (o *DcimSiteGroupsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim site groups create created response has a 5xx status code
+func (o *DcimSiteGroupsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim site groups create created response a status code equal to that given
+func (o *DcimSiteGroupsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimSiteGroupsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/site-groups/][%d] dcimSiteGroupsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimSiteGroupsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/site-groups/][%d] dcimSiteGroupsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimSiteGroupsCreateCreated) GetPayload() *models.SiteGroup {
 	return o.Payload
 }

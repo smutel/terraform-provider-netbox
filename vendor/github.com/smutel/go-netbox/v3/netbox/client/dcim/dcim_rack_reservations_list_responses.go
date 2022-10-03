@@ -59,7 +59,8 @@ func NewDcimRackReservationsListOK() *DcimRackReservationsListOK {
 	return &DcimRackReservationsListOK{}
 }
 
-/* DcimRackReservationsListOK describes a response with status code 200, with default header values.
+/*
+DcimRackReservationsListOK describes a response with status code 200, with default header values.
 
 DcimRackReservationsListOK dcim rack reservations list o k
 */
@@ -67,9 +68,39 @@ type DcimRackReservationsListOK struct {
 	Payload *DcimRackReservationsListOKBody
 }
 
+// IsSuccess returns true when this dcim rack reservations list o k response has a 2xx status code
+func (o *DcimRackReservationsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rack reservations list o k response has a 3xx status code
+func (o *DcimRackReservationsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rack reservations list o k response has a 4xx status code
+func (o *DcimRackReservationsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rack reservations list o k response has a 5xx status code
+func (o *DcimRackReservationsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rack reservations list o k response a status code equal to that given
+func (o *DcimRackReservationsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimRackReservationsListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/rack-reservations/][%d] dcimRackReservationsListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimRackReservationsListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/rack-reservations/][%d] dcimRackReservationsListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimRackReservationsListOK) GetPayload() *DcimRackReservationsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimRackReservationsListOK) readResponse(response runtime.ClientRespons
 	return nil
 }
 
-/*DcimRackReservationsListOKBody dcim rack reservations list o k body
+/*
+DcimRackReservationsListOKBody dcim rack reservations list o k body
 swagger:model DcimRackReservationsListOKBody
 */
 type DcimRackReservationsListOKBody struct {

@@ -51,14 +51,44 @@ func NewUsersTokensDeleteNoContent() *UsersTokensDeleteNoContent {
 	return &UsersTokensDeleteNoContent{}
 }
 
-/* UsersTokensDeleteNoContent describes a response with status code 204, with default header values.
+/*
+UsersTokensDeleteNoContent describes a response with status code 204, with default header values.
 
 UsersTokensDeleteNoContent users tokens delete no content
 */
 type UsersTokensDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this users tokens delete no content response has a 2xx status code
+func (o *UsersTokensDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users tokens delete no content response has a 3xx status code
+func (o *UsersTokensDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users tokens delete no content response has a 4xx status code
+func (o *UsersTokensDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users tokens delete no content response has a 5xx status code
+func (o *UsersTokensDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users tokens delete no content response a status code equal to that given
+func (o *UsersTokensDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *UsersTokensDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /users/tokens/{id}/][%d] usersTokensDeleteNoContent ", 204)
+}
+
+func (o *UsersTokensDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /users/tokens/{id}/][%d] usersTokensDeleteNoContent ", 204)
 }
 

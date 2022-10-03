@@ -54,7 +54,8 @@ func NewCircuitsCircuitTerminationsCreateCreated() *CircuitsCircuitTerminationsC
 	return &CircuitsCircuitTerminationsCreateCreated{}
 }
 
-/* CircuitsCircuitTerminationsCreateCreated describes a response with status code 201, with default header values.
+/*
+CircuitsCircuitTerminationsCreateCreated describes a response with status code 201, with default header values.
 
 CircuitsCircuitTerminationsCreateCreated circuits circuit terminations create created
 */
@@ -62,9 +63,39 @@ type CircuitsCircuitTerminationsCreateCreated struct {
 	Payload *models.CircuitTermination
 }
 
+// IsSuccess returns true when this circuits circuit terminations create created response has a 2xx status code
+func (o *CircuitsCircuitTerminationsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit terminations create created response has a 3xx status code
+func (o *CircuitsCircuitTerminationsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit terminations create created response has a 4xx status code
+func (o *CircuitsCircuitTerminationsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit terminations create created response has a 5xx status code
+func (o *CircuitsCircuitTerminationsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit terminations create created response a status code equal to that given
+func (o *CircuitsCircuitTerminationsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *CircuitsCircuitTerminationsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /circuits/circuit-terminations/][%d] circuitsCircuitTerminationsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *CircuitsCircuitTerminationsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /circuits/circuit-terminations/][%d] circuitsCircuitTerminationsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *CircuitsCircuitTerminationsCreateCreated) GetPayload() *models.CircuitTermination {
 	return o.Payload
 }

@@ -59,7 +59,8 @@ func NewDcimManufacturersListOK() *DcimManufacturersListOK {
 	return &DcimManufacturersListOK{}
 }
 
-/* DcimManufacturersListOK describes a response with status code 200, with default header values.
+/*
+DcimManufacturersListOK describes a response with status code 200, with default header values.
 
 DcimManufacturersListOK dcim manufacturers list o k
 */
@@ -67,9 +68,39 @@ type DcimManufacturersListOK struct {
 	Payload *DcimManufacturersListOKBody
 }
 
+// IsSuccess returns true when this dcim manufacturers list o k response has a 2xx status code
+func (o *DcimManufacturersListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim manufacturers list o k response has a 3xx status code
+func (o *DcimManufacturersListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim manufacturers list o k response has a 4xx status code
+func (o *DcimManufacturersListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim manufacturers list o k response has a 5xx status code
+func (o *DcimManufacturersListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim manufacturers list o k response a status code equal to that given
+func (o *DcimManufacturersListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimManufacturersListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/manufacturers/][%d] dcimManufacturersListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimManufacturersListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/manufacturers/][%d] dcimManufacturersListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimManufacturersListOK) GetPayload() *DcimManufacturersListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimManufacturersListOK) readResponse(response runtime.ClientResponse, 
 	return nil
 }
 
-/*DcimManufacturersListOKBody dcim manufacturers list o k body
+/*
+DcimManufacturersListOKBody dcim manufacturers list o k body
 swagger:model DcimManufacturersListOKBody
 */
 type DcimManufacturersListOKBody struct {

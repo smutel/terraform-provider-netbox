@@ -54,7 +54,8 @@ func NewIpamPrefixesAvailableIpsListOK() *IpamPrefixesAvailableIpsListOK {
 	return &IpamPrefixesAvailableIpsListOK{}
 }
 
-/* IpamPrefixesAvailableIpsListOK describes a response with status code 200, with default header values.
+/*
+IpamPrefixesAvailableIpsListOK describes a response with status code 200, with default header values.
 
 IpamPrefixesAvailableIpsListOK ipam prefixes available ips list o k
 */
@@ -62,9 +63,39 @@ type IpamPrefixesAvailableIpsListOK struct {
 	Payload []*models.AvailableIP
 }
 
+// IsSuccess returns true when this ipam prefixes available ips list o k response has a 2xx status code
+func (o *IpamPrefixesAvailableIpsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam prefixes available ips list o k response has a 3xx status code
+func (o *IpamPrefixesAvailableIpsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam prefixes available ips list o k response has a 4xx status code
+func (o *IpamPrefixesAvailableIpsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam prefixes available ips list o k response has a 5xx status code
+func (o *IpamPrefixesAvailableIpsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam prefixes available ips list o k response a status code equal to that given
+func (o *IpamPrefixesAvailableIpsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamPrefixesAvailableIpsListOK) Error() string {
 	return fmt.Sprintf("[GET /ipam/prefixes/{id}/available-ips/][%d] ipamPrefixesAvailableIpsListOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamPrefixesAvailableIpsListOK) String() string {
+	return fmt.Sprintf("[GET /ipam/prefixes/{id}/available-ips/][%d] ipamPrefixesAvailableIpsListOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamPrefixesAvailableIpsListOK) GetPayload() []*models.AvailableIP {
 	return o.Payload
 }

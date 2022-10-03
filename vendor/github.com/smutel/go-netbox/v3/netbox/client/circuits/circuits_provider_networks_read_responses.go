@@ -54,7 +54,8 @@ func NewCircuitsProviderNetworksReadOK() *CircuitsProviderNetworksReadOK {
 	return &CircuitsProviderNetworksReadOK{}
 }
 
-/* CircuitsProviderNetworksReadOK describes a response with status code 200, with default header values.
+/*
+CircuitsProviderNetworksReadOK describes a response with status code 200, with default header values.
 
 CircuitsProviderNetworksReadOK circuits provider networks read o k
 */
@@ -62,9 +63,39 @@ type CircuitsProviderNetworksReadOK struct {
 	Payload *models.ProviderNetwork
 }
 
+// IsSuccess returns true when this circuits provider networks read o k response has a 2xx status code
+func (o *CircuitsProviderNetworksReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits provider networks read o k response has a 3xx status code
+func (o *CircuitsProviderNetworksReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits provider networks read o k response has a 4xx status code
+func (o *CircuitsProviderNetworksReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits provider networks read o k response has a 5xx status code
+func (o *CircuitsProviderNetworksReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits provider networks read o k response a status code equal to that given
+func (o *CircuitsProviderNetworksReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsProviderNetworksReadOK) Error() string {
 	return fmt.Sprintf("[GET /circuits/provider-networks/{id}/][%d] circuitsProviderNetworksReadOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsProviderNetworksReadOK) String() string {
+	return fmt.Sprintf("[GET /circuits/provider-networks/{id}/][%d] circuitsProviderNetworksReadOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsProviderNetworksReadOK) GetPayload() *models.ProviderNetwork {
 	return o.Payload
 }

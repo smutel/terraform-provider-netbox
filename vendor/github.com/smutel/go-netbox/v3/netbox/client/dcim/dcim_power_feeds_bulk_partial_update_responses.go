@@ -54,7 +54,8 @@ func NewDcimPowerFeedsBulkPartialUpdateOK() *DcimPowerFeedsBulkPartialUpdateOK {
 	return &DcimPowerFeedsBulkPartialUpdateOK{}
 }
 
-/* DcimPowerFeedsBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimPowerFeedsBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimPowerFeedsBulkPartialUpdateOK dcim power feeds bulk partial update o k
 */
@@ -62,9 +63,39 @@ type DcimPowerFeedsBulkPartialUpdateOK struct {
 	Payload *models.PowerFeed
 }
 
+// IsSuccess returns true when this dcim power feeds bulk partial update o k response has a 2xx status code
+func (o *DcimPowerFeedsBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power feeds bulk partial update o k response has a 3xx status code
+func (o *DcimPowerFeedsBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power feeds bulk partial update o k response has a 4xx status code
+func (o *DcimPowerFeedsBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power feeds bulk partial update o k response has a 5xx status code
+func (o *DcimPowerFeedsBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power feeds bulk partial update o k response a status code equal to that given
+func (o *DcimPowerFeedsBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerFeedsBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/power-feeds/][%d] dcimPowerFeedsBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerFeedsBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/power-feeds/][%d] dcimPowerFeedsBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerFeedsBulkPartialUpdateOK) GetPayload() *models.PowerFeed {
 	return o.Payload
 }

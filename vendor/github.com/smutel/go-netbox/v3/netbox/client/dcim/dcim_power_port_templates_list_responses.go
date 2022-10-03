@@ -59,7 +59,8 @@ func NewDcimPowerPortTemplatesListOK() *DcimPowerPortTemplatesListOK {
 	return &DcimPowerPortTemplatesListOK{}
 }
 
-/* DcimPowerPortTemplatesListOK describes a response with status code 200, with default header values.
+/*
+DcimPowerPortTemplatesListOK describes a response with status code 200, with default header values.
 
 DcimPowerPortTemplatesListOK dcim power port templates list o k
 */
@@ -67,9 +68,39 @@ type DcimPowerPortTemplatesListOK struct {
 	Payload *DcimPowerPortTemplatesListOKBody
 }
 
+// IsSuccess returns true when this dcim power port templates list o k response has a 2xx status code
+func (o *DcimPowerPortTemplatesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power port templates list o k response has a 3xx status code
+func (o *DcimPowerPortTemplatesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power port templates list o k response has a 4xx status code
+func (o *DcimPowerPortTemplatesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power port templates list o k response has a 5xx status code
+func (o *DcimPowerPortTemplatesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power port templates list o k response a status code equal to that given
+func (o *DcimPowerPortTemplatesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerPortTemplatesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/power-port-templates/][%d] dcimPowerPortTemplatesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerPortTemplatesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/power-port-templates/][%d] dcimPowerPortTemplatesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerPortTemplatesListOK) GetPayload() *DcimPowerPortTemplatesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimPowerPortTemplatesListOK) readResponse(response runtime.ClientRespo
 	return nil
 }
 
-/*DcimPowerPortTemplatesListOKBody dcim power port templates list o k body
+/*
+DcimPowerPortTemplatesListOKBody dcim power port templates list o k body
 swagger:model DcimPowerPortTemplatesListOKBody
 */
 type DcimPowerPortTemplatesListOKBody struct {

@@ -51,14 +51,44 @@ func NewDcimConsoleServerPortTemplatesBulkDeleteNoContent() *DcimConsoleServerPo
 	return &DcimConsoleServerPortTemplatesBulkDeleteNoContent{}
 }
 
-/* DcimConsoleServerPortTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimConsoleServerPortTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimConsoleServerPortTemplatesBulkDeleteNoContent dcim console server port templates bulk delete no content
 */
 type DcimConsoleServerPortTemplatesBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim console server port templates bulk delete no content response has a 2xx status code
+func (o *DcimConsoleServerPortTemplatesBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console server port templates bulk delete no content response has a 3xx status code
+func (o *DcimConsoleServerPortTemplatesBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console server port templates bulk delete no content response has a 4xx status code
+func (o *DcimConsoleServerPortTemplatesBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console server port templates bulk delete no content response has a 5xx status code
+func (o *DcimConsoleServerPortTemplatesBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console server port templates bulk delete no content response a status code equal to that given
+func (o *DcimConsoleServerPortTemplatesBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimConsoleServerPortTemplatesBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/console-server-port-templates/][%d] dcimConsoleServerPortTemplatesBulkDeleteNoContent ", 204)
+}
+
+func (o *DcimConsoleServerPortTemplatesBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/console-server-port-templates/][%d] dcimConsoleServerPortTemplatesBulkDeleteNoContent ", 204)
 }
 

@@ -54,7 +54,8 @@ func NewIpamIPAddressesPartialUpdateOK() *IpamIPAddressesPartialUpdateOK {
 	return &IpamIPAddressesPartialUpdateOK{}
 }
 
-/* IpamIPAddressesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamIPAddressesPartialUpdateOK describes a response with status code 200, with default header values.
 
 IpamIPAddressesPartialUpdateOK ipam Ip addresses partial update o k
 */
@@ -62,9 +63,39 @@ type IpamIPAddressesPartialUpdateOK struct {
 	Payload *models.IPAddress
 }
 
+// IsSuccess returns true when this ipam Ip addresses partial update o k response has a 2xx status code
+func (o *IpamIPAddressesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam Ip addresses partial update o k response has a 3xx status code
+func (o *IpamIPAddressesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam Ip addresses partial update o k response has a 4xx status code
+func (o *IpamIPAddressesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam Ip addresses partial update o k response has a 5xx status code
+func (o *IpamIPAddressesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam Ip addresses partial update o k response a status code equal to that given
+func (o *IpamIPAddressesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamIPAddressesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /ipam/ip-addresses/{id}/][%d] ipamIpAddressesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamIPAddressesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /ipam/ip-addresses/{id}/][%d] ipamIpAddressesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamIPAddressesPartialUpdateOK) GetPayload() *models.IPAddress {
 	return o.Payload
 }

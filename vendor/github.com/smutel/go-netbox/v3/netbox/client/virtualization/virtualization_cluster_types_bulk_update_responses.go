@@ -54,7 +54,8 @@ func NewVirtualizationClusterTypesBulkUpdateOK() *VirtualizationClusterTypesBulk
 	return &VirtualizationClusterTypesBulkUpdateOK{}
 }
 
-/* VirtualizationClusterTypesBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+VirtualizationClusterTypesBulkUpdateOK describes a response with status code 200, with default header values.
 
 VirtualizationClusterTypesBulkUpdateOK virtualization cluster types bulk update o k
 */
@@ -62,9 +63,39 @@ type VirtualizationClusterTypesBulkUpdateOK struct {
 	Payload *models.ClusterType
 }
 
+// IsSuccess returns true when this virtualization cluster types bulk update o k response has a 2xx status code
+func (o *VirtualizationClusterTypesBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization cluster types bulk update o k response has a 3xx status code
+func (o *VirtualizationClusterTypesBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization cluster types bulk update o k response has a 4xx status code
+func (o *VirtualizationClusterTypesBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization cluster types bulk update o k response has a 5xx status code
+func (o *VirtualizationClusterTypesBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization cluster types bulk update o k response a status code equal to that given
+func (o *VirtualizationClusterTypesBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationClusterTypesBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /virtualization/cluster-types/][%d] virtualizationClusterTypesBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationClusterTypesBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /virtualization/cluster-types/][%d] virtualizationClusterTypesBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationClusterTypesBulkUpdateOK) GetPayload() *models.ClusterType {
 	return o.Payload
 }

@@ -59,7 +59,8 @@ func NewUsersGroupsListOK() *UsersGroupsListOK {
 	return &UsersGroupsListOK{}
 }
 
-/* UsersGroupsListOK describes a response with status code 200, with default header values.
+/*
+UsersGroupsListOK describes a response with status code 200, with default header values.
 
 UsersGroupsListOK users groups list o k
 */
@@ -67,9 +68,39 @@ type UsersGroupsListOK struct {
 	Payload *UsersGroupsListOKBody
 }
 
+// IsSuccess returns true when this users groups list o k response has a 2xx status code
+func (o *UsersGroupsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users groups list o k response has a 3xx status code
+func (o *UsersGroupsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users groups list o k response has a 4xx status code
+func (o *UsersGroupsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users groups list o k response has a 5xx status code
+func (o *UsersGroupsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users groups list o k response a status code equal to that given
+func (o *UsersGroupsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *UsersGroupsListOK) Error() string {
 	return fmt.Sprintf("[GET /users/groups/][%d] usersGroupsListOK  %+v", 200, o.Payload)
 }
+
+func (o *UsersGroupsListOK) String() string {
+	return fmt.Sprintf("[GET /users/groups/][%d] usersGroupsListOK  %+v", 200, o.Payload)
+}
+
 func (o *UsersGroupsListOK) GetPayload() *UsersGroupsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *UsersGroupsListOK) readResponse(response runtime.ClientResponse, consum
 	return nil
 }
 
-/*UsersGroupsListOKBody users groups list o k body
+/*
+UsersGroupsListOKBody users groups list o k body
 swagger:model UsersGroupsListOKBody
 */
 type UsersGroupsListOKBody struct {

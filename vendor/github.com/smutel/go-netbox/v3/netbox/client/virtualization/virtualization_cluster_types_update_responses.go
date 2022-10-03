@@ -54,7 +54,8 @@ func NewVirtualizationClusterTypesUpdateOK() *VirtualizationClusterTypesUpdateOK
 	return &VirtualizationClusterTypesUpdateOK{}
 }
 
-/* VirtualizationClusterTypesUpdateOK describes a response with status code 200, with default header values.
+/*
+VirtualizationClusterTypesUpdateOK describes a response with status code 200, with default header values.
 
 VirtualizationClusterTypesUpdateOK virtualization cluster types update o k
 */
@@ -62,9 +63,39 @@ type VirtualizationClusterTypesUpdateOK struct {
 	Payload *models.ClusterType
 }
 
+// IsSuccess returns true when this virtualization cluster types update o k response has a 2xx status code
+func (o *VirtualizationClusterTypesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization cluster types update o k response has a 3xx status code
+func (o *VirtualizationClusterTypesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization cluster types update o k response has a 4xx status code
+func (o *VirtualizationClusterTypesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization cluster types update o k response has a 5xx status code
+func (o *VirtualizationClusterTypesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization cluster types update o k response a status code equal to that given
+func (o *VirtualizationClusterTypesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationClusterTypesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /virtualization/cluster-types/{id}/][%d] virtualizationClusterTypesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationClusterTypesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /virtualization/cluster-types/{id}/][%d] virtualizationClusterTypesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationClusterTypesUpdateOK) GetPayload() *models.ClusterType {
 	return o.Payload
 }

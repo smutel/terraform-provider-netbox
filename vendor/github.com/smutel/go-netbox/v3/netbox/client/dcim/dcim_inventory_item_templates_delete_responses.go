@@ -51,14 +51,44 @@ func NewDcimInventoryItemTemplatesDeleteNoContent() *DcimInventoryItemTemplatesD
 	return &DcimInventoryItemTemplatesDeleteNoContent{}
 }
 
-/* DcimInventoryItemTemplatesDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimInventoryItemTemplatesDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimInventoryItemTemplatesDeleteNoContent dcim inventory item templates delete no content
 */
 type DcimInventoryItemTemplatesDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim inventory item templates delete no content response has a 2xx status code
+func (o *DcimInventoryItemTemplatesDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory item templates delete no content response has a 3xx status code
+func (o *DcimInventoryItemTemplatesDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory item templates delete no content response has a 4xx status code
+func (o *DcimInventoryItemTemplatesDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory item templates delete no content response has a 5xx status code
+func (o *DcimInventoryItemTemplatesDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory item templates delete no content response a status code equal to that given
+func (o *DcimInventoryItemTemplatesDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimInventoryItemTemplatesDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/inventory-item-templates/{id}/][%d] dcimInventoryItemTemplatesDeleteNoContent ", 204)
+}
+
+func (o *DcimInventoryItemTemplatesDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/inventory-item-templates/{id}/][%d] dcimInventoryItemTemplatesDeleteNoContent ", 204)
 }
 

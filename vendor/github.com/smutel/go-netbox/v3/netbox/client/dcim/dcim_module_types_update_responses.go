@@ -54,7 +54,8 @@ func NewDcimModuleTypesUpdateOK() *DcimModuleTypesUpdateOK {
 	return &DcimModuleTypesUpdateOK{}
 }
 
-/* DcimModuleTypesUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimModuleTypesUpdateOK describes a response with status code 200, with default header values.
 
 DcimModuleTypesUpdateOK dcim module types update o k
 */
@@ -62,9 +63,39 @@ type DcimModuleTypesUpdateOK struct {
 	Payload *models.ModuleType
 }
 
+// IsSuccess returns true when this dcim module types update o k response has a 2xx status code
+func (o *DcimModuleTypesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim module types update o k response has a 3xx status code
+func (o *DcimModuleTypesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim module types update o k response has a 4xx status code
+func (o *DcimModuleTypesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim module types update o k response has a 5xx status code
+func (o *DcimModuleTypesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim module types update o k response a status code equal to that given
+func (o *DcimModuleTypesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimModuleTypesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/module-types/{id}/][%d] dcimModuleTypesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimModuleTypesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/module-types/{id}/][%d] dcimModuleTypesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimModuleTypesUpdateOK) GetPayload() *models.ModuleType {
 	return o.Payload
 }

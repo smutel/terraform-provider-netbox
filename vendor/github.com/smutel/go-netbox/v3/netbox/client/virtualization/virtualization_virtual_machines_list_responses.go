@@ -59,7 +59,8 @@ func NewVirtualizationVirtualMachinesListOK() *VirtualizationVirtualMachinesList
 	return &VirtualizationVirtualMachinesListOK{}
 }
 
-/* VirtualizationVirtualMachinesListOK describes a response with status code 200, with default header values.
+/*
+VirtualizationVirtualMachinesListOK describes a response with status code 200, with default header values.
 
 VirtualizationVirtualMachinesListOK virtualization virtual machines list o k
 */
@@ -67,9 +68,39 @@ type VirtualizationVirtualMachinesListOK struct {
 	Payload *VirtualizationVirtualMachinesListOKBody
 }
 
+// IsSuccess returns true when this virtualization virtual machines list o k response has a 2xx status code
+func (o *VirtualizationVirtualMachinesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization virtual machines list o k response has a 3xx status code
+func (o *VirtualizationVirtualMachinesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization virtual machines list o k response has a 4xx status code
+func (o *VirtualizationVirtualMachinesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization virtual machines list o k response has a 5xx status code
+func (o *VirtualizationVirtualMachinesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization virtual machines list o k response a status code equal to that given
+func (o *VirtualizationVirtualMachinesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationVirtualMachinesListOK) Error() string {
 	return fmt.Sprintf("[GET /virtualization/virtual-machines/][%d] virtualizationVirtualMachinesListOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationVirtualMachinesListOK) String() string {
+	return fmt.Sprintf("[GET /virtualization/virtual-machines/][%d] virtualizationVirtualMachinesListOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationVirtualMachinesListOK) GetPayload() *VirtualizationVirtualMachinesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *VirtualizationVirtualMachinesListOK) readResponse(response runtime.Clie
 	return nil
 }
 
-/*VirtualizationVirtualMachinesListOKBody virtualization virtual machines list o k body
+/*
+VirtualizationVirtualMachinesListOKBody virtualization virtual machines list o k body
 swagger:model VirtualizationVirtualMachinesListOKBody
 */
 type VirtualizationVirtualMachinesListOKBody struct {

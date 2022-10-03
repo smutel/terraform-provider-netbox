@@ -54,7 +54,8 @@ func NewDcimInventoryItemTemplatesUpdateOK() *DcimInventoryItemTemplatesUpdateOK
 	return &DcimInventoryItemTemplatesUpdateOK{}
 }
 
-/* DcimInventoryItemTemplatesUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimInventoryItemTemplatesUpdateOK describes a response with status code 200, with default header values.
 
 DcimInventoryItemTemplatesUpdateOK dcim inventory item templates update o k
 */
@@ -62,9 +63,39 @@ type DcimInventoryItemTemplatesUpdateOK struct {
 	Payload *models.InventoryItemTemplate
 }
 
+// IsSuccess returns true when this dcim inventory item templates update o k response has a 2xx status code
+func (o *DcimInventoryItemTemplatesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory item templates update o k response has a 3xx status code
+func (o *DcimInventoryItemTemplatesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory item templates update o k response has a 4xx status code
+func (o *DcimInventoryItemTemplatesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory item templates update o k response has a 5xx status code
+func (o *DcimInventoryItemTemplatesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory item templates update o k response a status code equal to that given
+func (o *DcimInventoryItemTemplatesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInventoryItemTemplatesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/inventory-item-templates/{id}/][%d] dcimInventoryItemTemplatesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInventoryItemTemplatesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/inventory-item-templates/{id}/][%d] dcimInventoryItemTemplatesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInventoryItemTemplatesUpdateOK) GetPayload() *models.InventoryItemTemplate {
 	return o.Payload
 }

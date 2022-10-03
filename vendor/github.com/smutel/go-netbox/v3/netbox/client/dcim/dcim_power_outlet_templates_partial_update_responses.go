@@ -54,7 +54,8 @@ func NewDcimPowerOutletTemplatesPartialUpdateOK() *DcimPowerOutletTemplatesParti
 	return &DcimPowerOutletTemplatesPartialUpdateOK{}
 }
 
-/* DcimPowerOutletTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimPowerOutletTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimPowerOutletTemplatesPartialUpdateOK dcim power outlet templates partial update o k
 */
@@ -62,9 +63,39 @@ type DcimPowerOutletTemplatesPartialUpdateOK struct {
 	Payload *models.PowerOutletTemplate
 }
 
+// IsSuccess returns true when this dcim power outlet templates partial update o k response has a 2xx status code
+func (o *DcimPowerOutletTemplatesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power outlet templates partial update o k response has a 3xx status code
+func (o *DcimPowerOutletTemplatesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power outlet templates partial update o k response has a 4xx status code
+func (o *DcimPowerOutletTemplatesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power outlet templates partial update o k response has a 5xx status code
+func (o *DcimPowerOutletTemplatesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power outlet templates partial update o k response a status code equal to that given
+func (o *DcimPowerOutletTemplatesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerOutletTemplatesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/power-outlet-templates/{id}/][%d] dcimPowerOutletTemplatesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerOutletTemplatesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/power-outlet-templates/{id}/][%d] dcimPowerOutletTemplatesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerOutletTemplatesPartialUpdateOK) GetPayload() *models.PowerOutletTemplate {
 	return o.Payload
 }

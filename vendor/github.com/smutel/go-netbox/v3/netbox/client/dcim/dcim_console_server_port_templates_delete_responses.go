@@ -51,14 +51,44 @@ func NewDcimConsoleServerPortTemplatesDeleteNoContent() *DcimConsoleServerPortTe
 	return &DcimConsoleServerPortTemplatesDeleteNoContent{}
 }
 
-/* DcimConsoleServerPortTemplatesDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimConsoleServerPortTemplatesDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimConsoleServerPortTemplatesDeleteNoContent dcim console server port templates delete no content
 */
 type DcimConsoleServerPortTemplatesDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim console server port templates delete no content response has a 2xx status code
+func (o *DcimConsoleServerPortTemplatesDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console server port templates delete no content response has a 3xx status code
+func (o *DcimConsoleServerPortTemplatesDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console server port templates delete no content response has a 4xx status code
+func (o *DcimConsoleServerPortTemplatesDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console server port templates delete no content response has a 5xx status code
+func (o *DcimConsoleServerPortTemplatesDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console server port templates delete no content response a status code equal to that given
+func (o *DcimConsoleServerPortTemplatesDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimConsoleServerPortTemplatesDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/console-server-port-templates/{id}/][%d] dcimConsoleServerPortTemplatesDeleteNoContent ", 204)
+}
+
+func (o *DcimConsoleServerPortTemplatesDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/console-server-port-templates/{id}/][%d] dcimConsoleServerPortTemplatesDeleteNoContent ", 204)
 }
 

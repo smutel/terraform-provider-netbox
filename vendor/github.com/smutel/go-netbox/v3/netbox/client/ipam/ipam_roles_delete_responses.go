@@ -51,14 +51,44 @@ func NewIpamRolesDeleteNoContent() *IpamRolesDeleteNoContent {
 	return &IpamRolesDeleteNoContent{}
 }
 
-/* IpamRolesDeleteNoContent describes a response with status code 204, with default header values.
+/*
+IpamRolesDeleteNoContent describes a response with status code 204, with default header values.
 
 IpamRolesDeleteNoContent ipam roles delete no content
 */
 type IpamRolesDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this ipam roles delete no content response has a 2xx status code
+func (o *IpamRolesDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam roles delete no content response has a 3xx status code
+func (o *IpamRolesDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam roles delete no content response has a 4xx status code
+func (o *IpamRolesDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam roles delete no content response has a 5xx status code
+func (o *IpamRolesDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam roles delete no content response a status code equal to that given
+func (o *IpamRolesDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *IpamRolesDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /ipam/roles/{id}/][%d] ipamRolesDeleteNoContent ", 204)
+}
+
+func (o *IpamRolesDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /ipam/roles/{id}/][%d] ipamRolesDeleteNoContent ", 204)
 }
 

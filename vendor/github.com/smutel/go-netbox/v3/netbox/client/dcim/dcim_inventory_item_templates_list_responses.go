@@ -59,7 +59,8 @@ func NewDcimInventoryItemTemplatesListOK() *DcimInventoryItemTemplatesListOK {
 	return &DcimInventoryItemTemplatesListOK{}
 }
 
-/* DcimInventoryItemTemplatesListOK describes a response with status code 200, with default header values.
+/*
+DcimInventoryItemTemplatesListOK describes a response with status code 200, with default header values.
 
 DcimInventoryItemTemplatesListOK dcim inventory item templates list o k
 */
@@ -67,9 +68,39 @@ type DcimInventoryItemTemplatesListOK struct {
 	Payload *DcimInventoryItemTemplatesListOKBody
 }
 
+// IsSuccess returns true when this dcim inventory item templates list o k response has a 2xx status code
+func (o *DcimInventoryItemTemplatesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory item templates list o k response has a 3xx status code
+func (o *DcimInventoryItemTemplatesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory item templates list o k response has a 4xx status code
+func (o *DcimInventoryItemTemplatesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory item templates list o k response has a 5xx status code
+func (o *DcimInventoryItemTemplatesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory item templates list o k response a status code equal to that given
+func (o *DcimInventoryItemTemplatesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInventoryItemTemplatesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/inventory-item-templates/][%d] dcimInventoryItemTemplatesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInventoryItemTemplatesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/inventory-item-templates/][%d] dcimInventoryItemTemplatesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInventoryItemTemplatesListOK) GetPayload() *DcimInventoryItemTemplatesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimInventoryItemTemplatesListOK) readResponse(response runtime.ClientR
 	return nil
 }
 
-/*DcimInventoryItemTemplatesListOKBody dcim inventory item templates list o k body
+/*
+DcimInventoryItemTemplatesListOKBody dcim inventory item templates list o k body
 swagger:model DcimInventoryItemTemplatesListOKBody
 */
 type DcimInventoryItemTemplatesListOKBody struct {

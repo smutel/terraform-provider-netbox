@@ -54,7 +54,8 @@ func NewVirtualizationClustersUpdateOK() *VirtualizationClustersUpdateOK {
 	return &VirtualizationClustersUpdateOK{}
 }
 
-/* VirtualizationClustersUpdateOK describes a response with status code 200, with default header values.
+/*
+VirtualizationClustersUpdateOK describes a response with status code 200, with default header values.
 
 VirtualizationClustersUpdateOK virtualization clusters update o k
 */
@@ -62,9 +63,39 @@ type VirtualizationClustersUpdateOK struct {
 	Payload *models.Cluster
 }
 
+// IsSuccess returns true when this virtualization clusters update o k response has a 2xx status code
+func (o *VirtualizationClustersUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization clusters update o k response has a 3xx status code
+func (o *VirtualizationClustersUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization clusters update o k response has a 4xx status code
+func (o *VirtualizationClustersUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization clusters update o k response has a 5xx status code
+func (o *VirtualizationClustersUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization clusters update o k response a status code equal to that given
+func (o *VirtualizationClustersUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationClustersUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /virtualization/clusters/{id}/][%d] virtualizationClustersUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationClustersUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /virtualization/clusters/{id}/][%d] virtualizationClustersUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationClustersUpdateOK) GetPayload() *models.Cluster {
 	return o.Payload
 }

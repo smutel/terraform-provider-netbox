@@ -54,7 +54,8 @@ func NewDcimVirtualChassisPartialUpdateOK() *DcimVirtualChassisPartialUpdateOK {
 	return &DcimVirtualChassisPartialUpdateOK{}
 }
 
-/* DcimVirtualChassisPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimVirtualChassisPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimVirtualChassisPartialUpdateOK dcim virtual chassis partial update o k
 */
@@ -62,9 +63,39 @@ type DcimVirtualChassisPartialUpdateOK struct {
 	Payload *models.VirtualChassis
 }
 
+// IsSuccess returns true when this dcim virtual chassis partial update o k response has a 2xx status code
+func (o *DcimVirtualChassisPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim virtual chassis partial update o k response has a 3xx status code
+func (o *DcimVirtualChassisPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim virtual chassis partial update o k response has a 4xx status code
+func (o *DcimVirtualChassisPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim virtual chassis partial update o k response has a 5xx status code
+func (o *DcimVirtualChassisPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim virtual chassis partial update o k response a status code equal to that given
+func (o *DcimVirtualChassisPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimVirtualChassisPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/virtual-chassis/{id}/][%d] dcimVirtualChassisPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimVirtualChassisPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/virtual-chassis/{id}/][%d] dcimVirtualChassisPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimVirtualChassisPartialUpdateOK) GetPayload() *models.VirtualChassis {
 	return o.Payload
 }

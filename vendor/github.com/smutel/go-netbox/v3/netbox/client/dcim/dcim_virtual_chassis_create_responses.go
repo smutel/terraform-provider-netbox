@@ -54,7 +54,8 @@ func NewDcimVirtualChassisCreateCreated() *DcimVirtualChassisCreateCreated {
 	return &DcimVirtualChassisCreateCreated{}
 }
 
-/* DcimVirtualChassisCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimVirtualChassisCreateCreated describes a response with status code 201, with default header values.
 
 DcimVirtualChassisCreateCreated dcim virtual chassis create created
 */
@@ -62,9 +63,39 @@ type DcimVirtualChassisCreateCreated struct {
 	Payload *models.VirtualChassis
 }
 
+// IsSuccess returns true when this dcim virtual chassis create created response has a 2xx status code
+func (o *DcimVirtualChassisCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim virtual chassis create created response has a 3xx status code
+func (o *DcimVirtualChassisCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim virtual chassis create created response has a 4xx status code
+func (o *DcimVirtualChassisCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim virtual chassis create created response has a 5xx status code
+func (o *DcimVirtualChassisCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim virtual chassis create created response a status code equal to that given
+func (o *DcimVirtualChassisCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimVirtualChassisCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/virtual-chassis/][%d] dcimVirtualChassisCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimVirtualChassisCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/virtual-chassis/][%d] dcimVirtualChassisCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimVirtualChassisCreateCreated) GetPayload() *models.VirtualChassis {
 	return o.Payload
 }

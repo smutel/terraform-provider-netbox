@@ -54,7 +54,8 @@ func NewVirtualizationClustersCreateCreated() *VirtualizationClustersCreateCreat
 	return &VirtualizationClustersCreateCreated{}
 }
 
-/* VirtualizationClustersCreateCreated describes a response with status code 201, with default header values.
+/*
+VirtualizationClustersCreateCreated describes a response with status code 201, with default header values.
 
 VirtualizationClustersCreateCreated virtualization clusters create created
 */
@@ -62,9 +63,39 @@ type VirtualizationClustersCreateCreated struct {
 	Payload *models.Cluster
 }
 
+// IsSuccess returns true when this virtualization clusters create created response has a 2xx status code
+func (o *VirtualizationClustersCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization clusters create created response has a 3xx status code
+func (o *VirtualizationClustersCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization clusters create created response has a 4xx status code
+func (o *VirtualizationClustersCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization clusters create created response has a 5xx status code
+func (o *VirtualizationClustersCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization clusters create created response a status code equal to that given
+func (o *VirtualizationClustersCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *VirtualizationClustersCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /virtualization/clusters/][%d] virtualizationClustersCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *VirtualizationClustersCreateCreated) String() string {
+	return fmt.Sprintf("[POST /virtualization/clusters/][%d] virtualizationClustersCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *VirtualizationClustersCreateCreated) GetPayload() *models.Cluster {
 	return o.Payload
 }

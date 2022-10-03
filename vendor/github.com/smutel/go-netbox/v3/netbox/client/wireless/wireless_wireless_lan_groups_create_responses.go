@@ -54,7 +54,8 @@ func NewWirelessWirelessLanGroupsCreateCreated() *WirelessWirelessLanGroupsCreat
 	return &WirelessWirelessLanGroupsCreateCreated{}
 }
 
-/* WirelessWirelessLanGroupsCreateCreated describes a response with status code 201, with default header values.
+/*
+WirelessWirelessLanGroupsCreateCreated describes a response with status code 201, with default header values.
 
 WirelessWirelessLanGroupsCreateCreated wireless wireless lan groups create created
 */
@@ -62,9 +63,39 @@ type WirelessWirelessLanGroupsCreateCreated struct {
 	Payload *models.WirelessLANGroup
 }
 
+// IsSuccess returns true when this wireless wireless lan groups create created response has a 2xx status code
+func (o *WirelessWirelessLanGroupsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this wireless wireless lan groups create created response has a 3xx status code
+func (o *WirelessWirelessLanGroupsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this wireless wireless lan groups create created response has a 4xx status code
+func (o *WirelessWirelessLanGroupsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this wireless wireless lan groups create created response has a 5xx status code
+func (o *WirelessWirelessLanGroupsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this wireless wireless lan groups create created response a status code equal to that given
+func (o *WirelessWirelessLanGroupsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *WirelessWirelessLanGroupsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /wireless/wireless-lan-groups/][%d] wirelessWirelessLanGroupsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *WirelessWirelessLanGroupsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /wireless/wireless-lan-groups/][%d] wirelessWirelessLanGroupsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *WirelessWirelessLanGroupsCreateCreated) GetPayload() *models.WirelessLANGroup {
 	return o.Payload
 }

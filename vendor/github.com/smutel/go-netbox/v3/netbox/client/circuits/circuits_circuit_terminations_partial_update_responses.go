@@ -54,7 +54,8 @@ func NewCircuitsCircuitTerminationsPartialUpdateOK() *CircuitsCircuitTermination
 	return &CircuitsCircuitTerminationsPartialUpdateOK{}
 }
 
-/* CircuitsCircuitTerminationsPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+CircuitsCircuitTerminationsPartialUpdateOK describes a response with status code 200, with default header values.
 
 CircuitsCircuitTerminationsPartialUpdateOK circuits circuit terminations partial update o k
 */
@@ -62,9 +63,39 @@ type CircuitsCircuitTerminationsPartialUpdateOK struct {
 	Payload *models.CircuitTermination
 }
 
+// IsSuccess returns true when this circuits circuit terminations partial update o k response has a 2xx status code
+func (o *CircuitsCircuitTerminationsPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit terminations partial update o k response has a 3xx status code
+func (o *CircuitsCircuitTerminationsPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit terminations partial update o k response has a 4xx status code
+func (o *CircuitsCircuitTerminationsPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit terminations partial update o k response has a 5xx status code
+func (o *CircuitsCircuitTerminationsPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit terminations partial update o k response a status code equal to that given
+func (o *CircuitsCircuitTerminationsPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsCircuitTerminationsPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /circuits/circuit-terminations/{id}/][%d] circuitsCircuitTerminationsPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsCircuitTerminationsPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /circuits/circuit-terminations/{id}/][%d] circuitsCircuitTerminationsPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsCircuitTerminationsPartialUpdateOK) GetPayload() *models.CircuitTermination {
 	return o.Payload
 }

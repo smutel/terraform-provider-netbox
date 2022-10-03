@@ -54,7 +54,8 @@ func NewDcimVirtualChassisReadOK() *DcimVirtualChassisReadOK {
 	return &DcimVirtualChassisReadOK{}
 }
 
-/* DcimVirtualChassisReadOK describes a response with status code 200, with default header values.
+/*
+DcimVirtualChassisReadOK describes a response with status code 200, with default header values.
 
 DcimVirtualChassisReadOK dcim virtual chassis read o k
 */
@@ -62,9 +63,39 @@ type DcimVirtualChassisReadOK struct {
 	Payload *models.VirtualChassis
 }
 
+// IsSuccess returns true when this dcim virtual chassis read o k response has a 2xx status code
+func (o *DcimVirtualChassisReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim virtual chassis read o k response has a 3xx status code
+func (o *DcimVirtualChassisReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim virtual chassis read o k response has a 4xx status code
+func (o *DcimVirtualChassisReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim virtual chassis read o k response has a 5xx status code
+func (o *DcimVirtualChassisReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim virtual chassis read o k response a status code equal to that given
+func (o *DcimVirtualChassisReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimVirtualChassisReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/virtual-chassis/{id}/][%d] dcimVirtualChassisReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimVirtualChassisReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/virtual-chassis/{id}/][%d] dcimVirtualChassisReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimVirtualChassisReadOK) GetPayload() *models.VirtualChassis {
 	return o.Payload
 }
