@@ -142,7 +142,7 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 			"vcpus": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:     nil,
+				Default:  nil,
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[0-9]+((.[0-9]){0,1}[0-9]{0,1})$"),
 					"Must be like ^[0-9]+((.[0-9]){0,1}[0-9]{0,1})$"),
