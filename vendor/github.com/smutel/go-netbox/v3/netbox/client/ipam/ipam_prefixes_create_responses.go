@@ -54,7 +54,8 @@ func NewIpamPrefixesCreateCreated() *IpamPrefixesCreateCreated {
 	return &IpamPrefixesCreateCreated{}
 }
 
-/* IpamPrefixesCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamPrefixesCreateCreated describes a response with status code 201, with default header values.
 
 IpamPrefixesCreateCreated ipam prefixes create created
 */
@@ -62,9 +63,39 @@ type IpamPrefixesCreateCreated struct {
 	Payload *models.Prefix
 }
 
+// IsSuccess returns true when this ipam prefixes create created response has a 2xx status code
+func (o *IpamPrefixesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam prefixes create created response has a 3xx status code
+func (o *IpamPrefixesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam prefixes create created response has a 4xx status code
+func (o *IpamPrefixesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam prefixes create created response has a 5xx status code
+func (o *IpamPrefixesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam prefixes create created response a status code equal to that given
+func (o *IpamPrefixesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamPrefixesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/prefixes/][%d] ipamPrefixesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamPrefixesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/prefixes/][%d] ipamPrefixesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamPrefixesCreateCreated) GetPayload() *models.Prefix {
 	return o.Payload
 }

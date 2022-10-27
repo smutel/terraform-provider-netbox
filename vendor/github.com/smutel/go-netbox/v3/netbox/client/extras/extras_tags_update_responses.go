@@ -54,7 +54,8 @@ func NewExtrasTagsUpdateOK() *ExtrasTagsUpdateOK {
 	return &ExtrasTagsUpdateOK{}
 }
 
-/* ExtrasTagsUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasTagsUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasTagsUpdateOK extras tags update o k
 */
@@ -62,9 +63,39 @@ type ExtrasTagsUpdateOK struct {
 	Payload *models.Tag
 }
 
+// IsSuccess returns true when this extras tags update o k response has a 2xx status code
+func (o *ExtrasTagsUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras tags update o k response has a 3xx status code
+func (o *ExtrasTagsUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras tags update o k response has a 4xx status code
+func (o *ExtrasTagsUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras tags update o k response has a 5xx status code
+func (o *ExtrasTagsUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras tags update o k response a status code equal to that given
+func (o *ExtrasTagsUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasTagsUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /extras/tags/{id}/][%d] extrasTagsUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasTagsUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /extras/tags/{id}/][%d] extrasTagsUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasTagsUpdateOK) GetPayload() *models.Tag {
 	return o.Payload
 }

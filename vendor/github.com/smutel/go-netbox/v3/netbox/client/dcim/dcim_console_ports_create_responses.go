@@ -54,7 +54,8 @@ func NewDcimConsolePortsCreateCreated() *DcimConsolePortsCreateCreated {
 	return &DcimConsolePortsCreateCreated{}
 }
 
-/* DcimConsolePortsCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimConsolePortsCreateCreated describes a response with status code 201, with default header values.
 
 DcimConsolePortsCreateCreated dcim console ports create created
 */
@@ -62,9 +63,39 @@ type DcimConsolePortsCreateCreated struct {
 	Payload *models.ConsolePort
 }
 
+// IsSuccess returns true when this dcim console ports create created response has a 2xx status code
+func (o *DcimConsolePortsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console ports create created response has a 3xx status code
+func (o *DcimConsolePortsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console ports create created response has a 4xx status code
+func (o *DcimConsolePortsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console ports create created response has a 5xx status code
+func (o *DcimConsolePortsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console ports create created response a status code equal to that given
+func (o *DcimConsolePortsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimConsolePortsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/console-ports/][%d] dcimConsolePortsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimConsolePortsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/console-ports/][%d] dcimConsolePortsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimConsolePortsCreateCreated) GetPayload() *models.ConsolePort {
 	return o.Payload
 }

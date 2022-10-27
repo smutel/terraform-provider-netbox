@@ -54,7 +54,8 @@ func NewDcimInventoryItemTemplatesCreateCreated() *DcimInventoryItemTemplatesCre
 	return &DcimInventoryItemTemplatesCreateCreated{}
 }
 
-/* DcimInventoryItemTemplatesCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimInventoryItemTemplatesCreateCreated describes a response with status code 201, with default header values.
 
 DcimInventoryItemTemplatesCreateCreated dcim inventory item templates create created
 */
@@ -62,9 +63,39 @@ type DcimInventoryItemTemplatesCreateCreated struct {
 	Payload *models.InventoryItemTemplate
 }
 
+// IsSuccess returns true when this dcim inventory item templates create created response has a 2xx status code
+func (o *DcimInventoryItemTemplatesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory item templates create created response has a 3xx status code
+func (o *DcimInventoryItemTemplatesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory item templates create created response has a 4xx status code
+func (o *DcimInventoryItemTemplatesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory item templates create created response has a 5xx status code
+func (o *DcimInventoryItemTemplatesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory item templates create created response a status code equal to that given
+func (o *DcimInventoryItemTemplatesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimInventoryItemTemplatesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/inventory-item-templates/][%d] dcimInventoryItemTemplatesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimInventoryItemTemplatesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/inventory-item-templates/][%d] dcimInventoryItemTemplatesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimInventoryItemTemplatesCreateCreated) GetPayload() *models.InventoryItemTemplate {
 	return o.Payload
 }

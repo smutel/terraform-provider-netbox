@@ -51,14 +51,44 @@ func NewWirelessWirelessLanGroupsBulkDeleteNoContent() *WirelessWirelessLanGroup
 	return &WirelessWirelessLanGroupsBulkDeleteNoContent{}
 }
 
-/* WirelessWirelessLanGroupsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+WirelessWirelessLanGroupsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 WirelessWirelessLanGroupsBulkDeleteNoContent wireless wireless lan groups bulk delete no content
 */
 type WirelessWirelessLanGroupsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this wireless wireless lan groups bulk delete no content response has a 2xx status code
+func (o *WirelessWirelessLanGroupsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this wireless wireless lan groups bulk delete no content response has a 3xx status code
+func (o *WirelessWirelessLanGroupsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this wireless wireless lan groups bulk delete no content response has a 4xx status code
+func (o *WirelessWirelessLanGroupsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this wireless wireless lan groups bulk delete no content response has a 5xx status code
+func (o *WirelessWirelessLanGroupsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this wireless wireless lan groups bulk delete no content response a status code equal to that given
+func (o *WirelessWirelessLanGroupsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *WirelessWirelessLanGroupsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /wireless/wireless-lan-groups/][%d] wirelessWirelessLanGroupsBulkDeleteNoContent ", 204)
+}
+
+func (o *WirelessWirelessLanGroupsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /wireless/wireless-lan-groups/][%d] wirelessWirelessLanGroupsBulkDeleteNoContent ", 204)
 }
 

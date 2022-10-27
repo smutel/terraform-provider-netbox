@@ -59,7 +59,8 @@ func NewWirelessWirelessLansListOK() *WirelessWirelessLansListOK {
 	return &WirelessWirelessLansListOK{}
 }
 
-/* WirelessWirelessLansListOK describes a response with status code 200, with default header values.
+/*
+WirelessWirelessLansListOK describes a response with status code 200, with default header values.
 
 WirelessWirelessLansListOK wireless wireless lans list o k
 */
@@ -67,9 +68,39 @@ type WirelessWirelessLansListOK struct {
 	Payload *WirelessWirelessLansListOKBody
 }
 
+// IsSuccess returns true when this wireless wireless lans list o k response has a 2xx status code
+func (o *WirelessWirelessLansListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this wireless wireless lans list o k response has a 3xx status code
+func (o *WirelessWirelessLansListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this wireless wireless lans list o k response has a 4xx status code
+func (o *WirelessWirelessLansListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this wireless wireless lans list o k response has a 5xx status code
+func (o *WirelessWirelessLansListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this wireless wireless lans list o k response a status code equal to that given
+func (o *WirelessWirelessLansListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *WirelessWirelessLansListOK) Error() string {
 	return fmt.Sprintf("[GET /wireless/wireless-lans/][%d] wirelessWirelessLansListOK  %+v", 200, o.Payload)
 }
+
+func (o *WirelessWirelessLansListOK) String() string {
+	return fmt.Sprintf("[GET /wireless/wireless-lans/][%d] wirelessWirelessLansListOK  %+v", 200, o.Payload)
+}
+
 func (o *WirelessWirelessLansListOK) GetPayload() *WirelessWirelessLansListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *WirelessWirelessLansListOK) readResponse(response runtime.ClientRespons
 	return nil
 }
 
-/*WirelessWirelessLansListOKBody wireless wireless lans list o k body
+/*
+WirelessWirelessLansListOKBody wireless wireless lans list o k body
 swagger:model WirelessWirelessLansListOKBody
 */
 type WirelessWirelessLansListOKBody struct {

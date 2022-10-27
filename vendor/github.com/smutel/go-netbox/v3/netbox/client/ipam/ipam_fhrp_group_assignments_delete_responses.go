@@ -51,14 +51,44 @@ func NewIpamFhrpGroupAssignmentsDeleteNoContent() *IpamFhrpGroupAssignmentsDelet
 	return &IpamFhrpGroupAssignmentsDeleteNoContent{}
 }
 
-/* IpamFhrpGroupAssignmentsDeleteNoContent describes a response with status code 204, with default header values.
+/*
+IpamFhrpGroupAssignmentsDeleteNoContent describes a response with status code 204, with default header values.
 
 IpamFhrpGroupAssignmentsDeleteNoContent ipam fhrp group assignments delete no content
 */
 type IpamFhrpGroupAssignmentsDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this ipam fhrp group assignments delete no content response has a 2xx status code
+func (o *IpamFhrpGroupAssignmentsDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam fhrp group assignments delete no content response has a 3xx status code
+func (o *IpamFhrpGroupAssignmentsDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam fhrp group assignments delete no content response has a 4xx status code
+func (o *IpamFhrpGroupAssignmentsDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam fhrp group assignments delete no content response has a 5xx status code
+func (o *IpamFhrpGroupAssignmentsDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam fhrp group assignments delete no content response a status code equal to that given
+func (o *IpamFhrpGroupAssignmentsDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *IpamFhrpGroupAssignmentsDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /ipam/fhrp-group-assignments/{id}/][%d] ipamFhrpGroupAssignmentsDeleteNoContent ", 204)
+}
+
+func (o *IpamFhrpGroupAssignmentsDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /ipam/fhrp-group-assignments/{id}/][%d] ipamFhrpGroupAssignmentsDeleteNoContent ", 204)
 }
 

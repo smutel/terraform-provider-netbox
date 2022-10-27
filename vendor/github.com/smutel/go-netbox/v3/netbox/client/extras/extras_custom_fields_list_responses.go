@@ -59,7 +59,8 @@ func NewExtrasCustomFieldsListOK() *ExtrasCustomFieldsListOK {
 	return &ExtrasCustomFieldsListOK{}
 }
 
-/* ExtrasCustomFieldsListOK describes a response with status code 200, with default header values.
+/*
+ExtrasCustomFieldsListOK describes a response with status code 200, with default header values.
 
 ExtrasCustomFieldsListOK extras custom fields list o k
 */
@@ -67,9 +68,39 @@ type ExtrasCustomFieldsListOK struct {
 	Payload *ExtrasCustomFieldsListOKBody
 }
 
+// IsSuccess returns true when this extras custom fields list o k response has a 2xx status code
+func (o *ExtrasCustomFieldsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras custom fields list o k response has a 3xx status code
+func (o *ExtrasCustomFieldsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras custom fields list o k response has a 4xx status code
+func (o *ExtrasCustomFieldsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras custom fields list o k response has a 5xx status code
+func (o *ExtrasCustomFieldsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras custom fields list o k response a status code equal to that given
+func (o *ExtrasCustomFieldsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasCustomFieldsListOK) Error() string {
 	return fmt.Sprintf("[GET /extras/custom-fields/][%d] extrasCustomFieldsListOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasCustomFieldsListOK) String() string {
+	return fmt.Sprintf("[GET /extras/custom-fields/][%d] extrasCustomFieldsListOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasCustomFieldsListOK) GetPayload() *ExtrasCustomFieldsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *ExtrasCustomFieldsListOK) readResponse(response runtime.ClientResponse,
 	return nil
 }
 
-/*ExtrasCustomFieldsListOKBody extras custom fields list o k body
+/*
+ExtrasCustomFieldsListOKBody extras custom fields list o k body
 swagger:model ExtrasCustomFieldsListOKBody
 */
 type ExtrasCustomFieldsListOKBody struct {

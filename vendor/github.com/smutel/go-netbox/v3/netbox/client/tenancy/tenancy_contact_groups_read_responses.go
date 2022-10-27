@@ -54,7 +54,8 @@ func NewTenancyContactGroupsReadOK() *TenancyContactGroupsReadOK {
 	return &TenancyContactGroupsReadOK{}
 }
 
-/* TenancyContactGroupsReadOK describes a response with status code 200, with default header values.
+/*
+TenancyContactGroupsReadOK describes a response with status code 200, with default header values.
 
 TenancyContactGroupsReadOK tenancy contact groups read o k
 */
@@ -62,9 +63,39 @@ type TenancyContactGroupsReadOK struct {
 	Payload *models.ContactGroup
 }
 
+// IsSuccess returns true when this tenancy contact groups read o k response has a 2xx status code
+func (o *TenancyContactGroupsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy contact groups read o k response has a 3xx status code
+func (o *TenancyContactGroupsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy contact groups read o k response has a 4xx status code
+func (o *TenancyContactGroupsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy contact groups read o k response has a 5xx status code
+func (o *TenancyContactGroupsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy contact groups read o k response a status code equal to that given
+func (o *TenancyContactGroupsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *TenancyContactGroupsReadOK) Error() string {
 	return fmt.Sprintf("[GET /tenancy/contact-groups/{id}/][%d] tenancyContactGroupsReadOK  %+v", 200, o.Payload)
 }
+
+func (o *TenancyContactGroupsReadOK) String() string {
+	return fmt.Sprintf("[GET /tenancy/contact-groups/{id}/][%d] tenancyContactGroupsReadOK  %+v", 200, o.Payload)
+}
+
 func (o *TenancyContactGroupsReadOK) GetPayload() *models.ContactGroup {
 	return o.Payload
 }

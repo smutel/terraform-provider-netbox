@@ -54,7 +54,8 @@ func NewTenancyContactGroupsBulkPartialUpdateOK() *TenancyContactGroupsBulkParti
 	return &TenancyContactGroupsBulkPartialUpdateOK{}
 }
 
-/* TenancyContactGroupsBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+TenancyContactGroupsBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 TenancyContactGroupsBulkPartialUpdateOK tenancy contact groups bulk partial update o k
 */
@@ -62,9 +63,39 @@ type TenancyContactGroupsBulkPartialUpdateOK struct {
 	Payload *models.ContactGroup
 }
 
+// IsSuccess returns true when this tenancy contact groups bulk partial update o k response has a 2xx status code
+func (o *TenancyContactGroupsBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy contact groups bulk partial update o k response has a 3xx status code
+func (o *TenancyContactGroupsBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy contact groups bulk partial update o k response has a 4xx status code
+func (o *TenancyContactGroupsBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy contact groups bulk partial update o k response has a 5xx status code
+func (o *TenancyContactGroupsBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy contact groups bulk partial update o k response a status code equal to that given
+func (o *TenancyContactGroupsBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *TenancyContactGroupsBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /tenancy/contact-groups/][%d] tenancyContactGroupsBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *TenancyContactGroupsBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /tenancy/contact-groups/][%d] tenancyContactGroupsBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *TenancyContactGroupsBulkPartialUpdateOK) GetPayload() *models.ContactGroup {
 	return o.Payload
 }

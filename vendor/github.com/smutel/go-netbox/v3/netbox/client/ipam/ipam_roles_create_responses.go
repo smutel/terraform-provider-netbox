@@ -54,7 +54,8 @@ func NewIpamRolesCreateCreated() *IpamRolesCreateCreated {
 	return &IpamRolesCreateCreated{}
 }
 
-/* IpamRolesCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamRolesCreateCreated describes a response with status code 201, with default header values.
 
 IpamRolesCreateCreated ipam roles create created
 */
@@ -62,9 +63,39 @@ type IpamRolesCreateCreated struct {
 	Payload *models.Role
 }
 
+// IsSuccess returns true when this ipam roles create created response has a 2xx status code
+func (o *IpamRolesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam roles create created response has a 3xx status code
+func (o *IpamRolesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam roles create created response has a 4xx status code
+func (o *IpamRolesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam roles create created response has a 5xx status code
+func (o *IpamRolesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam roles create created response a status code equal to that given
+func (o *IpamRolesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamRolesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/roles/][%d] ipamRolesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamRolesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/roles/][%d] ipamRolesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamRolesCreateCreated) GetPayload() *models.Role {
 	return o.Payload
 }

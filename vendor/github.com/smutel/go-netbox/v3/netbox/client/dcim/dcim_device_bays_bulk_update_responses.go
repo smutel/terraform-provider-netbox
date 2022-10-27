@@ -54,7 +54,8 @@ func NewDcimDeviceBaysBulkUpdateOK() *DcimDeviceBaysBulkUpdateOK {
 	return &DcimDeviceBaysBulkUpdateOK{}
 }
 
-/* DcimDeviceBaysBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimDeviceBaysBulkUpdateOK describes a response with status code 200, with default header values.
 
 DcimDeviceBaysBulkUpdateOK dcim device bays bulk update o k
 */
@@ -62,9 +63,39 @@ type DcimDeviceBaysBulkUpdateOK struct {
 	Payload *models.DeviceBay
 }
 
+// IsSuccess returns true when this dcim device bays bulk update o k response has a 2xx status code
+func (o *DcimDeviceBaysBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim device bays bulk update o k response has a 3xx status code
+func (o *DcimDeviceBaysBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim device bays bulk update o k response has a 4xx status code
+func (o *DcimDeviceBaysBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim device bays bulk update o k response has a 5xx status code
+func (o *DcimDeviceBaysBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim device bays bulk update o k response a status code equal to that given
+func (o *DcimDeviceBaysBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimDeviceBaysBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/device-bays/][%d] dcimDeviceBaysBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimDeviceBaysBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/device-bays/][%d] dcimDeviceBaysBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimDeviceBaysBulkUpdateOK) GetPayload() *models.DeviceBay {
 	return o.Payload
 }

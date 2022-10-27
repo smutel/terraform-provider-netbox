@@ -54,7 +54,8 @@ func NewDcimDeviceTypesBulkPartialUpdateOK() *DcimDeviceTypesBulkPartialUpdateOK
 	return &DcimDeviceTypesBulkPartialUpdateOK{}
 }
 
-/* DcimDeviceTypesBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimDeviceTypesBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimDeviceTypesBulkPartialUpdateOK dcim device types bulk partial update o k
 */
@@ -62,9 +63,39 @@ type DcimDeviceTypesBulkPartialUpdateOK struct {
 	Payload *models.DeviceType
 }
 
+// IsSuccess returns true when this dcim device types bulk partial update o k response has a 2xx status code
+func (o *DcimDeviceTypesBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim device types bulk partial update o k response has a 3xx status code
+func (o *DcimDeviceTypesBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim device types bulk partial update o k response has a 4xx status code
+func (o *DcimDeviceTypesBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim device types bulk partial update o k response has a 5xx status code
+func (o *DcimDeviceTypesBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim device types bulk partial update o k response a status code equal to that given
+func (o *DcimDeviceTypesBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimDeviceTypesBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/device-types/][%d] dcimDeviceTypesBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimDeviceTypesBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/device-types/][%d] dcimDeviceTypesBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimDeviceTypesBulkPartialUpdateOK) GetPayload() *models.DeviceType {
 	return o.Payload
 }

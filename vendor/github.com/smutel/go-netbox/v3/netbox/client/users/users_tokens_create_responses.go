@@ -54,7 +54,8 @@ func NewUsersTokensCreateCreated() *UsersTokensCreateCreated {
 	return &UsersTokensCreateCreated{}
 }
 
-/* UsersTokensCreateCreated describes a response with status code 201, with default header values.
+/*
+UsersTokensCreateCreated describes a response with status code 201, with default header values.
 
 UsersTokensCreateCreated users tokens create created
 */
@@ -62,9 +63,39 @@ type UsersTokensCreateCreated struct {
 	Payload *models.Token
 }
 
+// IsSuccess returns true when this users tokens create created response has a 2xx status code
+func (o *UsersTokensCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users tokens create created response has a 3xx status code
+func (o *UsersTokensCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users tokens create created response has a 4xx status code
+func (o *UsersTokensCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users tokens create created response has a 5xx status code
+func (o *UsersTokensCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users tokens create created response a status code equal to that given
+func (o *UsersTokensCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *UsersTokensCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /users/tokens/][%d] usersTokensCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *UsersTokensCreateCreated) String() string {
+	return fmt.Sprintf("[POST /users/tokens/][%d] usersTokensCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *UsersTokensCreateCreated) GetPayload() *models.Token {
 	return o.Payload
 }

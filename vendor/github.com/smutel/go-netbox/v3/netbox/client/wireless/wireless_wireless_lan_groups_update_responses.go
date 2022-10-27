@@ -54,7 +54,8 @@ func NewWirelessWirelessLanGroupsUpdateOK() *WirelessWirelessLanGroupsUpdateOK {
 	return &WirelessWirelessLanGroupsUpdateOK{}
 }
 
-/* WirelessWirelessLanGroupsUpdateOK describes a response with status code 200, with default header values.
+/*
+WirelessWirelessLanGroupsUpdateOK describes a response with status code 200, with default header values.
 
 WirelessWirelessLanGroupsUpdateOK wireless wireless lan groups update o k
 */
@@ -62,9 +63,39 @@ type WirelessWirelessLanGroupsUpdateOK struct {
 	Payload *models.WirelessLANGroup
 }
 
+// IsSuccess returns true when this wireless wireless lan groups update o k response has a 2xx status code
+func (o *WirelessWirelessLanGroupsUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this wireless wireless lan groups update o k response has a 3xx status code
+func (o *WirelessWirelessLanGroupsUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this wireless wireless lan groups update o k response has a 4xx status code
+func (o *WirelessWirelessLanGroupsUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this wireless wireless lan groups update o k response has a 5xx status code
+func (o *WirelessWirelessLanGroupsUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this wireless wireless lan groups update o k response a status code equal to that given
+func (o *WirelessWirelessLanGroupsUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *WirelessWirelessLanGroupsUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /wireless/wireless-lan-groups/{id}/][%d] wirelessWirelessLanGroupsUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *WirelessWirelessLanGroupsUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /wireless/wireless-lan-groups/{id}/][%d] wirelessWirelessLanGroupsUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *WirelessWirelessLanGroupsUpdateOK) GetPayload() *models.WirelessLANGroup {
 	return o.Payload
 }

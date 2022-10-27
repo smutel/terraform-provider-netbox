@@ -59,7 +59,8 @@ func NewDcimInventoryItemsListOK() *DcimInventoryItemsListOK {
 	return &DcimInventoryItemsListOK{}
 }
 
-/* DcimInventoryItemsListOK describes a response with status code 200, with default header values.
+/*
+DcimInventoryItemsListOK describes a response with status code 200, with default header values.
 
 DcimInventoryItemsListOK dcim inventory items list o k
 */
@@ -67,9 +68,39 @@ type DcimInventoryItemsListOK struct {
 	Payload *DcimInventoryItemsListOKBody
 }
 
+// IsSuccess returns true when this dcim inventory items list o k response has a 2xx status code
+func (o *DcimInventoryItemsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory items list o k response has a 3xx status code
+func (o *DcimInventoryItemsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory items list o k response has a 4xx status code
+func (o *DcimInventoryItemsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory items list o k response has a 5xx status code
+func (o *DcimInventoryItemsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory items list o k response a status code equal to that given
+func (o *DcimInventoryItemsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInventoryItemsListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/inventory-items/][%d] dcimInventoryItemsListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInventoryItemsListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/inventory-items/][%d] dcimInventoryItemsListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInventoryItemsListOK) GetPayload() *DcimInventoryItemsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimInventoryItemsListOK) readResponse(response runtime.ClientResponse,
 	return nil
 }
 
-/*DcimInventoryItemsListOKBody dcim inventory items list o k body
+/*
+DcimInventoryItemsListOKBody dcim inventory items list o k body
 swagger:model DcimInventoryItemsListOKBody
 */
 type DcimInventoryItemsListOKBody struct {

@@ -51,14 +51,44 @@ func NewDcimRegionsBulkDeleteNoContent() *DcimRegionsBulkDeleteNoContent {
 	return &DcimRegionsBulkDeleteNoContent{}
 }
 
-/* DcimRegionsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimRegionsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimRegionsBulkDeleteNoContent dcim regions bulk delete no content
 */
 type DcimRegionsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim regions bulk delete no content response has a 2xx status code
+func (o *DcimRegionsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim regions bulk delete no content response has a 3xx status code
+func (o *DcimRegionsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim regions bulk delete no content response has a 4xx status code
+func (o *DcimRegionsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim regions bulk delete no content response has a 5xx status code
+func (o *DcimRegionsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim regions bulk delete no content response a status code equal to that given
+func (o *DcimRegionsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimRegionsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/regions/][%d] dcimRegionsBulkDeleteNoContent ", 204)
+}
+
+func (o *DcimRegionsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/regions/][%d] dcimRegionsBulkDeleteNoContent ", 204)
 }
 

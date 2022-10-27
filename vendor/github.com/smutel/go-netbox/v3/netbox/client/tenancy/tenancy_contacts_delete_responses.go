@@ -51,14 +51,44 @@ func NewTenancyContactsDeleteNoContent() *TenancyContactsDeleteNoContent {
 	return &TenancyContactsDeleteNoContent{}
 }
 
-/* TenancyContactsDeleteNoContent describes a response with status code 204, with default header values.
+/*
+TenancyContactsDeleteNoContent describes a response with status code 204, with default header values.
 
 TenancyContactsDeleteNoContent tenancy contacts delete no content
 */
 type TenancyContactsDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this tenancy contacts delete no content response has a 2xx status code
+func (o *TenancyContactsDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy contacts delete no content response has a 3xx status code
+func (o *TenancyContactsDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy contacts delete no content response has a 4xx status code
+func (o *TenancyContactsDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy contacts delete no content response has a 5xx status code
+func (o *TenancyContactsDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy contacts delete no content response a status code equal to that given
+func (o *TenancyContactsDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *TenancyContactsDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /tenancy/contacts/{id}/][%d] tenancyContactsDeleteNoContent ", 204)
+}
+
+func (o *TenancyContactsDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /tenancy/contacts/{id}/][%d] tenancyContactsDeleteNoContent ", 204)
 }
 

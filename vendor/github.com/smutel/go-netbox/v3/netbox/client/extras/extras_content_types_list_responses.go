@@ -59,7 +59,8 @@ func NewExtrasContentTypesListOK() *ExtrasContentTypesListOK {
 	return &ExtrasContentTypesListOK{}
 }
 
-/* ExtrasContentTypesListOK describes a response with status code 200, with default header values.
+/*
+ExtrasContentTypesListOK describes a response with status code 200, with default header values.
 
 ExtrasContentTypesListOK extras content types list o k
 */
@@ -67,9 +68,39 @@ type ExtrasContentTypesListOK struct {
 	Payload *ExtrasContentTypesListOKBody
 }
 
+// IsSuccess returns true when this extras content types list o k response has a 2xx status code
+func (o *ExtrasContentTypesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras content types list o k response has a 3xx status code
+func (o *ExtrasContentTypesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras content types list o k response has a 4xx status code
+func (o *ExtrasContentTypesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras content types list o k response has a 5xx status code
+func (o *ExtrasContentTypesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras content types list o k response a status code equal to that given
+func (o *ExtrasContentTypesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasContentTypesListOK) Error() string {
 	return fmt.Sprintf("[GET /extras/content-types/][%d] extrasContentTypesListOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasContentTypesListOK) String() string {
+	return fmt.Sprintf("[GET /extras/content-types/][%d] extrasContentTypesListOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasContentTypesListOK) GetPayload() *ExtrasContentTypesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *ExtrasContentTypesListOK) readResponse(response runtime.ClientResponse,
 	return nil
 }
 
-/*ExtrasContentTypesListOKBody extras content types list o k body
+/*
+ExtrasContentTypesListOKBody extras content types list o k body
 swagger:model ExtrasContentTypesListOKBody
 */
 type ExtrasContentTypesListOKBody struct {

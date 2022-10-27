@@ -54,7 +54,8 @@ func NewDcimCablesCreateCreated() *DcimCablesCreateCreated {
 	return &DcimCablesCreateCreated{}
 }
 
-/* DcimCablesCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimCablesCreateCreated describes a response with status code 201, with default header values.
 
 DcimCablesCreateCreated dcim cables create created
 */
@@ -62,9 +63,39 @@ type DcimCablesCreateCreated struct {
 	Payload *models.Cable
 }
 
+// IsSuccess returns true when this dcim cables create created response has a 2xx status code
+func (o *DcimCablesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim cables create created response has a 3xx status code
+func (o *DcimCablesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim cables create created response has a 4xx status code
+func (o *DcimCablesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim cables create created response has a 5xx status code
+func (o *DcimCablesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim cables create created response a status code equal to that given
+func (o *DcimCablesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimCablesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/cables/][%d] dcimCablesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimCablesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/cables/][%d] dcimCablesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimCablesCreateCreated) GetPayload() *models.Cable {
 	return o.Payload
 }

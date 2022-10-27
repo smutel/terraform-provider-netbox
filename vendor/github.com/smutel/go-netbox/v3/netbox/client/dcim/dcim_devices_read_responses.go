@@ -54,7 +54,8 @@ func NewDcimDevicesReadOK() *DcimDevicesReadOK {
 	return &DcimDevicesReadOK{}
 }
 
-/* DcimDevicesReadOK describes a response with status code 200, with default header values.
+/*
+DcimDevicesReadOK describes a response with status code 200, with default header values.
 
 DcimDevicesReadOK dcim devices read o k
 */
@@ -62,9 +63,39 @@ type DcimDevicesReadOK struct {
 	Payload *models.DeviceWithConfigContext
 }
 
+// IsSuccess returns true when this dcim devices read o k response has a 2xx status code
+func (o *DcimDevicesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim devices read o k response has a 3xx status code
+func (o *DcimDevicesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim devices read o k response has a 4xx status code
+func (o *DcimDevicesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim devices read o k response has a 5xx status code
+func (o *DcimDevicesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim devices read o k response a status code equal to that given
+func (o *DcimDevicesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimDevicesReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/devices/{id}/][%d] dcimDevicesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimDevicesReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/devices/{id}/][%d] dcimDevicesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimDevicesReadOK) GetPayload() *models.DeviceWithConfigContext {
 	return o.Payload
 }

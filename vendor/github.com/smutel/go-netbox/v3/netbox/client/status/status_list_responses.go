@@ -51,14 +51,44 @@ func NewStatusListOK() *StatusListOK {
 	return &StatusListOK{}
 }
 
-/* StatusListOK describes a response with status code 200, with default header values.
+/*
+StatusListOK describes a response with status code 200, with default header values.
 
 StatusListOK status list o k
 */
 type StatusListOK struct {
 }
 
+// IsSuccess returns true when this status list o k response has a 2xx status code
+func (o *StatusListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this status list o k response has a 3xx status code
+func (o *StatusListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this status list o k response has a 4xx status code
+func (o *StatusListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this status list o k response has a 5xx status code
+func (o *StatusListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this status list o k response a status code equal to that given
+func (o *StatusListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *StatusListOK) Error() string {
+	return fmt.Sprintf("[GET /status/][%d] statusListOK ", 200)
+}
+
+func (o *StatusListOK) String() string {
 	return fmt.Sprintf("[GET /status/][%d] statusListOK ", 200)
 }
 

@@ -59,7 +59,8 @@ func NewExtrasJobResultsListOK() *ExtrasJobResultsListOK {
 	return &ExtrasJobResultsListOK{}
 }
 
-/* ExtrasJobResultsListOK describes a response with status code 200, with default header values.
+/*
+ExtrasJobResultsListOK describes a response with status code 200, with default header values.
 
 ExtrasJobResultsListOK extras job results list o k
 */
@@ -67,9 +68,39 @@ type ExtrasJobResultsListOK struct {
 	Payload *ExtrasJobResultsListOKBody
 }
 
+// IsSuccess returns true when this extras job results list o k response has a 2xx status code
+func (o *ExtrasJobResultsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras job results list o k response has a 3xx status code
+func (o *ExtrasJobResultsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras job results list o k response has a 4xx status code
+func (o *ExtrasJobResultsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras job results list o k response has a 5xx status code
+func (o *ExtrasJobResultsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras job results list o k response a status code equal to that given
+func (o *ExtrasJobResultsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasJobResultsListOK) Error() string {
 	return fmt.Sprintf("[GET /extras/job-results/][%d] extrasJobResultsListOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasJobResultsListOK) String() string {
+	return fmt.Sprintf("[GET /extras/job-results/][%d] extrasJobResultsListOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasJobResultsListOK) GetPayload() *ExtrasJobResultsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *ExtrasJobResultsListOK) readResponse(response runtime.ClientResponse, c
 	return nil
 }
 
-/*ExtrasJobResultsListOKBody extras job results list o k body
+/*
+ExtrasJobResultsListOKBody extras job results list o k body
 swagger:model ExtrasJobResultsListOKBody
 */
 type ExtrasJobResultsListOKBody struct {

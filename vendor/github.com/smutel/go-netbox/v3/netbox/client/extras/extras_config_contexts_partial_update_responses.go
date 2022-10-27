@@ -54,7 +54,8 @@ func NewExtrasConfigContextsPartialUpdateOK() *ExtrasConfigContextsPartialUpdate
 	return &ExtrasConfigContextsPartialUpdateOK{}
 }
 
-/* ExtrasConfigContextsPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasConfigContextsPartialUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasConfigContextsPartialUpdateOK extras config contexts partial update o k
 */
@@ -62,9 +63,39 @@ type ExtrasConfigContextsPartialUpdateOK struct {
 	Payload *models.ConfigContext
 }
 
+// IsSuccess returns true when this extras config contexts partial update o k response has a 2xx status code
+func (o *ExtrasConfigContextsPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras config contexts partial update o k response has a 3xx status code
+func (o *ExtrasConfigContextsPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras config contexts partial update o k response has a 4xx status code
+func (o *ExtrasConfigContextsPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras config contexts partial update o k response has a 5xx status code
+func (o *ExtrasConfigContextsPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras config contexts partial update o k response a status code equal to that given
+func (o *ExtrasConfigContextsPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasConfigContextsPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /extras/config-contexts/{id}/][%d] extrasConfigContextsPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasConfigContextsPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /extras/config-contexts/{id}/][%d] extrasConfigContextsPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasConfigContextsPartialUpdateOK) GetPayload() *models.ConfigContext {
 	return o.Payload
 }

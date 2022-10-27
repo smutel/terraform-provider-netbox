@@ -54,7 +54,8 @@ func NewVirtualizationVirtualMachinesBulkPartialUpdateOK() *VirtualizationVirtua
 	return &VirtualizationVirtualMachinesBulkPartialUpdateOK{}
 }
 
-/* VirtualizationVirtualMachinesBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+VirtualizationVirtualMachinesBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 VirtualizationVirtualMachinesBulkPartialUpdateOK virtualization virtual machines bulk partial update o k
 */
@@ -62,9 +63,39 @@ type VirtualizationVirtualMachinesBulkPartialUpdateOK struct {
 	Payload *models.VirtualMachineWithConfigContext
 }
 
+// IsSuccess returns true when this virtualization virtual machines bulk partial update o k response has a 2xx status code
+func (o *VirtualizationVirtualMachinesBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization virtual machines bulk partial update o k response has a 3xx status code
+func (o *VirtualizationVirtualMachinesBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization virtual machines bulk partial update o k response has a 4xx status code
+func (o *VirtualizationVirtualMachinesBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization virtual machines bulk partial update o k response has a 5xx status code
+func (o *VirtualizationVirtualMachinesBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization virtual machines bulk partial update o k response a status code equal to that given
+func (o *VirtualizationVirtualMachinesBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationVirtualMachinesBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /virtualization/virtual-machines/][%d] virtualizationVirtualMachinesBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationVirtualMachinesBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /virtualization/virtual-machines/][%d] virtualizationVirtualMachinesBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationVirtualMachinesBulkPartialUpdateOK) GetPayload() *models.VirtualMachineWithConfigContext {
 	return o.Payload
 }

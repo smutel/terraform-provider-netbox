@@ -54,7 +54,8 @@ func NewIpamPrefixesAvailableIpsCreateCreated() *IpamPrefixesAvailableIpsCreateC
 	return &IpamPrefixesAvailableIpsCreateCreated{}
 }
 
-/* IpamPrefixesAvailableIpsCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamPrefixesAvailableIpsCreateCreated describes a response with status code 201, with default header values.
 
 IpamPrefixesAvailableIpsCreateCreated ipam prefixes available ips create created
 */
@@ -62,9 +63,39 @@ type IpamPrefixesAvailableIpsCreateCreated struct {
 	Payload []*models.IPAddress
 }
 
+// IsSuccess returns true when this ipam prefixes available ips create created response has a 2xx status code
+func (o *IpamPrefixesAvailableIpsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam prefixes available ips create created response has a 3xx status code
+func (o *IpamPrefixesAvailableIpsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam prefixes available ips create created response has a 4xx status code
+func (o *IpamPrefixesAvailableIpsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam prefixes available ips create created response has a 5xx status code
+func (o *IpamPrefixesAvailableIpsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam prefixes available ips create created response a status code equal to that given
+func (o *IpamPrefixesAvailableIpsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamPrefixesAvailableIpsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/prefixes/{id}/available-ips/][%d] ipamPrefixesAvailableIpsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamPrefixesAvailableIpsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/prefixes/{id}/available-ips/][%d] ipamPrefixesAvailableIpsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamPrefixesAvailableIpsCreateCreated) GetPayload() []*models.IPAddress {
 	return o.Payload
 }

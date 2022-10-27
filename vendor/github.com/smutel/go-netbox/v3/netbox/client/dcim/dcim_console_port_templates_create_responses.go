@@ -54,7 +54,8 @@ func NewDcimConsolePortTemplatesCreateCreated() *DcimConsolePortTemplatesCreateC
 	return &DcimConsolePortTemplatesCreateCreated{}
 }
 
-/* DcimConsolePortTemplatesCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimConsolePortTemplatesCreateCreated describes a response with status code 201, with default header values.
 
 DcimConsolePortTemplatesCreateCreated dcim console port templates create created
 */
@@ -62,9 +63,39 @@ type DcimConsolePortTemplatesCreateCreated struct {
 	Payload *models.ConsolePortTemplate
 }
 
+// IsSuccess returns true when this dcim console port templates create created response has a 2xx status code
+func (o *DcimConsolePortTemplatesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console port templates create created response has a 3xx status code
+func (o *DcimConsolePortTemplatesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console port templates create created response has a 4xx status code
+func (o *DcimConsolePortTemplatesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console port templates create created response has a 5xx status code
+func (o *DcimConsolePortTemplatesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console port templates create created response a status code equal to that given
+func (o *DcimConsolePortTemplatesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimConsolePortTemplatesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/console-port-templates/][%d] dcimConsolePortTemplatesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimConsolePortTemplatesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/console-port-templates/][%d] dcimConsolePortTemplatesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimConsolePortTemplatesCreateCreated) GetPayload() *models.ConsolePortTemplate {
 	return o.Payload
 }

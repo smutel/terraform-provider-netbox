@@ -59,7 +59,8 @@ func NewIpamVrfsListOK() *IpamVrfsListOK {
 	return &IpamVrfsListOK{}
 }
 
-/* IpamVrfsListOK describes a response with status code 200, with default header values.
+/*
+IpamVrfsListOK describes a response with status code 200, with default header values.
 
 IpamVrfsListOK ipam vrfs list o k
 */
@@ -67,9 +68,39 @@ type IpamVrfsListOK struct {
 	Payload *IpamVrfsListOKBody
 }
 
+// IsSuccess returns true when this ipam vrfs list o k response has a 2xx status code
+func (o *IpamVrfsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam vrfs list o k response has a 3xx status code
+func (o *IpamVrfsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam vrfs list o k response has a 4xx status code
+func (o *IpamVrfsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam vrfs list o k response has a 5xx status code
+func (o *IpamVrfsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam vrfs list o k response a status code equal to that given
+func (o *IpamVrfsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamVrfsListOK) Error() string {
 	return fmt.Sprintf("[GET /ipam/vrfs/][%d] ipamVrfsListOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamVrfsListOK) String() string {
+	return fmt.Sprintf("[GET /ipam/vrfs/][%d] ipamVrfsListOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamVrfsListOK) GetPayload() *IpamVrfsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *IpamVrfsListOK) readResponse(response runtime.ClientResponse, consumer 
 	return nil
 }
 
-/*IpamVrfsListOKBody ipam vrfs list o k body
+/*
+IpamVrfsListOKBody ipam vrfs list o k body
 swagger:model IpamVrfsListOKBody
 */
 type IpamVrfsListOKBody struct {

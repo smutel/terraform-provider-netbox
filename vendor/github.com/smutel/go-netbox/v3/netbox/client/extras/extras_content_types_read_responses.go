@@ -54,7 +54,8 @@ func NewExtrasContentTypesReadOK() *ExtrasContentTypesReadOK {
 	return &ExtrasContentTypesReadOK{}
 }
 
-/* ExtrasContentTypesReadOK describes a response with status code 200, with default header values.
+/*
+ExtrasContentTypesReadOK describes a response with status code 200, with default header values.
 
 ExtrasContentTypesReadOK extras content types read o k
 */
@@ -62,9 +63,39 @@ type ExtrasContentTypesReadOK struct {
 	Payload *models.ContentType
 }
 
+// IsSuccess returns true when this extras content types read o k response has a 2xx status code
+func (o *ExtrasContentTypesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras content types read o k response has a 3xx status code
+func (o *ExtrasContentTypesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras content types read o k response has a 4xx status code
+func (o *ExtrasContentTypesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras content types read o k response has a 5xx status code
+func (o *ExtrasContentTypesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras content types read o k response a status code equal to that given
+func (o *ExtrasContentTypesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasContentTypesReadOK) Error() string {
 	return fmt.Sprintf("[GET /extras/content-types/{id}/][%d] extrasContentTypesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasContentTypesReadOK) String() string {
+	return fmt.Sprintf("[GET /extras/content-types/{id}/][%d] extrasContentTypesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasContentTypesReadOK) GetPayload() *models.ContentType {
 	return o.Payload
 }

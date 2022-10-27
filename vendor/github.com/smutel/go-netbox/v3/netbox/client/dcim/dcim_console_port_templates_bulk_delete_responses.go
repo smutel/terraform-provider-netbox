@@ -51,14 +51,44 @@ func NewDcimConsolePortTemplatesBulkDeleteNoContent() *DcimConsolePortTemplatesB
 	return &DcimConsolePortTemplatesBulkDeleteNoContent{}
 }
 
-/* DcimConsolePortTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimConsolePortTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimConsolePortTemplatesBulkDeleteNoContent dcim console port templates bulk delete no content
 */
 type DcimConsolePortTemplatesBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim console port templates bulk delete no content response has a 2xx status code
+func (o *DcimConsolePortTemplatesBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console port templates bulk delete no content response has a 3xx status code
+func (o *DcimConsolePortTemplatesBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console port templates bulk delete no content response has a 4xx status code
+func (o *DcimConsolePortTemplatesBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console port templates bulk delete no content response has a 5xx status code
+func (o *DcimConsolePortTemplatesBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console port templates bulk delete no content response a status code equal to that given
+func (o *DcimConsolePortTemplatesBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimConsolePortTemplatesBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/console-port-templates/][%d] dcimConsolePortTemplatesBulkDeleteNoContent ", 204)
+}
+
+func (o *DcimConsolePortTemplatesBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/console-port-templates/][%d] dcimConsolePortTemplatesBulkDeleteNoContent ", 204)
 }
 

@@ -51,14 +51,44 @@ func NewWirelessWirelessLansDeleteNoContent() *WirelessWirelessLansDeleteNoConte
 	return &WirelessWirelessLansDeleteNoContent{}
 }
 
-/* WirelessWirelessLansDeleteNoContent describes a response with status code 204, with default header values.
+/*
+WirelessWirelessLansDeleteNoContent describes a response with status code 204, with default header values.
 
 WirelessWirelessLansDeleteNoContent wireless wireless lans delete no content
 */
 type WirelessWirelessLansDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this wireless wireless lans delete no content response has a 2xx status code
+func (o *WirelessWirelessLansDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this wireless wireless lans delete no content response has a 3xx status code
+func (o *WirelessWirelessLansDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this wireless wireless lans delete no content response has a 4xx status code
+func (o *WirelessWirelessLansDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this wireless wireless lans delete no content response has a 5xx status code
+func (o *WirelessWirelessLansDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this wireless wireless lans delete no content response a status code equal to that given
+func (o *WirelessWirelessLansDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *WirelessWirelessLansDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /wireless/wireless-lans/{id}/][%d] wirelessWirelessLansDeleteNoContent ", 204)
+}
+
+func (o *WirelessWirelessLansDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /wireless/wireless-lans/{id}/][%d] wirelessWirelessLansDeleteNoContent ", 204)
 }
 

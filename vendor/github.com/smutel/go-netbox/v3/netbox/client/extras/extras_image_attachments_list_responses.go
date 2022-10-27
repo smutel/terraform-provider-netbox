@@ -59,7 +59,8 @@ func NewExtrasImageAttachmentsListOK() *ExtrasImageAttachmentsListOK {
 	return &ExtrasImageAttachmentsListOK{}
 }
 
-/* ExtrasImageAttachmentsListOK describes a response with status code 200, with default header values.
+/*
+ExtrasImageAttachmentsListOK describes a response with status code 200, with default header values.
 
 ExtrasImageAttachmentsListOK extras image attachments list o k
 */
@@ -67,9 +68,39 @@ type ExtrasImageAttachmentsListOK struct {
 	Payload *ExtrasImageAttachmentsListOKBody
 }
 
+// IsSuccess returns true when this extras image attachments list o k response has a 2xx status code
+func (o *ExtrasImageAttachmentsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras image attachments list o k response has a 3xx status code
+func (o *ExtrasImageAttachmentsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras image attachments list o k response has a 4xx status code
+func (o *ExtrasImageAttachmentsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras image attachments list o k response has a 5xx status code
+func (o *ExtrasImageAttachmentsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras image attachments list o k response a status code equal to that given
+func (o *ExtrasImageAttachmentsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasImageAttachmentsListOK) Error() string {
 	return fmt.Sprintf("[GET /extras/image-attachments/][%d] extrasImageAttachmentsListOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasImageAttachmentsListOK) String() string {
+	return fmt.Sprintf("[GET /extras/image-attachments/][%d] extrasImageAttachmentsListOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasImageAttachmentsListOK) GetPayload() *ExtrasImageAttachmentsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *ExtrasImageAttachmentsListOK) readResponse(response runtime.ClientRespo
 	return nil
 }
 
-/*ExtrasImageAttachmentsListOKBody extras image attachments list o k body
+/*
+ExtrasImageAttachmentsListOKBody extras image attachments list o k body
 swagger:model ExtrasImageAttachmentsListOKBody
 */
 type ExtrasImageAttachmentsListOKBody struct {

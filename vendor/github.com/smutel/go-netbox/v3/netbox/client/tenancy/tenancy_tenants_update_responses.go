@@ -54,7 +54,8 @@ func NewTenancyTenantsUpdateOK() *TenancyTenantsUpdateOK {
 	return &TenancyTenantsUpdateOK{}
 }
 
-/* TenancyTenantsUpdateOK describes a response with status code 200, with default header values.
+/*
+TenancyTenantsUpdateOK describes a response with status code 200, with default header values.
 
 TenancyTenantsUpdateOK tenancy tenants update o k
 */
@@ -62,9 +63,39 @@ type TenancyTenantsUpdateOK struct {
 	Payload *models.Tenant
 }
 
+// IsSuccess returns true when this tenancy tenants update o k response has a 2xx status code
+func (o *TenancyTenantsUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy tenants update o k response has a 3xx status code
+func (o *TenancyTenantsUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy tenants update o k response has a 4xx status code
+func (o *TenancyTenantsUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy tenants update o k response has a 5xx status code
+func (o *TenancyTenantsUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy tenants update o k response a status code equal to that given
+func (o *TenancyTenantsUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *TenancyTenantsUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /tenancy/tenants/{id}/][%d] tenancyTenantsUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *TenancyTenantsUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /tenancy/tenants/{id}/][%d] tenancyTenantsUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *TenancyTenantsUpdateOK) GetPayload() *models.Tenant {
 	return o.Payload
 }

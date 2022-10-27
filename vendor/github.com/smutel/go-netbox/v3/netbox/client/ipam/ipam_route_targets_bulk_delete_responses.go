@@ -51,14 +51,44 @@ func NewIpamRouteTargetsBulkDeleteNoContent() *IpamRouteTargetsBulkDeleteNoConte
 	return &IpamRouteTargetsBulkDeleteNoContent{}
 }
 
-/* IpamRouteTargetsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+IpamRouteTargetsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 IpamRouteTargetsBulkDeleteNoContent ipam route targets bulk delete no content
 */
 type IpamRouteTargetsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this ipam route targets bulk delete no content response has a 2xx status code
+func (o *IpamRouteTargetsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam route targets bulk delete no content response has a 3xx status code
+func (o *IpamRouteTargetsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam route targets bulk delete no content response has a 4xx status code
+func (o *IpamRouteTargetsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam route targets bulk delete no content response has a 5xx status code
+func (o *IpamRouteTargetsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam route targets bulk delete no content response a status code equal to that given
+func (o *IpamRouteTargetsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *IpamRouteTargetsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /ipam/route-targets/][%d] ipamRouteTargetsBulkDeleteNoContent ", 204)
+}
+
+func (o *IpamRouteTargetsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /ipam/route-targets/][%d] ipamRouteTargetsBulkDeleteNoContent ", 204)
 }
 

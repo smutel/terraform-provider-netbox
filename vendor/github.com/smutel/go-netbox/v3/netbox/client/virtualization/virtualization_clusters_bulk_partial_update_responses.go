@@ -54,7 +54,8 @@ func NewVirtualizationClustersBulkPartialUpdateOK() *VirtualizationClustersBulkP
 	return &VirtualizationClustersBulkPartialUpdateOK{}
 }
 
-/* VirtualizationClustersBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+VirtualizationClustersBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 VirtualizationClustersBulkPartialUpdateOK virtualization clusters bulk partial update o k
 */
@@ -62,9 +63,39 @@ type VirtualizationClustersBulkPartialUpdateOK struct {
 	Payload *models.Cluster
 }
 
+// IsSuccess returns true when this virtualization clusters bulk partial update o k response has a 2xx status code
+func (o *VirtualizationClustersBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization clusters bulk partial update o k response has a 3xx status code
+func (o *VirtualizationClustersBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization clusters bulk partial update o k response has a 4xx status code
+func (o *VirtualizationClustersBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization clusters bulk partial update o k response has a 5xx status code
+func (o *VirtualizationClustersBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization clusters bulk partial update o k response a status code equal to that given
+func (o *VirtualizationClustersBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationClustersBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /virtualization/clusters/][%d] virtualizationClustersBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationClustersBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /virtualization/clusters/][%d] virtualizationClustersBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationClustersBulkPartialUpdateOK) GetPayload() *models.Cluster {
 	return o.Payload
 }

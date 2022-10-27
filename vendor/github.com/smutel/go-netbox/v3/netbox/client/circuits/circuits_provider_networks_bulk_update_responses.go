@@ -54,7 +54,8 @@ func NewCircuitsProviderNetworksBulkUpdateOK() *CircuitsProviderNetworksBulkUpda
 	return &CircuitsProviderNetworksBulkUpdateOK{}
 }
 
-/* CircuitsProviderNetworksBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+CircuitsProviderNetworksBulkUpdateOK describes a response with status code 200, with default header values.
 
 CircuitsProviderNetworksBulkUpdateOK circuits provider networks bulk update o k
 */
@@ -62,9 +63,39 @@ type CircuitsProviderNetworksBulkUpdateOK struct {
 	Payload *models.ProviderNetwork
 }
 
+// IsSuccess returns true when this circuits provider networks bulk update o k response has a 2xx status code
+func (o *CircuitsProviderNetworksBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits provider networks bulk update o k response has a 3xx status code
+func (o *CircuitsProviderNetworksBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits provider networks bulk update o k response has a 4xx status code
+func (o *CircuitsProviderNetworksBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits provider networks bulk update o k response has a 5xx status code
+func (o *CircuitsProviderNetworksBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits provider networks bulk update o k response a status code equal to that given
+func (o *CircuitsProviderNetworksBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsProviderNetworksBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /circuits/provider-networks/][%d] circuitsProviderNetworksBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsProviderNetworksBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /circuits/provider-networks/][%d] circuitsProviderNetworksBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsProviderNetworksBulkUpdateOK) GetPayload() *models.ProviderNetwork {
 	return o.Payload
 }

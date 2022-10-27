@@ -54,7 +54,8 @@ func NewCircuitsCircuitTerminationsPathsOK() *CircuitsCircuitTerminationsPathsOK
 	return &CircuitsCircuitTerminationsPathsOK{}
 }
 
-/* CircuitsCircuitTerminationsPathsOK describes a response with status code 200, with default header values.
+/*
+CircuitsCircuitTerminationsPathsOK describes a response with status code 200, with default header values.
 
 CircuitsCircuitTerminationsPathsOK circuits circuit terminations paths o k
 */
@@ -62,9 +63,39 @@ type CircuitsCircuitTerminationsPathsOK struct {
 	Payload *models.CircuitTermination
 }
 
+// IsSuccess returns true when this circuits circuit terminations paths o k response has a 2xx status code
+func (o *CircuitsCircuitTerminationsPathsOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit terminations paths o k response has a 3xx status code
+func (o *CircuitsCircuitTerminationsPathsOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit terminations paths o k response has a 4xx status code
+func (o *CircuitsCircuitTerminationsPathsOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit terminations paths o k response has a 5xx status code
+func (o *CircuitsCircuitTerminationsPathsOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit terminations paths o k response a status code equal to that given
+func (o *CircuitsCircuitTerminationsPathsOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsCircuitTerminationsPathsOK) Error() string {
 	return fmt.Sprintf("[GET /circuits/circuit-terminations/{id}/paths/][%d] circuitsCircuitTerminationsPathsOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsCircuitTerminationsPathsOK) String() string {
+	return fmt.Sprintf("[GET /circuits/circuit-terminations/{id}/paths/][%d] circuitsCircuitTerminationsPathsOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsCircuitTerminationsPathsOK) GetPayload() *models.CircuitTermination {
 	return o.Payload
 }

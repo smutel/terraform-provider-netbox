@@ -51,14 +51,44 @@ func NewExtrasCustomFieldsBulkDeleteNoContent() *ExtrasCustomFieldsBulkDeleteNoC
 	return &ExtrasCustomFieldsBulkDeleteNoContent{}
 }
 
-/* ExtrasCustomFieldsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+ExtrasCustomFieldsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 ExtrasCustomFieldsBulkDeleteNoContent extras custom fields bulk delete no content
 */
 type ExtrasCustomFieldsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this extras custom fields bulk delete no content response has a 2xx status code
+func (o *ExtrasCustomFieldsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras custom fields bulk delete no content response has a 3xx status code
+func (o *ExtrasCustomFieldsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras custom fields bulk delete no content response has a 4xx status code
+func (o *ExtrasCustomFieldsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras custom fields bulk delete no content response has a 5xx status code
+func (o *ExtrasCustomFieldsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras custom fields bulk delete no content response a status code equal to that given
+func (o *ExtrasCustomFieldsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *ExtrasCustomFieldsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /extras/custom-fields/][%d] extrasCustomFieldsBulkDeleteNoContent ", 204)
+}
+
+func (o *ExtrasCustomFieldsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /extras/custom-fields/][%d] extrasCustomFieldsBulkDeleteNoContent ", 204)
 }
 

@@ -54,7 +54,8 @@ func NewExtrasCustomLinksPartialUpdateOK() *ExtrasCustomLinksPartialUpdateOK {
 	return &ExtrasCustomLinksPartialUpdateOK{}
 }
 
-/* ExtrasCustomLinksPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasCustomLinksPartialUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasCustomLinksPartialUpdateOK extras custom links partial update o k
 */
@@ -62,9 +63,39 @@ type ExtrasCustomLinksPartialUpdateOK struct {
 	Payload *models.CustomLink
 }
 
+// IsSuccess returns true when this extras custom links partial update o k response has a 2xx status code
+func (o *ExtrasCustomLinksPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras custom links partial update o k response has a 3xx status code
+func (o *ExtrasCustomLinksPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras custom links partial update o k response has a 4xx status code
+func (o *ExtrasCustomLinksPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras custom links partial update o k response has a 5xx status code
+func (o *ExtrasCustomLinksPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras custom links partial update o k response a status code equal to that given
+func (o *ExtrasCustomLinksPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasCustomLinksPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /extras/custom-links/{id}/][%d] extrasCustomLinksPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasCustomLinksPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /extras/custom-links/{id}/][%d] extrasCustomLinksPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasCustomLinksPartialUpdateOK) GetPayload() *models.CustomLink {
 	return o.Payload
 }

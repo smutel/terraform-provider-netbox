@@ -54,7 +54,8 @@ func NewExtrasJournalEntriesUpdateOK() *ExtrasJournalEntriesUpdateOK {
 	return &ExtrasJournalEntriesUpdateOK{}
 }
 
-/* ExtrasJournalEntriesUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasJournalEntriesUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasJournalEntriesUpdateOK extras journal entries update o k
 */
@@ -62,9 +63,39 @@ type ExtrasJournalEntriesUpdateOK struct {
 	Payload *models.JournalEntry
 }
 
+// IsSuccess returns true when this extras journal entries update o k response has a 2xx status code
+func (o *ExtrasJournalEntriesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras journal entries update o k response has a 3xx status code
+func (o *ExtrasJournalEntriesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras journal entries update o k response has a 4xx status code
+func (o *ExtrasJournalEntriesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras journal entries update o k response has a 5xx status code
+func (o *ExtrasJournalEntriesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras journal entries update o k response a status code equal to that given
+func (o *ExtrasJournalEntriesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasJournalEntriesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /extras/journal-entries/{id}/][%d] extrasJournalEntriesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasJournalEntriesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /extras/journal-entries/{id}/][%d] extrasJournalEntriesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasJournalEntriesUpdateOK) GetPayload() *models.JournalEntry {
 	return o.Payload
 }

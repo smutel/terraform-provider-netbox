@@ -54,7 +54,8 @@ func NewVirtualizationClustersPartialUpdateOK() *VirtualizationClustersPartialUp
 	return &VirtualizationClustersPartialUpdateOK{}
 }
 
-/* VirtualizationClustersPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+VirtualizationClustersPartialUpdateOK describes a response with status code 200, with default header values.
 
 VirtualizationClustersPartialUpdateOK virtualization clusters partial update o k
 */
@@ -62,9 +63,39 @@ type VirtualizationClustersPartialUpdateOK struct {
 	Payload *models.Cluster
 }
 
+// IsSuccess returns true when this virtualization clusters partial update o k response has a 2xx status code
+func (o *VirtualizationClustersPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization clusters partial update o k response has a 3xx status code
+func (o *VirtualizationClustersPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization clusters partial update o k response has a 4xx status code
+func (o *VirtualizationClustersPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization clusters partial update o k response has a 5xx status code
+func (o *VirtualizationClustersPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization clusters partial update o k response a status code equal to that given
+func (o *VirtualizationClustersPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationClustersPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /virtualization/clusters/{id}/][%d] virtualizationClustersPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationClustersPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /virtualization/clusters/{id}/][%d] virtualizationClustersPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationClustersPartialUpdateOK) GetPayload() *models.Cluster {
 	return o.Payload
 }

@@ -141,7 +141,7 @@ type ClientService interface {
 }
 
 /*
-  CircuitsCircuitTerminationsBulkDelete circuits circuit terminations bulk delete API
+CircuitsCircuitTerminationsBulkDelete circuits circuit terminations bulk delete API
 */
 func (a *Client) CircuitsCircuitTerminationsBulkDelete(params *CircuitsCircuitTerminationsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -180,7 +180,7 @@ func (a *Client) CircuitsCircuitTerminationsBulkDelete(params *CircuitsCircuitTe
 }
 
 /*
-  CircuitsCircuitTerminationsBulkPartialUpdate circuits circuit terminations bulk partial update API
+CircuitsCircuitTerminationsBulkPartialUpdate circuits circuit terminations bulk partial update API
 */
 func (a *Client) CircuitsCircuitTerminationsBulkPartialUpdate(params *CircuitsCircuitTerminationsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -219,7 +219,7 @@ func (a *Client) CircuitsCircuitTerminationsBulkPartialUpdate(params *CircuitsCi
 }
 
 /*
-  CircuitsCircuitTerminationsBulkUpdate circuits circuit terminations bulk update API
+CircuitsCircuitTerminationsBulkUpdate circuits circuit terminations bulk update API
 */
 func (a *Client) CircuitsCircuitTerminationsBulkUpdate(params *CircuitsCircuitTerminationsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -258,7 +258,7 @@ func (a *Client) CircuitsCircuitTerminationsBulkUpdate(params *CircuitsCircuitTe
 }
 
 /*
-  CircuitsCircuitTerminationsCreate circuits circuit terminations create API
+CircuitsCircuitTerminationsCreate circuits circuit terminations create API
 */
 func (a *Client) CircuitsCircuitTerminationsCreate(params *CircuitsCircuitTerminationsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -297,7 +297,7 @@ func (a *Client) CircuitsCircuitTerminationsCreate(params *CircuitsCircuitTermin
 }
 
 /*
-  CircuitsCircuitTerminationsDelete circuits circuit terminations delete API
+CircuitsCircuitTerminationsDelete circuits circuit terminations delete API
 */
 func (a *Client) CircuitsCircuitTerminationsDelete(params *CircuitsCircuitTerminationsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -336,7 +336,7 @@ func (a *Client) CircuitsCircuitTerminationsDelete(params *CircuitsCircuitTermin
 }
 
 /*
-  CircuitsCircuitTerminationsList Overrides ListModelMixin to allow processing ExportTemplates.
+CircuitsCircuitTerminationsList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) CircuitsCircuitTerminationsList(params *CircuitsCircuitTerminationsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsListOK, error) {
 	// TODO: Validate the params before sending
@@ -375,7 +375,7 @@ func (a *Client) CircuitsCircuitTerminationsList(params *CircuitsCircuitTerminat
 }
 
 /*
-  CircuitsCircuitTerminationsPartialUpdate circuits circuit terminations partial update API
+CircuitsCircuitTerminationsPartialUpdate circuits circuit terminations partial update API
 */
 func (a *Client) CircuitsCircuitTerminationsPartialUpdate(params *CircuitsCircuitTerminationsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -414,7 +414,7 @@ func (a *Client) CircuitsCircuitTerminationsPartialUpdate(params *CircuitsCircui
 }
 
 /*
-  CircuitsCircuitTerminationsPaths Return all CablePaths which traverse a given pass-through port.
+CircuitsCircuitTerminationsPaths Return all CablePaths which traverse a given pass-through port.
 */
 func (a *Client) CircuitsCircuitTerminationsPaths(params *CircuitsCircuitTerminationsPathsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsPathsOK, error) {
 	// TODO: Validate the params before sending
@@ -453,7 +453,7 @@ func (a *Client) CircuitsCircuitTerminationsPaths(params *CircuitsCircuitTermina
 }
 
 /*
-  CircuitsCircuitTerminationsRead circuits circuit terminations read API
+CircuitsCircuitTerminationsRead circuits circuit terminations read API
 */
 func (a *Client) CircuitsCircuitTerminationsRead(params *CircuitsCircuitTerminationsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsReadOK, error) {
 	// TODO: Validate the params before sending
@@ -492,7 +492,7 @@ func (a *Client) CircuitsCircuitTerminationsRead(params *CircuitsCircuitTerminat
 }
 
 /*
-  CircuitsCircuitTerminationsUpdate circuits circuit terminations update API
+CircuitsCircuitTerminationsUpdate circuits circuit terminations update API
 */
 func (a *Client) CircuitsCircuitTerminationsUpdate(params *CircuitsCircuitTerminationsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTerminationsUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -531,7 +531,7 @@ func (a *Client) CircuitsCircuitTerminationsUpdate(params *CircuitsCircuitTermin
 }
 
 /*
-  CircuitsCircuitTypesBulkDelete circuits circuit types bulk delete API
+CircuitsCircuitTypesBulkDelete circuits circuit types bulk delete API
 */
 func (a *Client) CircuitsCircuitTypesBulkDelete(params *CircuitsCircuitTypesBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTypesBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -570,7 +570,7 @@ func (a *Client) CircuitsCircuitTypesBulkDelete(params *CircuitsCircuitTypesBulk
 }
 
 /*
-  CircuitsCircuitTypesBulkPartialUpdate circuits circuit types bulk partial update API
+CircuitsCircuitTypesBulkPartialUpdate circuits circuit types bulk partial update API
 */
 func (a *Client) CircuitsCircuitTypesBulkPartialUpdate(params *CircuitsCircuitTypesBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTypesBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -609,7 +609,7 @@ func (a *Client) CircuitsCircuitTypesBulkPartialUpdate(params *CircuitsCircuitTy
 }
 
 /*
-  CircuitsCircuitTypesBulkUpdate circuits circuit types bulk update API
+CircuitsCircuitTypesBulkUpdate circuits circuit types bulk update API
 */
 func (a *Client) CircuitsCircuitTypesBulkUpdate(params *CircuitsCircuitTypesBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTypesBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -648,7 +648,7 @@ func (a *Client) CircuitsCircuitTypesBulkUpdate(params *CircuitsCircuitTypesBulk
 }
 
 /*
-  CircuitsCircuitTypesCreate circuits circuit types create API
+CircuitsCircuitTypesCreate circuits circuit types create API
 */
 func (a *Client) CircuitsCircuitTypesCreate(params *CircuitsCircuitTypesCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTypesCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -687,7 +687,7 @@ func (a *Client) CircuitsCircuitTypesCreate(params *CircuitsCircuitTypesCreatePa
 }
 
 /*
-  CircuitsCircuitTypesDelete circuits circuit types delete API
+CircuitsCircuitTypesDelete circuits circuit types delete API
 */
 func (a *Client) CircuitsCircuitTypesDelete(params *CircuitsCircuitTypesDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTypesDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -726,7 +726,7 @@ func (a *Client) CircuitsCircuitTypesDelete(params *CircuitsCircuitTypesDeletePa
 }
 
 /*
-  CircuitsCircuitTypesList Overrides ListModelMixin to allow processing ExportTemplates.
+CircuitsCircuitTypesList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) CircuitsCircuitTypesList(params *CircuitsCircuitTypesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTypesListOK, error) {
 	// TODO: Validate the params before sending
@@ -765,7 +765,7 @@ func (a *Client) CircuitsCircuitTypesList(params *CircuitsCircuitTypesListParams
 }
 
 /*
-  CircuitsCircuitTypesPartialUpdate circuits circuit types partial update API
+CircuitsCircuitTypesPartialUpdate circuits circuit types partial update API
 */
 func (a *Client) CircuitsCircuitTypesPartialUpdate(params *CircuitsCircuitTypesPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTypesPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -804,7 +804,7 @@ func (a *Client) CircuitsCircuitTypesPartialUpdate(params *CircuitsCircuitTypesP
 }
 
 /*
-  CircuitsCircuitTypesRead circuits circuit types read API
+CircuitsCircuitTypesRead circuits circuit types read API
 */
 func (a *Client) CircuitsCircuitTypesRead(params *CircuitsCircuitTypesReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTypesReadOK, error) {
 	// TODO: Validate the params before sending
@@ -843,7 +843,7 @@ func (a *Client) CircuitsCircuitTypesRead(params *CircuitsCircuitTypesReadParams
 }
 
 /*
-  CircuitsCircuitTypesUpdate circuits circuit types update API
+CircuitsCircuitTypesUpdate circuits circuit types update API
 */
 func (a *Client) CircuitsCircuitTypesUpdate(params *CircuitsCircuitTypesUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitTypesUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -882,7 +882,7 @@ func (a *Client) CircuitsCircuitTypesUpdate(params *CircuitsCircuitTypesUpdatePa
 }
 
 /*
-  CircuitsCircuitsBulkDelete circuits circuits bulk delete API
+CircuitsCircuitsBulkDelete circuits circuits bulk delete API
 */
 func (a *Client) CircuitsCircuitsBulkDelete(params *CircuitsCircuitsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitsBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -921,7 +921,7 @@ func (a *Client) CircuitsCircuitsBulkDelete(params *CircuitsCircuitsBulkDeletePa
 }
 
 /*
-  CircuitsCircuitsBulkPartialUpdate circuits circuits bulk partial update API
+CircuitsCircuitsBulkPartialUpdate circuits circuits bulk partial update API
 */
 func (a *Client) CircuitsCircuitsBulkPartialUpdate(params *CircuitsCircuitsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitsBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -960,7 +960,7 @@ func (a *Client) CircuitsCircuitsBulkPartialUpdate(params *CircuitsCircuitsBulkP
 }
 
 /*
-  CircuitsCircuitsBulkUpdate circuits circuits bulk update API
+CircuitsCircuitsBulkUpdate circuits circuits bulk update API
 */
 func (a *Client) CircuitsCircuitsBulkUpdate(params *CircuitsCircuitsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitsBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -999,7 +999,7 @@ func (a *Client) CircuitsCircuitsBulkUpdate(params *CircuitsCircuitsBulkUpdatePa
 }
 
 /*
-  CircuitsCircuitsCreate circuits circuits create API
+CircuitsCircuitsCreate circuits circuits create API
 */
 func (a *Client) CircuitsCircuitsCreate(params *CircuitsCircuitsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -1038,7 +1038,7 @@ func (a *Client) CircuitsCircuitsCreate(params *CircuitsCircuitsCreateParams, au
 }
 
 /*
-  CircuitsCircuitsDelete circuits circuits delete API
+CircuitsCircuitsDelete circuits circuits delete API
 */
 func (a *Client) CircuitsCircuitsDelete(params *CircuitsCircuitsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitsDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1077,7 +1077,7 @@ func (a *Client) CircuitsCircuitsDelete(params *CircuitsCircuitsDeleteParams, au
 }
 
 /*
-  CircuitsCircuitsList Overrides ListModelMixin to allow processing ExportTemplates.
+CircuitsCircuitsList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) CircuitsCircuitsList(params *CircuitsCircuitsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitsListOK, error) {
 	// TODO: Validate the params before sending
@@ -1116,7 +1116,7 @@ func (a *Client) CircuitsCircuitsList(params *CircuitsCircuitsListParams, authIn
 }
 
 /*
-  CircuitsCircuitsPartialUpdate circuits circuits partial update API
+CircuitsCircuitsPartialUpdate circuits circuits partial update API
 */
 func (a *Client) CircuitsCircuitsPartialUpdate(params *CircuitsCircuitsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitsPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1155,7 +1155,7 @@ func (a *Client) CircuitsCircuitsPartialUpdate(params *CircuitsCircuitsPartialUp
 }
 
 /*
-  CircuitsCircuitsRead circuits circuits read API
+CircuitsCircuitsRead circuits circuits read API
 */
 func (a *Client) CircuitsCircuitsRead(params *CircuitsCircuitsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitsReadOK, error) {
 	// TODO: Validate the params before sending
@@ -1194,7 +1194,7 @@ func (a *Client) CircuitsCircuitsRead(params *CircuitsCircuitsReadParams, authIn
 }
 
 /*
-  CircuitsCircuitsUpdate circuits circuits update API
+CircuitsCircuitsUpdate circuits circuits update API
 */
 func (a *Client) CircuitsCircuitsUpdate(params *CircuitsCircuitsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsCircuitsUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1233,7 +1233,7 @@ func (a *Client) CircuitsCircuitsUpdate(params *CircuitsCircuitsUpdateParams, au
 }
 
 /*
-  CircuitsProviderNetworksBulkDelete circuits provider networks bulk delete API
+CircuitsProviderNetworksBulkDelete circuits provider networks bulk delete API
 */
 func (a *Client) CircuitsProviderNetworksBulkDelete(params *CircuitsProviderNetworksBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProviderNetworksBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1272,7 +1272,7 @@ func (a *Client) CircuitsProviderNetworksBulkDelete(params *CircuitsProviderNetw
 }
 
 /*
-  CircuitsProviderNetworksBulkPartialUpdate circuits provider networks bulk partial update API
+CircuitsProviderNetworksBulkPartialUpdate circuits provider networks bulk partial update API
 */
 func (a *Client) CircuitsProviderNetworksBulkPartialUpdate(params *CircuitsProviderNetworksBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProviderNetworksBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1311,7 +1311,7 @@ func (a *Client) CircuitsProviderNetworksBulkPartialUpdate(params *CircuitsProvi
 }
 
 /*
-  CircuitsProviderNetworksBulkUpdate circuits provider networks bulk update API
+CircuitsProviderNetworksBulkUpdate circuits provider networks bulk update API
 */
 func (a *Client) CircuitsProviderNetworksBulkUpdate(params *CircuitsProviderNetworksBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProviderNetworksBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1350,7 +1350,7 @@ func (a *Client) CircuitsProviderNetworksBulkUpdate(params *CircuitsProviderNetw
 }
 
 /*
-  CircuitsProviderNetworksCreate circuits provider networks create API
+CircuitsProviderNetworksCreate circuits provider networks create API
 */
 func (a *Client) CircuitsProviderNetworksCreate(params *CircuitsProviderNetworksCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProviderNetworksCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -1389,7 +1389,7 @@ func (a *Client) CircuitsProviderNetworksCreate(params *CircuitsProviderNetworks
 }
 
 /*
-  CircuitsProviderNetworksDelete circuits provider networks delete API
+CircuitsProviderNetworksDelete circuits provider networks delete API
 */
 func (a *Client) CircuitsProviderNetworksDelete(params *CircuitsProviderNetworksDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProviderNetworksDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1428,7 +1428,7 @@ func (a *Client) CircuitsProviderNetworksDelete(params *CircuitsProviderNetworks
 }
 
 /*
-  CircuitsProviderNetworksList Overrides ListModelMixin to allow processing ExportTemplates.
+CircuitsProviderNetworksList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) CircuitsProviderNetworksList(params *CircuitsProviderNetworksListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProviderNetworksListOK, error) {
 	// TODO: Validate the params before sending
@@ -1467,7 +1467,7 @@ func (a *Client) CircuitsProviderNetworksList(params *CircuitsProviderNetworksLi
 }
 
 /*
-  CircuitsProviderNetworksPartialUpdate circuits provider networks partial update API
+CircuitsProviderNetworksPartialUpdate circuits provider networks partial update API
 */
 func (a *Client) CircuitsProviderNetworksPartialUpdate(params *CircuitsProviderNetworksPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProviderNetworksPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1506,7 +1506,7 @@ func (a *Client) CircuitsProviderNetworksPartialUpdate(params *CircuitsProviderN
 }
 
 /*
-  CircuitsProviderNetworksRead circuits provider networks read API
+CircuitsProviderNetworksRead circuits provider networks read API
 */
 func (a *Client) CircuitsProviderNetworksRead(params *CircuitsProviderNetworksReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProviderNetworksReadOK, error) {
 	// TODO: Validate the params before sending
@@ -1545,7 +1545,7 @@ func (a *Client) CircuitsProviderNetworksRead(params *CircuitsProviderNetworksRe
 }
 
 /*
-  CircuitsProviderNetworksUpdate circuits provider networks update API
+CircuitsProviderNetworksUpdate circuits provider networks update API
 */
 func (a *Client) CircuitsProviderNetworksUpdate(params *CircuitsProviderNetworksUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProviderNetworksUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1584,7 +1584,7 @@ func (a *Client) CircuitsProviderNetworksUpdate(params *CircuitsProviderNetworks
 }
 
 /*
-  CircuitsProvidersBulkDelete circuits providers bulk delete API
+CircuitsProvidersBulkDelete circuits providers bulk delete API
 */
 func (a *Client) CircuitsProvidersBulkDelete(params *CircuitsProvidersBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProvidersBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1623,7 +1623,7 @@ func (a *Client) CircuitsProvidersBulkDelete(params *CircuitsProvidersBulkDelete
 }
 
 /*
-  CircuitsProvidersBulkPartialUpdate circuits providers bulk partial update API
+CircuitsProvidersBulkPartialUpdate circuits providers bulk partial update API
 */
 func (a *Client) CircuitsProvidersBulkPartialUpdate(params *CircuitsProvidersBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProvidersBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1662,7 +1662,7 @@ func (a *Client) CircuitsProvidersBulkPartialUpdate(params *CircuitsProvidersBul
 }
 
 /*
-  CircuitsProvidersBulkUpdate circuits providers bulk update API
+CircuitsProvidersBulkUpdate circuits providers bulk update API
 */
 func (a *Client) CircuitsProvidersBulkUpdate(params *CircuitsProvidersBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProvidersBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1701,7 +1701,7 @@ func (a *Client) CircuitsProvidersBulkUpdate(params *CircuitsProvidersBulkUpdate
 }
 
 /*
-  CircuitsProvidersCreate circuits providers create API
+CircuitsProvidersCreate circuits providers create API
 */
 func (a *Client) CircuitsProvidersCreate(params *CircuitsProvidersCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProvidersCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -1740,7 +1740,7 @@ func (a *Client) CircuitsProvidersCreate(params *CircuitsProvidersCreateParams, 
 }
 
 /*
-  CircuitsProvidersDelete circuits providers delete API
+CircuitsProvidersDelete circuits providers delete API
 */
 func (a *Client) CircuitsProvidersDelete(params *CircuitsProvidersDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProvidersDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1779,7 +1779,7 @@ func (a *Client) CircuitsProvidersDelete(params *CircuitsProvidersDeleteParams, 
 }
 
 /*
-  CircuitsProvidersList Overrides ListModelMixin to allow processing ExportTemplates.
+CircuitsProvidersList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) CircuitsProvidersList(params *CircuitsProvidersListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProvidersListOK, error) {
 	// TODO: Validate the params before sending
@@ -1818,7 +1818,7 @@ func (a *Client) CircuitsProvidersList(params *CircuitsProvidersListParams, auth
 }
 
 /*
-  CircuitsProvidersPartialUpdate circuits providers partial update API
+CircuitsProvidersPartialUpdate circuits providers partial update API
 */
 func (a *Client) CircuitsProvidersPartialUpdate(params *CircuitsProvidersPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProvidersPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1857,7 +1857,7 @@ func (a *Client) CircuitsProvidersPartialUpdate(params *CircuitsProvidersPartial
 }
 
 /*
-  CircuitsProvidersRead circuits providers read API
+CircuitsProvidersRead circuits providers read API
 */
 func (a *Client) CircuitsProvidersRead(params *CircuitsProvidersReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProvidersReadOK, error) {
 	// TODO: Validate the params before sending
@@ -1896,7 +1896,7 @@ func (a *Client) CircuitsProvidersRead(params *CircuitsProvidersReadParams, auth
 }
 
 /*
-  CircuitsProvidersUpdate circuits providers update API
+CircuitsProvidersUpdate circuits providers update API
 */
 func (a *Client) CircuitsProvidersUpdate(params *CircuitsProvidersUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CircuitsProvidersUpdateOK, error) {
 	// TODO: Validate the params before sending

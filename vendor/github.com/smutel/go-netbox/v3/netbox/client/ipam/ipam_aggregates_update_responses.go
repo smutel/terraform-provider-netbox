@@ -54,7 +54,8 @@ func NewIpamAggregatesUpdateOK() *IpamAggregatesUpdateOK {
 	return &IpamAggregatesUpdateOK{}
 }
 
-/* IpamAggregatesUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamAggregatesUpdateOK describes a response with status code 200, with default header values.
 
 IpamAggregatesUpdateOK ipam aggregates update o k
 */
@@ -62,9 +63,39 @@ type IpamAggregatesUpdateOK struct {
 	Payload *models.Aggregate
 }
 
+// IsSuccess returns true when this ipam aggregates update o k response has a 2xx status code
+func (o *IpamAggregatesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam aggregates update o k response has a 3xx status code
+func (o *IpamAggregatesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam aggregates update o k response has a 4xx status code
+func (o *IpamAggregatesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam aggregates update o k response has a 5xx status code
+func (o *IpamAggregatesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam aggregates update o k response a status code equal to that given
+func (o *IpamAggregatesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamAggregatesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /ipam/aggregates/{id}/][%d] ipamAggregatesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamAggregatesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /ipam/aggregates/{id}/][%d] ipamAggregatesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamAggregatesUpdateOK) GetPayload() *models.Aggregate {
 	return o.Payload
 }

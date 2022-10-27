@@ -54,7 +54,8 @@ func NewDcimInterfaceTemplatesBulkUpdateOK() *DcimInterfaceTemplatesBulkUpdateOK
 	return &DcimInterfaceTemplatesBulkUpdateOK{}
 }
 
-/* DcimInterfaceTemplatesBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimInterfaceTemplatesBulkUpdateOK describes a response with status code 200, with default header values.
 
 DcimInterfaceTemplatesBulkUpdateOK dcim interface templates bulk update o k
 */
@@ -62,9 +63,39 @@ type DcimInterfaceTemplatesBulkUpdateOK struct {
 	Payload *models.InterfaceTemplate
 }
 
+// IsSuccess returns true when this dcim interface templates bulk update o k response has a 2xx status code
+func (o *DcimInterfaceTemplatesBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim interface templates bulk update o k response has a 3xx status code
+func (o *DcimInterfaceTemplatesBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim interface templates bulk update o k response has a 4xx status code
+func (o *DcimInterfaceTemplatesBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim interface templates bulk update o k response has a 5xx status code
+func (o *DcimInterfaceTemplatesBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim interface templates bulk update o k response a status code equal to that given
+func (o *DcimInterfaceTemplatesBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInterfaceTemplatesBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/interface-templates/][%d] dcimInterfaceTemplatesBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInterfaceTemplatesBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/interface-templates/][%d] dcimInterfaceTemplatesBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInterfaceTemplatesBulkUpdateOK) GetPayload() *models.InterfaceTemplate {
 	return o.Payload
 }

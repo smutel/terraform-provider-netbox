@@ -54,7 +54,8 @@ func NewUsersUsersPartialUpdateOK() *UsersUsersPartialUpdateOK {
 	return &UsersUsersPartialUpdateOK{}
 }
 
-/* UsersUsersPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+UsersUsersPartialUpdateOK describes a response with status code 200, with default header values.
 
 UsersUsersPartialUpdateOK users users partial update o k
 */
@@ -62,9 +63,39 @@ type UsersUsersPartialUpdateOK struct {
 	Payload *models.User
 }
 
+// IsSuccess returns true when this users users partial update o k response has a 2xx status code
+func (o *UsersUsersPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users users partial update o k response has a 3xx status code
+func (o *UsersUsersPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users users partial update o k response has a 4xx status code
+func (o *UsersUsersPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users users partial update o k response has a 5xx status code
+func (o *UsersUsersPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users users partial update o k response a status code equal to that given
+func (o *UsersUsersPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *UsersUsersPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /users/users/{id}/][%d] usersUsersPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *UsersUsersPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /users/users/{id}/][%d] usersUsersPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *UsersUsersPartialUpdateOK) GetPayload() *models.User {
 	return o.Payload
 }

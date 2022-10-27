@@ -51,14 +51,44 @@ func NewExtrasConfigContextsBulkDeleteNoContent() *ExtrasConfigContextsBulkDelet
 	return &ExtrasConfigContextsBulkDeleteNoContent{}
 }
 
-/* ExtrasConfigContextsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+ExtrasConfigContextsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 ExtrasConfigContextsBulkDeleteNoContent extras config contexts bulk delete no content
 */
 type ExtrasConfigContextsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this extras config contexts bulk delete no content response has a 2xx status code
+func (o *ExtrasConfigContextsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras config contexts bulk delete no content response has a 3xx status code
+func (o *ExtrasConfigContextsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras config contexts bulk delete no content response has a 4xx status code
+func (o *ExtrasConfigContextsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras config contexts bulk delete no content response has a 5xx status code
+func (o *ExtrasConfigContextsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras config contexts bulk delete no content response a status code equal to that given
+func (o *ExtrasConfigContextsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *ExtrasConfigContextsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /extras/config-contexts/][%d] extrasConfigContextsBulkDeleteNoContent ", 204)
+}
+
+func (o *ExtrasConfigContextsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /extras/config-contexts/][%d] extrasConfigContextsBulkDeleteNoContent ", 204)
 }
 

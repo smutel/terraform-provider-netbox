@@ -1,27 +1,20 @@
 package netbox
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 )
-
-// InfosForPrimary is used to store info about primary IP
-type InfosForPrimary struct {
-	vmID           int64
-	vmName         string
-	vmClusterID    int64
-	vmPrimaryIP4ID int64
-	vmTags         []*models.NestedTag
-}
 
 // Type of vm interface in Netbox
 const VMInterfaceType string = "virtualization.vminterface"
@@ -84,22 +77,48 @@ func convertNestedTagsToTags(tags []*models.NestedTag) []map[string]string {
 	return tfTags
 }
 
-func getInfoForPrimary(m interface{}, objectID int64) (InfosForPrimary, error) {
+func getVMIDForInterface(m interface{}, objectID int64) (int64, error) {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	objectIDStr := fmt.Sprintf("%d", objectID)
-	info := InfosForPrimary{}
 	paramsInterface := virtualization.NewVirtualizationInterfacesListParams().WithID(
 		&objectIDStr)
 	interfaces, err := client.Virtualization.VirtualizationInterfacesList(
 		paramsInterface, nil)
 
 	if err != nil {
-		return info, err
+		return 0, err
 	}
 
 	for _, i := range interfaces.Payload.Results {
 		if i.ID == objectID {
+			if i.VirtualMachine != nil {
+				return i.VirtualMachine.ID, nil
+			}
+		}
+	}
+	return 0, fmt.Errorf("virtual machine not found")
+}
+
+func isprimary(m interface{}, objectID *int64, ipID int64, ip4 bool) (bool, error) {
+	client := m.(*netboxclient.NetBoxAPI)
+
+	if objectID == nil {
+		return false, nil
+	}
+
+	objectIDStr := strconv.FormatInt(*objectID, 10)
+	paramsInterface := virtualization.NewVirtualizationInterfacesListParams().WithID(
+		&objectIDStr)
+	interfaces, err := client.Virtualization.VirtualizationInterfacesList(
+		paramsInterface, nil)
+
+	if err != nil {
+		return false, err
+	}
+
+	for _, i := range interfaces.Payload.Results {
+		if i.ID == *objectID {
 			if i.VirtualMachine != nil {
 				vmIDStr := fmt.Sprintf("%d", i.VirtualMachine.ID)
 				paramsVM := virtualization.NewVirtualizationVirtualMachinesListParams().WithID(&vmIDStr)
@@ -107,52 +126,57 @@ func getInfoForPrimary(m interface{}, objectID int64) (InfosForPrimary, error) {
 					paramsVM, nil)
 
 				if err != nil {
-					return info, err
+					return false, err
 				}
 
 				if *vms.Payload.Count != 1 {
-					return info, fmt.Errorf("Cannot set an interface as primary when " +
+					return false, fmt.Errorf("Cannot set an interface as primary when " +
 						"the interface is not attached to a VM.")
 				}
 
-				info.vmID = i.VirtualMachine.ID
-				info.vmName = *vms.Payload.Results[0].Name
-				info.vmClusterID = vms.Payload.Results[0].Cluster.ID
-				info.vmTags = vms.Payload.Results[0].Tags
-
-				if vms.Payload.Results[0].PrimaryIp4 != nil {
-					info.vmPrimaryIP4ID = vms.Payload.Results[0].PrimaryIp4.ID
+				if ip4 && vms.Payload.Results[0].PrimaryIp4 != nil {
+					return vms.Payload.Results[0].PrimaryIp4.ID == ipID, nil
+				} else if !ip4 && vms.Payload.Results[0].PrimaryIp6 != nil {
+					return vms.Payload.Results[0].PrimaryIp6.ID == ipID, nil
 				} else {
-					info.vmPrimaryIP4ID = 0
+					return false, nil
 				}
 			} else {
-				return info, fmt.Errorf("Cannot set an interface as primary when the " +
+				return false, fmt.Errorf("Cannot set an interface as primary when the " +
 					"interface is not attached to a VM.")
 			}
 		}
 	}
 
-	return info, nil
+	return false, nil
 }
 
-func updatePrimaryStatus(m interface{}, info InfosForPrimary, id int64) error {
+func updatePrimaryStatus(m interface{}, vmid, ipid int64, primary bool) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
-	if info.vmName != "" {
-		params := &models.WritableVirtualMachineWithConfigContext{}
-		params.Name = &info.vmName
-		params.Cluster = &info.vmClusterID
-		params.PrimaryIp4 = &id
-		params.Tags = purgeNestedTagsToNestedTags(info.vmTags)
-		vm := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
-		vm.SetID(info.vmID)
-		_, err := client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
-			vm, nil)
-		if err != nil {
-			return err
-		}
+	emptyFields := make(map[string]interface{})
+	dropFields := []string{
+		"created",
+		"last_updated",
+		"name",
+		"cluster",
+		"tags",
 	}
 
+	params := &models.WritableVirtualMachineWithConfigContext{}
+	if primary {
+		params.PrimaryIp4 = &ipid
+	} else {
+		params.PrimaryIp4 = nil
+		emptyFields["primary_ip4"] = nil
+	}
+	vm := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
+	vm.SetID(vmid)
+	_, err := client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
+		vm, nil, newRequestModifierOperation(emptyFields, dropFields))
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -308,4 +332,50 @@ func getNewAvailablePrefix(client *netboxclient.NetBoxAPI, id int64, length int6
 		return nil, err
 	}
 	return list.Payload[0], nil
+}
+
+type requestModifier struct {
+	origwriter      runtime.ClientRequestWriter
+	overwritefields map[string]interface{}
+	dropfields      []string
+}
+
+func (o requestModifier) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
+	err := o.origwriter.WriteToRequest(r, reg)
+	if err != nil {
+		return err
+	}
+
+	jsonString, err := json.Marshal(r.GetBodyParam())
+	if err != nil {
+		return err
+	}
+
+	var objmap map[string]interface{}
+	err = json.Unmarshal(jsonString, &objmap)
+	if err != nil {
+		return err
+	}
+	for _, k := range o.dropfields {
+		delete(objmap, k)
+	}
+	for k, v := range o.overwritefields {
+		objmap[k] = v
+	}
+
+	err = r.SetBodyParam(objmap)
+	return err
+}
+
+func newRequestModifierOperation(empty map[string]interface{}, drop []string) func(*runtime.ClientOperation) {
+	return func(op *runtime.ClientOperation) {
+		if len(empty) > 0 || len(drop) > 0 {
+			tmp := requestModifier{
+				origwriter:      op.Params,
+				overwritefields: empty,
+				dropfields:      drop,
+			}
+			op.Params = tmp
+		}
+	}
 }

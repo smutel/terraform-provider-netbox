@@ -51,14 +51,44 @@ func NewDcimRackReservationsBulkDeleteNoContent() *DcimRackReservationsBulkDelet
 	return &DcimRackReservationsBulkDeleteNoContent{}
 }
 
-/* DcimRackReservationsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimRackReservationsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimRackReservationsBulkDeleteNoContent dcim rack reservations bulk delete no content
 */
 type DcimRackReservationsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim rack reservations bulk delete no content response has a 2xx status code
+func (o *DcimRackReservationsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rack reservations bulk delete no content response has a 3xx status code
+func (o *DcimRackReservationsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rack reservations bulk delete no content response has a 4xx status code
+func (o *DcimRackReservationsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rack reservations bulk delete no content response has a 5xx status code
+func (o *DcimRackReservationsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rack reservations bulk delete no content response a status code equal to that given
+func (o *DcimRackReservationsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimRackReservationsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/rack-reservations/][%d] dcimRackReservationsBulkDeleteNoContent ", 204)
+}
+
+func (o *DcimRackReservationsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/rack-reservations/][%d] dcimRackReservationsBulkDeleteNoContent ", 204)
 }
 

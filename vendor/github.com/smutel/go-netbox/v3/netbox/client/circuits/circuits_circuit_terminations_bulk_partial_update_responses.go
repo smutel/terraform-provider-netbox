@@ -54,7 +54,8 @@ func NewCircuitsCircuitTerminationsBulkPartialUpdateOK() *CircuitsCircuitTermina
 	return &CircuitsCircuitTerminationsBulkPartialUpdateOK{}
 }
 
-/* CircuitsCircuitTerminationsBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+CircuitsCircuitTerminationsBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 CircuitsCircuitTerminationsBulkPartialUpdateOK circuits circuit terminations bulk partial update o k
 */
@@ -62,9 +63,39 @@ type CircuitsCircuitTerminationsBulkPartialUpdateOK struct {
 	Payload *models.CircuitTermination
 }
 
+// IsSuccess returns true when this circuits circuit terminations bulk partial update o k response has a 2xx status code
+func (o *CircuitsCircuitTerminationsBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit terminations bulk partial update o k response has a 3xx status code
+func (o *CircuitsCircuitTerminationsBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit terminations bulk partial update o k response has a 4xx status code
+func (o *CircuitsCircuitTerminationsBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit terminations bulk partial update o k response has a 5xx status code
+func (o *CircuitsCircuitTerminationsBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit terminations bulk partial update o k response a status code equal to that given
+func (o *CircuitsCircuitTerminationsBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsCircuitTerminationsBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /circuits/circuit-terminations/][%d] circuitsCircuitTerminationsBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsCircuitTerminationsBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /circuits/circuit-terminations/][%d] circuitsCircuitTerminationsBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsCircuitTerminationsBulkPartialUpdateOK) GetPayload() *models.CircuitTermination {
 	return o.Payload
 }

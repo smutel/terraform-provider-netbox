@@ -54,7 +54,8 @@ func NewExtrasCustomFieldsReadOK() *ExtrasCustomFieldsReadOK {
 	return &ExtrasCustomFieldsReadOK{}
 }
 
-/* ExtrasCustomFieldsReadOK describes a response with status code 200, with default header values.
+/*
+ExtrasCustomFieldsReadOK describes a response with status code 200, with default header values.
 
 ExtrasCustomFieldsReadOK extras custom fields read o k
 */
@@ -62,9 +63,39 @@ type ExtrasCustomFieldsReadOK struct {
 	Payload *models.CustomField
 }
 
+// IsSuccess returns true when this extras custom fields read o k response has a 2xx status code
+func (o *ExtrasCustomFieldsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras custom fields read o k response has a 3xx status code
+func (o *ExtrasCustomFieldsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras custom fields read o k response has a 4xx status code
+func (o *ExtrasCustomFieldsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras custom fields read o k response has a 5xx status code
+func (o *ExtrasCustomFieldsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras custom fields read o k response a status code equal to that given
+func (o *ExtrasCustomFieldsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasCustomFieldsReadOK) Error() string {
 	return fmt.Sprintf("[GET /extras/custom-fields/{id}/][%d] extrasCustomFieldsReadOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasCustomFieldsReadOK) String() string {
+	return fmt.Sprintf("[GET /extras/custom-fields/{id}/][%d] extrasCustomFieldsReadOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasCustomFieldsReadOK) GetPayload() *models.CustomField {
 	return o.Payload
 }

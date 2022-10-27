@@ -54,7 +54,8 @@ func NewDcimRackRolesUpdateOK() *DcimRackRolesUpdateOK {
 	return &DcimRackRolesUpdateOK{}
 }
 
-/* DcimRackRolesUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimRackRolesUpdateOK describes a response with status code 200, with default header values.
 
 DcimRackRolesUpdateOK dcim rack roles update o k
 */
@@ -62,9 +63,39 @@ type DcimRackRolesUpdateOK struct {
 	Payload *models.RackRole
 }
 
+// IsSuccess returns true when this dcim rack roles update o k response has a 2xx status code
+func (o *DcimRackRolesUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rack roles update o k response has a 3xx status code
+func (o *DcimRackRolesUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rack roles update o k response has a 4xx status code
+func (o *DcimRackRolesUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rack roles update o k response has a 5xx status code
+func (o *DcimRackRolesUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rack roles update o k response a status code equal to that given
+func (o *DcimRackRolesUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimRackRolesUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/rack-roles/{id}/][%d] dcimRackRolesUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimRackRolesUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/rack-roles/{id}/][%d] dcimRackRolesUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimRackRolesUpdateOK) GetPayload() *models.RackRole {
 	return o.Payload
 }

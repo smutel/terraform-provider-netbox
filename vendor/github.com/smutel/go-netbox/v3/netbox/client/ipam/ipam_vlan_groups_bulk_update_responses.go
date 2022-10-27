@@ -54,7 +54,8 @@ func NewIpamVlanGroupsBulkUpdateOK() *IpamVlanGroupsBulkUpdateOK {
 	return &IpamVlanGroupsBulkUpdateOK{}
 }
 
-/* IpamVlanGroupsBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamVlanGroupsBulkUpdateOK describes a response with status code 200, with default header values.
 
 IpamVlanGroupsBulkUpdateOK ipam vlan groups bulk update o k
 */
@@ -62,9 +63,39 @@ type IpamVlanGroupsBulkUpdateOK struct {
 	Payload *models.VLANGroup
 }
 
+// IsSuccess returns true when this ipam vlan groups bulk update o k response has a 2xx status code
+func (o *IpamVlanGroupsBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam vlan groups bulk update o k response has a 3xx status code
+func (o *IpamVlanGroupsBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam vlan groups bulk update o k response has a 4xx status code
+func (o *IpamVlanGroupsBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam vlan groups bulk update o k response has a 5xx status code
+func (o *IpamVlanGroupsBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam vlan groups bulk update o k response a status code equal to that given
+func (o *IpamVlanGroupsBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamVlanGroupsBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /ipam/vlan-groups/][%d] ipamVlanGroupsBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamVlanGroupsBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /ipam/vlan-groups/][%d] ipamVlanGroupsBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamVlanGroupsBulkUpdateOK) GetPayload() *models.VLANGroup {
 	return o.Payload
 }

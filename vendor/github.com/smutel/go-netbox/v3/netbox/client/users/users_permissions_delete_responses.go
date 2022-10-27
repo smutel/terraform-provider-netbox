@@ -51,14 +51,44 @@ func NewUsersPermissionsDeleteNoContent() *UsersPermissionsDeleteNoContent {
 	return &UsersPermissionsDeleteNoContent{}
 }
 
-/* UsersPermissionsDeleteNoContent describes a response with status code 204, with default header values.
+/*
+UsersPermissionsDeleteNoContent describes a response with status code 204, with default header values.
 
 UsersPermissionsDeleteNoContent users permissions delete no content
 */
 type UsersPermissionsDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this users permissions delete no content response has a 2xx status code
+func (o *UsersPermissionsDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users permissions delete no content response has a 3xx status code
+func (o *UsersPermissionsDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users permissions delete no content response has a 4xx status code
+func (o *UsersPermissionsDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users permissions delete no content response has a 5xx status code
+func (o *UsersPermissionsDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users permissions delete no content response a status code equal to that given
+func (o *UsersPermissionsDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *UsersPermissionsDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /users/permissions/{id}/][%d] usersPermissionsDeleteNoContent ", 204)
+}
+
+func (o *UsersPermissionsDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /users/permissions/{id}/][%d] usersPermissionsDeleteNoContent ", 204)
 }
 

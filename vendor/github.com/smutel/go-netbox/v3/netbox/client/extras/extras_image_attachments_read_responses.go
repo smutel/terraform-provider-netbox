@@ -54,7 +54,8 @@ func NewExtrasImageAttachmentsReadOK() *ExtrasImageAttachmentsReadOK {
 	return &ExtrasImageAttachmentsReadOK{}
 }
 
-/* ExtrasImageAttachmentsReadOK describes a response with status code 200, with default header values.
+/*
+ExtrasImageAttachmentsReadOK describes a response with status code 200, with default header values.
 
 ExtrasImageAttachmentsReadOK extras image attachments read o k
 */
@@ -62,9 +63,39 @@ type ExtrasImageAttachmentsReadOK struct {
 	Payload *models.ImageAttachment
 }
 
+// IsSuccess returns true when this extras image attachments read o k response has a 2xx status code
+func (o *ExtrasImageAttachmentsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras image attachments read o k response has a 3xx status code
+func (o *ExtrasImageAttachmentsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras image attachments read o k response has a 4xx status code
+func (o *ExtrasImageAttachmentsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras image attachments read o k response has a 5xx status code
+func (o *ExtrasImageAttachmentsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras image attachments read o k response a status code equal to that given
+func (o *ExtrasImageAttachmentsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasImageAttachmentsReadOK) Error() string {
 	return fmt.Sprintf("[GET /extras/image-attachments/{id}/][%d] extrasImageAttachmentsReadOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasImageAttachmentsReadOK) String() string {
+	return fmt.Sprintf("[GET /extras/image-attachments/{id}/][%d] extrasImageAttachmentsReadOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasImageAttachmentsReadOK) GetPayload() *models.ImageAttachment {
 	return o.Payload
 }

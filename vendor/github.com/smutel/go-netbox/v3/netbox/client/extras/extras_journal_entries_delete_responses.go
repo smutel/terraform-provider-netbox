@@ -51,14 +51,44 @@ func NewExtrasJournalEntriesDeleteNoContent() *ExtrasJournalEntriesDeleteNoConte
 	return &ExtrasJournalEntriesDeleteNoContent{}
 }
 
-/* ExtrasJournalEntriesDeleteNoContent describes a response with status code 204, with default header values.
+/*
+ExtrasJournalEntriesDeleteNoContent describes a response with status code 204, with default header values.
 
 ExtrasJournalEntriesDeleteNoContent extras journal entries delete no content
 */
 type ExtrasJournalEntriesDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this extras journal entries delete no content response has a 2xx status code
+func (o *ExtrasJournalEntriesDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras journal entries delete no content response has a 3xx status code
+func (o *ExtrasJournalEntriesDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras journal entries delete no content response has a 4xx status code
+func (o *ExtrasJournalEntriesDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras journal entries delete no content response has a 5xx status code
+func (o *ExtrasJournalEntriesDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras journal entries delete no content response a status code equal to that given
+func (o *ExtrasJournalEntriesDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *ExtrasJournalEntriesDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /extras/journal-entries/{id}/][%d] extrasJournalEntriesDeleteNoContent ", 204)
+}
+
+func (o *ExtrasJournalEntriesDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /extras/journal-entries/{id}/][%d] extrasJournalEntriesDeleteNoContent ", 204)
 }
 

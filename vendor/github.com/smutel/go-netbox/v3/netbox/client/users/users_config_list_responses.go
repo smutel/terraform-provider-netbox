@@ -51,14 +51,44 @@ func NewUsersConfigListOK() *UsersConfigListOK {
 	return &UsersConfigListOK{}
 }
 
-/* UsersConfigListOK describes a response with status code 200, with default header values.
+/*
+UsersConfigListOK describes a response with status code 200, with default header values.
 
 UsersConfigListOK users config list o k
 */
 type UsersConfigListOK struct {
 }
 
+// IsSuccess returns true when this users config list o k response has a 2xx status code
+func (o *UsersConfigListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users config list o k response has a 3xx status code
+func (o *UsersConfigListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users config list o k response has a 4xx status code
+func (o *UsersConfigListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users config list o k response has a 5xx status code
+func (o *UsersConfigListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users config list o k response a status code equal to that given
+func (o *UsersConfigListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *UsersConfigListOK) Error() string {
+	return fmt.Sprintf("[GET /users/config/][%d] usersConfigListOK ", 200)
+}
+
+func (o *UsersConfigListOK) String() string {
 	return fmt.Sprintf("[GET /users/config/][%d] usersConfigListOK ", 200)
 }
 

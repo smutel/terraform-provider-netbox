@@ -51,14 +51,44 @@ func NewDcimFrontPortsDeleteNoContent() *DcimFrontPortsDeleteNoContent {
 	return &DcimFrontPortsDeleteNoContent{}
 }
 
-/* DcimFrontPortsDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimFrontPortsDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimFrontPortsDeleteNoContent dcim front ports delete no content
 */
 type DcimFrontPortsDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim front ports delete no content response has a 2xx status code
+func (o *DcimFrontPortsDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim front ports delete no content response has a 3xx status code
+func (o *DcimFrontPortsDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim front ports delete no content response has a 4xx status code
+func (o *DcimFrontPortsDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim front ports delete no content response has a 5xx status code
+func (o *DcimFrontPortsDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim front ports delete no content response a status code equal to that given
+func (o *DcimFrontPortsDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimFrontPortsDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/front-ports/{id}/][%d] dcimFrontPortsDeleteNoContent ", 204)
+}
+
+func (o *DcimFrontPortsDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/front-ports/{id}/][%d] dcimFrontPortsDeleteNoContent ", 204)
 }
 

@@ -59,7 +59,8 @@ func NewDcimModuleBayTemplatesListOK() *DcimModuleBayTemplatesListOK {
 	return &DcimModuleBayTemplatesListOK{}
 }
 
-/* DcimModuleBayTemplatesListOK describes a response with status code 200, with default header values.
+/*
+DcimModuleBayTemplatesListOK describes a response with status code 200, with default header values.
 
 DcimModuleBayTemplatesListOK dcim module bay templates list o k
 */
@@ -67,9 +68,39 @@ type DcimModuleBayTemplatesListOK struct {
 	Payload *DcimModuleBayTemplatesListOKBody
 }
 
+// IsSuccess returns true when this dcim module bay templates list o k response has a 2xx status code
+func (o *DcimModuleBayTemplatesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim module bay templates list o k response has a 3xx status code
+func (o *DcimModuleBayTemplatesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim module bay templates list o k response has a 4xx status code
+func (o *DcimModuleBayTemplatesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim module bay templates list o k response has a 5xx status code
+func (o *DcimModuleBayTemplatesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim module bay templates list o k response a status code equal to that given
+func (o *DcimModuleBayTemplatesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimModuleBayTemplatesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/module-bay-templates/][%d] dcimModuleBayTemplatesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimModuleBayTemplatesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/module-bay-templates/][%d] dcimModuleBayTemplatesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimModuleBayTemplatesListOK) GetPayload() *DcimModuleBayTemplatesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimModuleBayTemplatesListOK) readResponse(response runtime.ClientRespo
 	return nil
 }
 
-/*DcimModuleBayTemplatesListOKBody dcim module bay templates list o k body
+/*
+DcimModuleBayTemplatesListOKBody dcim module bay templates list o k body
 swagger:model DcimModuleBayTemplatesListOKBody
 */
 type DcimModuleBayTemplatesListOKBody struct {

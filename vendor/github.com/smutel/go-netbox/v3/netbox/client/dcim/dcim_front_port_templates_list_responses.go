@@ -59,7 +59,8 @@ func NewDcimFrontPortTemplatesListOK() *DcimFrontPortTemplatesListOK {
 	return &DcimFrontPortTemplatesListOK{}
 }
 
-/* DcimFrontPortTemplatesListOK describes a response with status code 200, with default header values.
+/*
+DcimFrontPortTemplatesListOK describes a response with status code 200, with default header values.
 
 DcimFrontPortTemplatesListOK dcim front port templates list o k
 */
@@ -67,9 +68,39 @@ type DcimFrontPortTemplatesListOK struct {
 	Payload *DcimFrontPortTemplatesListOKBody
 }
 
+// IsSuccess returns true when this dcim front port templates list o k response has a 2xx status code
+func (o *DcimFrontPortTemplatesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim front port templates list o k response has a 3xx status code
+func (o *DcimFrontPortTemplatesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim front port templates list o k response has a 4xx status code
+func (o *DcimFrontPortTemplatesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim front port templates list o k response has a 5xx status code
+func (o *DcimFrontPortTemplatesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim front port templates list o k response a status code equal to that given
+func (o *DcimFrontPortTemplatesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimFrontPortTemplatesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/front-port-templates/][%d] dcimFrontPortTemplatesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimFrontPortTemplatesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/front-port-templates/][%d] dcimFrontPortTemplatesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimFrontPortTemplatesListOK) GetPayload() *DcimFrontPortTemplatesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimFrontPortTemplatesListOK) readResponse(response runtime.ClientRespo
 	return nil
 }
 
-/*DcimFrontPortTemplatesListOKBody dcim front port templates list o k body
+/*
+DcimFrontPortTemplatesListOKBody dcim front port templates list o k body
 swagger:model DcimFrontPortTemplatesListOKBody
 */
 type DcimFrontPortTemplatesListOKBody struct {

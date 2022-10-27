@@ -54,7 +54,8 @@ func NewTenancyContactRolesReadOK() *TenancyContactRolesReadOK {
 	return &TenancyContactRolesReadOK{}
 }
 
-/* TenancyContactRolesReadOK describes a response with status code 200, with default header values.
+/*
+TenancyContactRolesReadOK describes a response with status code 200, with default header values.
 
 TenancyContactRolesReadOK tenancy contact roles read o k
 */
@@ -62,9 +63,39 @@ type TenancyContactRolesReadOK struct {
 	Payload *models.ContactRole
 }
 
+// IsSuccess returns true when this tenancy contact roles read o k response has a 2xx status code
+func (o *TenancyContactRolesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy contact roles read o k response has a 3xx status code
+func (o *TenancyContactRolesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy contact roles read o k response has a 4xx status code
+func (o *TenancyContactRolesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy contact roles read o k response has a 5xx status code
+func (o *TenancyContactRolesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy contact roles read o k response a status code equal to that given
+func (o *TenancyContactRolesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *TenancyContactRolesReadOK) Error() string {
 	return fmt.Sprintf("[GET /tenancy/contact-roles/{id}/][%d] tenancyContactRolesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *TenancyContactRolesReadOK) String() string {
+	return fmt.Sprintf("[GET /tenancy/contact-roles/{id}/][%d] tenancyContactRolesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *TenancyContactRolesReadOK) GetPayload() *models.ContactRole {
 	return o.Payload
 }

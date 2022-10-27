@@ -51,14 +51,44 @@ func NewIpamFhrpGroupAssignmentsBulkDeleteNoContent() *IpamFhrpGroupAssignmentsB
 	return &IpamFhrpGroupAssignmentsBulkDeleteNoContent{}
 }
 
-/* IpamFhrpGroupAssignmentsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+IpamFhrpGroupAssignmentsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 IpamFhrpGroupAssignmentsBulkDeleteNoContent ipam fhrp group assignments bulk delete no content
 */
 type IpamFhrpGroupAssignmentsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this ipam fhrp group assignments bulk delete no content response has a 2xx status code
+func (o *IpamFhrpGroupAssignmentsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam fhrp group assignments bulk delete no content response has a 3xx status code
+func (o *IpamFhrpGroupAssignmentsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam fhrp group assignments bulk delete no content response has a 4xx status code
+func (o *IpamFhrpGroupAssignmentsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam fhrp group assignments bulk delete no content response has a 5xx status code
+func (o *IpamFhrpGroupAssignmentsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam fhrp group assignments bulk delete no content response a status code equal to that given
+func (o *IpamFhrpGroupAssignmentsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *IpamFhrpGroupAssignmentsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /ipam/fhrp-group-assignments/][%d] ipamFhrpGroupAssignmentsBulkDeleteNoContent ", 204)
+}
+
+func (o *IpamFhrpGroupAssignmentsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /ipam/fhrp-group-assignments/][%d] ipamFhrpGroupAssignmentsBulkDeleteNoContent ", 204)
 }
 

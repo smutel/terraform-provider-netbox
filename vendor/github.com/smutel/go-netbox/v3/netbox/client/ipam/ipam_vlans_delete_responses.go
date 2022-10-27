@@ -51,14 +51,44 @@ func NewIpamVlansDeleteNoContent() *IpamVlansDeleteNoContent {
 	return &IpamVlansDeleteNoContent{}
 }
 
-/* IpamVlansDeleteNoContent describes a response with status code 204, with default header values.
+/*
+IpamVlansDeleteNoContent describes a response with status code 204, with default header values.
 
 IpamVlansDeleteNoContent ipam vlans delete no content
 */
 type IpamVlansDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this ipam vlans delete no content response has a 2xx status code
+func (o *IpamVlansDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam vlans delete no content response has a 3xx status code
+func (o *IpamVlansDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam vlans delete no content response has a 4xx status code
+func (o *IpamVlansDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam vlans delete no content response has a 5xx status code
+func (o *IpamVlansDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam vlans delete no content response a status code equal to that given
+func (o *IpamVlansDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *IpamVlansDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /ipam/vlans/{id}/][%d] ipamVlansDeleteNoContent ", 204)
+}
+
+func (o *IpamVlansDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /ipam/vlans/{id}/][%d] ipamVlansDeleteNoContent ", 204)
 }
 

@@ -54,7 +54,8 @@ func NewDcimRackReservationsBulkPartialUpdateOK() *DcimRackReservationsBulkParti
 	return &DcimRackReservationsBulkPartialUpdateOK{}
 }
 
-/* DcimRackReservationsBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimRackReservationsBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimRackReservationsBulkPartialUpdateOK dcim rack reservations bulk partial update o k
 */
@@ -62,9 +63,39 @@ type DcimRackReservationsBulkPartialUpdateOK struct {
 	Payload *models.RackReservation
 }
 
+// IsSuccess returns true when this dcim rack reservations bulk partial update o k response has a 2xx status code
+func (o *DcimRackReservationsBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rack reservations bulk partial update o k response has a 3xx status code
+func (o *DcimRackReservationsBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rack reservations bulk partial update o k response has a 4xx status code
+func (o *DcimRackReservationsBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rack reservations bulk partial update o k response has a 5xx status code
+func (o *DcimRackReservationsBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rack reservations bulk partial update o k response a status code equal to that given
+func (o *DcimRackReservationsBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimRackReservationsBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/rack-reservations/][%d] dcimRackReservationsBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimRackReservationsBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/rack-reservations/][%d] dcimRackReservationsBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimRackReservationsBulkPartialUpdateOK) GetPayload() *models.RackReservation {
 	return o.Payload
 }

@@ -59,7 +59,8 @@ func NewCircuitsCircuitTypesListOK() *CircuitsCircuitTypesListOK {
 	return &CircuitsCircuitTypesListOK{}
 }
 
-/* CircuitsCircuitTypesListOK describes a response with status code 200, with default header values.
+/*
+CircuitsCircuitTypesListOK describes a response with status code 200, with default header values.
 
 CircuitsCircuitTypesListOK circuits circuit types list o k
 */
@@ -67,9 +68,39 @@ type CircuitsCircuitTypesListOK struct {
 	Payload *CircuitsCircuitTypesListOKBody
 }
 
+// IsSuccess returns true when this circuits circuit types list o k response has a 2xx status code
+func (o *CircuitsCircuitTypesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit types list o k response has a 3xx status code
+func (o *CircuitsCircuitTypesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit types list o k response has a 4xx status code
+func (o *CircuitsCircuitTypesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit types list o k response has a 5xx status code
+func (o *CircuitsCircuitTypesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit types list o k response a status code equal to that given
+func (o *CircuitsCircuitTypesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsCircuitTypesListOK) Error() string {
 	return fmt.Sprintf("[GET /circuits/circuit-types/][%d] circuitsCircuitTypesListOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsCircuitTypesListOK) String() string {
+	return fmt.Sprintf("[GET /circuits/circuit-types/][%d] circuitsCircuitTypesListOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsCircuitTypesListOK) GetPayload() *CircuitsCircuitTypesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *CircuitsCircuitTypesListOK) readResponse(response runtime.ClientRespons
 	return nil
 }
 
-/*CircuitsCircuitTypesListOKBody circuits circuit types list o k body
+/*
+CircuitsCircuitTypesListOKBody circuits circuit types list o k body
 swagger:model CircuitsCircuitTypesListOKBody
 */
 type CircuitsCircuitTypesListOKBody struct {

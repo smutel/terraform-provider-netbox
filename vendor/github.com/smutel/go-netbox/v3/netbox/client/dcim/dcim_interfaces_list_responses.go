@@ -59,7 +59,8 @@ func NewDcimInterfacesListOK() *DcimInterfacesListOK {
 	return &DcimInterfacesListOK{}
 }
 
-/* DcimInterfacesListOK describes a response with status code 200, with default header values.
+/*
+DcimInterfacesListOK describes a response with status code 200, with default header values.
 
 DcimInterfacesListOK dcim interfaces list o k
 */
@@ -67,9 +68,39 @@ type DcimInterfacesListOK struct {
 	Payload *DcimInterfacesListOKBody
 }
 
+// IsSuccess returns true when this dcim interfaces list o k response has a 2xx status code
+func (o *DcimInterfacesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim interfaces list o k response has a 3xx status code
+func (o *DcimInterfacesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim interfaces list o k response has a 4xx status code
+func (o *DcimInterfacesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim interfaces list o k response has a 5xx status code
+func (o *DcimInterfacesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim interfaces list o k response a status code equal to that given
+func (o *DcimInterfacesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInterfacesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/interfaces/][%d] dcimInterfacesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInterfacesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/interfaces/][%d] dcimInterfacesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInterfacesListOK) GetPayload() *DcimInterfacesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimInterfacesListOK) readResponse(response runtime.ClientResponse, con
 	return nil
 }
 
-/*DcimInterfacesListOKBody dcim interfaces list o k body
+/*
+DcimInterfacesListOKBody dcim interfaces list o k body
 swagger:model DcimInterfacesListOKBody
 */
 type DcimInterfacesListOKBody struct {

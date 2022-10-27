@@ -54,7 +54,8 @@ func NewCircuitsCircuitTypesPartialUpdateOK() *CircuitsCircuitTypesPartialUpdate
 	return &CircuitsCircuitTypesPartialUpdateOK{}
 }
 
-/* CircuitsCircuitTypesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+CircuitsCircuitTypesPartialUpdateOK describes a response with status code 200, with default header values.
 
 CircuitsCircuitTypesPartialUpdateOK circuits circuit types partial update o k
 */
@@ -62,9 +63,39 @@ type CircuitsCircuitTypesPartialUpdateOK struct {
 	Payload *models.CircuitType
 }
 
+// IsSuccess returns true when this circuits circuit types partial update o k response has a 2xx status code
+func (o *CircuitsCircuitTypesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit types partial update o k response has a 3xx status code
+func (o *CircuitsCircuitTypesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit types partial update o k response has a 4xx status code
+func (o *CircuitsCircuitTypesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit types partial update o k response has a 5xx status code
+func (o *CircuitsCircuitTypesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit types partial update o k response a status code equal to that given
+func (o *CircuitsCircuitTypesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *CircuitsCircuitTypesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /circuits/circuit-types/{id}/][%d] circuitsCircuitTypesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *CircuitsCircuitTypesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /circuits/circuit-types/{id}/][%d] circuitsCircuitTypesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *CircuitsCircuitTypesPartialUpdateOK) GetPayload() *models.CircuitType {
 	return o.Payload
 }

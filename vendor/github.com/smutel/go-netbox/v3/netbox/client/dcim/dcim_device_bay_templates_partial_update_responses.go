@@ -54,7 +54,8 @@ func NewDcimDeviceBayTemplatesPartialUpdateOK() *DcimDeviceBayTemplatesPartialUp
 	return &DcimDeviceBayTemplatesPartialUpdateOK{}
 }
 
-/* DcimDeviceBayTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimDeviceBayTemplatesPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimDeviceBayTemplatesPartialUpdateOK dcim device bay templates partial update o k
 */
@@ -62,9 +63,39 @@ type DcimDeviceBayTemplatesPartialUpdateOK struct {
 	Payload *models.DeviceBayTemplate
 }
 
+// IsSuccess returns true when this dcim device bay templates partial update o k response has a 2xx status code
+func (o *DcimDeviceBayTemplatesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim device bay templates partial update o k response has a 3xx status code
+func (o *DcimDeviceBayTemplatesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim device bay templates partial update o k response has a 4xx status code
+func (o *DcimDeviceBayTemplatesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim device bay templates partial update o k response has a 5xx status code
+func (o *DcimDeviceBayTemplatesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim device bay templates partial update o k response a status code equal to that given
+func (o *DcimDeviceBayTemplatesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimDeviceBayTemplatesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/device-bay-templates/{id}/][%d] dcimDeviceBayTemplatesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimDeviceBayTemplatesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/device-bay-templates/{id}/][%d] dcimDeviceBayTemplatesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimDeviceBayTemplatesPartialUpdateOK) GetPayload() *models.DeviceBayTemplate {
 	return o.Payload
 }

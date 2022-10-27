@@ -54,7 +54,8 @@ func NewDcimLocationsCreateCreated() *DcimLocationsCreateCreated {
 	return &DcimLocationsCreateCreated{}
 }
 
-/* DcimLocationsCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimLocationsCreateCreated describes a response with status code 201, with default header values.
 
 DcimLocationsCreateCreated dcim locations create created
 */
@@ -62,9 +63,39 @@ type DcimLocationsCreateCreated struct {
 	Payload *models.Location
 }
 
+// IsSuccess returns true when this dcim locations create created response has a 2xx status code
+func (o *DcimLocationsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim locations create created response has a 3xx status code
+func (o *DcimLocationsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim locations create created response has a 4xx status code
+func (o *DcimLocationsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim locations create created response has a 5xx status code
+func (o *DcimLocationsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim locations create created response a status code equal to that given
+func (o *DcimLocationsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimLocationsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/locations/][%d] dcimLocationsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimLocationsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/locations/][%d] dcimLocationsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimLocationsCreateCreated) GetPayload() *models.Location {
 	return o.Payload
 }

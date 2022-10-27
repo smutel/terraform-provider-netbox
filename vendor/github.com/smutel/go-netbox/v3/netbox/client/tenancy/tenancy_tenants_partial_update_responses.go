@@ -54,7 +54,8 @@ func NewTenancyTenantsPartialUpdateOK() *TenancyTenantsPartialUpdateOK {
 	return &TenancyTenantsPartialUpdateOK{}
 }
 
-/* TenancyTenantsPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+TenancyTenantsPartialUpdateOK describes a response with status code 200, with default header values.
 
 TenancyTenantsPartialUpdateOK tenancy tenants partial update o k
 */
@@ -62,9 +63,39 @@ type TenancyTenantsPartialUpdateOK struct {
 	Payload *models.Tenant
 }
 
+// IsSuccess returns true when this tenancy tenants partial update o k response has a 2xx status code
+func (o *TenancyTenantsPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this tenancy tenants partial update o k response has a 3xx status code
+func (o *TenancyTenantsPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this tenancy tenants partial update o k response has a 4xx status code
+func (o *TenancyTenantsPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this tenancy tenants partial update o k response has a 5xx status code
+func (o *TenancyTenantsPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this tenancy tenants partial update o k response a status code equal to that given
+func (o *TenancyTenantsPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *TenancyTenantsPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /tenancy/tenants/{id}/][%d] tenancyTenantsPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *TenancyTenantsPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /tenancy/tenants/{id}/][%d] tenancyTenantsPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *TenancyTenantsPartialUpdateOK) GetPayload() *models.Tenant {
 	return o.Payload
 }

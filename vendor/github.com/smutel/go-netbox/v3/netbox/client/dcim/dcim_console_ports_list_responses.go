@@ -59,7 +59,8 @@ func NewDcimConsolePortsListOK() *DcimConsolePortsListOK {
 	return &DcimConsolePortsListOK{}
 }
 
-/* DcimConsolePortsListOK describes a response with status code 200, with default header values.
+/*
+DcimConsolePortsListOK describes a response with status code 200, with default header values.
 
 DcimConsolePortsListOK dcim console ports list o k
 */
@@ -67,9 +68,39 @@ type DcimConsolePortsListOK struct {
 	Payload *DcimConsolePortsListOKBody
 }
 
+// IsSuccess returns true when this dcim console ports list o k response has a 2xx status code
+func (o *DcimConsolePortsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console ports list o k response has a 3xx status code
+func (o *DcimConsolePortsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console ports list o k response has a 4xx status code
+func (o *DcimConsolePortsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console ports list o k response has a 5xx status code
+func (o *DcimConsolePortsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console ports list o k response a status code equal to that given
+func (o *DcimConsolePortsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimConsolePortsListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/console-ports/][%d] dcimConsolePortsListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimConsolePortsListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/console-ports/][%d] dcimConsolePortsListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimConsolePortsListOK) GetPayload() *DcimConsolePortsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimConsolePortsListOK) readResponse(response runtime.ClientResponse, c
 	return nil
 }
 
-/*DcimConsolePortsListOKBody dcim console ports list o k body
+/*
+DcimConsolePortsListOKBody dcim console ports list o k body
 swagger:model DcimConsolePortsListOKBody
 */
 type DcimConsolePortsListOKBody struct {

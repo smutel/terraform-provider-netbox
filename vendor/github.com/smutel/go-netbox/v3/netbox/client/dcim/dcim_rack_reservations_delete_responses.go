@@ -51,14 +51,44 @@ func NewDcimRackReservationsDeleteNoContent() *DcimRackReservationsDeleteNoConte
 	return &DcimRackReservationsDeleteNoContent{}
 }
 
-/* DcimRackReservationsDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimRackReservationsDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimRackReservationsDeleteNoContent dcim rack reservations delete no content
 */
 type DcimRackReservationsDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim rack reservations delete no content response has a 2xx status code
+func (o *DcimRackReservationsDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rack reservations delete no content response has a 3xx status code
+func (o *DcimRackReservationsDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rack reservations delete no content response has a 4xx status code
+func (o *DcimRackReservationsDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rack reservations delete no content response has a 5xx status code
+func (o *DcimRackReservationsDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rack reservations delete no content response a status code equal to that given
+func (o *DcimRackReservationsDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimRackReservationsDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/rack-reservations/{id}/][%d] dcimRackReservationsDeleteNoContent ", 204)
+}
+
+func (o *DcimRackReservationsDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/rack-reservations/{id}/][%d] dcimRackReservationsDeleteNoContent ", 204)
 }
 

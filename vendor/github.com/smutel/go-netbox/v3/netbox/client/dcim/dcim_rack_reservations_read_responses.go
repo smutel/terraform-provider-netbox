@@ -54,7 +54,8 @@ func NewDcimRackReservationsReadOK() *DcimRackReservationsReadOK {
 	return &DcimRackReservationsReadOK{}
 }
 
-/* DcimRackReservationsReadOK describes a response with status code 200, with default header values.
+/*
+DcimRackReservationsReadOK describes a response with status code 200, with default header values.
 
 DcimRackReservationsReadOK dcim rack reservations read o k
 */
@@ -62,9 +63,39 @@ type DcimRackReservationsReadOK struct {
 	Payload *models.RackReservation
 }
 
+// IsSuccess returns true when this dcim rack reservations read o k response has a 2xx status code
+func (o *DcimRackReservationsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rack reservations read o k response has a 3xx status code
+func (o *DcimRackReservationsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rack reservations read o k response has a 4xx status code
+func (o *DcimRackReservationsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rack reservations read o k response has a 5xx status code
+func (o *DcimRackReservationsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rack reservations read o k response a status code equal to that given
+func (o *DcimRackReservationsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimRackReservationsReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/rack-reservations/{id}/][%d] dcimRackReservationsReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimRackReservationsReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/rack-reservations/{id}/][%d] dcimRackReservationsReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimRackReservationsReadOK) GetPayload() *models.RackReservation {
 	return o.Payload
 }

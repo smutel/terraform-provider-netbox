@@ -51,14 +51,44 @@ func NewExtrasScriptsReadOK() *ExtrasScriptsReadOK {
 	return &ExtrasScriptsReadOK{}
 }
 
-/* ExtrasScriptsReadOK describes a response with status code 200, with default header values.
+/*
+ExtrasScriptsReadOK describes a response with status code 200, with default header values.
 
 ExtrasScriptsReadOK extras scripts read o k
 */
 type ExtrasScriptsReadOK struct {
 }
 
+// IsSuccess returns true when this extras scripts read o k response has a 2xx status code
+func (o *ExtrasScriptsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras scripts read o k response has a 3xx status code
+func (o *ExtrasScriptsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras scripts read o k response has a 4xx status code
+func (o *ExtrasScriptsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras scripts read o k response has a 5xx status code
+func (o *ExtrasScriptsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras scripts read o k response a status code equal to that given
+func (o *ExtrasScriptsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasScriptsReadOK) Error() string {
+	return fmt.Sprintf("[GET /extras/scripts/{id}/][%d] extrasScriptsReadOK ", 200)
+}
+
+func (o *ExtrasScriptsReadOK) String() string {
 	return fmt.Sprintf("[GET /extras/scripts/{id}/][%d] extrasScriptsReadOK ", 200)
 }
 

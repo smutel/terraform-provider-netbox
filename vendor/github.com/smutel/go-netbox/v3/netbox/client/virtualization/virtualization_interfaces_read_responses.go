@@ -54,7 +54,8 @@ func NewVirtualizationInterfacesReadOK() *VirtualizationInterfacesReadOK {
 	return &VirtualizationInterfacesReadOK{}
 }
 
-/* VirtualizationInterfacesReadOK describes a response with status code 200, with default header values.
+/*
+VirtualizationInterfacesReadOK describes a response with status code 200, with default header values.
 
 VirtualizationInterfacesReadOK virtualization interfaces read o k
 */
@@ -62,9 +63,39 @@ type VirtualizationInterfacesReadOK struct {
 	Payload *models.VMInterface
 }
 
+// IsSuccess returns true when this virtualization interfaces read o k response has a 2xx status code
+func (o *VirtualizationInterfacesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization interfaces read o k response has a 3xx status code
+func (o *VirtualizationInterfacesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization interfaces read o k response has a 4xx status code
+func (o *VirtualizationInterfacesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization interfaces read o k response has a 5xx status code
+func (o *VirtualizationInterfacesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization interfaces read o k response a status code equal to that given
+func (o *VirtualizationInterfacesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationInterfacesReadOK) Error() string {
 	return fmt.Sprintf("[GET /virtualization/interfaces/{id}/][%d] virtualizationInterfacesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationInterfacesReadOK) String() string {
+	return fmt.Sprintf("[GET /virtualization/interfaces/{id}/][%d] virtualizationInterfacesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationInterfacesReadOK) GetPayload() *models.VMInterface {
 	return o.Payload
 }

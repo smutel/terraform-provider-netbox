@@ -59,7 +59,8 @@ func NewDcimPowerFeedsListOK() *DcimPowerFeedsListOK {
 	return &DcimPowerFeedsListOK{}
 }
 
-/* DcimPowerFeedsListOK describes a response with status code 200, with default header values.
+/*
+DcimPowerFeedsListOK describes a response with status code 200, with default header values.
 
 DcimPowerFeedsListOK dcim power feeds list o k
 */
@@ -67,9 +68,39 @@ type DcimPowerFeedsListOK struct {
 	Payload *DcimPowerFeedsListOKBody
 }
 
+// IsSuccess returns true when this dcim power feeds list o k response has a 2xx status code
+func (o *DcimPowerFeedsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power feeds list o k response has a 3xx status code
+func (o *DcimPowerFeedsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power feeds list o k response has a 4xx status code
+func (o *DcimPowerFeedsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power feeds list o k response has a 5xx status code
+func (o *DcimPowerFeedsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power feeds list o k response a status code equal to that given
+func (o *DcimPowerFeedsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerFeedsListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/power-feeds/][%d] dcimPowerFeedsListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerFeedsListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/power-feeds/][%d] dcimPowerFeedsListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerFeedsListOK) GetPayload() *DcimPowerFeedsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimPowerFeedsListOK) readResponse(response runtime.ClientResponse, con
 	return nil
 }
 
-/*DcimPowerFeedsListOKBody dcim power feeds list o k body
+/*
+DcimPowerFeedsListOKBody dcim power feeds list o k body
 swagger:model DcimPowerFeedsListOKBody
 */
 type DcimPowerFeedsListOKBody struct {

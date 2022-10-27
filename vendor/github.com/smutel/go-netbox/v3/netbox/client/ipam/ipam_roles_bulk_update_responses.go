@@ -54,7 +54,8 @@ func NewIpamRolesBulkUpdateOK() *IpamRolesBulkUpdateOK {
 	return &IpamRolesBulkUpdateOK{}
 }
 
-/* IpamRolesBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamRolesBulkUpdateOK describes a response with status code 200, with default header values.
 
 IpamRolesBulkUpdateOK ipam roles bulk update o k
 */
@@ -62,9 +63,39 @@ type IpamRolesBulkUpdateOK struct {
 	Payload *models.Role
 }
 
+// IsSuccess returns true when this ipam roles bulk update o k response has a 2xx status code
+func (o *IpamRolesBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam roles bulk update o k response has a 3xx status code
+func (o *IpamRolesBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam roles bulk update o k response has a 4xx status code
+func (o *IpamRolesBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam roles bulk update o k response has a 5xx status code
+func (o *IpamRolesBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam roles bulk update o k response a status code equal to that given
+func (o *IpamRolesBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamRolesBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /ipam/roles/][%d] ipamRolesBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamRolesBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /ipam/roles/][%d] ipamRolesBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamRolesBulkUpdateOK) GetPayload() *models.Role {
 	return o.Payload
 }

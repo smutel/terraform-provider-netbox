@@ -54,7 +54,8 @@ func NewExtrasImageAttachmentsBulkUpdateOK() *ExtrasImageAttachmentsBulkUpdateOK
 	return &ExtrasImageAttachmentsBulkUpdateOK{}
 }
 
-/* ExtrasImageAttachmentsBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasImageAttachmentsBulkUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasImageAttachmentsBulkUpdateOK extras image attachments bulk update o k
 */
@@ -62,9 +63,39 @@ type ExtrasImageAttachmentsBulkUpdateOK struct {
 	Payload *models.ImageAttachment
 }
 
+// IsSuccess returns true when this extras image attachments bulk update o k response has a 2xx status code
+func (o *ExtrasImageAttachmentsBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras image attachments bulk update o k response has a 3xx status code
+func (o *ExtrasImageAttachmentsBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras image attachments bulk update o k response has a 4xx status code
+func (o *ExtrasImageAttachmentsBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras image attachments bulk update o k response has a 5xx status code
+func (o *ExtrasImageAttachmentsBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras image attachments bulk update o k response a status code equal to that given
+func (o *ExtrasImageAttachmentsBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasImageAttachmentsBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /extras/image-attachments/][%d] extrasImageAttachmentsBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasImageAttachmentsBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /extras/image-attachments/][%d] extrasImageAttachmentsBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasImageAttachmentsBulkUpdateOK) GetPayload() *models.ImageAttachment {
 	return o.Payload
 }

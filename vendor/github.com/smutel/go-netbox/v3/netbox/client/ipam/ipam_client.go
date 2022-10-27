@@ -335,7 +335,7 @@ type ClientService interface {
 }
 
 /*
-  IpamAggregatesBulkDelete ipam aggregates bulk delete API
+IpamAggregatesBulkDelete ipam aggregates bulk delete API
 */
 func (a *Client) IpamAggregatesBulkDelete(params *IpamAggregatesBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAggregatesBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -374,7 +374,7 @@ func (a *Client) IpamAggregatesBulkDelete(params *IpamAggregatesBulkDeleteParams
 }
 
 /*
-  IpamAggregatesBulkPartialUpdate ipam aggregates bulk partial update API
+IpamAggregatesBulkPartialUpdate ipam aggregates bulk partial update API
 */
 func (a *Client) IpamAggregatesBulkPartialUpdate(params *IpamAggregatesBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAggregatesBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -413,7 +413,7 @@ func (a *Client) IpamAggregatesBulkPartialUpdate(params *IpamAggregatesBulkParti
 }
 
 /*
-  IpamAggregatesBulkUpdate ipam aggregates bulk update API
+IpamAggregatesBulkUpdate ipam aggregates bulk update API
 */
 func (a *Client) IpamAggregatesBulkUpdate(params *IpamAggregatesBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAggregatesBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -452,7 +452,7 @@ func (a *Client) IpamAggregatesBulkUpdate(params *IpamAggregatesBulkUpdateParams
 }
 
 /*
-  IpamAggregatesCreate ipam aggregates create API
+IpamAggregatesCreate ipam aggregates create API
 */
 func (a *Client) IpamAggregatesCreate(params *IpamAggregatesCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAggregatesCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -491,7 +491,7 @@ func (a *Client) IpamAggregatesCreate(params *IpamAggregatesCreateParams, authIn
 }
 
 /*
-  IpamAggregatesDelete ipam aggregates delete API
+IpamAggregatesDelete ipam aggregates delete API
 */
 func (a *Client) IpamAggregatesDelete(params *IpamAggregatesDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAggregatesDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -530,7 +530,7 @@ func (a *Client) IpamAggregatesDelete(params *IpamAggregatesDeleteParams, authIn
 }
 
 /*
-  IpamAggregatesList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamAggregatesList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamAggregatesList(params *IpamAggregatesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAggregatesListOK, error) {
 	// TODO: Validate the params before sending
@@ -569,7 +569,7 @@ func (a *Client) IpamAggregatesList(params *IpamAggregatesListParams, authInfo r
 }
 
 /*
-  IpamAggregatesPartialUpdate ipam aggregates partial update API
+IpamAggregatesPartialUpdate ipam aggregates partial update API
 */
 func (a *Client) IpamAggregatesPartialUpdate(params *IpamAggregatesPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAggregatesPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -608,7 +608,7 @@ func (a *Client) IpamAggregatesPartialUpdate(params *IpamAggregatesPartialUpdate
 }
 
 /*
-  IpamAggregatesRead ipam aggregates read API
+IpamAggregatesRead ipam aggregates read API
 */
 func (a *Client) IpamAggregatesRead(params *IpamAggregatesReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAggregatesReadOK, error) {
 	// TODO: Validate the params before sending
@@ -647,7 +647,7 @@ func (a *Client) IpamAggregatesRead(params *IpamAggregatesReadParams, authInfo r
 }
 
 /*
-  IpamAggregatesUpdate ipam aggregates update API
+IpamAggregatesUpdate ipam aggregates update API
 */
 func (a *Client) IpamAggregatesUpdate(params *IpamAggregatesUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAggregatesUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -686,7 +686,7 @@ func (a *Client) IpamAggregatesUpdate(params *IpamAggregatesUpdateParams, authIn
 }
 
 /*
-  IpamAsnsBulkDelete ipam asns bulk delete API
+IpamAsnsBulkDelete ipam asns bulk delete API
 */
 func (a *Client) IpamAsnsBulkDelete(params *IpamAsnsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAsnsBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -725,7 +725,7 @@ func (a *Client) IpamAsnsBulkDelete(params *IpamAsnsBulkDeleteParams, authInfo r
 }
 
 /*
-  IpamAsnsBulkPartialUpdate ipam asns bulk partial update API
+IpamAsnsBulkPartialUpdate ipam asns bulk partial update API
 */
 func (a *Client) IpamAsnsBulkPartialUpdate(params *IpamAsnsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAsnsBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -764,7 +764,7 @@ func (a *Client) IpamAsnsBulkPartialUpdate(params *IpamAsnsBulkPartialUpdatePara
 }
 
 /*
-  IpamAsnsBulkUpdate ipam asns bulk update API
+IpamAsnsBulkUpdate ipam asns bulk update API
 */
 func (a *Client) IpamAsnsBulkUpdate(params *IpamAsnsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAsnsBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -803,7 +803,7 @@ func (a *Client) IpamAsnsBulkUpdate(params *IpamAsnsBulkUpdateParams, authInfo r
 }
 
 /*
-  IpamAsnsCreate ipam asns create API
+IpamAsnsCreate ipam asns create API
 */
 func (a *Client) IpamAsnsCreate(params *IpamAsnsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAsnsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -842,7 +842,7 @@ func (a *Client) IpamAsnsCreate(params *IpamAsnsCreateParams, authInfo runtime.C
 }
 
 /*
-  IpamAsnsDelete ipam asns delete API
+IpamAsnsDelete ipam asns delete API
 */
 func (a *Client) IpamAsnsDelete(params *IpamAsnsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAsnsDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -881,7 +881,7 @@ func (a *Client) IpamAsnsDelete(params *IpamAsnsDeleteParams, authInfo runtime.C
 }
 
 /*
-  IpamAsnsList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamAsnsList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamAsnsList(params *IpamAsnsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAsnsListOK, error) {
 	// TODO: Validate the params before sending
@@ -920,7 +920,7 @@ func (a *Client) IpamAsnsList(params *IpamAsnsListParams, authInfo runtime.Clien
 }
 
 /*
-  IpamAsnsPartialUpdate ipam asns partial update API
+IpamAsnsPartialUpdate ipam asns partial update API
 */
 func (a *Client) IpamAsnsPartialUpdate(params *IpamAsnsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAsnsPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -959,7 +959,7 @@ func (a *Client) IpamAsnsPartialUpdate(params *IpamAsnsPartialUpdateParams, auth
 }
 
 /*
-  IpamAsnsRead ipam asns read API
+IpamAsnsRead ipam asns read API
 */
 func (a *Client) IpamAsnsRead(params *IpamAsnsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAsnsReadOK, error) {
 	// TODO: Validate the params before sending
@@ -998,7 +998,7 @@ func (a *Client) IpamAsnsRead(params *IpamAsnsReadParams, authInfo runtime.Clien
 }
 
 /*
-  IpamAsnsUpdate ipam asns update API
+IpamAsnsUpdate ipam asns update API
 */
 func (a *Client) IpamAsnsUpdate(params *IpamAsnsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamAsnsUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1037,7 +1037,7 @@ func (a *Client) IpamAsnsUpdate(params *IpamAsnsUpdateParams, authInfo runtime.C
 }
 
 /*
-  IpamFhrpGroupAssignmentsBulkDelete ipam fhrp group assignments bulk delete API
+IpamFhrpGroupAssignmentsBulkDelete ipam fhrp group assignments bulk delete API
 */
 func (a *Client) IpamFhrpGroupAssignmentsBulkDelete(params *IpamFhrpGroupAssignmentsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupAssignmentsBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1076,7 +1076,7 @@ func (a *Client) IpamFhrpGroupAssignmentsBulkDelete(params *IpamFhrpGroupAssignm
 }
 
 /*
-  IpamFhrpGroupAssignmentsBulkPartialUpdate ipam fhrp group assignments bulk partial update API
+IpamFhrpGroupAssignmentsBulkPartialUpdate ipam fhrp group assignments bulk partial update API
 */
 func (a *Client) IpamFhrpGroupAssignmentsBulkPartialUpdate(params *IpamFhrpGroupAssignmentsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupAssignmentsBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1115,7 +1115,7 @@ func (a *Client) IpamFhrpGroupAssignmentsBulkPartialUpdate(params *IpamFhrpGroup
 }
 
 /*
-  IpamFhrpGroupAssignmentsBulkUpdate ipam fhrp group assignments bulk update API
+IpamFhrpGroupAssignmentsBulkUpdate ipam fhrp group assignments bulk update API
 */
 func (a *Client) IpamFhrpGroupAssignmentsBulkUpdate(params *IpamFhrpGroupAssignmentsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupAssignmentsBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1154,7 +1154,7 @@ func (a *Client) IpamFhrpGroupAssignmentsBulkUpdate(params *IpamFhrpGroupAssignm
 }
 
 /*
-  IpamFhrpGroupAssignmentsCreate ipam fhrp group assignments create API
+IpamFhrpGroupAssignmentsCreate ipam fhrp group assignments create API
 */
 func (a *Client) IpamFhrpGroupAssignmentsCreate(params *IpamFhrpGroupAssignmentsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupAssignmentsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -1193,7 +1193,7 @@ func (a *Client) IpamFhrpGroupAssignmentsCreate(params *IpamFhrpGroupAssignments
 }
 
 /*
-  IpamFhrpGroupAssignmentsDelete ipam fhrp group assignments delete API
+IpamFhrpGroupAssignmentsDelete ipam fhrp group assignments delete API
 */
 func (a *Client) IpamFhrpGroupAssignmentsDelete(params *IpamFhrpGroupAssignmentsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupAssignmentsDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1232,7 +1232,7 @@ func (a *Client) IpamFhrpGroupAssignmentsDelete(params *IpamFhrpGroupAssignments
 }
 
 /*
-  IpamFhrpGroupAssignmentsList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamFhrpGroupAssignmentsList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamFhrpGroupAssignmentsList(params *IpamFhrpGroupAssignmentsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupAssignmentsListOK, error) {
 	// TODO: Validate the params before sending
@@ -1271,7 +1271,7 @@ func (a *Client) IpamFhrpGroupAssignmentsList(params *IpamFhrpGroupAssignmentsLi
 }
 
 /*
-  IpamFhrpGroupAssignmentsPartialUpdate ipam fhrp group assignments partial update API
+IpamFhrpGroupAssignmentsPartialUpdate ipam fhrp group assignments partial update API
 */
 func (a *Client) IpamFhrpGroupAssignmentsPartialUpdate(params *IpamFhrpGroupAssignmentsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupAssignmentsPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1310,7 +1310,7 @@ func (a *Client) IpamFhrpGroupAssignmentsPartialUpdate(params *IpamFhrpGroupAssi
 }
 
 /*
-  IpamFhrpGroupAssignmentsRead ipam fhrp group assignments read API
+IpamFhrpGroupAssignmentsRead ipam fhrp group assignments read API
 */
 func (a *Client) IpamFhrpGroupAssignmentsRead(params *IpamFhrpGroupAssignmentsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupAssignmentsReadOK, error) {
 	// TODO: Validate the params before sending
@@ -1349,7 +1349,7 @@ func (a *Client) IpamFhrpGroupAssignmentsRead(params *IpamFhrpGroupAssignmentsRe
 }
 
 /*
-  IpamFhrpGroupAssignmentsUpdate ipam fhrp group assignments update API
+IpamFhrpGroupAssignmentsUpdate ipam fhrp group assignments update API
 */
 func (a *Client) IpamFhrpGroupAssignmentsUpdate(params *IpamFhrpGroupAssignmentsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupAssignmentsUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1388,7 +1388,7 @@ func (a *Client) IpamFhrpGroupAssignmentsUpdate(params *IpamFhrpGroupAssignments
 }
 
 /*
-  IpamFhrpGroupsBulkDelete ipam fhrp groups bulk delete API
+IpamFhrpGroupsBulkDelete ipam fhrp groups bulk delete API
 */
 func (a *Client) IpamFhrpGroupsBulkDelete(params *IpamFhrpGroupsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupsBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1427,7 +1427,7 @@ func (a *Client) IpamFhrpGroupsBulkDelete(params *IpamFhrpGroupsBulkDeleteParams
 }
 
 /*
-  IpamFhrpGroupsBulkPartialUpdate ipam fhrp groups bulk partial update API
+IpamFhrpGroupsBulkPartialUpdate ipam fhrp groups bulk partial update API
 */
 func (a *Client) IpamFhrpGroupsBulkPartialUpdate(params *IpamFhrpGroupsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupsBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1466,7 +1466,7 @@ func (a *Client) IpamFhrpGroupsBulkPartialUpdate(params *IpamFhrpGroupsBulkParti
 }
 
 /*
-  IpamFhrpGroupsBulkUpdate ipam fhrp groups bulk update API
+IpamFhrpGroupsBulkUpdate ipam fhrp groups bulk update API
 */
 func (a *Client) IpamFhrpGroupsBulkUpdate(params *IpamFhrpGroupsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupsBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1505,7 +1505,7 @@ func (a *Client) IpamFhrpGroupsBulkUpdate(params *IpamFhrpGroupsBulkUpdateParams
 }
 
 /*
-  IpamFhrpGroupsCreate ipam fhrp groups create API
+IpamFhrpGroupsCreate ipam fhrp groups create API
 */
 func (a *Client) IpamFhrpGroupsCreate(params *IpamFhrpGroupsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -1544,7 +1544,7 @@ func (a *Client) IpamFhrpGroupsCreate(params *IpamFhrpGroupsCreateParams, authIn
 }
 
 /*
-  IpamFhrpGroupsDelete ipam fhrp groups delete API
+IpamFhrpGroupsDelete ipam fhrp groups delete API
 */
 func (a *Client) IpamFhrpGroupsDelete(params *IpamFhrpGroupsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupsDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1583,7 +1583,7 @@ func (a *Client) IpamFhrpGroupsDelete(params *IpamFhrpGroupsDeleteParams, authIn
 }
 
 /*
-  IpamFhrpGroupsList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamFhrpGroupsList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamFhrpGroupsList(params *IpamFhrpGroupsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupsListOK, error) {
 	// TODO: Validate the params before sending
@@ -1622,7 +1622,7 @@ func (a *Client) IpamFhrpGroupsList(params *IpamFhrpGroupsListParams, authInfo r
 }
 
 /*
-  IpamFhrpGroupsPartialUpdate ipam fhrp groups partial update API
+IpamFhrpGroupsPartialUpdate ipam fhrp groups partial update API
 */
 func (a *Client) IpamFhrpGroupsPartialUpdate(params *IpamFhrpGroupsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupsPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1661,7 +1661,7 @@ func (a *Client) IpamFhrpGroupsPartialUpdate(params *IpamFhrpGroupsPartialUpdate
 }
 
 /*
-  IpamFhrpGroupsRead ipam fhrp groups read API
+IpamFhrpGroupsRead ipam fhrp groups read API
 */
 func (a *Client) IpamFhrpGroupsRead(params *IpamFhrpGroupsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupsReadOK, error) {
 	// TODO: Validate the params before sending
@@ -1700,7 +1700,7 @@ func (a *Client) IpamFhrpGroupsRead(params *IpamFhrpGroupsReadParams, authInfo r
 }
 
 /*
-  IpamFhrpGroupsUpdate ipam fhrp groups update API
+IpamFhrpGroupsUpdate ipam fhrp groups update API
 */
 func (a *Client) IpamFhrpGroupsUpdate(params *IpamFhrpGroupsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamFhrpGroupsUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1739,7 +1739,7 @@ func (a *Client) IpamFhrpGroupsUpdate(params *IpamFhrpGroupsUpdateParams, authIn
 }
 
 /*
-  IpamIPAddressesBulkDelete ipam ip addresses bulk delete API
+IpamIPAddressesBulkDelete ipam ip addresses bulk delete API
 */
 func (a *Client) IpamIPAddressesBulkDelete(params *IpamIPAddressesBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPAddressesBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1778,7 +1778,7 @@ func (a *Client) IpamIPAddressesBulkDelete(params *IpamIPAddressesBulkDeletePara
 }
 
 /*
-  IpamIPAddressesBulkPartialUpdate ipam ip addresses bulk partial update API
+IpamIPAddressesBulkPartialUpdate ipam ip addresses bulk partial update API
 */
 func (a *Client) IpamIPAddressesBulkPartialUpdate(params *IpamIPAddressesBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPAddressesBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1817,7 +1817,7 @@ func (a *Client) IpamIPAddressesBulkPartialUpdate(params *IpamIPAddressesBulkPar
 }
 
 /*
-  IpamIPAddressesBulkUpdate ipam ip addresses bulk update API
+IpamIPAddressesBulkUpdate ipam ip addresses bulk update API
 */
 func (a *Client) IpamIPAddressesBulkUpdate(params *IpamIPAddressesBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPAddressesBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -1856,7 +1856,7 @@ func (a *Client) IpamIPAddressesBulkUpdate(params *IpamIPAddressesBulkUpdatePara
 }
 
 /*
-  IpamIPAddressesCreate ipam ip addresses create API
+IpamIPAddressesCreate ipam ip addresses create API
 */
 func (a *Client) IpamIPAddressesCreate(params *IpamIPAddressesCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPAddressesCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -1895,7 +1895,7 @@ func (a *Client) IpamIPAddressesCreate(params *IpamIPAddressesCreateParams, auth
 }
 
 /*
-  IpamIPAddressesDelete ipam ip addresses delete API
+IpamIPAddressesDelete ipam ip addresses delete API
 */
 func (a *Client) IpamIPAddressesDelete(params *IpamIPAddressesDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPAddressesDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -1934,7 +1934,7 @@ func (a *Client) IpamIPAddressesDelete(params *IpamIPAddressesDeleteParams, auth
 }
 
 /*
-  IpamIPAddressesList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamIPAddressesList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamIPAddressesList(params *IpamIPAddressesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPAddressesListOK, error) {
 	// TODO: Validate the params before sending
@@ -1973,7 +1973,7 @@ func (a *Client) IpamIPAddressesList(params *IpamIPAddressesListParams, authInfo
 }
 
 /*
-  IpamIPAddressesPartialUpdate ipam ip addresses partial update API
+IpamIPAddressesPartialUpdate ipam ip addresses partial update API
 */
 func (a *Client) IpamIPAddressesPartialUpdate(params *IpamIPAddressesPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPAddressesPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -2012,7 +2012,7 @@ func (a *Client) IpamIPAddressesPartialUpdate(params *IpamIPAddressesPartialUpda
 }
 
 /*
-  IpamIPAddressesRead ipam ip addresses read API
+IpamIPAddressesRead ipam ip addresses read API
 */
 func (a *Client) IpamIPAddressesRead(params *IpamIPAddressesReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPAddressesReadOK, error) {
 	// TODO: Validate the params before sending
@@ -2051,7 +2051,7 @@ func (a *Client) IpamIPAddressesRead(params *IpamIPAddressesReadParams, authInfo
 }
 
 /*
-  IpamIPAddressesUpdate ipam ip addresses update API
+IpamIPAddressesUpdate ipam ip addresses update API
 */
 func (a *Client) IpamIPAddressesUpdate(params *IpamIPAddressesUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPAddressesUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -2090,7 +2090,7 @@ func (a *Client) IpamIPAddressesUpdate(params *IpamIPAddressesUpdateParams, auth
 }
 
 /*
-  IpamIPRangesAvailableIpsCreate ipam ip ranges available ips create API
+IpamIPRangesAvailableIpsCreate ipam ip ranges available ips create API
 */
 func (a *Client) IpamIPRangesAvailableIpsCreate(params *IpamIPRangesAvailableIpsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesAvailableIpsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -2129,7 +2129,7 @@ func (a *Client) IpamIPRangesAvailableIpsCreate(params *IpamIPRangesAvailableIps
 }
 
 /*
-  IpamIPRangesAvailableIpsList ipam ip ranges available ips list API
+IpamIPRangesAvailableIpsList ipam ip ranges available ips list API
 */
 func (a *Client) IpamIPRangesAvailableIpsList(params *IpamIPRangesAvailableIpsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesAvailableIpsListOK, error) {
 	// TODO: Validate the params before sending
@@ -2168,7 +2168,7 @@ func (a *Client) IpamIPRangesAvailableIpsList(params *IpamIPRangesAvailableIpsLi
 }
 
 /*
-  IpamIPRangesBulkDelete ipam ip ranges bulk delete API
+IpamIPRangesBulkDelete ipam ip ranges bulk delete API
 */
 func (a *Client) IpamIPRangesBulkDelete(params *IpamIPRangesBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -2207,7 +2207,7 @@ func (a *Client) IpamIPRangesBulkDelete(params *IpamIPRangesBulkDeleteParams, au
 }
 
 /*
-  IpamIPRangesBulkPartialUpdate ipam ip ranges bulk partial update API
+IpamIPRangesBulkPartialUpdate ipam ip ranges bulk partial update API
 */
 func (a *Client) IpamIPRangesBulkPartialUpdate(params *IpamIPRangesBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -2246,7 +2246,7 @@ func (a *Client) IpamIPRangesBulkPartialUpdate(params *IpamIPRangesBulkPartialUp
 }
 
 /*
-  IpamIPRangesBulkUpdate ipam ip ranges bulk update API
+IpamIPRangesBulkUpdate ipam ip ranges bulk update API
 */
 func (a *Client) IpamIPRangesBulkUpdate(params *IpamIPRangesBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -2285,7 +2285,7 @@ func (a *Client) IpamIPRangesBulkUpdate(params *IpamIPRangesBulkUpdateParams, au
 }
 
 /*
-  IpamIPRangesCreate ipam ip ranges create API
+IpamIPRangesCreate ipam ip ranges create API
 */
 func (a *Client) IpamIPRangesCreate(params *IpamIPRangesCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -2324,7 +2324,7 @@ func (a *Client) IpamIPRangesCreate(params *IpamIPRangesCreateParams, authInfo r
 }
 
 /*
-  IpamIPRangesDelete ipam ip ranges delete API
+IpamIPRangesDelete ipam ip ranges delete API
 */
 func (a *Client) IpamIPRangesDelete(params *IpamIPRangesDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -2363,7 +2363,7 @@ func (a *Client) IpamIPRangesDelete(params *IpamIPRangesDeleteParams, authInfo r
 }
 
 /*
-  IpamIPRangesList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamIPRangesList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamIPRangesList(params *IpamIPRangesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesListOK, error) {
 	// TODO: Validate the params before sending
@@ -2402,7 +2402,7 @@ func (a *Client) IpamIPRangesList(params *IpamIPRangesListParams, authInfo runti
 }
 
 /*
-  IpamIPRangesPartialUpdate ipam ip ranges partial update API
+IpamIPRangesPartialUpdate ipam ip ranges partial update API
 */
 func (a *Client) IpamIPRangesPartialUpdate(params *IpamIPRangesPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -2441,7 +2441,7 @@ func (a *Client) IpamIPRangesPartialUpdate(params *IpamIPRangesPartialUpdatePara
 }
 
 /*
-  IpamIPRangesRead ipam ip ranges read API
+IpamIPRangesRead ipam ip ranges read API
 */
 func (a *Client) IpamIPRangesRead(params *IpamIPRangesReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesReadOK, error) {
 	// TODO: Validate the params before sending
@@ -2480,7 +2480,7 @@ func (a *Client) IpamIPRangesRead(params *IpamIPRangesReadParams, authInfo runti
 }
 
 /*
-  IpamIPRangesUpdate ipam ip ranges update API
+IpamIPRangesUpdate ipam ip ranges update API
 */
 func (a *Client) IpamIPRangesUpdate(params *IpamIPRangesUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamIPRangesUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -2519,7 +2519,7 @@ func (a *Client) IpamIPRangesUpdate(params *IpamIPRangesUpdateParams, authInfo r
 }
 
 /*
-  IpamPrefixesAvailableIpsCreate ipam prefixes available ips create API
+IpamPrefixesAvailableIpsCreate ipam prefixes available ips create API
 */
 func (a *Client) IpamPrefixesAvailableIpsCreate(params *IpamPrefixesAvailableIpsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesAvailableIpsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -2558,7 +2558,7 @@ func (a *Client) IpamPrefixesAvailableIpsCreate(params *IpamPrefixesAvailableIps
 }
 
 /*
-  IpamPrefixesAvailableIpsList ipam prefixes available ips list API
+IpamPrefixesAvailableIpsList ipam prefixes available ips list API
 */
 func (a *Client) IpamPrefixesAvailableIpsList(params *IpamPrefixesAvailableIpsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesAvailableIpsListOK, error) {
 	// TODO: Validate the params before sending
@@ -2597,7 +2597,7 @@ func (a *Client) IpamPrefixesAvailableIpsList(params *IpamPrefixesAvailableIpsLi
 }
 
 /*
-  IpamPrefixesAvailablePrefixesCreate ipam prefixes available prefixes create API
+IpamPrefixesAvailablePrefixesCreate ipam prefixes available prefixes create API
 */
 func (a *Client) IpamPrefixesAvailablePrefixesCreate(params *IpamPrefixesAvailablePrefixesCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesAvailablePrefixesCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -2636,7 +2636,7 @@ func (a *Client) IpamPrefixesAvailablePrefixesCreate(params *IpamPrefixesAvailab
 }
 
 /*
-  IpamPrefixesAvailablePrefixesList ipam prefixes available prefixes list API
+IpamPrefixesAvailablePrefixesList ipam prefixes available prefixes list API
 */
 func (a *Client) IpamPrefixesAvailablePrefixesList(params *IpamPrefixesAvailablePrefixesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesAvailablePrefixesListOK, error) {
 	// TODO: Validate the params before sending
@@ -2675,7 +2675,7 @@ func (a *Client) IpamPrefixesAvailablePrefixesList(params *IpamPrefixesAvailable
 }
 
 /*
-  IpamPrefixesBulkDelete ipam prefixes bulk delete API
+IpamPrefixesBulkDelete ipam prefixes bulk delete API
 */
 func (a *Client) IpamPrefixesBulkDelete(params *IpamPrefixesBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -2714,7 +2714,7 @@ func (a *Client) IpamPrefixesBulkDelete(params *IpamPrefixesBulkDeleteParams, au
 }
 
 /*
-  IpamPrefixesBulkPartialUpdate ipam prefixes bulk partial update API
+IpamPrefixesBulkPartialUpdate ipam prefixes bulk partial update API
 */
 func (a *Client) IpamPrefixesBulkPartialUpdate(params *IpamPrefixesBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -2753,7 +2753,7 @@ func (a *Client) IpamPrefixesBulkPartialUpdate(params *IpamPrefixesBulkPartialUp
 }
 
 /*
-  IpamPrefixesBulkUpdate ipam prefixes bulk update API
+IpamPrefixesBulkUpdate ipam prefixes bulk update API
 */
 func (a *Client) IpamPrefixesBulkUpdate(params *IpamPrefixesBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -2792,7 +2792,7 @@ func (a *Client) IpamPrefixesBulkUpdate(params *IpamPrefixesBulkUpdateParams, au
 }
 
 /*
-  IpamPrefixesCreate ipam prefixes create API
+IpamPrefixesCreate ipam prefixes create API
 */
 func (a *Client) IpamPrefixesCreate(params *IpamPrefixesCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -2831,7 +2831,7 @@ func (a *Client) IpamPrefixesCreate(params *IpamPrefixesCreateParams, authInfo r
 }
 
 /*
-  IpamPrefixesDelete ipam prefixes delete API
+IpamPrefixesDelete ipam prefixes delete API
 */
 func (a *Client) IpamPrefixesDelete(params *IpamPrefixesDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -2870,7 +2870,7 @@ func (a *Client) IpamPrefixesDelete(params *IpamPrefixesDeleteParams, authInfo r
 }
 
 /*
-  IpamPrefixesList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamPrefixesList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamPrefixesList(params *IpamPrefixesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesListOK, error) {
 	// TODO: Validate the params before sending
@@ -2909,7 +2909,7 @@ func (a *Client) IpamPrefixesList(params *IpamPrefixesListParams, authInfo runti
 }
 
 /*
-  IpamPrefixesPartialUpdate ipam prefixes partial update API
+IpamPrefixesPartialUpdate ipam prefixes partial update API
 */
 func (a *Client) IpamPrefixesPartialUpdate(params *IpamPrefixesPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -2948,7 +2948,7 @@ func (a *Client) IpamPrefixesPartialUpdate(params *IpamPrefixesPartialUpdatePara
 }
 
 /*
-  IpamPrefixesRead ipam prefixes read API
+IpamPrefixesRead ipam prefixes read API
 */
 func (a *Client) IpamPrefixesRead(params *IpamPrefixesReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesReadOK, error) {
 	// TODO: Validate the params before sending
@@ -2987,7 +2987,7 @@ func (a *Client) IpamPrefixesRead(params *IpamPrefixesReadParams, authInfo runti
 }
 
 /*
-  IpamPrefixesUpdate ipam prefixes update API
+IpamPrefixesUpdate ipam prefixes update API
 */
 func (a *Client) IpamPrefixesUpdate(params *IpamPrefixesUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamPrefixesUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3026,7 +3026,7 @@ func (a *Client) IpamPrefixesUpdate(params *IpamPrefixesUpdateParams, authInfo r
 }
 
 /*
-  IpamRirsBulkDelete ipam rirs bulk delete API
+IpamRirsBulkDelete ipam rirs bulk delete API
 */
 func (a *Client) IpamRirsBulkDelete(params *IpamRirsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRirsBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -3065,7 +3065,7 @@ func (a *Client) IpamRirsBulkDelete(params *IpamRirsBulkDeleteParams, authInfo r
 }
 
 /*
-  IpamRirsBulkPartialUpdate ipam rirs bulk partial update API
+IpamRirsBulkPartialUpdate ipam rirs bulk partial update API
 */
 func (a *Client) IpamRirsBulkPartialUpdate(params *IpamRirsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRirsBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3104,7 +3104,7 @@ func (a *Client) IpamRirsBulkPartialUpdate(params *IpamRirsBulkPartialUpdatePara
 }
 
 /*
-  IpamRirsBulkUpdate ipam rirs bulk update API
+IpamRirsBulkUpdate ipam rirs bulk update API
 */
 func (a *Client) IpamRirsBulkUpdate(params *IpamRirsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRirsBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3143,7 +3143,7 @@ func (a *Client) IpamRirsBulkUpdate(params *IpamRirsBulkUpdateParams, authInfo r
 }
 
 /*
-  IpamRirsCreate ipam rirs create API
+IpamRirsCreate ipam rirs create API
 */
 func (a *Client) IpamRirsCreate(params *IpamRirsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRirsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -3182,7 +3182,7 @@ func (a *Client) IpamRirsCreate(params *IpamRirsCreateParams, authInfo runtime.C
 }
 
 /*
-  IpamRirsDelete ipam rirs delete API
+IpamRirsDelete ipam rirs delete API
 */
 func (a *Client) IpamRirsDelete(params *IpamRirsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRirsDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -3221,7 +3221,7 @@ func (a *Client) IpamRirsDelete(params *IpamRirsDeleteParams, authInfo runtime.C
 }
 
 /*
-  IpamRirsList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamRirsList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamRirsList(params *IpamRirsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRirsListOK, error) {
 	// TODO: Validate the params before sending
@@ -3260,7 +3260,7 @@ func (a *Client) IpamRirsList(params *IpamRirsListParams, authInfo runtime.Clien
 }
 
 /*
-  IpamRirsPartialUpdate ipam rirs partial update API
+IpamRirsPartialUpdate ipam rirs partial update API
 */
 func (a *Client) IpamRirsPartialUpdate(params *IpamRirsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRirsPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3299,7 +3299,7 @@ func (a *Client) IpamRirsPartialUpdate(params *IpamRirsPartialUpdateParams, auth
 }
 
 /*
-  IpamRirsRead ipam rirs read API
+IpamRirsRead ipam rirs read API
 */
 func (a *Client) IpamRirsRead(params *IpamRirsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRirsReadOK, error) {
 	// TODO: Validate the params before sending
@@ -3338,7 +3338,7 @@ func (a *Client) IpamRirsRead(params *IpamRirsReadParams, authInfo runtime.Clien
 }
 
 /*
-  IpamRirsUpdate ipam rirs update API
+IpamRirsUpdate ipam rirs update API
 */
 func (a *Client) IpamRirsUpdate(params *IpamRirsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRirsUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3377,7 +3377,7 @@ func (a *Client) IpamRirsUpdate(params *IpamRirsUpdateParams, authInfo runtime.C
 }
 
 /*
-  IpamRolesBulkDelete ipam roles bulk delete API
+IpamRolesBulkDelete ipam roles bulk delete API
 */
 func (a *Client) IpamRolesBulkDelete(params *IpamRolesBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRolesBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -3416,7 +3416,7 @@ func (a *Client) IpamRolesBulkDelete(params *IpamRolesBulkDeleteParams, authInfo
 }
 
 /*
-  IpamRolesBulkPartialUpdate ipam roles bulk partial update API
+IpamRolesBulkPartialUpdate ipam roles bulk partial update API
 */
 func (a *Client) IpamRolesBulkPartialUpdate(params *IpamRolesBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRolesBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3455,7 +3455,7 @@ func (a *Client) IpamRolesBulkPartialUpdate(params *IpamRolesBulkPartialUpdatePa
 }
 
 /*
-  IpamRolesBulkUpdate ipam roles bulk update API
+IpamRolesBulkUpdate ipam roles bulk update API
 */
 func (a *Client) IpamRolesBulkUpdate(params *IpamRolesBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRolesBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3494,7 +3494,7 @@ func (a *Client) IpamRolesBulkUpdate(params *IpamRolesBulkUpdateParams, authInfo
 }
 
 /*
-  IpamRolesCreate ipam roles create API
+IpamRolesCreate ipam roles create API
 */
 func (a *Client) IpamRolesCreate(params *IpamRolesCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRolesCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -3533,7 +3533,7 @@ func (a *Client) IpamRolesCreate(params *IpamRolesCreateParams, authInfo runtime
 }
 
 /*
-  IpamRolesDelete ipam roles delete API
+IpamRolesDelete ipam roles delete API
 */
 func (a *Client) IpamRolesDelete(params *IpamRolesDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRolesDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -3572,7 +3572,7 @@ func (a *Client) IpamRolesDelete(params *IpamRolesDeleteParams, authInfo runtime
 }
 
 /*
-  IpamRolesList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamRolesList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamRolesList(params *IpamRolesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRolesListOK, error) {
 	// TODO: Validate the params before sending
@@ -3611,7 +3611,7 @@ func (a *Client) IpamRolesList(params *IpamRolesListParams, authInfo runtime.Cli
 }
 
 /*
-  IpamRolesPartialUpdate ipam roles partial update API
+IpamRolesPartialUpdate ipam roles partial update API
 */
 func (a *Client) IpamRolesPartialUpdate(params *IpamRolesPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRolesPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3650,7 +3650,7 @@ func (a *Client) IpamRolesPartialUpdate(params *IpamRolesPartialUpdateParams, au
 }
 
 /*
-  IpamRolesRead ipam roles read API
+IpamRolesRead ipam roles read API
 */
 func (a *Client) IpamRolesRead(params *IpamRolesReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRolesReadOK, error) {
 	// TODO: Validate the params before sending
@@ -3689,7 +3689,7 @@ func (a *Client) IpamRolesRead(params *IpamRolesReadParams, authInfo runtime.Cli
 }
 
 /*
-  IpamRolesUpdate ipam roles update API
+IpamRolesUpdate ipam roles update API
 */
 func (a *Client) IpamRolesUpdate(params *IpamRolesUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRolesUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3728,7 +3728,7 @@ func (a *Client) IpamRolesUpdate(params *IpamRolesUpdateParams, authInfo runtime
 }
 
 /*
-  IpamRouteTargetsBulkDelete ipam route targets bulk delete API
+IpamRouteTargetsBulkDelete ipam route targets bulk delete API
 */
 func (a *Client) IpamRouteTargetsBulkDelete(params *IpamRouteTargetsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRouteTargetsBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -3767,7 +3767,7 @@ func (a *Client) IpamRouteTargetsBulkDelete(params *IpamRouteTargetsBulkDeletePa
 }
 
 /*
-  IpamRouteTargetsBulkPartialUpdate ipam route targets bulk partial update API
+IpamRouteTargetsBulkPartialUpdate ipam route targets bulk partial update API
 */
 func (a *Client) IpamRouteTargetsBulkPartialUpdate(params *IpamRouteTargetsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRouteTargetsBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3806,7 +3806,7 @@ func (a *Client) IpamRouteTargetsBulkPartialUpdate(params *IpamRouteTargetsBulkP
 }
 
 /*
-  IpamRouteTargetsBulkUpdate ipam route targets bulk update API
+IpamRouteTargetsBulkUpdate ipam route targets bulk update API
 */
 func (a *Client) IpamRouteTargetsBulkUpdate(params *IpamRouteTargetsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRouteTargetsBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -3845,7 +3845,7 @@ func (a *Client) IpamRouteTargetsBulkUpdate(params *IpamRouteTargetsBulkUpdatePa
 }
 
 /*
-  IpamRouteTargetsCreate ipam route targets create API
+IpamRouteTargetsCreate ipam route targets create API
 */
 func (a *Client) IpamRouteTargetsCreate(params *IpamRouteTargetsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRouteTargetsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -3884,7 +3884,7 @@ func (a *Client) IpamRouteTargetsCreate(params *IpamRouteTargetsCreateParams, au
 }
 
 /*
-  IpamRouteTargetsDelete ipam route targets delete API
+IpamRouteTargetsDelete ipam route targets delete API
 */
 func (a *Client) IpamRouteTargetsDelete(params *IpamRouteTargetsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRouteTargetsDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -3923,7 +3923,7 @@ func (a *Client) IpamRouteTargetsDelete(params *IpamRouteTargetsDeleteParams, au
 }
 
 /*
-  IpamRouteTargetsList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamRouteTargetsList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamRouteTargetsList(params *IpamRouteTargetsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRouteTargetsListOK, error) {
 	// TODO: Validate the params before sending
@@ -3962,7 +3962,7 @@ func (a *Client) IpamRouteTargetsList(params *IpamRouteTargetsListParams, authIn
 }
 
 /*
-  IpamRouteTargetsPartialUpdate ipam route targets partial update API
+IpamRouteTargetsPartialUpdate ipam route targets partial update API
 */
 func (a *Client) IpamRouteTargetsPartialUpdate(params *IpamRouteTargetsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRouteTargetsPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4001,7 +4001,7 @@ func (a *Client) IpamRouteTargetsPartialUpdate(params *IpamRouteTargetsPartialUp
 }
 
 /*
-  IpamRouteTargetsRead ipam route targets read API
+IpamRouteTargetsRead ipam route targets read API
 */
 func (a *Client) IpamRouteTargetsRead(params *IpamRouteTargetsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRouteTargetsReadOK, error) {
 	// TODO: Validate the params before sending
@@ -4040,7 +4040,7 @@ func (a *Client) IpamRouteTargetsRead(params *IpamRouteTargetsReadParams, authIn
 }
 
 /*
-  IpamRouteTargetsUpdate ipam route targets update API
+IpamRouteTargetsUpdate ipam route targets update API
 */
 func (a *Client) IpamRouteTargetsUpdate(params *IpamRouteTargetsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamRouteTargetsUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4079,7 +4079,7 @@ func (a *Client) IpamRouteTargetsUpdate(params *IpamRouteTargetsUpdateParams, au
 }
 
 /*
-  IpamServiceTemplatesBulkDelete ipam service templates bulk delete API
+IpamServiceTemplatesBulkDelete ipam service templates bulk delete API
 */
 func (a *Client) IpamServiceTemplatesBulkDelete(params *IpamServiceTemplatesBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServiceTemplatesBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -4118,7 +4118,7 @@ func (a *Client) IpamServiceTemplatesBulkDelete(params *IpamServiceTemplatesBulk
 }
 
 /*
-  IpamServiceTemplatesBulkPartialUpdate ipam service templates bulk partial update API
+IpamServiceTemplatesBulkPartialUpdate ipam service templates bulk partial update API
 */
 func (a *Client) IpamServiceTemplatesBulkPartialUpdate(params *IpamServiceTemplatesBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServiceTemplatesBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4157,7 +4157,7 @@ func (a *Client) IpamServiceTemplatesBulkPartialUpdate(params *IpamServiceTempla
 }
 
 /*
-  IpamServiceTemplatesBulkUpdate ipam service templates bulk update API
+IpamServiceTemplatesBulkUpdate ipam service templates bulk update API
 */
 func (a *Client) IpamServiceTemplatesBulkUpdate(params *IpamServiceTemplatesBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServiceTemplatesBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4196,7 +4196,7 @@ func (a *Client) IpamServiceTemplatesBulkUpdate(params *IpamServiceTemplatesBulk
 }
 
 /*
-  IpamServiceTemplatesCreate ipam service templates create API
+IpamServiceTemplatesCreate ipam service templates create API
 */
 func (a *Client) IpamServiceTemplatesCreate(params *IpamServiceTemplatesCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServiceTemplatesCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -4235,7 +4235,7 @@ func (a *Client) IpamServiceTemplatesCreate(params *IpamServiceTemplatesCreatePa
 }
 
 /*
-  IpamServiceTemplatesDelete ipam service templates delete API
+IpamServiceTemplatesDelete ipam service templates delete API
 */
 func (a *Client) IpamServiceTemplatesDelete(params *IpamServiceTemplatesDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServiceTemplatesDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -4274,7 +4274,7 @@ func (a *Client) IpamServiceTemplatesDelete(params *IpamServiceTemplatesDeletePa
 }
 
 /*
-  IpamServiceTemplatesList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamServiceTemplatesList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamServiceTemplatesList(params *IpamServiceTemplatesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServiceTemplatesListOK, error) {
 	// TODO: Validate the params before sending
@@ -4313,7 +4313,7 @@ func (a *Client) IpamServiceTemplatesList(params *IpamServiceTemplatesListParams
 }
 
 /*
-  IpamServiceTemplatesPartialUpdate ipam service templates partial update API
+IpamServiceTemplatesPartialUpdate ipam service templates partial update API
 */
 func (a *Client) IpamServiceTemplatesPartialUpdate(params *IpamServiceTemplatesPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServiceTemplatesPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4352,7 +4352,7 @@ func (a *Client) IpamServiceTemplatesPartialUpdate(params *IpamServiceTemplatesP
 }
 
 /*
-  IpamServiceTemplatesRead ipam service templates read API
+IpamServiceTemplatesRead ipam service templates read API
 */
 func (a *Client) IpamServiceTemplatesRead(params *IpamServiceTemplatesReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServiceTemplatesReadOK, error) {
 	// TODO: Validate the params before sending
@@ -4391,7 +4391,7 @@ func (a *Client) IpamServiceTemplatesRead(params *IpamServiceTemplatesReadParams
 }
 
 /*
-  IpamServiceTemplatesUpdate ipam service templates update API
+IpamServiceTemplatesUpdate ipam service templates update API
 */
 func (a *Client) IpamServiceTemplatesUpdate(params *IpamServiceTemplatesUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServiceTemplatesUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4430,7 +4430,7 @@ func (a *Client) IpamServiceTemplatesUpdate(params *IpamServiceTemplatesUpdatePa
 }
 
 /*
-  IpamServicesBulkDelete ipam services bulk delete API
+IpamServicesBulkDelete ipam services bulk delete API
 */
 func (a *Client) IpamServicesBulkDelete(params *IpamServicesBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServicesBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -4469,7 +4469,7 @@ func (a *Client) IpamServicesBulkDelete(params *IpamServicesBulkDeleteParams, au
 }
 
 /*
-  IpamServicesBulkPartialUpdate ipam services bulk partial update API
+IpamServicesBulkPartialUpdate ipam services bulk partial update API
 */
 func (a *Client) IpamServicesBulkPartialUpdate(params *IpamServicesBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServicesBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4508,7 +4508,7 @@ func (a *Client) IpamServicesBulkPartialUpdate(params *IpamServicesBulkPartialUp
 }
 
 /*
-  IpamServicesBulkUpdate ipam services bulk update API
+IpamServicesBulkUpdate ipam services bulk update API
 */
 func (a *Client) IpamServicesBulkUpdate(params *IpamServicesBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServicesBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4547,7 +4547,7 @@ func (a *Client) IpamServicesBulkUpdate(params *IpamServicesBulkUpdateParams, au
 }
 
 /*
-  IpamServicesCreate ipam services create API
+IpamServicesCreate ipam services create API
 */
 func (a *Client) IpamServicesCreate(params *IpamServicesCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServicesCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -4586,7 +4586,7 @@ func (a *Client) IpamServicesCreate(params *IpamServicesCreateParams, authInfo r
 }
 
 /*
-  IpamServicesDelete ipam services delete API
+IpamServicesDelete ipam services delete API
 */
 func (a *Client) IpamServicesDelete(params *IpamServicesDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServicesDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -4625,7 +4625,7 @@ func (a *Client) IpamServicesDelete(params *IpamServicesDeleteParams, authInfo r
 }
 
 /*
-  IpamServicesList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamServicesList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamServicesList(params *IpamServicesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServicesListOK, error) {
 	// TODO: Validate the params before sending
@@ -4664,7 +4664,7 @@ func (a *Client) IpamServicesList(params *IpamServicesListParams, authInfo runti
 }
 
 /*
-  IpamServicesPartialUpdate ipam services partial update API
+IpamServicesPartialUpdate ipam services partial update API
 */
 func (a *Client) IpamServicesPartialUpdate(params *IpamServicesPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServicesPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4703,7 +4703,7 @@ func (a *Client) IpamServicesPartialUpdate(params *IpamServicesPartialUpdatePara
 }
 
 /*
-  IpamServicesRead ipam services read API
+IpamServicesRead ipam services read API
 */
 func (a *Client) IpamServicesRead(params *IpamServicesReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServicesReadOK, error) {
 	// TODO: Validate the params before sending
@@ -4742,7 +4742,7 @@ func (a *Client) IpamServicesRead(params *IpamServicesReadParams, authInfo runti
 }
 
 /*
-  IpamServicesUpdate ipam services update API
+IpamServicesUpdate ipam services update API
 */
 func (a *Client) IpamServicesUpdate(params *IpamServicesUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamServicesUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4781,7 +4781,7 @@ func (a *Client) IpamServicesUpdate(params *IpamServicesUpdateParams, authInfo r
 }
 
 /*
-  IpamVlanGroupsAvailableVlansCreate ipam vlan groups available vlans create API
+IpamVlanGroupsAvailableVlansCreate ipam vlan groups available vlans create API
 */
 func (a *Client) IpamVlanGroupsAvailableVlansCreate(params *IpamVlanGroupsAvailableVlansCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsAvailableVlansCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -4820,7 +4820,7 @@ func (a *Client) IpamVlanGroupsAvailableVlansCreate(params *IpamVlanGroupsAvaila
 }
 
 /*
-  IpamVlanGroupsAvailableVlansList ipam vlan groups available vlans list API
+IpamVlanGroupsAvailableVlansList ipam vlan groups available vlans list API
 */
 func (a *Client) IpamVlanGroupsAvailableVlansList(params *IpamVlanGroupsAvailableVlansListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsAvailableVlansListOK, error) {
 	// TODO: Validate the params before sending
@@ -4859,7 +4859,7 @@ func (a *Client) IpamVlanGroupsAvailableVlansList(params *IpamVlanGroupsAvailabl
 }
 
 /*
-  IpamVlanGroupsBulkDelete ipam vlan groups bulk delete API
+IpamVlanGroupsBulkDelete ipam vlan groups bulk delete API
 */
 func (a *Client) IpamVlanGroupsBulkDelete(params *IpamVlanGroupsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -4898,7 +4898,7 @@ func (a *Client) IpamVlanGroupsBulkDelete(params *IpamVlanGroupsBulkDeleteParams
 }
 
 /*
-  IpamVlanGroupsBulkPartialUpdate ipam vlan groups bulk partial update API
+IpamVlanGroupsBulkPartialUpdate ipam vlan groups bulk partial update API
 */
 func (a *Client) IpamVlanGroupsBulkPartialUpdate(params *IpamVlanGroupsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4937,7 +4937,7 @@ func (a *Client) IpamVlanGroupsBulkPartialUpdate(params *IpamVlanGroupsBulkParti
 }
 
 /*
-  IpamVlanGroupsBulkUpdate ipam vlan groups bulk update API
+IpamVlanGroupsBulkUpdate ipam vlan groups bulk update API
 */
 func (a *Client) IpamVlanGroupsBulkUpdate(params *IpamVlanGroupsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -4976,7 +4976,7 @@ func (a *Client) IpamVlanGroupsBulkUpdate(params *IpamVlanGroupsBulkUpdateParams
 }
 
 /*
-  IpamVlanGroupsCreate ipam vlan groups create API
+IpamVlanGroupsCreate ipam vlan groups create API
 */
 func (a *Client) IpamVlanGroupsCreate(params *IpamVlanGroupsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -5015,7 +5015,7 @@ func (a *Client) IpamVlanGroupsCreate(params *IpamVlanGroupsCreateParams, authIn
 }
 
 /*
-  IpamVlanGroupsDelete ipam vlan groups delete API
+IpamVlanGroupsDelete ipam vlan groups delete API
 */
 func (a *Client) IpamVlanGroupsDelete(params *IpamVlanGroupsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -5054,7 +5054,7 @@ func (a *Client) IpamVlanGroupsDelete(params *IpamVlanGroupsDeleteParams, authIn
 }
 
 /*
-  IpamVlanGroupsList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamVlanGroupsList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamVlanGroupsList(params *IpamVlanGroupsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsListOK, error) {
 	// TODO: Validate the params before sending
@@ -5093,7 +5093,7 @@ func (a *Client) IpamVlanGroupsList(params *IpamVlanGroupsListParams, authInfo r
 }
 
 /*
-  IpamVlanGroupsPartialUpdate ipam vlan groups partial update API
+IpamVlanGroupsPartialUpdate ipam vlan groups partial update API
 */
 func (a *Client) IpamVlanGroupsPartialUpdate(params *IpamVlanGroupsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -5132,7 +5132,7 @@ func (a *Client) IpamVlanGroupsPartialUpdate(params *IpamVlanGroupsPartialUpdate
 }
 
 /*
-  IpamVlanGroupsRead ipam vlan groups read API
+IpamVlanGroupsRead ipam vlan groups read API
 */
 func (a *Client) IpamVlanGroupsRead(params *IpamVlanGroupsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsReadOK, error) {
 	// TODO: Validate the params before sending
@@ -5171,7 +5171,7 @@ func (a *Client) IpamVlanGroupsRead(params *IpamVlanGroupsReadParams, authInfo r
 }
 
 /*
-  IpamVlanGroupsUpdate ipam vlan groups update API
+IpamVlanGroupsUpdate ipam vlan groups update API
 */
 func (a *Client) IpamVlanGroupsUpdate(params *IpamVlanGroupsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlanGroupsUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -5210,7 +5210,7 @@ func (a *Client) IpamVlanGroupsUpdate(params *IpamVlanGroupsUpdateParams, authIn
 }
 
 /*
-  IpamVlansBulkDelete ipam vlans bulk delete API
+IpamVlansBulkDelete ipam vlans bulk delete API
 */
 func (a *Client) IpamVlansBulkDelete(params *IpamVlansBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlansBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -5249,7 +5249,7 @@ func (a *Client) IpamVlansBulkDelete(params *IpamVlansBulkDeleteParams, authInfo
 }
 
 /*
-  IpamVlansBulkPartialUpdate ipam vlans bulk partial update API
+IpamVlansBulkPartialUpdate ipam vlans bulk partial update API
 */
 func (a *Client) IpamVlansBulkPartialUpdate(params *IpamVlansBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlansBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -5288,7 +5288,7 @@ func (a *Client) IpamVlansBulkPartialUpdate(params *IpamVlansBulkPartialUpdatePa
 }
 
 /*
-  IpamVlansBulkUpdate ipam vlans bulk update API
+IpamVlansBulkUpdate ipam vlans bulk update API
 */
 func (a *Client) IpamVlansBulkUpdate(params *IpamVlansBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlansBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -5327,7 +5327,7 @@ func (a *Client) IpamVlansBulkUpdate(params *IpamVlansBulkUpdateParams, authInfo
 }
 
 /*
-  IpamVlansCreate ipam vlans create API
+IpamVlansCreate ipam vlans create API
 */
 func (a *Client) IpamVlansCreate(params *IpamVlansCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlansCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -5366,7 +5366,7 @@ func (a *Client) IpamVlansCreate(params *IpamVlansCreateParams, authInfo runtime
 }
 
 /*
-  IpamVlansDelete ipam vlans delete API
+IpamVlansDelete ipam vlans delete API
 */
 func (a *Client) IpamVlansDelete(params *IpamVlansDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlansDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -5405,7 +5405,7 @@ func (a *Client) IpamVlansDelete(params *IpamVlansDeleteParams, authInfo runtime
 }
 
 /*
-  IpamVlansList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamVlansList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamVlansList(params *IpamVlansListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlansListOK, error) {
 	// TODO: Validate the params before sending
@@ -5444,7 +5444,7 @@ func (a *Client) IpamVlansList(params *IpamVlansListParams, authInfo runtime.Cli
 }
 
 /*
-  IpamVlansPartialUpdate ipam vlans partial update API
+IpamVlansPartialUpdate ipam vlans partial update API
 */
 func (a *Client) IpamVlansPartialUpdate(params *IpamVlansPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlansPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -5483,7 +5483,7 @@ func (a *Client) IpamVlansPartialUpdate(params *IpamVlansPartialUpdateParams, au
 }
 
 /*
-  IpamVlansRead ipam vlans read API
+IpamVlansRead ipam vlans read API
 */
 func (a *Client) IpamVlansRead(params *IpamVlansReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlansReadOK, error) {
 	// TODO: Validate the params before sending
@@ -5522,7 +5522,7 @@ func (a *Client) IpamVlansRead(params *IpamVlansReadParams, authInfo runtime.Cli
 }
 
 /*
-  IpamVlansUpdate ipam vlans update API
+IpamVlansUpdate ipam vlans update API
 */
 func (a *Client) IpamVlansUpdate(params *IpamVlansUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVlansUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -5561,7 +5561,7 @@ func (a *Client) IpamVlansUpdate(params *IpamVlansUpdateParams, authInfo runtime
 }
 
 /*
-  IpamVrfsBulkDelete ipam vrfs bulk delete API
+IpamVrfsBulkDelete ipam vrfs bulk delete API
 */
 func (a *Client) IpamVrfsBulkDelete(params *IpamVrfsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVrfsBulkDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -5600,7 +5600,7 @@ func (a *Client) IpamVrfsBulkDelete(params *IpamVrfsBulkDeleteParams, authInfo r
 }
 
 /*
-  IpamVrfsBulkPartialUpdate ipam vrfs bulk partial update API
+IpamVrfsBulkPartialUpdate ipam vrfs bulk partial update API
 */
 func (a *Client) IpamVrfsBulkPartialUpdate(params *IpamVrfsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVrfsBulkPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -5639,7 +5639,7 @@ func (a *Client) IpamVrfsBulkPartialUpdate(params *IpamVrfsBulkPartialUpdatePara
 }
 
 /*
-  IpamVrfsBulkUpdate ipam vrfs bulk update API
+IpamVrfsBulkUpdate ipam vrfs bulk update API
 */
 func (a *Client) IpamVrfsBulkUpdate(params *IpamVrfsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVrfsBulkUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -5678,7 +5678,7 @@ func (a *Client) IpamVrfsBulkUpdate(params *IpamVrfsBulkUpdateParams, authInfo r
 }
 
 /*
-  IpamVrfsCreate ipam vrfs create API
+IpamVrfsCreate ipam vrfs create API
 */
 func (a *Client) IpamVrfsCreate(params *IpamVrfsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVrfsCreateCreated, error) {
 	// TODO: Validate the params before sending
@@ -5717,7 +5717,7 @@ func (a *Client) IpamVrfsCreate(params *IpamVrfsCreateParams, authInfo runtime.C
 }
 
 /*
-  IpamVrfsDelete ipam vrfs delete API
+IpamVrfsDelete ipam vrfs delete API
 */
 func (a *Client) IpamVrfsDelete(params *IpamVrfsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVrfsDeleteNoContent, error) {
 	// TODO: Validate the params before sending
@@ -5756,7 +5756,7 @@ func (a *Client) IpamVrfsDelete(params *IpamVrfsDeleteParams, authInfo runtime.C
 }
 
 /*
-  IpamVrfsList Overrides ListModelMixin to allow processing ExportTemplates.
+IpamVrfsList Overrides ListModelMixin to allow processing ExportTemplates.
 */
 func (a *Client) IpamVrfsList(params *IpamVrfsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVrfsListOK, error) {
 	// TODO: Validate the params before sending
@@ -5795,7 +5795,7 @@ func (a *Client) IpamVrfsList(params *IpamVrfsListParams, authInfo runtime.Clien
 }
 
 /*
-  IpamVrfsPartialUpdate ipam vrfs partial update API
+IpamVrfsPartialUpdate ipam vrfs partial update API
 */
 func (a *Client) IpamVrfsPartialUpdate(params *IpamVrfsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVrfsPartialUpdateOK, error) {
 	// TODO: Validate the params before sending
@@ -5834,7 +5834,7 @@ func (a *Client) IpamVrfsPartialUpdate(params *IpamVrfsPartialUpdateParams, auth
 }
 
 /*
-  IpamVrfsRead ipam vrfs read API
+IpamVrfsRead ipam vrfs read API
 */
 func (a *Client) IpamVrfsRead(params *IpamVrfsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVrfsReadOK, error) {
 	// TODO: Validate the params before sending
@@ -5873,7 +5873,7 @@ func (a *Client) IpamVrfsRead(params *IpamVrfsReadParams, authInfo runtime.Clien
 }
 
 /*
-  IpamVrfsUpdate ipam vrfs update API
+IpamVrfsUpdate ipam vrfs update API
 */
 func (a *Client) IpamVrfsUpdate(params *IpamVrfsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*IpamVrfsUpdateOK, error) {
 	// TODO: Validate the params before sending

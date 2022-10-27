@@ -54,7 +54,8 @@ func NewExtrasConfigContextsCreateCreated() *ExtrasConfigContextsCreateCreated {
 	return &ExtrasConfigContextsCreateCreated{}
 }
 
-/* ExtrasConfigContextsCreateCreated describes a response with status code 201, with default header values.
+/*
+ExtrasConfigContextsCreateCreated describes a response with status code 201, with default header values.
 
 ExtrasConfigContextsCreateCreated extras config contexts create created
 */
@@ -62,9 +63,39 @@ type ExtrasConfigContextsCreateCreated struct {
 	Payload *models.ConfigContext
 }
 
+// IsSuccess returns true when this extras config contexts create created response has a 2xx status code
+func (o *ExtrasConfigContextsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras config contexts create created response has a 3xx status code
+func (o *ExtrasConfigContextsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras config contexts create created response has a 4xx status code
+func (o *ExtrasConfigContextsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras config contexts create created response has a 5xx status code
+func (o *ExtrasConfigContextsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras config contexts create created response a status code equal to that given
+func (o *ExtrasConfigContextsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *ExtrasConfigContextsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /extras/config-contexts/][%d] extrasConfigContextsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *ExtrasConfigContextsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /extras/config-contexts/][%d] extrasConfigContextsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *ExtrasConfigContextsCreateCreated) GetPayload() *models.ConfigContext {
 	return o.Payload
 }

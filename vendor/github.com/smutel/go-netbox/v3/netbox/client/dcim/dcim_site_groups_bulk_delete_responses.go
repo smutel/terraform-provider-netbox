@@ -51,14 +51,44 @@ func NewDcimSiteGroupsBulkDeleteNoContent() *DcimSiteGroupsBulkDeleteNoContent {
 	return &DcimSiteGroupsBulkDeleteNoContent{}
 }
 
-/* DcimSiteGroupsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimSiteGroupsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimSiteGroupsBulkDeleteNoContent dcim site groups bulk delete no content
 */
 type DcimSiteGroupsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim site groups bulk delete no content response has a 2xx status code
+func (o *DcimSiteGroupsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim site groups bulk delete no content response has a 3xx status code
+func (o *DcimSiteGroupsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim site groups bulk delete no content response has a 4xx status code
+func (o *DcimSiteGroupsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim site groups bulk delete no content response has a 5xx status code
+func (o *DcimSiteGroupsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim site groups bulk delete no content response a status code equal to that given
+func (o *DcimSiteGroupsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimSiteGroupsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/site-groups/][%d] dcimSiteGroupsBulkDeleteNoContent ", 204)
+}
+
+func (o *DcimSiteGroupsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/site-groups/][%d] dcimSiteGroupsBulkDeleteNoContent ", 204)
 }
 

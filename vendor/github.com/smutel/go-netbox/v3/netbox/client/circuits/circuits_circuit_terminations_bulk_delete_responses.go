@@ -51,14 +51,44 @@ func NewCircuitsCircuitTerminationsBulkDeleteNoContent() *CircuitsCircuitTermina
 	return &CircuitsCircuitTerminationsBulkDeleteNoContent{}
 }
 
-/* CircuitsCircuitTerminationsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+CircuitsCircuitTerminationsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 CircuitsCircuitTerminationsBulkDeleteNoContent circuits circuit terminations bulk delete no content
 */
 type CircuitsCircuitTerminationsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this circuits circuit terminations bulk delete no content response has a 2xx status code
+func (o *CircuitsCircuitTerminationsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits circuit terminations bulk delete no content response has a 3xx status code
+func (o *CircuitsCircuitTerminationsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits circuit terminations bulk delete no content response has a 4xx status code
+func (o *CircuitsCircuitTerminationsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits circuit terminations bulk delete no content response has a 5xx status code
+func (o *CircuitsCircuitTerminationsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits circuit terminations bulk delete no content response a status code equal to that given
+func (o *CircuitsCircuitTerminationsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *CircuitsCircuitTerminationsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /circuits/circuit-terminations/][%d] circuitsCircuitTerminationsBulkDeleteNoContent ", 204)
+}
+
+func (o *CircuitsCircuitTerminationsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /circuits/circuit-terminations/][%d] circuitsCircuitTerminationsBulkDeleteNoContent ", 204)
 }
 

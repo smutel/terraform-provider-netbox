@@ -54,7 +54,8 @@ func NewDcimDeviceRolesPartialUpdateOK() *DcimDeviceRolesPartialUpdateOK {
 	return &DcimDeviceRolesPartialUpdateOK{}
 }
 
-/* DcimDeviceRolesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimDeviceRolesPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimDeviceRolesPartialUpdateOK dcim device roles partial update o k
 */
@@ -62,9 +63,39 @@ type DcimDeviceRolesPartialUpdateOK struct {
 	Payload *models.DeviceRole
 }
 
+// IsSuccess returns true when this dcim device roles partial update o k response has a 2xx status code
+func (o *DcimDeviceRolesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim device roles partial update o k response has a 3xx status code
+func (o *DcimDeviceRolesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim device roles partial update o k response has a 4xx status code
+func (o *DcimDeviceRolesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim device roles partial update o k response has a 5xx status code
+func (o *DcimDeviceRolesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim device roles partial update o k response a status code equal to that given
+func (o *DcimDeviceRolesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimDeviceRolesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/device-roles/{id}/][%d] dcimDeviceRolesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimDeviceRolesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/device-roles/{id}/][%d] dcimDeviceRolesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimDeviceRolesPartialUpdateOK) GetPayload() *models.DeviceRole {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewExtrasJournalEntriesBulkPartialUpdateOK() *ExtrasJournalEntriesBulkParti
 	return &ExtrasJournalEntriesBulkPartialUpdateOK{}
 }
 
-/* ExtrasJournalEntriesBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasJournalEntriesBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasJournalEntriesBulkPartialUpdateOK extras journal entries bulk partial update o k
 */
@@ -62,9 +63,39 @@ type ExtrasJournalEntriesBulkPartialUpdateOK struct {
 	Payload *models.JournalEntry
 }
 
+// IsSuccess returns true when this extras journal entries bulk partial update o k response has a 2xx status code
+func (o *ExtrasJournalEntriesBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras journal entries bulk partial update o k response has a 3xx status code
+func (o *ExtrasJournalEntriesBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras journal entries bulk partial update o k response has a 4xx status code
+func (o *ExtrasJournalEntriesBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras journal entries bulk partial update o k response has a 5xx status code
+func (o *ExtrasJournalEntriesBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras journal entries bulk partial update o k response a status code equal to that given
+func (o *ExtrasJournalEntriesBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasJournalEntriesBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /extras/journal-entries/][%d] extrasJournalEntriesBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasJournalEntriesBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /extras/journal-entries/][%d] extrasJournalEntriesBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasJournalEntriesBulkPartialUpdateOK) GetPayload() *models.JournalEntry {
 	return o.Payload
 }

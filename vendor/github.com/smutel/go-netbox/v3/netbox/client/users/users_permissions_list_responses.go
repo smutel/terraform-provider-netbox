@@ -59,7 +59,8 @@ func NewUsersPermissionsListOK() *UsersPermissionsListOK {
 	return &UsersPermissionsListOK{}
 }
 
-/* UsersPermissionsListOK describes a response with status code 200, with default header values.
+/*
+UsersPermissionsListOK describes a response with status code 200, with default header values.
 
 UsersPermissionsListOK users permissions list o k
 */
@@ -67,9 +68,39 @@ type UsersPermissionsListOK struct {
 	Payload *UsersPermissionsListOKBody
 }
 
+// IsSuccess returns true when this users permissions list o k response has a 2xx status code
+func (o *UsersPermissionsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users permissions list o k response has a 3xx status code
+func (o *UsersPermissionsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users permissions list o k response has a 4xx status code
+func (o *UsersPermissionsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users permissions list o k response has a 5xx status code
+func (o *UsersPermissionsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users permissions list o k response a status code equal to that given
+func (o *UsersPermissionsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *UsersPermissionsListOK) Error() string {
 	return fmt.Sprintf("[GET /users/permissions/][%d] usersPermissionsListOK  %+v", 200, o.Payload)
 }
+
+func (o *UsersPermissionsListOK) String() string {
+	return fmt.Sprintf("[GET /users/permissions/][%d] usersPermissionsListOK  %+v", 200, o.Payload)
+}
+
 func (o *UsersPermissionsListOK) GetPayload() *UsersPermissionsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *UsersPermissionsListOK) readResponse(response runtime.ClientResponse, c
 	return nil
 }
 
-/*UsersPermissionsListOKBody users permissions list o k body
+/*
+UsersPermissionsListOKBody users permissions list o k body
 swagger:model UsersPermissionsListOKBody
 */
 type UsersPermissionsListOKBody struct {

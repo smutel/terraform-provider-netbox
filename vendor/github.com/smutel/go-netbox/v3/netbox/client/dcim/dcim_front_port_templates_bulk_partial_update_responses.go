@@ -54,7 +54,8 @@ func NewDcimFrontPortTemplatesBulkPartialUpdateOK() *DcimFrontPortTemplatesBulkP
 	return &DcimFrontPortTemplatesBulkPartialUpdateOK{}
 }
 
-/* DcimFrontPortTemplatesBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimFrontPortTemplatesBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimFrontPortTemplatesBulkPartialUpdateOK dcim front port templates bulk partial update o k
 */
@@ -62,9 +63,39 @@ type DcimFrontPortTemplatesBulkPartialUpdateOK struct {
 	Payload *models.FrontPortTemplate
 }
 
+// IsSuccess returns true when this dcim front port templates bulk partial update o k response has a 2xx status code
+func (o *DcimFrontPortTemplatesBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim front port templates bulk partial update o k response has a 3xx status code
+func (o *DcimFrontPortTemplatesBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim front port templates bulk partial update o k response has a 4xx status code
+func (o *DcimFrontPortTemplatesBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim front port templates bulk partial update o k response has a 5xx status code
+func (o *DcimFrontPortTemplatesBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim front port templates bulk partial update o k response a status code equal to that given
+func (o *DcimFrontPortTemplatesBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimFrontPortTemplatesBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/front-port-templates/][%d] dcimFrontPortTemplatesBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimFrontPortTemplatesBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/front-port-templates/][%d] dcimFrontPortTemplatesBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimFrontPortTemplatesBulkPartialUpdateOK) GetPayload() *models.FrontPortTemplate {
 	return o.Payload
 }

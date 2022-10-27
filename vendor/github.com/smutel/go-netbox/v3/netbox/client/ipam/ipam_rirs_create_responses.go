@@ -54,7 +54,8 @@ func NewIpamRirsCreateCreated() *IpamRirsCreateCreated {
 	return &IpamRirsCreateCreated{}
 }
 
-/* IpamRirsCreateCreated describes a response with status code 201, with default header values.
+/*
+IpamRirsCreateCreated describes a response with status code 201, with default header values.
 
 IpamRirsCreateCreated ipam rirs create created
 */
@@ -62,9 +63,39 @@ type IpamRirsCreateCreated struct {
 	Payload *models.RIR
 }
 
+// IsSuccess returns true when this ipam rirs create created response has a 2xx status code
+func (o *IpamRirsCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam rirs create created response has a 3xx status code
+func (o *IpamRirsCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam rirs create created response has a 4xx status code
+func (o *IpamRirsCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam rirs create created response has a 5xx status code
+func (o *IpamRirsCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam rirs create created response a status code equal to that given
+func (o *IpamRirsCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *IpamRirsCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /ipam/rirs/][%d] ipamRirsCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *IpamRirsCreateCreated) String() string {
+	return fmt.Sprintf("[POST /ipam/rirs/][%d] ipamRirsCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *IpamRirsCreateCreated) GetPayload() *models.RIR {
 	return o.Payload
 }

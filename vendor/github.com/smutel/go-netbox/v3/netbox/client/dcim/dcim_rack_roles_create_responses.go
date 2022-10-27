@@ -54,7 +54,8 @@ func NewDcimRackRolesCreateCreated() *DcimRackRolesCreateCreated {
 	return &DcimRackRolesCreateCreated{}
 }
 
-/* DcimRackRolesCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimRackRolesCreateCreated describes a response with status code 201, with default header values.
 
 DcimRackRolesCreateCreated dcim rack roles create created
 */
@@ -62,9 +63,39 @@ type DcimRackRolesCreateCreated struct {
 	Payload *models.RackRole
 }
 
+// IsSuccess returns true when this dcim rack roles create created response has a 2xx status code
+func (o *DcimRackRolesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim rack roles create created response has a 3xx status code
+func (o *DcimRackRolesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim rack roles create created response has a 4xx status code
+func (o *DcimRackRolesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim rack roles create created response has a 5xx status code
+func (o *DcimRackRolesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim rack roles create created response a status code equal to that given
+func (o *DcimRackRolesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimRackRolesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/rack-roles/][%d] dcimRackRolesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimRackRolesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/rack-roles/][%d] dcimRackRolesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimRackRolesCreateCreated) GetPayload() *models.RackRole {
 	return o.Payload
 }

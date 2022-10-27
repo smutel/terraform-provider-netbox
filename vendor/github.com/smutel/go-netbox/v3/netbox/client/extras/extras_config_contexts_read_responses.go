@@ -54,7 +54,8 @@ func NewExtrasConfigContextsReadOK() *ExtrasConfigContextsReadOK {
 	return &ExtrasConfigContextsReadOK{}
 }
 
-/* ExtrasConfigContextsReadOK describes a response with status code 200, with default header values.
+/*
+ExtrasConfigContextsReadOK describes a response with status code 200, with default header values.
 
 ExtrasConfigContextsReadOK extras config contexts read o k
 */
@@ -62,9 +63,39 @@ type ExtrasConfigContextsReadOK struct {
 	Payload *models.ConfigContext
 }
 
+// IsSuccess returns true when this extras config contexts read o k response has a 2xx status code
+func (o *ExtrasConfigContextsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras config contexts read o k response has a 3xx status code
+func (o *ExtrasConfigContextsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras config contexts read o k response has a 4xx status code
+func (o *ExtrasConfigContextsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras config contexts read o k response has a 5xx status code
+func (o *ExtrasConfigContextsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras config contexts read o k response a status code equal to that given
+func (o *ExtrasConfigContextsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasConfigContextsReadOK) Error() string {
 	return fmt.Sprintf("[GET /extras/config-contexts/{id}/][%d] extrasConfigContextsReadOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasConfigContextsReadOK) String() string {
+	return fmt.Sprintf("[GET /extras/config-contexts/{id}/][%d] extrasConfigContextsReadOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasConfigContextsReadOK) GetPayload() *models.ConfigContext {
 	return o.Payload
 }

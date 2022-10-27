@@ -51,14 +51,44 @@ func NewCircuitsProviderNetworksBulkDeleteNoContent() *CircuitsProviderNetworksB
 	return &CircuitsProviderNetworksBulkDeleteNoContent{}
 }
 
-/* CircuitsProviderNetworksBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+CircuitsProviderNetworksBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 CircuitsProviderNetworksBulkDeleteNoContent circuits provider networks bulk delete no content
 */
 type CircuitsProviderNetworksBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this circuits provider networks bulk delete no content response has a 2xx status code
+func (o *CircuitsProviderNetworksBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this circuits provider networks bulk delete no content response has a 3xx status code
+func (o *CircuitsProviderNetworksBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this circuits provider networks bulk delete no content response has a 4xx status code
+func (o *CircuitsProviderNetworksBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this circuits provider networks bulk delete no content response has a 5xx status code
+func (o *CircuitsProviderNetworksBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this circuits provider networks bulk delete no content response a status code equal to that given
+func (o *CircuitsProviderNetworksBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *CircuitsProviderNetworksBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /circuits/provider-networks/][%d] circuitsProviderNetworksBulkDeleteNoContent ", 204)
+}
+
+func (o *CircuitsProviderNetworksBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /circuits/provider-networks/][%d] circuitsProviderNetworksBulkDeleteNoContent ", 204)
 }
 

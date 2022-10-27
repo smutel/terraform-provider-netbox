@@ -59,7 +59,8 @@ func NewIpamVlanGroupsListOK() *IpamVlanGroupsListOK {
 	return &IpamVlanGroupsListOK{}
 }
 
-/* IpamVlanGroupsListOK describes a response with status code 200, with default header values.
+/*
+IpamVlanGroupsListOK describes a response with status code 200, with default header values.
 
 IpamVlanGroupsListOK ipam vlan groups list o k
 */
@@ -67,9 +68,39 @@ type IpamVlanGroupsListOK struct {
 	Payload *IpamVlanGroupsListOKBody
 }
 
+// IsSuccess returns true when this ipam vlan groups list o k response has a 2xx status code
+func (o *IpamVlanGroupsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam vlan groups list o k response has a 3xx status code
+func (o *IpamVlanGroupsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam vlan groups list o k response has a 4xx status code
+func (o *IpamVlanGroupsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam vlan groups list o k response has a 5xx status code
+func (o *IpamVlanGroupsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam vlan groups list o k response a status code equal to that given
+func (o *IpamVlanGroupsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamVlanGroupsListOK) Error() string {
 	return fmt.Sprintf("[GET /ipam/vlan-groups/][%d] ipamVlanGroupsListOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamVlanGroupsListOK) String() string {
+	return fmt.Sprintf("[GET /ipam/vlan-groups/][%d] ipamVlanGroupsListOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamVlanGroupsListOK) GetPayload() *IpamVlanGroupsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *IpamVlanGroupsListOK) readResponse(response runtime.ClientResponse, con
 	return nil
 }
 
-/*IpamVlanGroupsListOKBody ipam vlan groups list o k body
+/*
+IpamVlanGroupsListOKBody ipam vlan groups list o k body
 swagger:model IpamVlanGroupsListOKBody
 */
 type IpamVlanGroupsListOKBody struct {

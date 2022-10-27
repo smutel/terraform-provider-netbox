@@ -54,7 +54,8 @@ func NewExtrasImageAttachmentsBulkPartialUpdateOK() *ExtrasImageAttachmentsBulkP
 	return &ExtrasImageAttachmentsBulkPartialUpdateOK{}
 }
 
-/* ExtrasImageAttachmentsBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasImageAttachmentsBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasImageAttachmentsBulkPartialUpdateOK extras image attachments bulk partial update o k
 */
@@ -62,9 +63,39 @@ type ExtrasImageAttachmentsBulkPartialUpdateOK struct {
 	Payload *models.ImageAttachment
 }
 
+// IsSuccess returns true when this extras image attachments bulk partial update o k response has a 2xx status code
+func (o *ExtrasImageAttachmentsBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras image attachments bulk partial update o k response has a 3xx status code
+func (o *ExtrasImageAttachmentsBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras image attachments bulk partial update o k response has a 4xx status code
+func (o *ExtrasImageAttachmentsBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras image attachments bulk partial update o k response has a 5xx status code
+func (o *ExtrasImageAttachmentsBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras image attachments bulk partial update o k response a status code equal to that given
+func (o *ExtrasImageAttachmentsBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasImageAttachmentsBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /extras/image-attachments/][%d] extrasImageAttachmentsBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasImageAttachmentsBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /extras/image-attachments/][%d] extrasImageAttachmentsBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasImageAttachmentsBulkPartialUpdateOK) GetPayload() *models.ImageAttachment {
 	return o.Payload
 }

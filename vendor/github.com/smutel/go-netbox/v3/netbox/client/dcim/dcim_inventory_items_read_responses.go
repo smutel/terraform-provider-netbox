@@ -54,7 +54,8 @@ func NewDcimInventoryItemsReadOK() *DcimInventoryItemsReadOK {
 	return &DcimInventoryItemsReadOK{}
 }
 
-/* DcimInventoryItemsReadOK describes a response with status code 200, with default header values.
+/*
+DcimInventoryItemsReadOK describes a response with status code 200, with default header values.
 
 DcimInventoryItemsReadOK dcim inventory items read o k
 */
@@ -62,9 +63,39 @@ type DcimInventoryItemsReadOK struct {
 	Payload *models.InventoryItem
 }
 
+// IsSuccess returns true when this dcim inventory items read o k response has a 2xx status code
+func (o *DcimInventoryItemsReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory items read o k response has a 3xx status code
+func (o *DcimInventoryItemsReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory items read o k response has a 4xx status code
+func (o *DcimInventoryItemsReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory items read o k response has a 5xx status code
+func (o *DcimInventoryItemsReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory items read o k response a status code equal to that given
+func (o *DcimInventoryItemsReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimInventoryItemsReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/inventory-items/{id}/][%d] dcimInventoryItemsReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimInventoryItemsReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/inventory-items/{id}/][%d] dcimInventoryItemsReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimInventoryItemsReadOK) GetPayload() *models.InventoryItem {
 	return o.Payload
 }

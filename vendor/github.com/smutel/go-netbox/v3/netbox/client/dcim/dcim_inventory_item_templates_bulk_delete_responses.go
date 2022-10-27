@@ -51,14 +51,44 @@ func NewDcimInventoryItemTemplatesBulkDeleteNoContent() *DcimInventoryItemTempla
 	return &DcimInventoryItemTemplatesBulkDeleteNoContent{}
 }
 
-/* DcimInventoryItemTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+DcimInventoryItemTemplatesBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 DcimInventoryItemTemplatesBulkDeleteNoContent dcim inventory item templates bulk delete no content
 */
 type DcimInventoryItemTemplatesBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this dcim inventory item templates bulk delete no content response has a 2xx status code
+func (o *DcimInventoryItemTemplatesBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim inventory item templates bulk delete no content response has a 3xx status code
+func (o *DcimInventoryItemTemplatesBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim inventory item templates bulk delete no content response has a 4xx status code
+func (o *DcimInventoryItemTemplatesBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim inventory item templates bulk delete no content response has a 5xx status code
+func (o *DcimInventoryItemTemplatesBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim inventory item templates bulk delete no content response a status code equal to that given
+func (o *DcimInventoryItemTemplatesBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DcimInventoryItemTemplatesBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /dcim/inventory-item-templates/][%d] dcimInventoryItemTemplatesBulkDeleteNoContent ", 204)
+}
+
+func (o *DcimInventoryItemTemplatesBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /dcim/inventory-item-templates/][%d] dcimInventoryItemTemplatesBulkDeleteNoContent ", 204)
 }
 

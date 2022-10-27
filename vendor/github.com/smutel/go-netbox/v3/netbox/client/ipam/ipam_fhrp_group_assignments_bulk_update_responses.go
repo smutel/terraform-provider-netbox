@@ -54,7 +54,8 @@ func NewIpamFhrpGroupAssignmentsBulkUpdateOK() *IpamFhrpGroupAssignmentsBulkUpda
 	return &IpamFhrpGroupAssignmentsBulkUpdateOK{}
 }
 
-/* IpamFhrpGroupAssignmentsBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+IpamFhrpGroupAssignmentsBulkUpdateOK describes a response with status code 200, with default header values.
 
 IpamFhrpGroupAssignmentsBulkUpdateOK ipam fhrp group assignments bulk update o k
 */
@@ -62,9 +63,39 @@ type IpamFhrpGroupAssignmentsBulkUpdateOK struct {
 	Payload *models.FHRPGroupAssignment
 }
 
+// IsSuccess returns true when this ipam fhrp group assignments bulk update o k response has a 2xx status code
+func (o *IpamFhrpGroupAssignmentsBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam fhrp group assignments bulk update o k response has a 3xx status code
+func (o *IpamFhrpGroupAssignmentsBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam fhrp group assignments bulk update o k response has a 4xx status code
+func (o *IpamFhrpGroupAssignmentsBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam fhrp group assignments bulk update o k response has a 5xx status code
+func (o *IpamFhrpGroupAssignmentsBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam fhrp group assignments bulk update o k response a status code equal to that given
+func (o *IpamFhrpGroupAssignmentsBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamFhrpGroupAssignmentsBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /ipam/fhrp-group-assignments/][%d] ipamFhrpGroupAssignmentsBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamFhrpGroupAssignmentsBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /ipam/fhrp-group-assignments/][%d] ipamFhrpGroupAssignmentsBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamFhrpGroupAssignmentsBulkUpdateOK) GetPayload() *models.FHRPGroupAssignment {
 	return o.Payload
 }

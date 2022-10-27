@@ -54,7 +54,8 @@ func NewExtrasCustomFieldsBulkUpdateOK() *ExtrasCustomFieldsBulkUpdateOK {
 	return &ExtrasCustomFieldsBulkUpdateOK{}
 }
 
-/* ExtrasCustomFieldsBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasCustomFieldsBulkUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasCustomFieldsBulkUpdateOK extras custom fields bulk update o k
 */
@@ -62,9 +63,39 @@ type ExtrasCustomFieldsBulkUpdateOK struct {
 	Payload *models.CustomField
 }
 
+// IsSuccess returns true when this extras custom fields bulk update o k response has a 2xx status code
+func (o *ExtrasCustomFieldsBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras custom fields bulk update o k response has a 3xx status code
+func (o *ExtrasCustomFieldsBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras custom fields bulk update o k response has a 4xx status code
+func (o *ExtrasCustomFieldsBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras custom fields bulk update o k response has a 5xx status code
+func (o *ExtrasCustomFieldsBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras custom fields bulk update o k response a status code equal to that given
+func (o *ExtrasCustomFieldsBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasCustomFieldsBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /extras/custom-fields/][%d] extrasCustomFieldsBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasCustomFieldsBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /extras/custom-fields/][%d] extrasCustomFieldsBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasCustomFieldsBulkUpdateOK) GetPayload() *models.CustomField {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewDcimDeviceBayTemplatesBulkPartialUpdateOK() *DcimDeviceBayTemplatesBulkP
 	return &DcimDeviceBayTemplatesBulkPartialUpdateOK{}
 }
 
-/* DcimDeviceBayTemplatesBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimDeviceBayTemplatesBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimDeviceBayTemplatesBulkPartialUpdateOK dcim device bay templates bulk partial update o k
 */
@@ -62,9 +63,39 @@ type DcimDeviceBayTemplatesBulkPartialUpdateOK struct {
 	Payload *models.DeviceBayTemplate
 }
 
+// IsSuccess returns true when this dcim device bay templates bulk partial update o k response has a 2xx status code
+func (o *DcimDeviceBayTemplatesBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim device bay templates bulk partial update o k response has a 3xx status code
+func (o *DcimDeviceBayTemplatesBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim device bay templates bulk partial update o k response has a 4xx status code
+func (o *DcimDeviceBayTemplatesBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim device bay templates bulk partial update o k response has a 5xx status code
+func (o *DcimDeviceBayTemplatesBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim device bay templates bulk partial update o k response a status code equal to that given
+func (o *DcimDeviceBayTemplatesBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimDeviceBayTemplatesBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/device-bay-templates/][%d] dcimDeviceBayTemplatesBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimDeviceBayTemplatesBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/device-bay-templates/][%d] dcimDeviceBayTemplatesBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimDeviceBayTemplatesBulkPartialUpdateOK) GetPayload() *models.DeviceBayTemplate {
 	return o.Payload
 }

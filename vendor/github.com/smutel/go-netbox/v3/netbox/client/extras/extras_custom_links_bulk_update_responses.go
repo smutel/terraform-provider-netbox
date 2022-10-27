@@ -54,7 +54,8 @@ func NewExtrasCustomLinksBulkUpdateOK() *ExtrasCustomLinksBulkUpdateOK {
 	return &ExtrasCustomLinksBulkUpdateOK{}
 }
 
-/* ExtrasCustomLinksBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+ExtrasCustomLinksBulkUpdateOK describes a response with status code 200, with default header values.
 
 ExtrasCustomLinksBulkUpdateOK extras custom links bulk update o k
 */
@@ -62,9 +63,39 @@ type ExtrasCustomLinksBulkUpdateOK struct {
 	Payload *models.CustomLink
 }
 
+// IsSuccess returns true when this extras custom links bulk update o k response has a 2xx status code
+func (o *ExtrasCustomLinksBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this extras custom links bulk update o k response has a 3xx status code
+func (o *ExtrasCustomLinksBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this extras custom links bulk update o k response has a 4xx status code
+func (o *ExtrasCustomLinksBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this extras custom links bulk update o k response has a 5xx status code
+func (o *ExtrasCustomLinksBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this extras custom links bulk update o k response a status code equal to that given
+func (o *ExtrasCustomLinksBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ExtrasCustomLinksBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /extras/custom-links/][%d] extrasCustomLinksBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *ExtrasCustomLinksBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /extras/custom-links/][%d] extrasCustomLinksBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *ExtrasCustomLinksBulkUpdateOK) GetPayload() *models.CustomLink {
 	return o.Payload
 }

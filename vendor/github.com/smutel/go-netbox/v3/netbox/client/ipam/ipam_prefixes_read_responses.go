@@ -54,7 +54,8 @@ func NewIpamPrefixesReadOK() *IpamPrefixesReadOK {
 	return &IpamPrefixesReadOK{}
 }
 
-/* IpamPrefixesReadOK describes a response with status code 200, with default header values.
+/*
+IpamPrefixesReadOK describes a response with status code 200, with default header values.
 
 IpamPrefixesReadOK ipam prefixes read o k
 */
@@ -62,9 +63,39 @@ type IpamPrefixesReadOK struct {
 	Payload *models.Prefix
 }
 
+// IsSuccess returns true when this ipam prefixes read o k response has a 2xx status code
+func (o *IpamPrefixesReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam prefixes read o k response has a 3xx status code
+func (o *IpamPrefixesReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam prefixes read o k response has a 4xx status code
+func (o *IpamPrefixesReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam prefixes read o k response has a 5xx status code
+func (o *IpamPrefixesReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam prefixes read o k response a status code equal to that given
+func (o *IpamPrefixesReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *IpamPrefixesReadOK) Error() string {
 	return fmt.Sprintf("[GET /ipam/prefixes/{id}/][%d] ipamPrefixesReadOK  %+v", 200, o.Payload)
 }
+
+func (o *IpamPrefixesReadOK) String() string {
+	return fmt.Sprintf("[GET /ipam/prefixes/{id}/][%d] ipamPrefixesReadOK  %+v", 200, o.Payload)
+}
+
 func (o *IpamPrefixesReadOK) GetPayload() *models.Prefix {
 	return o.Payload
 }

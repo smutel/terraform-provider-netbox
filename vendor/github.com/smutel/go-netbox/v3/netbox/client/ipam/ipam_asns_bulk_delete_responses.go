@@ -51,14 +51,44 @@ func NewIpamAsnsBulkDeleteNoContent() *IpamAsnsBulkDeleteNoContent {
 	return &IpamAsnsBulkDeleteNoContent{}
 }
 
-/* IpamAsnsBulkDeleteNoContent describes a response with status code 204, with default header values.
+/*
+IpamAsnsBulkDeleteNoContent describes a response with status code 204, with default header values.
 
 IpamAsnsBulkDeleteNoContent ipam asns bulk delete no content
 */
 type IpamAsnsBulkDeleteNoContent struct {
 }
 
+// IsSuccess returns true when this ipam asns bulk delete no content response has a 2xx status code
+func (o *IpamAsnsBulkDeleteNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this ipam asns bulk delete no content response has a 3xx status code
+func (o *IpamAsnsBulkDeleteNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this ipam asns bulk delete no content response has a 4xx status code
+func (o *IpamAsnsBulkDeleteNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this ipam asns bulk delete no content response has a 5xx status code
+func (o *IpamAsnsBulkDeleteNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this ipam asns bulk delete no content response a status code equal to that given
+func (o *IpamAsnsBulkDeleteNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *IpamAsnsBulkDeleteNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /ipam/asns/][%d] ipamAsnsBulkDeleteNoContent ", 204)
+}
+
+func (o *IpamAsnsBulkDeleteNoContent) String() string {
 	return fmt.Sprintf("[DELETE /ipam/asns/][%d] ipamAsnsBulkDeleteNoContent ", 204)
 }
 

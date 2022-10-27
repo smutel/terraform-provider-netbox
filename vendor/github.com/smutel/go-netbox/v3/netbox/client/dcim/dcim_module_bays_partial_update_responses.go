@@ -54,7 +54,8 @@ func NewDcimModuleBaysPartialUpdateOK() *DcimModuleBaysPartialUpdateOK {
 	return &DcimModuleBaysPartialUpdateOK{}
 }
 
-/* DcimModuleBaysPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimModuleBaysPartialUpdateOK describes a response with status code 200, with default header values.
 
 DcimModuleBaysPartialUpdateOK dcim module bays partial update o k
 */
@@ -62,9 +63,39 @@ type DcimModuleBaysPartialUpdateOK struct {
 	Payload *models.ModuleBay
 }
 
+// IsSuccess returns true when this dcim module bays partial update o k response has a 2xx status code
+func (o *DcimModuleBaysPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim module bays partial update o k response has a 3xx status code
+func (o *DcimModuleBaysPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim module bays partial update o k response has a 4xx status code
+func (o *DcimModuleBaysPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim module bays partial update o k response has a 5xx status code
+func (o *DcimModuleBaysPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim module bays partial update o k response a status code equal to that given
+func (o *DcimModuleBaysPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimModuleBaysPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /dcim/module-bays/{id}/][%d] dcimModuleBaysPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimModuleBaysPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /dcim/module-bays/{id}/][%d] dcimModuleBaysPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimModuleBaysPartialUpdateOK) GetPayload() *models.ModuleBay {
 	return o.Payload
 }

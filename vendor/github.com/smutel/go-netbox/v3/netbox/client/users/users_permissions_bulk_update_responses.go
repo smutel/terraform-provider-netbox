@@ -54,7 +54,8 @@ func NewUsersPermissionsBulkUpdateOK() *UsersPermissionsBulkUpdateOK {
 	return &UsersPermissionsBulkUpdateOK{}
 }
 
-/* UsersPermissionsBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+UsersPermissionsBulkUpdateOK describes a response with status code 200, with default header values.
 
 UsersPermissionsBulkUpdateOK users permissions bulk update o k
 */
@@ -62,9 +63,39 @@ type UsersPermissionsBulkUpdateOK struct {
 	Payload *models.ObjectPermission
 }
 
+// IsSuccess returns true when this users permissions bulk update o k response has a 2xx status code
+func (o *UsersPermissionsBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users permissions bulk update o k response has a 3xx status code
+func (o *UsersPermissionsBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users permissions bulk update o k response has a 4xx status code
+func (o *UsersPermissionsBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users permissions bulk update o k response has a 5xx status code
+func (o *UsersPermissionsBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users permissions bulk update o k response a status code equal to that given
+func (o *UsersPermissionsBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *UsersPermissionsBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /users/permissions/][%d] usersPermissionsBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *UsersPermissionsBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /users/permissions/][%d] usersPermissionsBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *UsersPermissionsBulkUpdateOK) GetPayload() *models.ObjectPermission {
 	return o.Payload
 }

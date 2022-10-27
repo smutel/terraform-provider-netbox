@@ -59,7 +59,8 @@ func NewDcimModulesListOK() *DcimModulesListOK {
 	return &DcimModulesListOK{}
 }
 
-/* DcimModulesListOK describes a response with status code 200, with default header values.
+/*
+DcimModulesListOK describes a response with status code 200, with default header values.
 
 DcimModulesListOK dcim modules list o k
 */
@@ -67,9 +68,39 @@ type DcimModulesListOK struct {
 	Payload *DcimModulesListOKBody
 }
 
+// IsSuccess returns true when this dcim modules list o k response has a 2xx status code
+func (o *DcimModulesListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim modules list o k response has a 3xx status code
+func (o *DcimModulesListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim modules list o k response has a 4xx status code
+func (o *DcimModulesListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim modules list o k response has a 5xx status code
+func (o *DcimModulesListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim modules list o k response a status code equal to that given
+func (o *DcimModulesListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimModulesListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/modules/][%d] dcimModulesListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimModulesListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/modules/][%d] dcimModulesListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimModulesListOK) GetPayload() *DcimModulesListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimModulesListOK) readResponse(response runtime.ClientResponse, consum
 	return nil
 }
 
-/*DcimModulesListOKBody dcim modules list o k body
+/*
+DcimModulesListOKBody dcim modules list o k body
 swagger:model DcimModulesListOKBody
 */
 type DcimModulesListOKBody struct {

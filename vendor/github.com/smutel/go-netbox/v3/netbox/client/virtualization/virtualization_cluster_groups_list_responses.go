@@ -59,7 +59,8 @@ func NewVirtualizationClusterGroupsListOK() *VirtualizationClusterGroupsListOK {
 	return &VirtualizationClusterGroupsListOK{}
 }
 
-/* VirtualizationClusterGroupsListOK describes a response with status code 200, with default header values.
+/*
+VirtualizationClusterGroupsListOK describes a response with status code 200, with default header values.
 
 VirtualizationClusterGroupsListOK virtualization cluster groups list o k
 */
@@ -67,9 +68,39 @@ type VirtualizationClusterGroupsListOK struct {
 	Payload *VirtualizationClusterGroupsListOKBody
 }
 
+// IsSuccess returns true when this virtualization cluster groups list o k response has a 2xx status code
+func (o *VirtualizationClusterGroupsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization cluster groups list o k response has a 3xx status code
+func (o *VirtualizationClusterGroupsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization cluster groups list o k response has a 4xx status code
+func (o *VirtualizationClusterGroupsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization cluster groups list o k response has a 5xx status code
+func (o *VirtualizationClusterGroupsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization cluster groups list o k response a status code equal to that given
+func (o *VirtualizationClusterGroupsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationClusterGroupsListOK) Error() string {
 	return fmt.Sprintf("[GET /virtualization/cluster-groups/][%d] virtualizationClusterGroupsListOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationClusterGroupsListOK) String() string {
+	return fmt.Sprintf("[GET /virtualization/cluster-groups/][%d] virtualizationClusterGroupsListOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationClusterGroupsListOK) GetPayload() *VirtualizationClusterGroupsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *VirtualizationClusterGroupsListOK) readResponse(response runtime.Client
 	return nil
 }
 
-/*VirtualizationClusterGroupsListOKBody virtualization cluster groups list o k body
+/*
+VirtualizationClusterGroupsListOKBody virtualization cluster groups list o k body
 swagger:model VirtualizationClusterGroupsListOKBody
 */
 type VirtualizationClusterGroupsListOKBody struct {

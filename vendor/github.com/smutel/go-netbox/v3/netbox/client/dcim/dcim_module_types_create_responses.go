@@ -54,7 +54,8 @@ func NewDcimModuleTypesCreateCreated() *DcimModuleTypesCreateCreated {
 	return &DcimModuleTypesCreateCreated{}
 }
 
-/* DcimModuleTypesCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimModuleTypesCreateCreated describes a response with status code 201, with default header values.
 
 DcimModuleTypesCreateCreated dcim module types create created
 */
@@ -62,9 +63,39 @@ type DcimModuleTypesCreateCreated struct {
 	Payload *models.ModuleType
 }
 
+// IsSuccess returns true when this dcim module types create created response has a 2xx status code
+func (o *DcimModuleTypesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim module types create created response has a 3xx status code
+func (o *DcimModuleTypesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim module types create created response has a 4xx status code
+func (o *DcimModuleTypesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim module types create created response has a 5xx status code
+func (o *DcimModuleTypesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim module types create created response a status code equal to that given
+func (o *DcimModuleTypesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimModuleTypesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/module-types/][%d] dcimModuleTypesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimModuleTypesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/module-types/][%d] dcimModuleTypesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimModuleTypesCreateCreated) GetPayload() *models.ModuleType {
 	return o.Payload
 }

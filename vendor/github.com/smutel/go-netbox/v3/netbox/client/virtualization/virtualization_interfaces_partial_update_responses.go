@@ -54,7 +54,8 @@ func NewVirtualizationInterfacesPartialUpdateOK() *VirtualizationInterfacesParti
 	return &VirtualizationInterfacesPartialUpdateOK{}
 }
 
-/* VirtualizationInterfacesPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+VirtualizationInterfacesPartialUpdateOK describes a response with status code 200, with default header values.
 
 VirtualizationInterfacesPartialUpdateOK virtualization interfaces partial update o k
 */
@@ -62,9 +63,39 @@ type VirtualizationInterfacesPartialUpdateOK struct {
 	Payload *models.VMInterface
 }
 
+// IsSuccess returns true when this virtualization interfaces partial update o k response has a 2xx status code
+func (o *VirtualizationInterfacesPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this virtualization interfaces partial update o k response has a 3xx status code
+func (o *VirtualizationInterfacesPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this virtualization interfaces partial update o k response has a 4xx status code
+func (o *VirtualizationInterfacesPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this virtualization interfaces partial update o k response has a 5xx status code
+func (o *VirtualizationInterfacesPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this virtualization interfaces partial update o k response a status code equal to that given
+func (o *VirtualizationInterfacesPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *VirtualizationInterfacesPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /virtualization/interfaces/{id}/][%d] virtualizationInterfacesPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *VirtualizationInterfacesPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /virtualization/interfaces/{id}/][%d] virtualizationInterfacesPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *VirtualizationInterfacesPartialUpdateOK) GetPayload() *models.VMInterface {
 	return o.Payload
 }

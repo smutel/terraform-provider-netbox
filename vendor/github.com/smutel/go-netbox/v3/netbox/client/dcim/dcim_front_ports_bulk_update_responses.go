@@ -54,7 +54,8 @@ func NewDcimFrontPortsBulkUpdateOK() *DcimFrontPortsBulkUpdateOK {
 	return &DcimFrontPortsBulkUpdateOK{}
 }
 
-/* DcimFrontPortsBulkUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimFrontPortsBulkUpdateOK describes a response with status code 200, with default header values.
 
 DcimFrontPortsBulkUpdateOK dcim front ports bulk update o k
 */
@@ -62,9 +63,39 @@ type DcimFrontPortsBulkUpdateOK struct {
 	Payload *models.FrontPort
 }
 
+// IsSuccess returns true when this dcim front ports bulk update o k response has a 2xx status code
+func (o *DcimFrontPortsBulkUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim front ports bulk update o k response has a 3xx status code
+func (o *DcimFrontPortsBulkUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim front ports bulk update o k response has a 4xx status code
+func (o *DcimFrontPortsBulkUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim front ports bulk update o k response has a 5xx status code
+func (o *DcimFrontPortsBulkUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim front ports bulk update o k response a status code equal to that given
+func (o *DcimFrontPortsBulkUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimFrontPortsBulkUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/front-ports/][%d] dcimFrontPortsBulkUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimFrontPortsBulkUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/front-ports/][%d] dcimFrontPortsBulkUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimFrontPortsBulkUpdateOK) GetPayload() *models.FrontPort {
 	return o.Payload
 }

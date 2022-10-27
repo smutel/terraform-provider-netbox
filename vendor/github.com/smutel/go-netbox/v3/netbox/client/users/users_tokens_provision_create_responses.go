@@ -51,14 +51,44 @@ func NewUsersTokensProvisionCreateCreated() *UsersTokensProvisionCreateCreated {
 	return &UsersTokensProvisionCreateCreated{}
 }
 
-/* UsersTokensProvisionCreateCreated describes a response with status code 201, with default header values.
+/*
+UsersTokensProvisionCreateCreated describes a response with status code 201, with default header values.
 
 UsersTokensProvisionCreateCreated users tokens provision create created
 */
 type UsersTokensProvisionCreateCreated struct {
 }
 
+// IsSuccess returns true when this users tokens provision create created response has a 2xx status code
+func (o *UsersTokensProvisionCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this users tokens provision create created response has a 3xx status code
+func (o *UsersTokensProvisionCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this users tokens provision create created response has a 4xx status code
+func (o *UsersTokensProvisionCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this users tokens provision create created response has a 5xx status code
+func (o *UsersTokensProvisionCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this users tokens provision create created response a status code equal to that given
+func (o *UsersTokensProvisionCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *UsersTokensProvisionCreateCreated) Error() string {
+	return fmt.Sprintf("[POST /users/tokens/provision/][%d] usersTokensProvisionCreateCreated ", 201)
+}
+
+func (o *UsersTokensProvisionCreateCreated) String() string {
 	return fmt.Sprintf("[POST /users/tokens/provision/][%d] usersTokensProvisionCreateCreated ", 201)
 }
 

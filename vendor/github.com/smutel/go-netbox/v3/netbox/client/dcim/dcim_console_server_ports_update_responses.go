@@ -54,7 +54,8 @@ func NewDcimConsoleServerPortsUpdateOK() *DcimConsoleServerPortsUpdateOK {
 	return &DcimConsoleServerPortsUpdateOK{}
 }
 
-/* DcimConsoleServerPortsUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimConsoleServerPortsUpdateOK describes a response with status code 200, with default header values.
 
 DcimConsoleServerPortsUpdateOK dcim console server ports update o k
 */
@@ -62,9 +63,39 @@ type DcimConsoleServerPortsUpdateOK struct {
 	Payload *models.ConsoleServerPort
 }
 
+// IsSuccess returns true when this dcim console server ports update o k response has a 2xx status code
+func (o *DcimConsoleServerPortsUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim console server ports update o k response has a 3xx status code
+func (o *DcimConsoleServerPortsUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim console server ports update o k response has a 4xx status code
+func (o *DcimConsoleServerPortsUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim console server ports update o k response has a 5xx status code
+func (o *DcimConsoleServerPortsUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim console server ports update o k response a status code equal to that given
+func (o *DcimConsoleServerPortsUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimConsoleServerPortsUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/console-server-ports/{id}/][%d] dcimConsoleServerPortsUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimConsoleServerPortsUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/console-server-ports/{id}/][%d] dcimConsoleServerPortsUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimConsoleServerPortsUpdateOK) GetPayload() *models.ConsoleServerPort {
 	return o.Payload
 }

@@ -54,7 +54,8 @@ func NewWirelessWirelessLansBulkPartialUpdateOK() *WirelessWirelessLansBulkParti
 	return &WirelessWirelessLansBulkPartialUpdateOK{}
 }
 
-/* WirelessWirelessLansBulkPartialUpdateOK describes a response with status code 200, with default header values.
+/*
+WirelessWirelessLansBulkPartialUpdateOK describes a response with status code 200, with default header values.
 
 WirelessWirelessLansBulkPartialUpdateOK wireless wireless lans bulk partial update o k
 */
@@ -62,9 +63,39 @@ type WirelessWirelessLansBulkPartialUpdateOK struct {
 	Payload *models.WirelessLAN
 }
 
+// IsSuccess returns true when this wireless wireless lans bulk partial update o k response has a 2xx status code
+func (o *WirelessWirelessLansBulkPartialUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this wireless wireless lans bulk partial update o k response has a 3xx status code
+func (o *WirelessWirelessLansBulkPartialUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this wireless wireless lans bulk partial update o k response has a 4xx status code
+func (o *WirelessWirelessLansBulkPartialUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this wireless wireless lans bulk partial update o k response has a 5xx status code
+func (o *WirelessWirelessLansBulkPartialUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this wireless wireless lans bulk partial update o k response a status code equal to that given
+func (o *WirelessWirelessLansBulkPartialUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *WirelessWirelessLansBulkPartialUpdateOK) Error() string {
 	return fmt.Sprintf("[PATCH /wireless/wireless-lans/][%d] wirelessWirelessLansBulkPartialUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *WirelessWirelessLansBulkPartialUpdateOK) String() string {
+	return fmt.Sprintf("[PATCH /wireless/wireless-lans/][%d] wirelessWirelessLansBulkPartialUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *WirelessWirelessLansBulkPartialUpdateOK) GetPayload() *models.WirelessLAN {
 	return o.Payload
 }

@@ -59,7 +59,8 @@ func NewDcimPowerOutletsListOK() *DcimPowerOutletsListOK {
 	return &DcimPowerOutletsListOK{}
 }
 
-/* DcimPowerOutletsListOK describes a response with status code 200, with default header values.
+/*
+DcimPowerOutletsListOK describes a response with status code 200, with default header values.
 
 DcimPowerOutletsListOK dcim power outlets list o k
 */
@@ -67,9 +68,39 @@ type DcimPowerOutletsListOK struct {
 	Payload *DcimPowerOutletsListOKBody
 }
 
+// IsSuccess returns true when this dcim power outlets list o k response has a 2xx status code
+func (o *DcimPowerOutletsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim power outlets list o k response has a 3xx status code
+func (o *DcimPowerOutletsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim power outlets list o k response has a 4xx status code
+func (o *DcimPowerOutletsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim power outlets list o k response has a 5xx status code
+func (o *DcimPowerOutletsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim power outlets list o k response a status code equal to that given
+func (o *DcimPowerOutletsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimPowerOutletsListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/power-outlets/][%d] dcimPowerOutletsListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimPowerOutletsListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/power-outlets/][%d] dcimPowerOutletsListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimPowerOutletsListOK) GetPayload() *DcimPowerOutletsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimPowerOutletsListOK) readResponse(response runtime.ClientResponse, c
 	return nil
 }
 
-/*DcimPowerOutletsListOKBody dcim power outlets list o k body
+/*
+DcimPowerOutletsListOKBody dcim power outlets list o k body
 swagger:model DcimPowerOutletsListOKBody
 */
 type DcimPowerOutletsListOKBody struct {

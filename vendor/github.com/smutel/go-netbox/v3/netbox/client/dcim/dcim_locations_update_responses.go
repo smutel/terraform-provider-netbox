@@ -54,7 +54,8 @@ func NewDcimLocationsUpdateOK() *DcimLocationsUpdateOK {
 	return &DcimLocationsUpdateOK{}
 }
 
-/* DcimLocationsUpdateOK describes a response with status code 200, with default header values.
+/*
+DcimLocationsUpdateOK describes a response with status code 200, with default header values.
 
 DcimLocationsUpdateOK dcim locations update o k
 */
@@ -62,9 +63,39 @@ type DcimLocationsUpdateOK struct {
 	Payload *models.Location
 }
 
+// IsSuccess returns true when this dcim locations update o k response has a 2xx status code
+func (o *DcimLocationsUpdateOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim locations update o k response has a 3xx status code
+func (o *DcimLocationsUpdateOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim locations update o k response has a 4xx status code
+func (o *DcimLocationsUpdateOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim locations update o k response has a 5xx status code
+func (o *DcimLocationsUpdateOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim locations update o k response a status code equal to that given
+func (o *DcimLocationsUpdateOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimLocationsUpdateOK) Error() string {
 	return fmt.Sprintf("[PUT /dcim/locations/{id}/][%d] dcimLocationsUpdateOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimLocationsUpdateOK) String() string {
+	return fmt.Sprintf("[PUT /dcim/locations/{id}/][%d] dcimLocationsUpdateOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimLocationsUpdateOK) GetPayload() *models.Location {
 	return o.Payload
 }

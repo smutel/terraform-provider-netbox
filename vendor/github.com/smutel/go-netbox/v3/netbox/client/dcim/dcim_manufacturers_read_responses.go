@@ -54,7 +54,8 @@ func NewDcimManufacturersReadOK() *DcimManufacturersReadOK {
 	return &DcimManufacturersReadOK{}
 }
 
-/* DcimManufacturersReadOK describes a response with status code 200, with default header values.
+/*
+DcimManufacturersReadOK describes a response with status code 200, with default header values.
 
 DcimManufacturersReadOK dcim manufacturers read o k
 */
@@ -62,9 +63,39 @@ type DcimManufacturersReadOK struct {
 	Payload *models.Manufacturer
 }
 
+// IsSuccess returns true when this dcim manufacturers read o k response has a 2xx status code
+func (o *DcimManufacturersReadOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim manufacturers read o k response has a 3xx status code
+func (o *DcimManufacturersReadOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim manufacturers read o k response has a 4xx status code
+func (o *DcimManufacturersReadOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim manufacturers read o k response has a 5xx status code
+func (o *DcimManufacturersReadOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim manufacturers read o k response a status code equal to that given
+func (o *DcimManufacturersReadOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimManufacturersReadOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/manufacturers/{id}/][%d] dcimManufacturersReadOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimManufacturersReadOK) String() string {
+	return fmt.Sprintf("[GET /dcim/manufacturers/{id}/][%d] dcimManufacturersReadOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimManufacturersReadOK) GetPayload() *models.Manufacturer {
 	return o.Payload
 }

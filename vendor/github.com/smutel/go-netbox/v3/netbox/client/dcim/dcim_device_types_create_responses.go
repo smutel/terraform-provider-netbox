@@ -54,7 +54,8 @@ func NewDcimDeviceTypesCreateCreated() *DcimDeviceTypesCreateCreated {
 	return &DcimDeviceTypesCreateCreated{}
 }
 
-/* DcimDeviceTypesCreateCreated describes a response with status code 201, with default header values.
+/*
+DcimDeviceTypesCreateCreated describes a response with status code 201, with default header values.
 
 DcimDeviceTypesCreateCreated dcim device types create created
 */
@@ -62,9 +63,39 @@ type DcimDeviceTypesCreateCreated struct {
 	Payload *models.DeviceType
 }
 
+// IsSuccess returns true when this dcim device types create created response has a 2xx status code
+func (o *DcimDeviceTypesCreateCreated) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim device types create created response has a 3xx status code
+func (o *DcimDeviceTypesCreateCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim device types create created response has a 4xx status code
+func (o *DcimDeviceTypesCreateCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim device types create created response has a 5xx status code
+func (o *DcimDeviceTypesCreateCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim device types create created response a status code equal to that given
+func (o *DcimDeviceTypesCreateCreated) IsCode(code int) bool {
+	return code == 201
+}
+
 func (o *DcimDeviceTypesCreateCreated) Error() string {
 	return fmt.Sprintf("[POST /dcim/device-types/][%d] dcimDeviceTypesCreateCreated  %+v", 201, o.Payload)
 }
+
+func (o *DcimDeviceTypesCreateCreated) String() string {
+	return fmt.Sprintf("[POST /dcim/device-types/][%d] dcimDeviceTypesCreateCreated  %+v", 201, o.Payload)
+}
+
 func (o *DcimDeviceTypesCreateCreated) GetPayload() *models.DeviceType {
 	return o.Payload
 }

@@ -59,7 +59,8 @@ func NewDcimFrontPortsListOK() *DcimFrontPortsListOK {
 	return &DcimFrontPortsListOK{}
 }
 
-/* DcimFrontPortsListOK describes a response with status code 200, with default header values.
+/*
+DcimFrontPortsListOK describes a response with status code 200, with default header values.
 
 DcimFrontPortsListOK dcim front ports list o k
 */
@@ -67,9 +68,39 @@ type DcimFrontPortsListOK struct {
 	Payload *DcimFrontPortsListOKBody
 }
 
+// IsSuccess returns true when this dcim front ports list o k response has a 2xx status code
+func (o *DcimFrontPortsListOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this dcim front ports list o k response has a 3xx status code
+func (o *DcimFrontPortsListOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this dcim front ports list o k response has a 4xx status code
+func (o *DcimFrontPortsListOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this dcim front ports list o k response has a 5xx status code
+func (o *DcimFrontPortsListOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this dcim front ports list o k response a status code equal to that given
+func (o *DcimFrontPortsListOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *DcimFrontPortsListOK) Error() string {
 	return fmt.Sprintf("[GET /dcim/front-ports/][%d] dcimFrontPortsListOK  %+v", 200, o.Payload)
 }
+
+func (o *DcimFrontPortsListOK) String() string {
+	return fmt.Sprintf("[GET /dcim/front-ports/][%d] dcimFrontPortsListOK  %+v", 200, o.Payload)
+}
+
 func (o *DcimFrontPortsListOK) GetPayload() *DcimFrontPortsListOKBody {
 	return o.Payload
 }
@@ -86,7 +117,8 @@ func (o *DcimFrontPortsListOK) readResponse(response runtime.ClientResponse, con
 	return nil
 }
 
-/*DcimFrontPortsListOKBody dcim front ports list o k body
+/*
+DcimFrontPortsListOKBody dcim front ports list o k body
 swagger:model DcimFrontPortsListOKBody
 */
 type DcimFrontPortsListOKBody struct {
