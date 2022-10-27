@@ -6,6 +6,8 @@ description: |-
   Manage an IP address (ipam module) within Netbox.
 ---
 
+!> **Warning:** The parameter `primary_ip4` is now deprecated and will be replaced by a new parameter `primary_ip`, we recommend that you use this new parameter as soon as possible.
+
 # netbox_ipam_ip_addresses (Resource)
 
 Manage an IP address (ipam module) within Netbox.

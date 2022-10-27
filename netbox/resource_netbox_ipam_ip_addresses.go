@@ -2,9 +2,13 @@ package netbox
 
 import (
 	"context"
+	"fmt"
+	"net"
 	"regexp"
 	"strconv"
+	"strings"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -33,6 +37,12 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				ExactlyOneOf: []string{"address", "prefix", "ip_range"},
 				ValidateFunc: validation.IsCIDR,
 				Description:  "The IP address (with mask) used for this IP address (ipam module). Required if both prefix and ip_range are not set.",
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if old == "" {
+						return false
+					}
+					return net.ParseIP(old).Equal(net.ParseIP(new))
+				},
 			},
 			"ip_range": {
 				Type:        schema.TypeInt,
@@ -113,10 +123,19 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Description: "The object type among virtualization.vminterface or dcim.interface (empty by default).",
 			},
 			"primary_ip4": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     false,
-				Description: "Set this resource as primary IPv4 (false by default).",
+				Type:          schema.TypeBool,
+				Optional:      true,
+				Default:       false,
+				Description:   "Set this resource as primary IPv4 (false by default).",
+				ConflictsWith: []string{"primary_ip"},
+				Deprecated:    "use primary_ip instead",
+			},
+			"primary_ip": {
+				Type:          schema.TypeBool,
+				Optional:      true,
+				Default:       false,
+				Description:   "Set this resource as primary IP (false by default).",
+				ConflictsWith: []string{"primary_ip4"},
 			},
 			"role": {
 				Type:     schema.TypeString,
@@ -174,6 +193,11 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 
 	var address string
 	var addressid *int64
+
+	toto1, toto2 := d.GetOk("address")
+	fmt.Printf("TOTO: %v", toto1)
+	fmt.Printf("TITI: %v", toto2)
+
 	if stateaddress, ok := d.GetOk("address"); ok {
 		address = stateaddress.(string)
 	} else if prefixid, ok := d.GetOk("prefix"); ok {
@@ -192,8 +216,6 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		address = *ip.Address
 		addressid = &ip.ID
 		d.Set("address", address)
-	} else {
-		return diag.Errorf("exactly one of (address, ip_range, prefix) must be specified")
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
@@ -254,13 +276,21 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		}
 	}
 
+	primary := false
+	primaryIP := d.Get("primary_ip").(bool)
+	primaryIP4 := d.Get("primary_ip4").(bool)
+	if primaryIP || primaryIP4 {
+		primary = true
+	}
+
 	d.SetId(strconv.FormatInt(*addressid, 10))
-	if primaryIP := d.Get("primary_ip4").(bool); primaryIP {
+	if primary {
 		vmID, err := getVMIDForInterface(client, objectID)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = updatePrimaryStatus(client, vmID, *addressid, primaryIP)
+		err = updatePrimaryStatus(client, vmID, *addressid, primary,
+			govalidator.IsIPv4(strings.Split(address, "/")[0]))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -333,6 +363,11 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 			if err != nil {
 				return diag.FromErr(err)
 			}
+
+			if err = d.Set("primary_ip", isPrimary); err != nil {
+				return diag.FromErr(err)
+			}
+
 			if err = d.Set("primary_ip4", isPrimary); err != nil {
 				return diag.FromErr(err)
 			}
@@ -498,15 +533,24 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 
-	if (d.HasChange("object_id") && d.Get("primary_ip4").(bool)) ||
-		(!d.HasChange("object_id") && d.HasChange("primary_ip4")) ||
-		(d.HasChange("primary_ip4") && d.Get("primary_ip4").(bool)) {
+	primary := false
+	primaryIP := d.Get("primary_ip").(bool)
+	primaryIP4 := d.Get("primary_ip4").(bool)
+	if primaryIP || primaryIP4 {
+		primary = true
+	}
+
+	if (d.HasChange("object_id") && (d.Get("primary_ip4").(bool) || d.Get("primary_ip").(bool))) ||
+		(!d.HasChange("object_id") && (d.HasChange("primary_ip4") || d.HasChange("primary_ip"))) ||
+		(d.HasChange("primary_ip4") && d.Get("primary_ip4").(bool)) ||
+		(d.HasChange("primary_ip") && d.Get("primary_ip").(bool)) {
 		objectID := int64(d.Get("object_id").(int))
 		vmID, err := getVMIDForInterface(client, objectID)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = updatePrimaryStatus(client, vmID, resourceID, d.Get("primary_ip4").(bool))
+		err = updatePrimaryStatus(client, vmID, resourceID, primary,
+			govalidator.IsIPv4(strings.Split(address, "/")[0]))
 		if err != nil {
 			return diag.FromErr(err)
 		}

@@ -151,7 +151,7 @@ func isprimary(m interface{}, objectID *int64, ipID int64, ip4 bool) (bool, erro
 	return false, nil
 }
 
-func updatePrimaryStatus(m interface{}, vmid, ipid int64, primary bool) error {
+func updatePrimaryStatus(m interface{}, vmid, ipid int64, primary bool, ip4 bool) error {
 	client := m.(*netboxclient.NetBoxAPI)
 
 	emptyFields := make(map[string]interface{})
@@ -164,11 +164,20 @@ func updatePrimaryStatus(m interface{}, vmid, ipid int64, primary bool) error {
 	}
 
 	params := &models.WritableVirtualMachineWithConfigContext{}
-	if primary {
-		params.PrimaryIp4 = &ipid
+	if ip4 {
+		if primary {
+			params.PrimaryIp4 = &ipid
+		} else {
+			params.PrimaryIp4 = nil
+			emptyFields["primary_ip4"] = nil
+		}
 	} else {
-		params.PrimaryIp4 = nil
-		emptyFields["primary_ip4"] = nil
+		if primary {
+			params.PrimaryIp6 = &ipid
+		} else {
+			params.PrimaryIp6 = nil
+			emptyFields["primary_ip6"] = nil
+		}
 	}
 	vm := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
 	vm.SetID(vmid)
