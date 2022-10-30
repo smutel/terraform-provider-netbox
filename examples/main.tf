@@ -1,3 +1,10 @@
+resource "netbox_dcim_device_role" "device_role_test" {
+  name = "Test device role"
+  slug = "Test device role"
+  description = "Device role for testing"
+  color = "00ff00"
+}
+
 resource "netbox_tenancy_tenant" "tenant_test" {
   name            = "Test_Tenant"
   slug            = "Test_Tenant"
@@ -542,7 +549,7 @@ resource "netbox_virtualization_vm" "vm_test" {
   vcpus       = 2
   platform_id = data.netbox_dcim_platform.platform_test.id
   tenant_id   = netbox_tenancy_tenant.tenant_test.id
-  role_id     = 1
+  role_id     = netbox_dcim_device_role.device_role_test.id
   local_context_data = jsonencode(
     {
       hello = "world"

@@ -114,10 +114,10 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 		slug = "Debian_10"
 	}
 
-	#resource "netbox_dcim_device_role" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#	slug = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_dcim_device_role" "test" {
+		name = "test-{{ .namesuffix }}"
+		slug = "test-{{ .namesuffix }}"
+	}
 
 	#resource "netbox_extras_tag" "test" {
 	#	name = "test-{{ .namesuffix }}"
@@ -137,7 +137,7 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 
 		{{ if eq .resourcefull "true" }}
 		comments        = "VM created by terraform"
-		#role_id = netbox_dcim_device_role.test.id
+		role_id = netbox_dcim_device_role.test.id
 		#platform_id = netbox_dcim_platform.test.id
 		platform_id = data.netbox_dcim_platform.platform_test.id
 		tenant_id = netbox_tenancy_tenant.test.id
