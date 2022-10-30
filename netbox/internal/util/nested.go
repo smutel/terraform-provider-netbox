@@ -28,6 +28,22 @@ func GetNestedPlatformID(nested *models.NestedPlatform) *int64 {
 	return &nested.ID
 }
 
+func GetNestedRegionID(nested *models.NestedRegion) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}
+
+func GetNestedSiteGroupID(nested *models.NestedSiteGroup) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}
+
 func GetNestedTenantID(nested *models.NestedTenant) *int64 {
 	if nested == nil {
 		return nil

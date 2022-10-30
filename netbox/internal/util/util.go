@@ -7,7 +7,20 @@ import (
 	"strings"
 
 	"github.com/go-openapi/strfmt"
+	"github.com/smutel/go-netbox/v3/netbox/models"
 )
+
+func ConvertNestedASNsToASNs(asns []*models.NestedASN) []int64 {
+	var tfASNs []int64
+
+	for _, t := range asns {
+		asn := t.ID
+
+		tfASNs = append(tfASNs, asn)
+	}
+
+	return tfASNs
+}
 
 // Convert URL in content_type
 func ConvertURIContentType(uri strfmt.URI) string {
@@ -53,4 +66,16 @@ func GetLocalContextData(data interface{}) (*string, error) {
 	}
 	jsonstring := string(localContextDataJSON)
 	return &jsonstring, nil
+}
+
+func ToListofInts(in []interface{}) []int64 {
+	out := make([]int64, len(in))
+	for i := range in {
+		out[i] = int64(in[i].(int))
+	}
+	return out
+}
+
+func TrimString(val interface{}) string {
+	return strings.TrimSpace(val.(string))
 }
