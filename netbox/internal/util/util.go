@@ -76,6 +76,14 @@ func ToListofInts(in []interface{}) []int64 {
 	return out
 }
 
+func ToListofStrings(in []interface{}) []string {
+	out := make([]string, len(in))
+	for i := range in {
+		out[i] = in[i].(string)
+	}
+	return out
+}
+
 func TrimString(val interface{}) string {
 	return strings.TrimSpace(val.(string))
 }
