@@ -115,24 +115,19 @@ func TestAccNetboxVirtualizationVMPrimaryIPLegacy(t *testing.T) {
 
 func testAccCheckNetboxVirtualizationVMPrimaryIPConfig(nameSuffix string, resourceFull, extraResources bool, ipnum int64, legacy bool) string {
 	template := `
-	#resource "netbox_virtualization_cluster_type" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#	slug = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_virtualization_cluster_type" "test" {
+		name = "test-{{ .namesuffix }}"
+		slug = "test-{{ .namesuffix }}"
+	}
 
-	#resource "netbox_virtualization_cluster" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#	type_id = netbox_virtualization_cluster_type.test.id
-	#}
-
-	data "netbox_virtualization_cluster" "cluster_test" {
-	    name = "test"
+	resource "netbox_virtualization_cluster" "test" {
+		name = "test-{{ .namesuffix }}"
+		type_id = netbox_virtualization_cluster_type.test.id
 	}
 
 	resource "netbox_virtualization_vm" "test" {
 		name            = "test-{{ .namesuffix }}"
-		#cluster_id      = netbox_virtualization_cluster.test.id
-		cluster_id      = data.netbox_virtualization_cluster.cluster_test.id
+		cluster_id      = netbox_virtualization_cluster.test.id
 	}
 
 	{{ if eq .extraresources "true" }}

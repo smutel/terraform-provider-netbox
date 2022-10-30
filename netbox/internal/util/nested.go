@@ -12,6 +12,14 @@ func GetNestedIPAddressAddress(nested *models.NestedIPAddress) *string {
 	return nested.Address
 }
 
+func GetNestedClusterGroupID(nested *models.NestedClusterGroup) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}
+
 func GetNestedManufacturerID(nested *models.NestedManufacturer) *int64 {
 	if nested == nil {
 		return nil
@@ -29,6 +37,14 @@ func GetNestedPlatformID(nested *models.NestedPlatform) *int64 {
 }
 
 func GetNestedRegionID(nested *models.NestedRegion) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}
+
+func GetNestedSiteID(nested *models.NestedSite) *int64 {
 	if nested == nil {
 		return nil
 	}
