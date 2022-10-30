@@ -163,6 +163,7 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"netbox_dcim_manufacturer":            dcim.ResourceNetboxDcimManufacturer(),
 			"netbox_dcim_device_role":             dcim.ResourceNetboxDcimDeviceRole(),
+			"netbox_dcim_platform":                dcim.ResourceNetboxDcimPlatform(),
 			"netbox_ipam_aggregate":               ipam.ResourceNetboxIpamAggregate(),
 			"netbox_ipam_ip_addresses":            ipam.ResourceNetboxIpamIPAddresses(),
 			"netbox_ipam_ip_range":                ipam.ResourceNetboxIpamIPRange(),
