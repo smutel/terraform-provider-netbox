@@ -101,10 +101,10 @@ func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string, resourceFull, extr
 	}
 
 	{{ if eq .extraresources "true" }}
-	#resource "netbox_extras_tag" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#	slug = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_extras_tag" "test" {
+		name = "test-{{ .namesuffix }}"
+		slug = "test-{{ .namesuffix }}"
+	}
 
 	resource "netbox_tenancy_tenant" "test" {
 		name = "test-{{ .namesuffix }}"
@@ -120,10 +120,10 @@ func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string, resourceFull, extr
 		tenant_id = netbox_tenancy_tenant.test.id
 		date_added = "1971-01-02"
 		description = "Test Aggregate"
-		#tag {
-		#	name = netbox_extras_tag.test.name
-		#	slug = netbox_extras_tag.test.slug
-		#}
+		tag {
+			name = netbox_extras_tag.test.name
+			slug = netbox_extras_tag.test.slug
+		}
 		{{ end }}
 	}
 	`

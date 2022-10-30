@@ -1,4 +1,4 @@
-package ipam_test
+package extras_test
 
 import (
 	"strconv"
@@ -9,10 +9,9 @@ import (
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/util"
 )
 
-const resourceNameIpamRIR = "netbox_ipam_rir.test"
+const resourceNameNetboxExtrasTag = "netbox_extras_tag.test"
 
-func TestAccNetboxIpamRIRMinimal(t *testing.T) {
-
+func TestAccNetboxExtrasTagMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
@@ -20,13 +19,13 @@ func TestAccNetboxIpamRIRMinimal(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasTagConfig(nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameIpamRIR),
+					util.TestAccResourceExists(resourceNameNetboxExtrasTag),
 				),
 			},
 			{
-				ResourceName:      resourceNameIpamRIR,
+				ResourceName:      resourceNameNetboxExtrasTag,
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -34,7 +33,7 @@ func TestAccNetboxIpamRIRMinimal(t *testing.T) {
 	})
 }
 
-func TestAccNetboxIpamRIRFull(t *testing.T) {
+func TestAccNetboxExtrasTagFull(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
@@ -42,13 +41,13 @@ func TestAccNetboxIpamRIRFull(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasTagConfig(nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameIpamRIR),
+					util.TestAccResourceExists(resourceNameNetboxExtrasTag),
 				),
 			},
 			{
-				ResourceName:      resourceNameIpamRIR,
+				ResourceName:      resourceNameNetboxExtrasTag,
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -56,7 +55,7 @@ func TestAccNetboxIpamRIRFull(t *testing.T) {
 	})
 }
 
-func TestAccNetboxIpamRIRMininmalFullMinimal(t *testing.T) {
+func TestAccNetboxExtrasTagMinimalFullMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
@@ -64,53 +63,41 @@ func TestAccNetboxIpamRIRMininmalFullMinimal(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasTagConfig(nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameIpamRIR),
+					util.TestAccResourceExists(resourceNameNetboxExtrasTag),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasTagConfig(nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameIpamRIR),
+					util.TestAccResourceExists(resourceNameNetboxExtrasTag),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxExtrasTagConfig(nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameIpamRIR),
+					util.TestAccResourceExists(resourceNameNetboxExtrasTag),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasTagConfig(nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameIpamRIR),
+					util.TestAccResourceExists(resourceNameNetboxExtrasTag),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxIPAMRIRConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxExtrasTagConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
-	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
-	}
-	{{ end }}
-
-	resource "netbox_ipam_rir" "test" {
 		name        = "test-{{ .namesuffix }}"
 		slug        = "test-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
-		description = "Test RIR"
-		is_private  = true
-
-		tag {
-			name = netbox_extras_tag.test.name
-			slug = netbox_extras_tag.test.slug
-		}
+		description = "Test tag"
+		color       = "00ff00"
 		{{ end }}
 	}
 	`

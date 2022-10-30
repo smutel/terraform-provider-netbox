@@ -98,10 +98,10 @@ func testAccCheckNetboxDcimPlatformConfig(nameSuffix string, resourceFull, extra
 	   slug = "test-{{ .namesuffix }}"
 	}
 
-	#resource "netbox_extras_tag" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#   slug = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_extras_tag" "test" {
+		name = "test-{{ .namesuffix }}"
+		slug = "test-{{ .namesuffix }}"
+	}
 	{{ end }}
 
 	resource "netbox_dcim_platform" "test" {
@@ -113,10 +113,10 @@ func testAccCheckNetboxDcimPlatformConfig(nameSuffix string, resourceFull, extra
 		napalm_driver   = "test"
 		napalm_args     = "testing"
 
-		#tag {
-		#	name = netbox_extras_tag.test.name
-		#	slug = netbox_extras_tag.test.slug
-		#}
+		tag {
+			name = netbox_extras_tag.test.name
+			slug = netbox_extras_tag.test.slug
+		}
 		{{ end }}
 	}
 	`

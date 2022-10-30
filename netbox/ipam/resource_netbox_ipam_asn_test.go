@@ -106,10 +106,10 @@ func testAccCheckNetboxIpamAsnConfig(nameSuffix string, resourceFull, extraResou
 		slug = "test-{{ .namesuffix }}"
 	}
 
-	#resource "netbox_extras_tag" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#   slug = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_extras_tag" "test" {
+		name = "test-{{ .namesuffix }}"
+		slug = "test-{{ .namesuffix }}"
+	}
 	{{ end }}
 
 	resource "netbox_ipam_asn" "test" {
@@ -119,10 +119,10 @@ func testAccCheckNetboxIpamAsnConfig(nameSuffix string, resourceFull, extraResou
 		description = "Test ASN"
 		tenant_id   = netbox_tenancy_tenant.test.id
 
-		#tag {
-		#  name = netbox_extras_tag.test.name
-		#  slug = netbox_extras_tag.test.slug
-		#}
+		tag {
+			name = netbox_extras_tag.test.name
+			slug = netbox_extras_tag.test.slug
+		}
 		{{ end }}
 	}
 	`

@@ -116,10 +116,10 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 		slug = "test-{{ .namesuffix }}"
 	}
 
-	#resource "netbox_extras_tag" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#   slug = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_extras_tag" "test" {
+		name = "test-{{ .namesuffix }}"
+		slug = "test-{{ .namesuffix }}"
+	}
 
 	resource "netbox_tenancy_tenant" "test" {
  		name = "test-{{ .namesuffix }}"
@@ -149,13 +149,9 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 		  }
 		)
 
-		#tag {
-		#  name = netbox_extras_tag.test.name
-		#  slug = netbox_extras_tag.test.slug
-		#}
 		tag {
-		  name = "tag1"
-		  slug = "tag1"
+			name = netbox_extras_tag.test.name
+			slug = netbox_extras_tag.test.slug
 		}
 		{{ end }}
 	}

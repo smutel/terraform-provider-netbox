@@ -120,10 +120,10 @@ func testAccCheckNetboxDcimSiteConfig(nameSuffix string, resourceFull, extraReso
 	    rir_id = netbox_ipam_rir.test.id
 	}
 
-	#resource "netbox_extras_tag" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#   slug = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_extras_tag" "test" {
+		name = "test-{{ .namesuffix }}"
+		slug = "test-{{ .namesuffix }}"
+	}
 	{{ end }}
 
 	resource "netbox_dcim_site" "test" {
@@ -162,10 +162,10 @@ func testAccCheckNetboxDcimSiteConfig(nameSuffix string, resourceFull, extraReso
 			netbox_ipam_asn.test.id
 		]
 
-		#tag {
-		#  name = netbox_extras_tag.test.name
-		#  slug = netbox_extras_tag.test.slug
-		#}
+		tag {
+			name = netbox_extras_tag.test.name
+			slug = netbox_extras_tag.test.slug
+		}
 		{{ end }}
 	}
 	`
