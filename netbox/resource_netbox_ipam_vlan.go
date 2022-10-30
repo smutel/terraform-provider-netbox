@@ -30,32 +30,7 @@ func resourceNetboxIpamVlan() *schema.Resource {
 				Computed:    true,
 				Description: "The content type of this vlan (ipam module).",
 			},
-			"custom_field": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing custom field.",
-						},
-						"type": {
-							Type:     schema.TypeString,
-							Required: true,
-							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
-								"date", "url", "selection", "multiple"}, false),
-							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
-						},
-						"value": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Value of the existing custom field.",
-						},
-					},
-				},
-				Description: "Existing custom fields to associate to this vlan (ipam module).",
-			},
+			"custom_field": &customFieldSchema,
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -285,6 +260,11 @@ func resourceNetboxIpamVlanRead(ctx context.Context, d *schema.ResourceData,
 func resourceNetboxIpamVlanUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
+	dropFields := []string{
+		"created",
+		"last_updated",
+	}
+	emptyFields := make(map[string]interface{})
 	params := &models.WritableVLAN{}
 
 	// Required parameters
@@ -313,6 +293,8 @@ func resourceNetboxIpamVlanUpdate(ctx context.Context, d *schema.ResourceData,
 		if groupID != 0 {
 			params.Group = &groupID
 		}
+	} else {
+		dropFields = append(dropFields, "group")
 	}
 
 	if d.HasChange("role_id") {
@@ -353,7 +335,7 @@ func resourceNetboxIpamVlanUpdate(ctx context.Context, d *schema.ResourceData,
 
 	resource.SetID(resourceID)
 
-	_, err = client.Ipam.IpamVlansPartialUpdate(resource, nil)
+	_, err = client.Ipam.IpamVlansPartialUpdate(resource, nil, newRequestModifierOperation(emptyFields, dropFields))
 	if err != nil {
 		return diag.FromErr(err)
 	}

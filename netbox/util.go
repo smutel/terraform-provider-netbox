@@ -10,6 +10,8 @@ import (
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
@@ -21,6 +23,38 @@ const VMInterfaceType string = "virtualization.vminterface"
 
 // Boolean string for custom field
 const CustomFieldBoolean = "boolean"
+const CustomFieldJSON = "json"
+const CustomFieldMultiSelectLegacy = "multiple"
+const CustomFieldMultiSelect = "multiselect"
+const CustomFieldObject = "object"
+const CustomFieldMultiObject = "multiobject"
+
+var customFieldSchema = schema.Schema{
+	Type:     schema.TypeSet,
+	Optional: true,
+	Elem: &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Name of the existing custom field.",
+			},
+			"type": {
+				Type:     schema.TypeString,
+				Required: true,
+				ValidateFunc: validation.StringInSlice([]string{"text", "longtext", "integer", CustomFieldBoolean,
+					"date", "url", CustomFieldJSON, "select", CustomFieldMultiSelect, CustomFieldObject, CustomFieldMultiObject, CustomFieldMultiSelectLegacy, "selection"}, false),
+				Description: "Type of the existing custom field (text, longtext, integer, boolean, date, url, json, select, multiselect, object, multiobject, selection (deprecated), multiple(deprecated)).",
+			},
+			"value": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Value of the existing custom field.",
+			},
+		},
+	},
+	Description: "Existing custom fields to associate to this ressource.",
+}
 
 func expandToInt64Slice(v []interface{}) []int64 {
 	s := make([]int64, len(v))
@@ -200,6 +234,38 @@ func convertArrayInterfaceString(arrayInterface []interface{}) string {
 	return result
 }
 
+func convertArrayInterfaceJSONString(arrayInterface []interface{}) string {
+	var arrayString []interface{}
+
+	for _, item := range arrayInterface {
+		switch v := item.(type) {
+		case map[string]interface{}:
+			arrayString = append(arrayString, string(v["id"].(json.Number)))
+		default:
+			arrayString = append(arrayString, v)
+		}
+	}
+
+	if len(arrayString) > 1 {
+		switch arrayString[0].(type) {
+		case json.Number:
+			sort.Slice(arrayString, func(i, j int) bool {
+				return arrayString[i].(json.Number) < arrayString[j].(json.Number)
+			})
+		case string:
+			sort.Slice(arrayString, func(i, j int) bool {
+				return arrayString[i].(string) < arrayString[j].(string)
+			})
+		default:
+			panic("")
+		}
+	}
+	jsonValue, _ := json.Marshal(arrayString)
+	result := string(jsonValue)
+
+	return result
+}
+
 // Pick the custom fields in the state file and update values with data from API
 func updateCustomFieldsFromAPI(stateCustomFields, customFields interface{}) []map[string]string {
 	var tfCms []map[string]string
@@ -215,18 +281,23 @@ func updateCustomFieldsFromAPI(stateCustomFields, customFields interface{}) []ma
 					cm["name"] = key
 					cm["type"] = stateCustomField.(map[string]interface{})["type"].(string)
 
-					if value != nil {
+					if value != nil && cm["type"] == CustomFieldJSON {
+						jsonValue, _ := json.Marshal(value)
+						cm["value"] = string(jsonValue)
+					} else if value != nil {
 						switch v := value.(type) {
 						case []interface{}:
-							strValue = convertArrayInterfaceString(v)
+							if cm["type"] == CustomFieldMultiSelectLegacy {
+								strValue = convertArrayInterfaceString(v)
+							} else if cm["type"] == CustomFieldObject {
+								strValue = string(value.([]interface{})[0].(map[string]interface{})["id"].(json.Number))
+							} else {
+								strValue = convertArrayInterfaceJSONString(v)
+							}
+						case map[string]interface{}:
+							strValue = string(v["id"].(json.Number))
 						default:
 							strValue = fmt.Sprintf("%v", v)
-						}
-
-						if strValue == "1" && cm["type"] == CustomFieldBoolean {
-							strValue = "true"
-						} else if strValue == "0" && cm["type"] == CustomFieldBoolean {
-							strValue = "false"
 						}
 
 						cm["value"] = strValue
@@ -260,20 +331,51 @@ func convertCustomFieldsFromTerraformToAPI(stateCustomFields []interface{}, cust
 		cfValue := customField["value"].(string)
 
 		if len(cfValue) > 0 {
-			if cfType == "integer" {
+			switch cfType {
+			case "integer":
 				cfValueInt, _ := strconv.Atoi(cfValue)
 				toReturn[cfName] = cfValueInt
-			} else if cfType == CustomFieldBoolean {
+			case CustomFieldBoolean:
 				if cfValue == "true" {
 					toReturn[cfName] = true
 				} else if cfValue == "false" {
 					toReturn[cfName] = false
 				}
-			} else if cfType == "multiple" {
+			case CustomFieldMultiSelectLegacy:
 				cfValueArray := strings.Split(cfValue, ",")
 				sort.Strings(cfValueArray)
 				toReturn[cfName] = cfValueArray
-			} else {
+			case CustomFieldJSON:
+				jsonMap := make(map[string]interface{})
+				err := json.Unmarshal([]byte(cfValue), &jsonMap)
+				if err != nil {
+					continue
+				}
+				toReturn[cfName] = jsonMap
+			case CustomFieldMultiSelect:
+				var jsonList []interface{}
+				err := json.Unmarshal([]byte(cfValue), &jsonList)
+				if err != nil {
+					continue
+				}
+				sort.Slice(jsonList, func(i, j int) bool {
+					return jsonList[i].(string) < jsonList[j].(string)
+				})
+				toReturn[cfName] = jsonList
+			case CustomFieldObject:
+				cfValueInt, _ := strconv.Atoi(cfValue)
+				toReturn[cfName] = []int{cfValueInt}
+			case CustomFieldMultiObject:
+				var jsonList []interface{}
+				err := json.Unmarshal([]byte(cfValue), &jsonList)
+				if err != nil {
+					continue
+				}
+				sort.Slice(jsonList, func(i, j int) bool {
+					return jsonList[i].(string) < jsonList[j].(string)
+				})
+				toReturn[cfName] = jsonList
+			default:
 				toReturn[cfName] = cfValue
 			}
 		} else {

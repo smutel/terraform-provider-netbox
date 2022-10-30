@@ -34,7 +34,7 @@ resource "netbox_tenancy_contact_role" "contact_role_test" {
 
   custom_field {
     name = "cf_selection"
-    type = "selection"
+    type = "select"
     value = "1"
   }
 
@@ -45,8 +45,38 @@ resource "netbox_tenancy_contact_role" "contact_role_test" {
   }
 
   custom_field {
-    name = "cf_multiple_selection"
-    type = "multiple"
-    value = "0,1"
+    name = "cf_multi_selection"
+    type = "multiselect"
+    value = jsonencode([
+      "0",
+      "1"
+    ])
+  }
+
+  custom_field {
+    name = "cf_json"
+    type = "json"
+    value = jsonencode({
+      stringvalue = "string"
+      boolvalue = false
+      dictionary = {
+        numbervalue = 5
+      }
+    })
+  }
+
+  custom_field {
+    name = "cf_object"
+    type = "object"
+    value = 1
+  }
+
+  custom_field {
+    name = "cf_multi_object"
+    type = "multiobject"
+    value = jsonencode([
+      1,
+      2
+    ])
   }
 }
