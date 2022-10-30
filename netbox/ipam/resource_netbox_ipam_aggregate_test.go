@@ -95,12 +95,9 @@ func TestAccNetboxIpamAggregateMininmalFullMinimal(t *testing.T) {
 
 func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string, resourceFull, extraResources bool, prefix string) string {
 	template := `
-	#resource "netbox_ipam_rir" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#	slug = "test-{{ .namesuffix }}"
-	#}
-	data "netbox_json_ipam_rirs_list" "json_rir" {
-		limit = 1
+	resource "netbox_ipam_rir" "test" {
+		name = "test-{{ .namesuffix }}"
+		slug = "test-{{ .namesuffix }}"
 	}
 
 	{{ if eq .extraresources "true" }}
@@ -117,8 +114,7 @@ func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string, resourceFull, extr
 
 	resource "netbox_ipam_aggregate" "test" {
 		prefix = "{{ .prefix }}"
-		rir_id = jsondecode(data.netbox_json_ipam_rirs_list.json_rir.json)[0].id
-		#rir_id = netbox_ipam_rir.test.id
+		rir_id = netbox_ipam_rir.test.id
 
 		{{ if eq .resourcefull "true" }}
 		tenant_id = netbox_tenancy_tenant.test.id
