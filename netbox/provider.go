@@ -184,6 +184,7 @@ func Provider() *schema.Provider {
 			"netbox_tenancy_tenant":               tenancy.ResourceNetboxTenancyTenant(),
 			"netbox_tenancy_tenant_group":         tenancy.ResourceNetboxTenancyTenantGroup(),
 			"netbox_virtualization_cluster_group": virtualization.ResourceNetboxVirtualizationClusterGroup(),
+			"netbox_virtualization_cluster_type":  virtualization.ResourceNetboxVirtualizationClusterType(),
 			"netbox_virtualization_interface":     virtualization.ResourceNetboxVirtualizationInterface(),
 			"netbox_virtualization_vm":            virtualization.ResourceNetboxVirtualizationVM(),
 			"netbox_virtualization_vm_primary_ip": virtualization.ResourceNetboxVirtualizationVMPrimaryIP(),
