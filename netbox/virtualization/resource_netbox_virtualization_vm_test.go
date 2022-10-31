@@ -92,17 +92,14 @@ func TestAccNetboxVirtualizationVMMinimalFullMinimal(t *testing.T) {
 
 func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
-	#resource "netbox_virtualization_cluster_type" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#	slug = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_virtualization_cluster_type" "test" {
+		name = "test-{{ .namesuffix }}"
+		slug = "test-{{ .namesuffix }}"
+	}
 
-	#resource "netbox_virtualization_cluster" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#	type_id = netbox_virtualization_cluster_type.test.id
-	#}
-	data "netbox_virtualization_cluster" "cluster_test" {
-		name = "Test Cluster"
+	resource "netbox_virtualization_cluster" "test" {
+		name = "test-{{ .namesuffix }}"
+		type_id = netbox_virtualization_cluster_type.test.id
 	}
 
 	{{ if eq .extraresources "true" }}
@@ -129,11 +126,13 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 
 	resource "netbox_virtualization_vm" "test" {
 		name            = "test-{{ .namesuffix }}"
-		#cluster_id      = netbox_virtualization_cluster.test.id
-		cluster_id      = data.netbox_virtualization_cluster.cluster_test.id
+		cluster_id      = netbox_virtualization_cluster.test.id
 
 		{{ if eq .resourcefull "true" }}
-		comments        = "VM created by terraform"
+		comments        = <<-EOT
+		VM created by terraform
+		Multiline
+		EOT
 		role_id = netbox_dcim_device_role.test.id
 		platform_id = netbox_dcim_platform.test.id
 		tenant_id = netbox_tenancy_tenant.test.id

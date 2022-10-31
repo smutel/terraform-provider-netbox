@@ -41,6 +41,7 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     nil,
+				StateFunc:   util.TrimString,
 				Description: "Comments for this VM (virtualization module).",
 			},
 			"content_type": {
