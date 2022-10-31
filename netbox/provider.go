@@ -165,6 +165,7 @@ func Provider() *schema.Provider {
 			"netbox_dcim_device_role":             dcim.ResourceNetboxDcimDeviceRole(),
 			"netbox_dcim_platform":                dcim.ResourceNetboxDcimPlatform(),
 			"netbox_ipam_aggregate":               ipam.ResourceNetboxIpamAggregate(),
+			"netbox_ipam_asn":                     ipam.ResourceNetboxIpamASN(),
 			"netbox_ipam_ip_addresses":            ipam.ResourceNetboxIpamIPAddresses(),
 			"netbox_ipam_ip_range":                ipam.ResourceNetboxIpamIPRange(),
 			"netbox_ipam_prefix":                  ipam.ResourceNetboxIpamPrefix(),
