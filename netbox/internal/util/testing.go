@@ -47,3 +47,26 @@ func TestAccPreCheck(t *testing.T) {
 		t.Fatal("NETBOX_TOKEN must be set for acceptance tests")
 	}
 }
+
+func TestAccSaveID(n string, id *string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[n]
+
+		if !ok {
+			return fmt.Errorf("Not found: %s", n)
+		}
+
+		if rs.Primary.ID == "" {
+			return fmt.Errorf("No ID set")
+		}
+
+		*id = rs.Primary.ID
+		return nil
+	}
+}
+
+func TestAccCheckID(r, k string, id *string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		return resource.TestCheckResourceAttr(r, k, *id)(s)
+	}
+}

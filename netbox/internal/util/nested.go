@@ -99,3 +99,11 @@ func GetNestedRoleID(nested *models.NestedDeviceRole) *int64 {
 
 	return &nested.ID
 }
+
+func GetNestedVlanID(nested *models.NestedVLAN) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}

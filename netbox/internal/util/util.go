@@ -23,6 +23,18 @@ func ConvertNestedASNsToASNs(asns []*models.NestedASN) []int64 {
 	return tfASNs
 }
 
+func ConvertNestedVlansToVlans(vlans []*models.NestedVLAN) []int64 {
+	var tfVlans []int64
+
+	for _, t := range vlans {
+		vlan := t.ID
+
+		tfVlans = append(tfVlans, vlan)
+	}
+
+	return tfVlans
+}
+
 // Convert URL in content_type
 func ConvertURIContentType(uri strfmt.URI) string {
 	uriSplit := strings.Split(uri.String(), "/")
@@ -37,15 +49,17 @@ func ConvertURIContentType(uri strfmt.URI) string {
 	return contentType
 }
 
-func ExpandToInt64Slice(v []interface{}) []int64 {
+func ExpandToInt64Slice(v []interface{}) ([]int64, error) {
 	s := make([]int64, len(v))
 	for i, val := range v {
-		if strVal, ok := val.(int64); ok {
-			s[i] = strVal
+		if strVal, ok := val.(int); ok {
+			s[i] = int64(strVal)
+		} else {
+			return nil, fmt.Errorf("could not convert values to int")
 		}
 	}
 
-	return s
+	return s, nil
 }
 
 func Float2stringptr(vcpus *float64) *string {
