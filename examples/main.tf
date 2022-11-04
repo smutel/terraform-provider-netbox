@@ -74,15 +74,15 @@ resource "netbox_tenancy_tenant" "tenant_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -207,15 +207,15 @@ resource "netbox_ipam_vlan" "vlan_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -296,15 +296,15 @@ resource "netbox_ipam_prefix" "prefix_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -389,15 +389,15 @@ resource "netbox_ipam_ip_range" "range_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -480,15 +480,15 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -512,6 +512,15 @@ data "netbox_virtualization_cluster" "cluster_test" {
 data "netbox_dcim_platform" "platform_test" {
   slug = "Debian_10"
 }
+
+data "netbox_dcim_platform" "platform_test2" {
+  slug = "ubuntu_22_04"
+}
+
+data "netbox_dcim_platform" "platform_test3" {
+  slug = "ubuntu_22_10"
+}
+
 
 resource "netbox_virtualization_vm" "vm_test" {
   cluster_id  = data.netbox_virtualization_cluster.cluster_test.id
@@ -594,15 +603,15 @@ resource "netbox_virtualization_vm" "vm_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -680,15 +689,15 @@ resource "netbox_ipam_service" "service_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -776,15 +785,15 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -868,15 +877,15 @@ resource "netbox_tenancy_contact" "contact" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -956,15 +965,15 @@ resource "netbox_tenancy_contact_group" "contact_group_01" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
@@ -1051,15 +1060,16 @@ resource "netbox_tenancy_contact_role" "contact_role_01" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id,
+      "3"
     ])
   }
 }

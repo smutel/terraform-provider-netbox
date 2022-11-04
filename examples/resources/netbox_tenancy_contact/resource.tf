@@ -72,15 +72,15 @@ resource "netbox_tenancy_contact" "contact_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = 1
+    value = data.netbox_dcim_platform.platform_test.id
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      1,
-      2
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
     ])
   }
 }
