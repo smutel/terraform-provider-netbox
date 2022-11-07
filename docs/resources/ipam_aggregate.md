@@ -81,11 +81,16 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
 - `date_added` (String) Date when this aggregate was added. Format *YYYY-MM-DD*.
 - `description` (String) The description of this aggregate (ipam module).
 - `tag` (Block Set) Existing tag to associate to this aggregate (ipam module). (see [below for nested schema](#nestedblock--tag))
+- `tenant_id` (Number) ID of the tenant where this object is attached.
 
 ### Read-Only
 
 - `content_type` (String) The content type of this aggregate (ipam module).
+- `created` (String) Date when this aggregate was created.
+- `family` (String) IP family of this aggregate.
 - `id` (String) The ID of this resource.
+- `last_updated` (String) Date when this aggregate was last updated.
+- `url` (String) The link to this tag (extra module).
 
 <a id="nestedblock--custom_field"></a>
 ### Nested Schema for `custom_field`
