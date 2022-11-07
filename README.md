@@ -49,6 +49,25 @@ $ cd $GOPATH/src/github.com/smutel/terraform-provider-netbox
 $ make build
 ```
 
+# Testing
+
+To run the tests you need to have a running netbox installation. For example netbox-docker.
+
+To run the tests execute:
+```
+export NETBOX_TOKEN=0123456789abcdef0123456789abcdef01234567
+export NETBOX_SCHEME=http
+export NETBOX_URL=localhost:8000
+
+TF_ACC=1 go test -v ./...
+```
+Scheme and URL are not needed it the default is used (https and localhost:8000)
+
+To run only some tests execute the following:
+```
+TF_ACC=1 go test -v ./... -run TestAccNetboxVirtualizationVM
+```
+
 # Debugging the provider
 
 To run this provider in delve run:
