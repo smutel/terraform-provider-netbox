@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.2.0](https://github.com/smutel/terraform-provider-netbox/compare/v5.1.0...v5.2.0) (2022-11-10)
+
+
+### Features
+
+* Add first tests to provider ([2d9cf3b](https://github.com/smutel/terraform-provider-netbox/commit/2d9cf3bbd49d344238be264588597a1b7eaf6a58))
+* Add function to modify API requests ([9ed4488](https://github.com/smutel/terraform-provider-netbox/commit/9ed4488c5b3c0287c521d304f290ce30ef525ffc))
+* Add suppport for missing customfield types ([c770ce9](https://github.com/smutel/terraform-provider-netbox/commit/c770ce9d5a0a1918e52189bdd6a99ff68a60337e))
+
+
+### Bug Fixes
+
+* Prevent panic if vcpus is null ([82ad49f](https://github.com/smutel/terraform-provider-netbox/commit/82ad49fa2855885576909d227f12f8885b61eabf))
+
 ## [5.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v5.0.0...v5.1.0) (2022-09-24)
 
 
