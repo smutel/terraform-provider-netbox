@@ -49,7 +49,7 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
 
   custom_field {
     name = "cf_selection"
-    type = "selection"
+    type = "select"
     value = "1"
   }
 
@@ -60,9 +60,39 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
   }
 
   custom_field {
-    name = "cf_multiple_selection"
-    type = "multiple"
-    value = "0,1"
+    name = "cf_multi_selection"
+    type = "multiselect"
+    value = jsonencode([
+      "0",
+      "1"
+    ])
+  }
+
+  custom_field {
+    name = "cf_json"
+    type = "json"
+    value = jsonencode({
+      stringvalue = "string"
+      boolvalue = false
+      dictionary = {
+        numbervalue = 5
+      }
+    })
+  }
+
+  custom_field {
+    name = "cf_object"
+    type = "object"
+    value = data.netbox_dcim_platform.platform_test.id
+  }
+
+  custom_field {
+    name = "cf_multi_object"
+    type = "multiobject"
+    value = jsonencode([
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
+    ])
   }
 }
 
@@ -85,7 +115,7 @@ resource "netbox_ipam_ip_addresses" "dynamic_ip_from_ip_range" {
 ### Optional
 
 - `address` (String) The IP address (with mask) used for this IP address (ipam module). Required if both prefix and ip_range are not set.
-- `custom_field` (Block Set) Existing custom fields to associate to this IP address (ipam module). (see [below for nested schema](#nestedblock--custom_field))
+- `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `description` (String) The description of this IP address (ipam module).
 - `dns_name` (String) The DNS name of this IP address (ipam module).
 - `ip_range` (Number) The ip-range id for automatic IP assignment. Required if both prefix and address are not set.
@@ -111,7 +141,7 @@ resource "netbox_ipam_ip_addresses" "dynamic_ip_from_ip_range" {
 Required:
 
 - `name` (String) Name of the existing custom field.
-- `type` (String) Type of the existing custom field (text, integer, boolean, url, selection, multiple).
+- `type` (String) Type of the existing custom field (text, longtext, integer, boolean, date, url, json, select, multiselect, object, multiobject, selection (deprecated), multiple(deprecated)).
 - `value` (String) Value of the existing custom field.
 
 

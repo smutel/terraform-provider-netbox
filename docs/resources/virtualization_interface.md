@@ -46,7 +46,7 @@ resource "netbox_virtualization_interface" "interface_test" {
 
   custom_field {
     name = "cf_selection"
-    type = "selection"
+    type = "select"
     value = "1"
   }
 
@@ -57,9 +57,39 @@ resource "netbox_virtualization_interface" "interface_test" {
   }
 
   custom_field {
-    name = "cf_multiple_selection"
-    type = "multiple"
-    value = "0,1"
+    name = "cf_multi_selection"
+    type = "multiselect"
+    value = jsonencode([
+      "0",
+      "1"
+    ])
+  }
+
+  custom_field {
+    name = "cf_json"
+    type = "json"
+    value = jsonencode({
+      stringvalue = "string"
+      boolvalue = false
+      dictionary = {
+        numbervalue = 5
+      }
+    })
+  }
+
+  custom_field {
+    name = "cf_object"
+    type = "object"
+    value = data.netbox_dcim_platform.platform_test.id
+  }
+
+  custom_field {
+    name = "cf_multi_object"
+    type = "multiobject"
+    value = jsonencode([
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
+    ])
   }
 }
 ```
@@ -74,7 +104,7 @@ resource "netbox_virtualization_interface" "interface_test" {
 
 ### Optional
 
-- `custom_field` (Block Set) Existing custom fields to associate to this interface (virtualization module). (see [below for nested schema](#nestedblock--custom_field))
+- `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `description` (String) Description for this interface (virtualization module).
 - `enabled` (Boolean) true or false (true by default)
 - `mac_address` (String) Mac address for this interface (virtualization module)
@@ -96,7 +126,7 @@ resource "netbox_virtualization_interface" "interface_test" {
 Required:
 
 - `name` (String) Name of the existing custom field.
-- `type` (String) Type of the existing custom field (text, integer, boolean, url, selection, multiple).
+- `type` (String) Type of the existing custom field (text, longtext, integer, boolean, date, url, json, select, multiselect, object, multiobject, selection (deprecated), multiple(deprecated)).
 - `value` (String) Value of the existing custom field.
 
 

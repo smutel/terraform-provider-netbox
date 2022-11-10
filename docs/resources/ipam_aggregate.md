@@ -49,7 +49,7 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
 
   custom_field {
     name = "cf_selection"
-    type = "selection"
+    type = "select"
     value = "1"
   }
 
@@ -60,9 +60,39 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
   }
 
   custom_field {
-    name = "cf_multiple_selection"
-    type = "multiple"
-    value = "0,1"
+    name = "cf_multi_selection"
+    type = "multiselect"
+    value = jsonencode([
+      "0",
+      "1"
+    ])
+  }
+
+  custom_field {
+    name = "cf_json"
+    type = "json"
+    value = jsonencode({
+      stringvalue = "string"
+      boolvalue = false
+      dictionary = {
+        numbervalue = 5
+      }
+    })
+  }
+
+  custom_field {
+    name = "cf_object"
+    type = "object"
+    value = data.netbox_dcim_platform.platform_test.id
+  }
+
+  custom_field {
+    name = "cf_multi_object"
+    type = "multiobject"
+    value = jsonencode([
+      data.netbox_dcim_platform.platform_test.id,
+      data.netbox_dcim_platform.platform_test2.id
+    ])
   }
 }
 ```
@@ -77,7 +107,7 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
 
 ### Optional
 
-- `custom_field` (Block Set) Existing custom fields to associate to this aggregate (ipam module). (see [below for nested schema](#nestedblock--custom_field))
+- `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `date_added` (String) Date when this aggregate was added. Format *YYYY-MM-DD*.
 - `description` (String) The description of this aggregate (ipam module).
 - `tag` (Block Set) Existing tag to associate to this aggregate (ipam module). (see [below for nested schema](#nestedblock--tag))
@@ -98,7 +128,7 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
 Required:
 
 - `name` (String) Name of the existing custom field.
-- `type` (String) Type of the existing custom field (text, integer, boolean, url, selection, multiple).
+- `type` (String) Type of the existing custom field (text, longtext, integer, boolean, date, url, json, select, multiselect, object, multiobject, selection (deprecated), multiple(deprecated)).
 - `value` (String) Value of the existing custom field.
 
 
