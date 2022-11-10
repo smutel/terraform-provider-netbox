@@ -30,32 +30,7 @@ func resourceNetboxIpamIPRange() *schema.Resource {
 				Computed:    true,
 				Description: "The content type of this prefix (ipam module).",
 			},
-			"custom_field": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing custom field.",
-						},
-						"type": {
-							Type:     schema.TypeString,
-							Required: true,
-							ValidateFunc: validation.StringInSlice([]string{"text", "integer", "boolean",
-								"date", "url", "selection", "multiple"}, false),
-							Description: "Type of the existing custom field (text, integer, boolean, url, selection, multiple).",
-						},
-						"value": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Value of the existing custom field.",
-						},
-					},
-				},
-				Description: "Existing custom fields to associate to this prefix (ipam module).",
-			},
+			"custom_field": &customFieldSchema,
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
