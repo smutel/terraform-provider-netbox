@@ -402,13 +402,18 @@ resource "netbox_ipam_ip_range" "range_test" {
   }
 }
 
+resource "netbox_virtualization_vm_primary_ip" "name" {
+  virtualmachine_id = netbox_virtualization_vm.vm_test.id
+  primary_ip4_id = netbox_ipam_ip_addresses.ip_test.id
+  primary_ip6_id = netbox_ipam_ip_addresses.ip6_test.id
+}
+
 resource "netbox_ipam_ip_addresses" "ip_test" {
   address     = "192.168.56.1/24"
   status      = "active"
   tenant_id   = netbox_tenancy_tenant.tenant_test.id
   object_id   = netbox_virtualization_interface.interface_test.id
   object_type = netbox_virtualization_interface.interface_test.type
-  primary_ip4 = true
 
   tag {
     name = "tag1"
@@ -491,6 +496,13 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
       data.netbox_dcim_platform.platform_test2.id
     ])
   }
+}
+
+resource "netbox_ipam_ip_addresses" "ip6_test" {
+  address     = "2001:db8::1234/64"
+  status      = "active"
+  object_id   = netbox_virtualization_interface.interface_test.id
+  object_type = netbox_virtualization_interface.interface_test.type
 }
 
 resource "netbox_ipam_ip_addresses" "dynamic_ip_from_prefix" {
