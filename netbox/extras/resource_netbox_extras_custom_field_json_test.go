@@ -98,21 +98,22 @@ func testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix string, resourceFu
 			"dcim.site",
 		]
 
-		type         = "json"
+		type          = "json"
 		{{ if eq .resourcefull "true" }}
-		description  = "Test custom field"
-		label        = "Test Label for CF"
-		weight       = 50
-		#required     = true
-		filter_logic = "disabled"
-		# Fixed in Netbox 3.3
-		#default      = jsonencode({
-		#	bool = false
-		#	number = 1.5
-		#	dict = {
-		#		text = "Some text"}
-		#	}
-		#})
+		description   = "Test custom field"
+		group_name    = "testgroup"
+		ui_visibility = "hidden"
+		label         = "Test Label for CF"
+		weight        = 50
+		#required      = true
+		filter_logic  = "disabled"
+		default       = jsonencode({
+			bool = false
+			number = 1.5
+			dict = {
+				text = "Some text"
+			}
+		})
 		{{ end }}
 	}
 	`

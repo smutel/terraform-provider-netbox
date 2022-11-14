@@ -98,19 +98,20 @@ func testAccCheckNetboxExtrasCustomFieldMultiSelectConfig(nameSuffix string, res
 			"dcim.site",
 		]
 
-		type         = "multiselect"
+		type          = "multiselect"
 		{{ if eq .resourcefull "true" }}
-		description  = "Test custom field"
+		description   = "Test custom field"
 		choices = [
 			"test",
 			"test2"
 		]
-		label        = "Test Label for CF"
-		weight       = 50
-		#required     = true
-		filter_logic = "disabled"
-		# Fixed in netbox 3.3
-		#default     = "test"
+		label         = "Test Label for CF"
+		group_name    = "testgroup"
+		ui_visibility = "hidden"
+		weight        = 50
+		#required      = true
+		filter_logic  = "disabled"
+		default       = jsonencode(["test"])
 		{{ end }}
 	}
 	`

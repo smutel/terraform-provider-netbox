@@ -12,6 +12,14 @@ func GetClusterStatusValue(nested *models.ClusterStatus) *string {
 	return nested.Value
 }
 
+func GetCustomFieldUIVisibilityValue(nested *models.CustomFieldUIVisibility) *string {
+	if nested == nil {
+		return nil
+	}
+
+	return nested.Value
+}
+
 func GetNestedIPAddressAddress(nested *models.NestedIPAddress) *string {
 	if nested == nil {
 		return nil

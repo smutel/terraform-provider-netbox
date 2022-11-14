@@ -105,18 +105,19 @@ func testAccCheckNetboxExtrasCustomFieldMultiObjectConfig(nameSuffix string, res
 			"dcim.site",
 		]
 
-		type         = "multiobject"
-		object_type  = "dcim.platform"
+		type          = "multiobject"
+		object_type   = "dcim.platform"
 		{{ if eq .resourcefull "true" }}
-		description  = "Test custom field"
-		label        = "Test Label for CF"
-		weight       = 50
-		#required     = true
-		filter_logic = "disabled"
-		# Fixed in netbox 3.3
-		#default      = jsonencode([
-		#	netbox_dcim_platform.test.id
-		#])
+		description   = "Test custom field"
+		label         = "Test Label for CF"
+		group_name    = "testgroup"
+		ui_visibility = "hidden"
+		weight        = 50
+		#required      = true
+		filter_logic  = "disabled"
+		default       = jsonencode([
+			netbox_dcim_platform.test.id
+		])
 		{{ end }}
 	}
 	`

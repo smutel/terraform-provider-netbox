@@ -2,6 +2,7 @@ package extras
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -63,7 +64,7 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 			"default": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "The default value for this custom field. Encoded as JSON.",
+				Description: "The default value for this custom field. This value must be valid Json. Strings, List and Dicts should be wrapped in jsonencode()",
 			},
 			"description": {
 				Type:         schema.TypeString,
@@ -78,6 +79,13 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 				Default:      "loose",
 				ValidateFunc: validation.StringInSlice([]string{"disabled", "loose", "exact"}, false),
 				Description:  "The filter logic for this custom field. Allowed values: \"loose\" (default), \"exact\", \"disabled\"",
+			},
+			"group_name": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      nil,
+				ValidateFunc: validation.StringLenBetween(1, 50),
+				Description:  "Custom fields within the same group will be displayed together.",
 			},
 			"label": {
 				Type:        schema.TypeString,
@@ -123,6 +131,13 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 				}, false),
 				Description: "Type of the custom field (text, longtext, integer, boolean, url, json, select, multiselect, object, multiobject).",
 			},
+			"ui_visibility": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      "read-write",
+				ValidateFunc: validation.StringInSlice([]string{"read-write", "read-only", "hidden"}, false),
+				Description:  "The filter logic for this custom field. Allowed values: \"read-write\" (default), \"read-only\", \"hidden\"",
+			},
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -167,7 +182,6 @@ func resourceNetboxExtrasCustomFieldCreate(ctx context.Context, d *schema.Resour
 	client := m.(*netboxclient.NetBoxAPI)
 
 	name := d.Get("name").(string)
-	defaultstring := d.Get("default").(string)
 	validationMaximum := int64(d.Get("validation_maximum").(int))
 	var validationMaximumPtr *int64
 	if validationMaximum != 0 {
@@ -187,18 +201,28 @@ func resourceNetboxExtrasCustomFieldCreate(ctx context.Context, d *schema.Resour
 	newResource := &models.WritableCustomField{
 		Choices:           util.ToListofStrings(d.Get("choices").(*schema.Set).List()),
 		ContentTypes:      util.ToListofStrings(d.Get("content_types").(*schema.Set).List()),
-		Default:           &defaultstring,
 		Description:       d.Get("description").(string),
 		FilterLogic:       d.Get("filter_logic").(string),
+		GroupName:         d.Get("group_name").(string),
 		Label:             d.Get("label").(string),
 		Name:              &name,
 		ObjectType:        d.Get("object_type").(string),
 		Required:          d.Get("required").(bool),
 		Type:              d.Get("type").(string),
+		UIVisibility:      d.Get("ui_visibility").(string),
 		ValidationMaximum: validationMaximumPtr,
 		ValidationMinimum: validationMinimumPtr,
 		ValidationRegex:   d.Get("validation_regex").(string),
 		Weight:            &weight,
+	}
+
+	if defaultstring := d.Get("default").(string); defaultstring != "" {
+		var jsonMap interface{}
+		err := json.Unmarshal([]byte(defaultstring), &jsonMap)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		newResource.Default = jsonMap
 	}
 
 	resource := extras.NewExtrasCustomFieldsCreateParams().WithData(newResource)
@@ -246,13 +270,23 @@ func resourceNetboxExtrasCustomFieldRead(ctx context.Context, d *schema.Resource
 	if err = d.Set("data_type", resource.DataType); err != nil {
 		return diag.FromErr(err)
 	}
-	if err = d.Set("default", resource.Default); err != nil {
-		return diag.FromErr(err)
+	if resource.Default != nil {
+		jsonValue, _ := json.Marshal(resource.Default)
+		if err = d.Set("default", string(jsonValue)); err != nil {
+			return diag.FromErr(err)
+		}
+	} else {
+		if err = d.Set("default", nil); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 	if err = d.Set("description", resource.Description); err != nil {
 		return diag.FromErr(err)
 	}
 	if err = d.Set("filter_logic", resource.FilterLogic.Value); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("group_name", resource.GroupName); err != nil {
 		return diag.FromErr(err)
 	}
 	if err = d.Set("label", resource.Label); err != nil {
@@ -271,6 +305,9 @@ func resourceNetboxExtrasCustomFieldRead(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 	if err = d.Set("type", resource.Type.Value); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("ui_visibility", util.GetCustomFieldUIVisibilityValue(resource.UIVisibility)); err != nil {
 		return diag.FromErr(err)
 	}
 	if err = d.Set("url", resource.URL); err != nil {
@@ -310,9 +347,16 @@ func resourceNetboxExtrasCustomFieldUpdate(ctx context.Context, d *schema.Resour
 		params.ContentTypes = util.ToListofStrings(d.Get("content_types").(*schema.Set).List())
 	}
 	if d.HasChange("default") {
-		defaultvalue := d.Get("default").(string)
-		params.Default = &defaultvalue
-		modifiedFields["default"] = defaultvalue
+		if defaultstring := d.Get("default").(string); defaultstring != "" {
+			var jsonMap interface{}
+			err := json.Unmarshal([]byte(defaultstring), &jsonMap)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			params.Default = jsonMap
+		} else {
+			modifiedFields["default"] = nil
+		}
 	}
 	if d.HasChange("description") {
 		params.Description = d.Get("description").(string)
@@ -320,6 +364,10 @@ func resourceNetboxExtrasCustomFieldUpdate(ctx context.Context, d *schema.Resour
 	}
 	if d.HasChange("filter_logic") {
 		params.FilterLogic = d.Get("filter_logic").(string)
+	}
+	if d.HasChange("group_name") {
+		params.GroupName = d.Get("group_name").(string)
+		modifiedFields["group_name"] = params.GroupName
 	}
 	if d.HasChange("label") {
 		params.Label = d.Get("label").(string)
@@ -338,6 +386,9 @@ func resourceNetboxExtrasCustomFieldUpdate(ctx context.Context, d *schema.Resour
 	}
 	if d.HasChange("type") {
 		params.Type = d.Get("type").(string)
+	}
+	if d.HasChange("ui_visibility") {
+		params.UIVisibility = d.Get("ui_visibility").(string)
 	}
 	if d.HasChange("validation_maximum") {
 		validationMaximum := int64(d.Get("validation_maximum").(int))

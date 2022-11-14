@@ -98,15 +98,16 @@ func testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix string, resourceFu
 			"dcim.site",
 		]
 
-		type         = "date"
+		type          = "date"
 		{{ if eq .resourcefull "true" }}
-		description  = "Test custom field"
-		label        = "Test Label for CF"
-		weight       = 50
-		#required     = true
-		filter_logic = "disabled"
-		# Fixed in Netbox 3.3
-		#default      = "2022-01-01"
+		description   = "Test custom field"
+		group_name    = "testgroup"
+		ui_visibility = "hidden"
+		label         = "Test Label for CF"
+		weight        = 50
+		#required      = true
+		filter_logic  = "disabled"
+		default       = jsonencode("2022-01-01")
 		{{ end }}
 	}
 	`

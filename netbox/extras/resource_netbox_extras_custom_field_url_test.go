@@ -98,15 +98,16 @@ func testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix string, resourceFul
 			"dcim.site",
 		]
 
-		type         = "url"
+		type          = "url"
 		{{ if eq .resourcefull "true" }}
-		description  = "Test custom field"
-		label        = "Test Label for CF"
-		weight       = 50
-		#required     = true
-		filter_logic = "disabled"
-		# Fixed in Netbox 3.3
-		#default      = "https://netbox.dev/"
+		description   = "Test custom field"
+		label         = "Test Label for CF"
+		group_name    = "testgroup"
+		ui_visibility = "hidden"
+		weight        = 50
+		#required      = true
+		filter_logic  = "disabled"
+		default       = jsonencode("https://netbox.dev/")
 		{{ end }}
 	}
 	`
