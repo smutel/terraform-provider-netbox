@@ -11,6 +11,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxIpamService() *schema.Resource {
@@ -73,25 +74,7 @@ func resourceNetboxIpamService() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"tcp", "udp"}, false),
 				Description:  "The protocol of this service (ipam module) (tcp or udp).",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this service (ipam module).",
-			},
+			"tag": &tag.TagSchema,
 			"virtualmachine_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -133,7 +116,7 @@ func resourceNetboxIpamServiceCreate(ctx context.Context, d *schema.ResourceData
 		Name:         &name,
 		Ports:        ports64,
 		Protocol:     &protocol,
-		Tags:         convertTagsToNestedTags(tags),
+		Tags:         tag.ConvertTagsToNestedTags(tags),
 	}
 
 	if deviceID != 0 {
@@ -222,7 +205,7 @@ func resourceNetboxIpamServiceRead(ctx context.Context, d *schema.ResourceData,
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -297,7 +280,7 @@ func resourceNetboxIpamServiceUpdate(ctx context.Context, d *schema.ResourceData
 	}
 
 	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	params.Tags = tag.ConvertTagsToNestedTags(tags)
 
 	resource := ipam.NewIpamServicesPartialUpdateParams().WithData(
 		params)

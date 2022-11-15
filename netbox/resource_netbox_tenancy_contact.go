@@ -13,6 +13,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxTenancyContact() *schema.Resource {
@@ -81,25 +82,7 @@ func resourceNetboxTenancyContact() *schema.Resource {
 				ValidateFunc: validation.StringLenBetween(1, 50),
 				Description:  "The phone for this contact (tenancy module).",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this contact (tenancy module).",
-			},
+			"tag": &tag.TagSchema,
 			"title": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -133,7 +116,7 @@ func resourceNetboxTenancyContactCreate(ctx context.Context, d *schema.ResourceD
 		Email:        email,
 		Name:         &name,
 		Phone:        phone,
-		Tags:         convertTagsToNestedTags(tags),
+		Tags:         tag.ConvertTagsToNestedTags(tags),
 		Title:        title,
 	}
 
@@ -235,7 +218,7 @@ func resourceNetboxTenancyContactRead(ctx context.Context, d *schema.ResourceDat
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -322,7 +305,7 @@ func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceD
 	}
 
 	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	params.Tags = tag.ConvertTagsToNestedTags(tags)
 
 	if d.HasChange("title") {
 		if title, exist := d.GetOk("title"); exist {

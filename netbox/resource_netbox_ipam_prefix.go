@@ -11,6 +11,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxIpamPrefix() *schema.Resource {
@@ -92,25 +93,7 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 					"reserved", "deprecated"}, false),
 				Description: "Status among container, active, reserved, deprecated (active by default).",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this prefix (ipam module).",
-			},
+			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -171,7 +154,7 @@ func resourceNetboxIpamPrefixCreate(ctx context.Context, d *schema.ResourceData,
 		IsPool:       isPool,
 		Prefix:       &prefix,
 		Status:       status,
-		Tags:         convertTagsToNestedTags(tags),
+		Tags:         tag.ConvertTagsToNestedTags(tags),
 	}
 
 	if roleID != 0 {
@@ -292,7 +275,7 @@ func resourceNetboxIpamPrefixRead(ctx context.Context, d *schema.ResourceData,
 				}
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -378,7 +361,7 @@ func resourceNetboxIpamPrefixUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	params.Tags = tag.ConvertTagsToNestedTags(tags)
 
 	if d.HasChange("tenant_id") {
 		tenantID := int64(d.Get("tenant_id").(int))

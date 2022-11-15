@@ -12,6 +12,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxIpamIPAddresses() *schema.Resource {
@@ -115,25 +116,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 					"reserved", "deprecated", "dhcp"}, false),
 				Description: "The status among of this IP address (ipam module) container, active, reserved, deprecated (active by default).",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this IP address (ipam module).",
-			},
+			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -196,7 +179,7 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		DNSName:      dnsName,
 		Role:         role,
 		Status:       status,
-		Tags:         convertTagsToNestedTags(tags),
+		Tags:         tag.ConvertTagsToNestedTags(tags),
 	}
 
 	if natInsideID != 0 {
@@ -352,7 +335,7 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -447,7 +430,7 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 	}
 
 	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	params.Tags = tag.ConvertTagsToNestedTags(tags)
 
 	if d.HasChange("tenant_id") {
 		tenantID := int64(d.Get("tenant_id").(int))

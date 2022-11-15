@@ -11,6 +11,7 @@ import (
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
 	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxTenancyTenantGroup() *schema.Resource {
@@ -45,25 +46,7 @@ func resourceNetboxTenancyTenantGroup() *schema.Resource {
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
 				Description: "The slug for this tenant group (tenancy module).",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this tenant group (tenancy module).",
-			},
+			"tag": &tag.TagSchema,
 		},
 	}
 }
@@ -79,7 +62,7 @@ func resourceNetboxTenancyTenantGroupCreate(ctx context.Context, d *schema.Resou
 	newResource := &models.WritableTenantGroup{
 		Name: &groupName,
 		Slug: &groupSlug,
-		Tags: convertTagsToNestedTags(tags),
+		Tags: tag.ConvertTagsToNestedTags(tags),
 	}
 
 	resource := tenancy.NewTenancyTenantGroupsCreateParams().WithData(newResource)
@@ -119,7 +102,7 @@ func resourceNetboxTenancyTenantGroupRead(ctx context.Context, d *schema.Resourc
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -145,7 +128,7 @@ func resourceNetboxTenancyTenantGroupUpdate(ctx context.Context, d *schema.Resou
 	params.Name = &name
 
 	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	params.Tags = tag.ConvertTagsToNestedTags(tags)
 
 	resource := tenancy.NewTenancyTenantGroupsPartialUpdateParams().WithData(
 		params)

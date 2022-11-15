@@ -11,6 +11,7 @@ import (
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxIpamVlanGroup() *schema.Resource {
@@ -45,25 +46,7 @@ func resourceNetboxIpamVlanGroup() *schema.Resource {
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
 				Description: "The slug for this vlan group (ipam module).",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this vlan group (ipam module).",
-			},
+			"tag": &tag.TagSchema,
 		},
 	}
 }
@@ -79,7 +62,7 @@ func resourceNetboxIpamVlanGroupCreate(ctx context.Context, d *schema.ResourceDa
 	newResource := &models.VLANGroup{
 		Name: &groupName,
 		Slug: &groupSlug,
-		Tags: convertTagsToNestedTags(tags),
+		Tags: tag.ConvertTagsToNestedTags(tags),
 	}
 
 	resource := ipam.NewIpamVlanGroupsCreateParams().WithData(newResource)
@@ -118,7 +101,7 @@ func resourceNetboxIpamVlanGroupRead(ctx context.Context, d *schema.ResourceData
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -143,7 +126,7 @@ func resourceNetboxIpamVlanGroupUpdate(ctx context.Context, d *schema.ResourceDa
 	params.Slug = &slug
 
 	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	params.Tags = tag.ConvertTagsToNestedTags(tags)
 
 	resource := ipam.NewIpamVlanGroupsPartialUpdateParams().WithData(
 		params)

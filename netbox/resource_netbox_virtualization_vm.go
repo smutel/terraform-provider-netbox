@@ -14,6 +14,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxVirtualizationVM() *schema.Resource {
@@ -108,25 +109,7 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 					"planned", "staged", "failed", "decommissioning"}, false),
 				Description: "The status among offline, active, planned, staged, failed or decommissioning (active by default).",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this VM (virtualization module).",
-			},
+			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -177,7 +160,7 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 		CustomFields: &customFields,
 		Name:         &name,
 		Status:       status,
-		Tags:         convertTagsToNestedTags(tags),
+		Tags:         tag.ConvertTagsToNestedTags(tags),
 	}
 
 	if disk != 0 {
@@ -344,7 +327,7 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -470,7 +453,7 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = convertTagsToNestedTags(tags)
+		params.Tags = tag.ConvertTagsToNestedTags(tags)
 	} else {
 		dropFields = append(dropFields, "tags")
 	}

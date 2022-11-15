@@ -12,6 +12,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxTenancyContactRole() *schema.Resource {
@@ -54,25 +55,7 @@ func resourceNetboxTenancyContactRole() *schema.Resource {
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
 				Description: "Slug of this contact role (tenancy module).",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this contact role (tenancy module).",
-			},
+			"tag": &tag.TagSchema,
 		},
 	}
 }
@@ -93,7 +76,7 @@ func resourceNetboxTenancyContactRoleCreate(ctx context.Context, d *schema.Resou
 		Description:  description,
 		Name:         &name,
 		Slug:         &slug,
-		Tags:         convertTagsToNestedTags(tags),
+		Tags:         tag.ConvertTagsToNestedTags(tags),
 	}
 
 	resource := tenancy.NewTenancyContactRolesCreateParams().WithData(newResource)
@@ -151,7 +134,7 @@ func resourceNetboxTenancyContactRoleRead(ctx context.Context, d *schema.Resourc
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -190,7 +173,7 @@ func resourceNetboxTenancyContactRoleUpdate(ctx context.Context, d *schema.Resou
 	}
 
 	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	params.Tags = tag.ConvertTagsToNestedTags(tags)
 
 	resource := tenancy.NewTenancyContactRolesPartialUpdateParams().WithData(params)
 

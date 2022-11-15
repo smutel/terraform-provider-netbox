@@ -30,49 +30,6 @@ func expandToInt64Slice(v []interface{}) []int64 {
 	return s
 }
 
-func convertTagsToNestedTags(tags []interface{}) []*models.NestedTag {
-	nestedTags := []*models.NestedTag{}
-
-	for _, tag := range tags {
-		t := tag.(map[string]interface{})
-
-		tagName := t["name"].(string)
-		tagSlug := t["slug"].(string)
-
-		nestedTag := models.NestedTag{Name: &tagName, Slug: &tagSlug}
-		nestedTags = append(nestedTags, &nestedTag)
-	}
-
-	return nestedTags
-}
-
-func purgeNestedTagsToNestedTags(vmTags []*models.NestedTag) []*models.NestedTag {
-	nestedTags := []*models.NestedTag{}
-
-	for _, tag := range vmTags {
-		tagName := tag.Name
-		tagSlug := tag.Slug
-
-		nestedTag := models.NestedTag{Name: tagName, Slug: tagSlug}
-		nestedTags = append(nestedTags, &nestedTag)
-	}
-
-	return nestedTags
-}
-
-func convertNestedTagsToTags(tags []*models.NestedTag) []map[string]string {
-	var tfTags []map[string]string
-
-	for _, t := range tags {
-		tag := map[string]string{}
-		tag["name"] = *t.Name
-		tag["slug"] = *t.Slug
-
-		tfTags = append(tfTags, tag)
-	}
-
-	return tfTags
-}
 
 func getVMIDForInterface(m interface{}, objectID int64) (int64, error) {
 	client := m.(*netboxclient.NetBoxAPI)

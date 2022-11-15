@@ -12,6 +12,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxVirtualizationInterface() *schema.Resource {
@@ -84,25 +85,7 @@ func resourceNetboxVirtualizationInterface() *schema.Resource {
 				Optional:    true,
 				Description: "List of vlan id tagged for this interface (virtualization module)",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this interface (virtualization module).",
-			},
+			"tag": &tag.TagSchema,
 			"type": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -146,7 +129,7 @@ func resourceNetboxVirtualizationInterfaceCreate(ctx context.Context, d *schema.
 		Mode:           mode,
 		Name:           &name,
 		TaggedVlans:    expandToInt64Slice(taggedVlans),
-		Tags:           convertTagsToNestedTags(tags),
+		Tags:           tag.ConvertTagsToNestedTags(tags),
 		VirtualMachine: &virtualmachineID,
 	}
 
@@ -244,7 +227,7 @@ func resourceNetboxVirtualizationInterfaceRead(ctx context.Context, d *schema.Re
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(
 				resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
@@ -324,7 +307,7 @@ func resourceNetboxVirtualizationInterfaceUpdate(ctx context.Context, d *schema.
 	}
 
 	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	params.Tags = tag.ConvertTagsToNestedTags(tags)
 
 	if d.HasChange("untagged_vlan") {
 		untaggedVlan := int64(d.Get("untagged_vlan").(int))

@@ -12,6 +12,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
 func resourceNetboxTenancyContactGroup() *schema.Resource {
@@ -60,25 +61,7 @@ func resourceNetboxTenancyContactGroup() *schema.Resource {
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
 				Description: "The slug for this contact group (tenancy module).",
 			},
-			"tag": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Name of the existing tag.",
-						},
-						"slug": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Slug of the existing tag.",
-						},
-					},
-				},
-				Description: "Existing tag to associate to this contact group (tenancy module).",
-			},
+			"tag": &tag.TagSchema,
 		},
 	}
 }
@@ -100,7 +83,7 @@ func resourceNetboxTenancyContactGroupCreate(ctx context.Context, d *schema.Reso
 		Description:  description,
 		Name:         &name,
 		Slug:         &slug,
-		Tags:         convertTagsToNestedTags(tags),
+		Tags:         tag.ConvertTagsToNestedTags(tags),
 	}
 
 	if parentID != 0 {
@@ -172,7 +155,7 @@ func resourceNetboxTenancyContactGroupRead(ctx context.Context, d *schema.Resour
 				return diag.FromErr(err)
 			}
 
-			if err = d.Set("tag", convertNestedTagsToTags(resource.Tags)); err != nil {
+			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 				return diag.FromErr(err)
 			}
 
@@ -216,7 +199,7 @@ func resourceNetboxTenancyContactGroupUpdate(ctx context.Context, d *schema.Reso
 	}
 
 	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = convertTagsToNestedTags(tags)
+	params.Tags = tag.ConvertTagsToNestedTags(tags)
 
 	resource := tenancy.NewTenancyContactGroupsPartialUpdateParams().WithData(params)
 
