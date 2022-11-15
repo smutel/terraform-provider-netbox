@@ -13,6 +13,7 @@ import (
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
 )
 
 func resourceNetboxIpamAggregate() *schema.Resource {
@@ -38,7 +39,7 @@ func resourceNetboxIpamAggregate() *schema.Resource {
 				Computed:    true,
 				Description: "Date when this aggregate was created.",
 			},
-			"custom_field": &customFieldSchema,
+			"custom_field": &customfield.CustomFieldSchema,
 			"date_added": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -119,7 +120,7 @@ func resourceNetboxIpamAggregateCreate(ctx context.Context, d *schema.ResourceDa
 	client := m.(*netboxclient.NetBoxAPI)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	dateAdded := d.Get("date_added").(string)
 	description := d.Get("description").(string)
 	prefix := d.Get("prefix").(string)
@@ -181,7 +182,7 @@ func resourceNetboxIpamAggregateRead(ctx context.Context, d *schema.ResourceData
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
 				return diag.FromErr(err)
@@ -262,7 +263,7 @@ func resourceNetboxIpamAggregateUpdate(ctx context.Context, d *schema.ResourceDa
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
-		customFields := convertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
+		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
 		params.CustomFields = &customFields
 	}
 	if d.HasChange("date_added") {

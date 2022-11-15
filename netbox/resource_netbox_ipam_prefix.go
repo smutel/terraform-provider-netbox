@@ -10,6 +10,7 @@ import (
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
 )
 
 func resourceNetboxIpamPrefix() *schema.Resource {
@@ -30,7 +31,7 @@ func resourceNetboxIpamPrefix() *schema.Resource {
 				Computed:    true,
 				Description: "The content type of this prefix (ipam module).",
 			},
-			"custom_field": &customFieldSchema,
+			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -153,7 +154,7 @@ func resourceNetboxIpamPrefixCreate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	isPool := d.Get("is_pool").(bool)
 	roleID := int64(d.Get("role_id").(int))
@@ -236,7 +237,7 @@ func resourceNetboxIpamPrefixRead(ctx context.Context, d *schema.ResourceData,
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
 				return diag.FromErr(err)
@@ -344,7 +345,7 @@ func resourceNetboxIpamPrefixUpdate(ctx context.Context, d *schema.ResourceData,
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
-		customFields := convertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
+		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
 		params.CustomFields = &customFields
 	}
 

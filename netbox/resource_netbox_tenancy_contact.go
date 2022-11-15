@@ -12,6 +12,7 @@ import (
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
 	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
 )
 
 func resourceNetboxTenancyContact() *schema.Resource {
@@ -51,7 +52,7 @@ func resourceNetboxTenancyContact() *schema.Resource {
 				Computed:    true,
 				Description: "The content type of this contact (tenancy module).",
 			},
-			"custom_field": &customFieldSchema,
+			"custom_field": &customfield.CustomFieldSchema,
 			"email": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -118,7 +119,7 @@ func resourceNetboxTenancyContactCreate(ctx context.Context, d *schema.ResourceD
 	comments := d.Get("comments").(string)
 	groupID := int64(d.Get("contact_group_id").(int))
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := convertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	email := strfmt.Email(d.Get("email").(string))
 	name := d.Get("name").(string)
 	phone := d.Get("phone").(string)
@@ -202,7 +203,7 @@ func resourceNetboxTenancyContactRead(ctx context.Context, d *schema.ResourceDat
 			}
 
 			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := updateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 			if err = d.Set("custom_field", customFields); err != nil {
 				return diag.FromErr(err)
@@ -300,7 +301,7 @@ func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceD
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
-		customFields := convertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
+		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
 		params.CustomFields = &customFields
 	}
 
