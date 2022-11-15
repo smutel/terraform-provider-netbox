@@ -13,6 +13,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
@@ -324,7 +325,7 @@ func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceD
 
 	resource.SetID(resourceID)
 
-	_, err = client.Tenancy.TenancyContactsPartialUpdate(resource, nil, newRequestModifierOperation(emptyFields, dropFields))
+	_, err = client.Tenancy.TenancyContactsPartialUpdate(resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
 	if err != nil {
 		return diag.FromErr(err)
 	}

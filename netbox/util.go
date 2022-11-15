@@ -1,18 +1,17 @@
 package netbox
 
 import (
-	"encoding/json"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
 	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/requestmodifier"
 )
 
 // Type of vm interface in Netbox
@@ -127,7 +126,7 @@ func updatePrimaryStatus(m interface{}, vmid, ipid int64, primary bool) error {
 	vm := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
 	vm.SetID(vmid)
 	_, err := client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
-		vm, nil, newRequestModifierOperation(emptyFields, dropFields))
+		vm, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
 	if err != nil {
 		return err
 	}
@@ -182,50 +181,4 @@ func getNewAvailablePrefix(client *netboxclient.NetBoxAPI, id int64, length int6
 		return nil, err
 	}
 	return list.Payload[0], nil
-}
-
-type requestModifier struct {
-	origwriter      runtime.ClientRequestWriter
-	overwritefields map[string]interface{}
-	dropfields      []string
-}
-
-func (o requestModifier) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
-	err := o.origwriter.WriteToRequest(r, reg)
-	if err != nil {
-		return err
-	}
-
-	jsonString, err := json.Marshal(r.GetBodyParam())
-	if err != nil {
-		return err
-	}
-
-	var objmap map[string]interface{}
-	err = json.Unmarshal(jsonString, &objmap)
-	if err != nil {
-		return err
-	}
-	for _, k := range o.dropfields {
-		delete(objmap, k)
-	}
-	for k, v := range o.overwritefields {
-		objmap[k] = v
-	}
-
-	err = r.SetBodyParam(objmap)
-	return err
-}
-
-func newRequestModifierOperation(empty map[string]interface{}, drop []string) func(*runtime.ClientOperation) {
-	return func(op *runtime.ClientOperation) {
-		if len(empty) > 0 || len(drop) > 0 {
-			tmp := requestModifier{
-				origwriter:      op.Params,
-				overwritefields: empty,
-				dropfields:      drop,
-			}
-			op.Params = tmp
-		}
-	}
 }

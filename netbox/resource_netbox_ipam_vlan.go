@@ -11,6 +11,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
@@ -319,7 +320,7 @@ func resourceNetboxIpamVlanUpdate(ctx context.Context, d *schema.ResourceData,
 
 	resource.SetID(resourceID)
 
-	_, err = client.Ipam.IpamVlansPartialUpdate(resource, nil, newRequestModifierOperation(emptyFields, dropFields))
+	_, err = client.Ipam.IpamVlansPartialUpdate(resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
 	if err != nil {
 		return diag.FromErr(err)
 	}

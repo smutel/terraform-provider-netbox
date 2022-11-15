@@ -14,6 +14,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
@@ -299,7 +300,7 @@ func resourceNetboxIpamAggregateUpdate(ctx context.Context, d *schema.ResourceDa
 	resource := ipam.NewIpamAggregatesPartialUpdateParams().WithData(params)
 	resource.SetID(resourceID)
 
-	_, err = client.Ipam.IpamAggregatesPartialUpdate(resource, nil, newRequestModifierOperation(emptyFields, dropFields))
+	_, err = client.Ipam.IpamAggregatesPartialUpdate(resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
 	if err != nil {
 		return diag.FromErr(err)
 	}

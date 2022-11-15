@@ -14,6 +14,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
 )
 
@@ -487,7 +488,7 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 	resource.SetID(resourceID)
 
 	_, err = client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
-		resource, nil, newRequestModifierOperation(emptyFields, dropFields))
+		resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
 	if err != nil {
 		return diag.FromErr(err)
 	}
