@@ -1,4 +1,4 @@
-package netbox
+package netbox_test
 
 import (
 	"strconv"

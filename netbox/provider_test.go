@@ -1,30 +1,31 @@
-package netbox
+package netbox_test
 
 import (
 	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox"
 )
 
 var testAccProviders map[string]*schema.Provider
 var testAccProvider *schema.Provider
 
 func init() {
-	testAccProvider = Provider()
+	testAccProvider = netbox.Provider()
 	testAccProviders = map[string]*schema.Provider{
 		"netbox": testAccProvider,
 	}
 }
 
 func TestProvider(t *testing.T) {
-	if err := Provider().InternalValidate(); err != nil {
+	if err := netbox.Provider().InternalValidate(); err != nil {
 		t.Fatalf("err: %s", err)
 	}
 }
 
 func TestProvider_impl(t *testing.T) {
-	var _ *schema.Provider = Provider()
+	var _ *schema.Provider = netbox.Provider()
 }
 
 func testAccPreCheck(t *testing.T) {
