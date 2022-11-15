@@ -19,15 +19,15 @@ import (
 )
 
 // Type of vm interface in Netbox
-const VMInterfaceType string = "virtualization.vminterface"
+const vMInterfaceType string = "virtualization.vminterface"
 
 // Boolean string for custom field
-const CustomFieldBoolean = "boolean"
-const CustomFieldJSON = "json"
-const CustomFieldMultiSelectLegacy = "multiple"
-const CustomFieldMultiSelect = "multiselect"
-const CustomFieldObject = "object"
-const CustomFieldMultiObject = "multiobject"
+const customFieldBoolean = "boolean"
+const customFieldJSON = "json"
+const customFieldMultiSelectLegacy = "multiple"
+const customFieldMultiSelect = "multiselect"
+const customFieldObject = "object"
+const customFieldMultiObject = "multiobject"
 
 var customFieldSchema = schema.Schema{
 	Type:     schema.TypeSet,
@@ -42,8 +42,8 @@ var customFieldSchema = schema.Schema{
 			"type": {
 				Type:     schema.TypeString,
 				Required: true,
-				ValidateFunc: validation.StringInSlice([]string{"text", "longtext", "integer", CustomFieldBoolean,
-					"date", "url", CustomFieldJSON, "select", CustomFieldMultiSelect, CustomFieldObject, CustomFieldMultiObject, CustomFieldMultiSelectLegacy, "selection"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"text", "longtext", "integer", customFieldBoolean,
+					"date", "url", customFieldJSON, "select", customFieldMultiSelect, customFieldObject, customFieldMultiObject, customFieldMultiSelectLegacy, "selection"}, false),
 				Description: "Type of the existing custom field (text, longtext, integer, boolean, date, url, json, select, multiselect, object, multiobject, selection (deprecated), multiple(deprecated)).",
 			},
 			"value": {
@@ -281,15 +281,15 @@ func updateCustomFieldsFromAPI(stateCustomFields, customFields interface{}) []ma
 					cm["name"] = key
 					cm["type"] = stateCustomField.(map[string]interface{})["type"].(string)
 
-					if value != nil && cm["type"] == CustomFieldJSON {
+					if value != nil && cm["type"] == customFieldJSON {
 						jsonValue, _ := json.Marshal(value)
 						cm["value"] = string(jsonValue)
 					} else if value != nil {
 						switch v := value.(type) {
 						case []interface{}:
-							if cm["type"] == CustomFieldMultiSelectLegacy {
+							if cm["type"] == customFieldMultiSelectLegacy {
 								strValue = convertArrayInterfaceString(v)
-							} else if cm["type"] == CustomFieldObject {
+							} else if cm["type"] == customFieldObject {
 								strValue = string(value.([]interface{})[0].(map[string]interface{})["id"].(json.Number))
 							} else {
 								strValue = convertArrayInterfaceJSONString(v)
@@ -335,24 +335,24 @@ func convertCustomFieldsFromTerraformToAPI(stateCustomFields []interface{}, cust
 			case "integer":
 				cfValueInt, _ := strconv.Atoi(cfValue)
 				toReturn[cfName] = cfValueInt
-			case CustomFieldBoolean:
+			case customFieldBoolean:
 				if cfValue == "true" {
 					toReturn[cfName] = true
 				} else if cfValue == "false" {
 					toReturn[cfName] = false
 				}
-			case CustomFieldMultiSelectLegacy:
+			case customFieldMultiSelectLegacy:
 				cfValueArray := strings.Split(cfValue, ",")
 				sort.Strings(cfValueArray)
 				toReturn[cfName] = cfValueArray
-			case CustomFieldJSON:
+			case customFieldJSON:
 				jsonMap := make(map[string]interface{})
 				err := json.Unmarshal([]byte(cfValue), &jsonMap)
 				if err != nil {
 					continue
 				}
 				toReturn[cfName] = jsonMap
-			case CustomFieldMultiSelect:
+			case customFieldMultiSelect:
 				var jsonList []interface{}
 				err := json.Unmarshal([]byte(cfValue), &jsonList)
 				if err != nil {
@@ -362,10 +362,10 @@ func convertCustomFieldsFromTerraformToAPI(stateCustomFields []interface{}, cust
 					return jsonList[i].(string) < jsonList[j].(string)
 				})
 				toReturn[cfName] = jsonList
-			case CustomFieldObject:
+			case customFieldObject:
 				cfValueInt, _ := strconv.Atoi(cfValue)
 				toReturn[cfName] = []int{cfValueInt}
-			case CustomFieldMultiObject:
+			case customFieldMultiObject:
 				var jsonList []interface{}
 				err := json.Unmarshal([]byte(cfValue), &jsonList)
 				if err != nil {

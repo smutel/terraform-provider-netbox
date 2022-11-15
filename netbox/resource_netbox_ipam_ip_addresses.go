@@ -84,7 +84,7 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Optional: true,
 				Default:  "",
 				ValidateFunc: validation.StringInSlice([]string{
-					VMInterfaceType, "dcim.interface"}, false),
+					vMInterfaceType, "dcim.interface"}, false),
 				Description: "The object type among virtualization.vminterface or dcim.interface (empty by default).",
 			},
 			"primary_ip4": {
@@ -322,7 +322,7 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 
 			objectType := resource.AssignedObjectType
 			if objectType != nil {
-				*objectType = VMInterfaceType
+				*objectType = vMInterfaceType
 
 				if err = d.Set("object_type", *objectType); err != nil {
 					return diag.FromErr(err)
@@ -428,7 +428,7 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 
 		var objectType string
 		if *params.AssignedObjectType == "" {
-			objectType = VMInterfaceType
+			objectType = vMInterfaceType
 		} else {
 			objectType = d.Get("object_type").(string)
 		}

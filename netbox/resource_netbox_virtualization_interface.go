@@ -263,7 +263,7 @@ func resourceNetboxVirtualizationInterfaceRead(ctx context.Context, d *schema.Re
 				}
 			}
 
-			if err = d.Set("type", VMInterfaceType); err != nil {
+			if err = d.Set("type", vMInterfaceType); err != nil {
 				return diag.FromErr(err)
 			}
 
