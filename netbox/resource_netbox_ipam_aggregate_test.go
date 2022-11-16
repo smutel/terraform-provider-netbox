@@ -98,6 +98,9 @@ func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string, resourceFull, extr
 	#	name = "test-{{ .namesuffix }}"
 	#	slug = "test-{{ .namesuffix }}"
 	#}
+	data "netbox_json_ipam_rirs_list" "json_rir" {
+		limit = 1
+	}
 
 	{{ if eq .extraresources "true" }}
 	#resource "netbox_extras_tag" "test" {
@@ -113,8 +116,8 @@ func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string, resourceFull, extr
 
 	resource "netbox_ipam_aggregate" "test" {
 		prefix = "{{ .prefix }}"
+		rir_id = jsondecode(data.netbox_json_ipam_rirs_list.json_rir.json)[0].id
 		#rir_id = netbox_ipam_rir.test.id
-		rir_id = 39
 
 		{{ if eq .resourcefull "true" }}
 		tenant_id = netbox_tenancy_tenant.test.id

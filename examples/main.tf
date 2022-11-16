@@ -709,9 +709,13 @@ resource "netbox_virtualization_interface" "interface_test" {
   description       = "Interface de test"
 }
 
+data "netbox_json_ipam_rirs_list" "json_rir" {
+  limit = 1
+}
+
 resource "netbox_ipam_aggregate" "aggregate_test" {
   prefix      = "192.167.0.0/24"
-  rir_id      = 1
+  rir_id      = jsondecode(data.netbox_json_ipam_rirs_list.json_rir.json)[0].id
   date_added  = "2020-12-21"
   description = "Aggregate created by terraform"
 
