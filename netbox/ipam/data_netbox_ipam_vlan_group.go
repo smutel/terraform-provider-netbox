@@ -58,7 +58,9 @@ func dataNetboxIpamVlanGroupRead(ctx context.Context, d *schema.ResourceData, m 
 
 	r := list.Payload.Results[0]
 	d.SetId(strconv.FormatInt(r.ID, 10))
-	d.Set("content_type", util.ConvertURIContentType(r.URL))
+	if err = d.Set("content_type", util.ConvertURIContentType(r.URL)); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }

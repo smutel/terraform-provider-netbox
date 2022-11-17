@@ -256,18 +256,15 @@ output:
 
 linters:
   enable:
-    - deadcode
+    - unused
     - gocyclo
-    - golint
-    - varcheck
-    - structcheck
-    - maligned
+    - revive
     - errcheck
     - ineffassign
-    - interfacer
     - unconvert
     - goconst
     - gosec
+    - govet
     - megacheck
   #disable:
   #  - maligned
@@ -310,9 +307,9 @@ issues:
     #  text: "SA9003:"
 
     # Exclude lll issues for long lines with go:generate
-    - linters:
-        - errcheck
-      text: "Error return value of `d.Set` is not checked"
+    # - linters:
+    #     - errcheck
+    #   text: "Error return value of `d.Set` is not checked"
     #  source: "^//go:generate "
 
   # Independently from option `exclude` we use default exclude patterns,
