@@ -100,12 +100,18 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 	#	name = "test-{{ .namesuffix }}"
 	#	type_id = netbox_virtualization_cluster_type.test.id
 	#}
+	data "netbox_virtualization_cluster" "cluster_test" {
+		name = "test"
+	}
 
 	{{ if eq .extraresources "true" }}
 	#resource "netbox_dcim_platform" "test" {
 	#	name = "test-{{ .namesuffix }}"
 	#	slug = "test-{{ .namesuffix }}"
 	#}
+	data "netbox_dcim_platform" "platform_test" {
+		slug = "Debian_10"
+	}
 
 	#resource "netbox_dcim_device_role" "test" {
 	#	name = "test-{{ .namesuffix }}"
@@ -126,12 +132,13 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 	resource "netbox_virtualization_vm" "test" {
 		name            = "test-{{ .namesuffix }}"
 		#cluster_id      = netbox_virtualization_cluster.test.id
-		cluster_id      = 30
+		cluster_id      = data.netbox_virtualization_cluster.cluster_test.id
 
 		{{ if eq .resourcefull "true" }}
 		comments        = "VM created by terraform"
 		#role_id = netbox_dcim_device_role.test.id
 		#platform_id = netbox_dcim_platform.test.id
+		platform_id = data.netbox_dcim_platform.platform_test.id
 		tenant_id = netbox_tenancy_tenant.test.id
 		status = "planned"
 		vcpus           = 2
@@ -149,6 +156,10 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 		#  name = netbox_extras_tag.test.name
 		#  slug = netbox_extras_tag.test.slug
 		#}
+		tag {
+		  name = "tag1"
+		  slug = "tag1"
+		}
 		{{ end }}
 	}
 	`
