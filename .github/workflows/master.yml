@@ -41,7 +41,7 @@ jobs:
       - name: Go fmt
         run: |
           cd "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
-          go fmt netbox/*
+          find . -name "*.go" -exec go fmt {} \;
         shell: bash
 
       - name: Go generate
