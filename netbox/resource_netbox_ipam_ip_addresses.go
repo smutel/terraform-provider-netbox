@@ -91,7 +91,11 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
+				Deprecated:  "Use new netbox_virtualization_primary_ip resource instead",
 				Description: "Set this resource as primary IPv4 (false by default).",
+				DiffSuppressFunc: func(k, oldValue, newValue string, d *schema.ResourceData) bool {
+					return d.GetRawConfig().GetAttr("primary_ip4").IsNull()
+				},
 			},
 			"role": {
 				Type:     schema.TypeString,
@@ -473,17 +477,19 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 
-	if (d.HasChange("object_id") && d.Get("primary_ip4").(bool)) ||
-		(!d.HasChange("object_id") && d.HasChange("primary_ip4")) ||
-		(d.HasChange("primary_ip4") && d.Get("primary_ip4").(bool)) {
-		objectID := int64(d.Get("object_id").(int))
-		vmID, err := getVMIDForInterface(client, objectID)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		err = updatePrimaryStatus(client, vmID, resourceID, d.Get("primary_ip4").(bool))
-		if err != nil {
-			return diag.FromErr(err)
+	if !d.GetRawConfig().GetAttr("primary_ip4").IsNull() {
+		if (d.HasChange("object_id") && d.Get("primary_ip4").(bool)) ||
+			(!d.HasChange("object_id") && d.HasChange("primary_ip4")) ||
+			(d.HasChange("primary_ip4") && d.Get("primary_ip4").(bool)) {
+			objectID := int64(d.Get("object_id").(int))
+			vmID, err := getVMIDForInterface(client, objectID)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			err = updatePrimaryStatus(client, vmID, resourceID, d.Get("primary_ip4").(bool))
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 

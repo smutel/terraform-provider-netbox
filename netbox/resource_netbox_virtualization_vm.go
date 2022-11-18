@@ -75,6 +75,24 @@ func resourceNetboxVirtualizationVM() *schema.Resource {
 				Default:     nil,
 				Description: "ID of the platform for this VM (virtualization module).",
 			},
+			"primary_ip": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Default:     nil,
+				Description: "Primary IP of this VM (virtualization module). Can be IPv4 or IPv6. See [Netbox docs|https://docs.netbox.dev/en/stable/models/virtualization/virtualmachine/] for more information.",
+			},
+			"primary_ip4": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Default:     nil,
+				Description: "Primary IPv4 of this VM (virtualization module).",
+			},
+			"primary_ip6": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Default:     nil,
+				Description: "Primary IPv6 of this VM (virtualization module).",
+			},
 			"role_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -279,6 +297,34 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 				}
 			} else {
 				if err = d.Set("platform_id", resource.Platform.ID); err != nil {
+					return diag.FromErr(err)
+				}
+			}
+
+			if resource.PrimaryIP == nil {
+				if err = d.Set("primary_ip", nil); err != nil {
+					return diag.FromErr(err)
+				}
+			} else {
+				if err = d.Set("primary_ip", resource.PrimaryIP.Address); err != nil {
+					return diag.FromErr(err)
+				}
+			}
+			if resource.PrimaryIp4 == nil {
+				if err = d.Set("primary_ip4", nil); err != nil {
+					return diag.FromErr(err)
+				}
+			} else {
+				if err = d.Set("primary_ip4", resource.PrimaryIp4.Address); err != nil {
+					return diag.FromErr(err)
+				}
+			}
+			if resource.PrimaryIp6 == nil {
+				if err = d.Set("primary_ip6", nil); err != nil {
+					return diag.FromErr(err)
+				}
+			} else {
+				if err = d.Set("primary_ip6", resource.PrimaryIp6.Address); err != nil {
 					return diag.FromErr(err)
 				}
 			}

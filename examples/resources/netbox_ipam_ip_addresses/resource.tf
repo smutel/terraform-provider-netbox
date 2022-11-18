@@ -81,6 +81,13 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
   }
 }
 
+resource "netbox_ipam_ip_addresses" "ip6_test" {
+  address     = "2001:db8::1234/64"
+  status      = "active"
+  object_id   = netbox_virtualization_interface.interface_test.id
+  object_type = netbox_virtualization_interface.interface_test.type
+}
+
 resource "netbox_ipam_ip_addresses" "dynamic_ip_from_prefix" {
   prefix = netbox_ipam_prefix.dynamic_prefix_test.id
   description = "Dynamic IP in dynamic prefix created by terraform"
