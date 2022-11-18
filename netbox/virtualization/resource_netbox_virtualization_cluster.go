@@ -72,6 +72,14 @@ func ResourceNetboxVirtualizationCluster() *schema.Resource {
 				Optional:    true,
 				Description: "The site of this cluster.",
 			},
+			"status": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "active",
+				ValidateFunc: validation.StringInSlice([]string{"offline", "active",
+					"planned", "staging", "decommissioning"}, false),
+				Description: "The status among offline, active, planned, staging or decommissioning (active by default).",
+			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
@@ -126,6 +134,7 @@ func resourceNetboxVirtualizationClusterCreate(ctx context.Context, d *schema.Re
 		Name:         &name,
 		Tags:         tag.ConvertTagsToNestedTags(tags),
 		Type:         &typeID,
+		Status:       d.Get("status").(string),
 	}
 
 	if groupID != 0 {
@@ -199,6 +208,9 @@ func resourceNetboxVirtualizationClusterRead(ctx context.Context, d *schema.Reso
 	if err = d.Set("site_id", util.GetNestedSiteID(resource.Site)); err != nil {
 		return diag.FromErr(err)
 	}
+	if err = d.Set("status", util.GetClusterStatusValue(resource.Status)); err != nil {
+		return diag.FromErr(err)
+	}
 	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
 		return diag.FromErr(err)
 	}
@@ -246,6 +258,9 @@ func resourceNetboxVirtualizationClusterUpdate(ctx context.Context, d *schema.Re
 	if d.HasChange("name") {
 		name := d.Get("name").(string)
 		params.Name = &name
+	}
+	if d.HasChange("status") {
+		params.Status = d.Get("status").(string)
 	}
 	if d.HasChange("site_id") {
 		siteID := int64(d.Get("site_id").(int))

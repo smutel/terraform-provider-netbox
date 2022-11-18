@@ -4,6 +4,14 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/models"
 )
 
+func GetClusterStatusValue(nested *models.ClusterStatus) *string {
+	if nested == nil {
+		return nil
+	}
+
+	return nested.Value
+}
+
 func GetNestedIPAddressAddress(nested *models.NestedIPAddress) *string {
 	if nested == nil {
 		return nil
