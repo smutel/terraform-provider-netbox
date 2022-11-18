@@ -69,7 +69,7 @@ done
 cat ${FILE}.tmp | sort -u > ${FILE}
 rm ${FILE}.tmp
 
-find ${SCRIPT_PATH}/../netbox -name "*_json_*.go" -delete
+find ${SCRIPT_PATH}/../netbox/json/ -name "*_json_*.go" -delete
 rm -rf ${SCRIPT_PATH}/../examples/data-sources/netbox_json_*
 
 rm -f ${SCRIPT_PATH}/provider_update.txt
@@ -80,8 +80,8 @@ while read -r line; do
         SECTION=${SPLIT[1]}
         ITEM=${SPLIT[2]}
 
-cat << EOF > ${SCRIPT_PATH}/../netbox/data_netbox_json_${ENDPOINT}_list.go
-package netbox
+cat << EOF > ${SCRIPT_PATH}/../netbox/json/data_netbox_json_${ENDPOINT}_list.go
+package json
 
 import (
 	"context"
@@ -93,7 +93,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/${SECTION,}"
 )
 
-func dataNetboxJSON${SECTION}${ITEM}List() *schema.Resource {
+func DataNetboxJSON${SECTION}${ITEM}List() *schema.Resource {
 	return &schema.Resource{
 		Description: "Get json output from the ${ENDPOINT}_list Netbox endpoint.",
 		ReadContext: dataNetboxJSON${SECTION}${ITEM}ListRead,
@@ -159,7 +159,7 @@ func dataNetboxJSON${SECTION}${ITEM}ListRead(ctx context.Context, d *schema.Reso
 EOF
 
 cat << EOF >> ${SCRIPT_PATH}/provider_update.txt
-"netbox_json_${ENDPOINT}_list": dataNetboxJSON${SECTION}${ITEM}List(),
+"netbox_json_${ENDPOINT}_list": json.DataNetboxJSON${SECTION}${ITEM}List(),
 EOF
 
 mkdir -p ${SCRIPT_PATH}/../examples/data-sources/netbox_json_${ENDPOINT}_list
