@@ -96,6 +96,13 @@ resource "netbox_ipam_ip_addresses" "ip_test" {
   }
 }
 
+resource "netbox_ipam_ip_addresses" "ip6_test" {
+  address     = "2001:db8::1234/64"
+  status      = "active"
+  object_id   = netbox_virtualization_interface.interface_test.id
+  object_type = netbox_virtualization_interface.interface_test.type
+}
+
 resource "netbox_ipam_ip_addresses" "dynamic_ip_from_prefix" {
   prefix = netbox_ipam_prefix.dynamic_prefix_test.id
   description = "Dynamic IP in dynamic prefix created by terraform"
@@ -123,7 +130,7 @@ resource "netbox_ipam_ip_addresses" "dynamic_ip_from_ip_range" {
 - `object_id` (Number) The ID of the object where this resource is attached to.
 - `object_type` (String) The object type among virtualization.vminterface or dcim.interface (empty by default).
 - `prefix` (Number) The prefix id for automatic IP assignment. Required if both address and ip_range are not set.
-- `primary_ip4` (Boolean) Set this resource as primary IPv4 (false by default).
+- `primary_ip4` (Boolean, Deprecated) Set this resource as primary IPv4 (false by default).
 - `role` (String) The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this IP address (ipam module).
 - `status` (String) The status among of this IP address (ipam module) container, active, reserved, deprecated (active by default).
 - `tag` (Block Set) Existing tag to associate to this IP address (ipam module). (see [below for nested schema](#nestedblock--tag))

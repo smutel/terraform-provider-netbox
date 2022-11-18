@@ -132,6 +132,9 @@ resource "netbox_virtualization_vm" "vm_test" {
 
 - `content_type` (String) The content type of this VM (virtualization module).
 - `id` (String) The ID of this resource.
+- `primary_ip` (String) Primary IP of this VM (virtualization module). Can be IPv4 or IPv6. See [Netbox docs|https://docs.netbox.dev/en/stable/models/virtualization/virtualmachine/] for more information.
+- `primary_ip4` (String) Primary IPv4 of this VM (virtualization module).
+- `primary_ip6` (String) Primary IPv6 of this VM (virtualization module).
 
 <a id="nestedblock--custom_field"></a>
 ### Nested Schema for `custom_field`
