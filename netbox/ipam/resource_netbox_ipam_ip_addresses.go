@@ -147,7 +147,9 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		}
 		address = *ip.Address
 		addressid = &ip.ID
-		d.Set("address", address)
+		if err := d.Set("address", address); err != nil {
+			return diag.FromErr(err)
+		}
 	} else if rangeid, ok := d.GetOk("ip_range"); ok {
 		ip, err := getNewAvailableIPForIPRange(client, int64(rangeid.(int)))
 		if err != nil {
@@ -155,7 +157,9 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		}
 		address = *ip.Address
 		addressid = &ip.ID
-		d.Set("address", address)
+		if err := d.Set("address", address); err != nil {
+			return diag.FromErr(err)
+		}
 	} else {
 		return diag.Errorf("exactly one of (address, ip_range, prefix) must be specified")
 	}

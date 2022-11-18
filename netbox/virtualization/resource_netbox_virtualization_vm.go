@@ -3,7 +3,6 @@ package virtualization
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"regexp"
 	"strconv"
 
@@ -224,141 +223,85 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 		return diag.FromErr(err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("cluster_id", resource.Cluster.ID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var comments interface{}
-			if resource.Comments == "" {
-				comments = nil
-			} else {
-				comments = resource.Comments
-			}
-
-			if err = d.Set("comments", comments); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
-
-			if err = d.Set("custom_field", customFields); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("disk", resource.Disk); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.LocalContextData != nil {
-				localContextDataJSON, err := json.Marshal(resource.LocalContextData)
-				if err != nil {
-					return diag.FromErr(err)
-				}
-				if err = d.Set("local_context_data",
-					string(localContextDataJSON)); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				d.Set("local_context_data", "")
-			}
-
-			if err = d.Set("memory", resource.Memory); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("name", resource.Name); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Platform == nil {
-				if err = d.Set("platform_id", 0); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("platform_id", resource.Platform.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if resource.PrimaryIP == nil {
-				if err = d.Set("primary_ip", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("primary_ip", resource.PrimaryIP.Address); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-			if resource.PrimaryIp4 == nil {
-				if err = d.Set("primary_ip4", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("primary_ip4", resource.PrimaryIp4.Address); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-			if resource.PrimaryIp6 == nil {
-				if err = d.Set("primary_ip6", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("primary_ip6", resource.PrimaryIp6.Address); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if resource.Role == nil {
-				if err = d.Set("role_id", 0); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("role_id", resource.Role.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if err = d.Set("status", resource.Status.Value); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Tenant == nil {
-				if err = d.Set("tenant_id", 0); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			var vcpus string
-			if resource.Vcpus == nil {
-				vcpus = ""
-			} else {
-				vcpus = fmt.Sprintf("%v", *resource.Vcpus)
-			}
-			if err = d.Set("vcpus", vcpus); err != nil {
-				return diag.FromErr(err)
-			}
-
-			return nil
-		}
+	if len(resources.Payload.Results) != 1 {
+		d.SetId("")
+		return nil
 	}
 
-	d.SetId("")
+	resource := resources.Payload.Results[0]
+	if err = d.Set("cluster_id", resource.Cluster.ID); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("comments", resource.Comments); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
+		return diag.FromErr(err)
+	}
+
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+
+	if err = d.Set("custom_field", customFields); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("disk", resource.Disk); err != nil {
+		return diag.FromErr(err)
+	}
+
+	localContextDataJSON, err := util.GetLocalContextData(resource.LocalContextData)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("local_context_data", localContextDataJSON); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("memory", resource.Memory); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("name", resource.Name); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("platform_id", util.GetNestedPlatformID(resource.Platform)); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("primary_ip", util.GetNestedIPAddressAddress(resource.PrimaryIP)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("primary_ip4", util.GetNestedIPAddressAddress(resource.PrimaryIp4)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("primary_ip6", util.GetNestedIPAddressAddress(resource.PrimaryIp6)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("role_id", util.GetNestedRoleID(resource.Role)); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("status", resource.Status.Value); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("tenant_id", util.GetNestedTenantID(resource.Tenant)); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("vcpus", util.Float2stringptr(resource.Vcpus)); err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
+
 }
 
 func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.ResourceData,
