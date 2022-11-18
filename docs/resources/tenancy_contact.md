@@ -116,7 +116,7 @@ resource "netbox_tenancy_contact" "contact_test" {
 - `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `email` (String) The e-mail for this contact (tenancy module).
 - `phone` (String) The phone for this contact (tenancy module).
-- `tag` (Block Set) Existing tag to associate to this contact (tenancy module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `title` (String) The title for this contact (tenancy module).
 
 ### Read-Only

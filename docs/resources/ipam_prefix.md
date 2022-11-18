@@ -121,7 +121,7 @@ resource "netbox_ipam_prefix" "dynamic_prefix_test" {
 - `role_id` (Number) ID of the role attached to this prefix (ipam module).
 - `site_id` (Number) ID of the site where this prefix (ipam module) is located.
 - `status` (String) Status among container, active, reserved, deprecated (active by default).
-- `tag` (Block Set) Existing tag to associate to this prefix (ipam module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) ID of the tenant where this prefix (ipam module) is attached.
 - `vlan_id` (Number) ID of the vlan where this prefix (ipam module) is attached.
 - `vrf_id` (Number) ID of the vrf attached to this prefix (ipam module).

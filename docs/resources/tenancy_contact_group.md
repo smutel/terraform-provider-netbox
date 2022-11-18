@@ -111,7 +111,7 @@ resource "netbox_tenancy_contact_group" "contact_group_test" {
 - `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `description` (String) Description for this contact group (tenancy module).
 - `parent_id` (Number) ID of the contact group parent of this one.
-- `tag` (Block Set) Existing tag to associate to this contact group (tenancy module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 
 ### Read-Only
 

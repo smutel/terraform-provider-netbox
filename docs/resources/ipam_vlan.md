@@ -116,7 +116,7 @@ resource "netbox_ipam_vlan" "vlan_test" {
 - `role_id` (Number) ID of the role attached to this vlan (ipam module).
 - `site_id` (Number) ID of the site where this vlan (ipam module) is located.
 - `status` (String) The description of this vlan (ipam module).
-- `tag` (Block Set) Existing tag to associate to this vlan (ipam module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) ID of the tenant where this vlan (ipam module) is attached.
 - `vlan_group_id` (Number) ID of the group where this vlan (ipam module) belongs to.
 

@@ -113,7 +113,7 @@ resource "netbox_ipam_ip_range" "range_test" {
 - `description` (String) The description of this prefix (ipam module).
 - `role_id` (Number) ID of the role attached to this prefix (ipam module).
 - `status` (String) Status among active, reserved, deprecated (active by default).
-- `tag` (Block Set) Existing tag to associate to this prefix (ipam module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) ID of the tenant where this prefix (ipam module) is attached.
 - `vrf_id` (Number) ID of the vrf attached to this prefix (ipam module).
 

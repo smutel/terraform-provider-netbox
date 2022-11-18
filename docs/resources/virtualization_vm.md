@@ -124,7 +124,7 @@ resource "netbox_virtualization_vm" "vm_test" {
 - `platform_id` (Number) ID of the platform for this VM (virtualization module).
 - `role_id` (Number) ID of the role for this VM (virtualization module).
 - `status` (String) The status among offline, active, planned, staged, failed or decommissioning (active by default).
-- `tag` (Block Set) Existing tag to associate to this VM (virtualization module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) ID of the tenant where this VM (virtualization module) is attached.
 - `vcpus` (String) The number of VCPUS for this VM (virtualization module).
 

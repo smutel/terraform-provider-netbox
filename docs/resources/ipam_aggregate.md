@@ -110,7 +110,7 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
 - `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `date_added` (String) Date when this aggregate was added. Format *YYYY-MM-DD*.
 - `description` (String) The description of this aggregate (ipam module).
-- `tag` (Block Set) Existing tag to associate to this aggregate (ipam module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) ID of the tenant where this object is attached.
 
 ### Read-Only

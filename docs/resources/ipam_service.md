@@ -115,7 +115,7 @@ resource "netbox_ipam_service" "service_test" {
 - `description` (String) The description of this service (ipam module).
 - `device_id` (Number) ID of the device linked to this service (ipam module).
 - `ip_addresses_id` (List of Number) Array of ID of IP addresses attached to this service (ipam module).
-- `tag` (Block Set) Existing tag to associate to this service (ipam module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `virtualmachine_id` (Number) ID of the VM linked to this service (ipam module).
 
 ### Read-Only

@@ -110,7 +110,7 @@ resource "netbox_virtualization_interface" "interface_test" {
 - `mac_address` (String) Mac address for this interface (virtualization module)
 - `mode` (String) The mode among access, tagged, tagged-all.
 - `mtu` (Number) The MTU between 1 and 65536 for this interface (virtualization module).
-- `tag` (Block Set) Existing tag to associate to this interface (virtualization module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tagged_vlans` (Set of Number) List of vlan id tagged for this interface (virtualization module)
 - `untagged_vlan` (Number) Vlan ID untagged for this interface (virtualization module).
 

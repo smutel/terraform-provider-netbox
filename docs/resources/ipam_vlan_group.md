@@ -34,7 +34,7 @@ resource "netbox_ipam_vlan_group" "vlan_group_test" {
 
 ### Optional
 
-- `tag` (Block Set) Existing tag to associate to this vlan group (ipam module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 
 ### Read-Only
 

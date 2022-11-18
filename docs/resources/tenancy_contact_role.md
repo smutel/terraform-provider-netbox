@@ -109,7 +109,7 @@ resource "netbox_tenancy_contact_role" "contact_role_test" {
 
 - `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `description` (String) Description for this contact role (tenancy module).
-- `tag` (Block Set) Existing tag to associate to this contact role (tenancy module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 
 ### Read-Only
 

@@ -133,7 +133,7 @@ resource "netbox_ipam_ip_addresses" "dynamic_ip_from_ip_range" {
 - `primary_ip4` (Boolean, Deprecated) Set this resource as primary IPv4 (false by default).
 - `role` (String) The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this IP address (ipam module).
 - `status` (String) The status among of this IP address (ipam module) container, active, reserved, deprecated (active by default).
-- `tag` (Block Set) Existing tag to associate to this IP address (ipam module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) ID of the tenant where this object is attached.
 - `vrf_id` (Number) ID of the vrf attached to this IP address (ipam module).
 

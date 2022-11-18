@@ -34,7 +34,7 @@ resource "netbox_tenancy_tenant_group" "tenant_group_test" {
 
 ### Optional
 
-- `tag` (Block Set) Existing tag to associate to this tenant group (tenancy module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 
 ### Read-Only
 

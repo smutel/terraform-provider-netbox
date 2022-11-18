@@ -112,7 +112,7 @@ resource "netbox_tenancy_tenant" "tenant_test" {
 - `comments` (String) Comments for this tenant (tenancy module).
 - `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `description` (String) The description for this tenant (tenancy module).
-- `tag` (Block Set) Existing tag to associate to this tenant (tenancy module). (see [below for nested schema](#nestedblock--tag))
+- `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_group_id` (Number) ID of the group where this tenant (tenancy module) is attached to.
 
 ### Read-Only
