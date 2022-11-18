@@ -138,8 +138,7 @@ func testAccCheckNetboxDcimSiteConfig(nameSuffix string, resourceFull, extraReso
 		latitude    = 12.54632
 		longitude   = 41.21632
 		tenant_id   = netbox_tenancy_tenant.test.id
-		# Broken in netbox < 3.3.7
-		# time_zone = "Europe/Berlin"
+		time_zone = "Europe/Berlin"
 
 		comments = <<-EOT
 		Comments for Test device role
