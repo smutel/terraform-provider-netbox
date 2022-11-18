@@ -33,7 +33,7 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"cluster_id": {
 				Type:        schema.TypeInt,
-				Required:    true,
+				Optional:    true,
 				Default:     nil,
 				Description: "ID of the cluster which host this VM (virtualization module).",
 			},
@@ -49,6 +49,12 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 				Description: "The content type of this VM (virtualization module).",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
+			"device_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     nil,
+				Description: "Optionally pin this VM to a specific host device within the cluster.",
+			},
 			"disk": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -103,9 +109,10 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 				Description: "ID of the role for this VM (virtualization module).",
 			},
 			"site_id": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Description: "ID of the site where this VM (virtualization module) is attached. If cluster_id is set and the cluster resides in a site, this must be set and the same as the cluster's site",
+				Type:         schema.TypeInt,
+				Optional:     true,
+				Description:  "ID of the site where this VM (virtualization module) is attached. If cluster_id is set and the cluster resides in a site, this must be set and the same as the cluster's site",
+				AtLeastOneOf: []string{"cluster_id", "site_id"},
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -149,16 +156,9 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 	comments := d.Get("comments").(string)
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
-	disk := int64(d.Get("disk").(int))
-	localContextData := d.Get("local_context_data").(string)
-	memory := int64(d.Get("memory").(int))
 	name := d.Get("name").(string)
-	platformID := int64(d.Get("platform_id").(int))
-	roleID := int64(d.Get("role_id").(int))
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int64(d.Get("tenant_id").(int))
-	vcpus := d.Get("vcpus").(string)
 
 	newResource := &models.WritableVirtualMachineWithConfigContext{
 		Cluster:      &clusterID,
@@ -169,15 +169,15 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 		Tags:         tag.ConvertTagsToNestedTags(tags),
 	}
 
-	if disk != 0 {
+	if disk := int64(d.Get("disk").(int)); disk != 0 {
 		newResource.Disk = &disk
 	}
 
-	if memory != 0 {
+	if memory := int64(d.Get("memory").(int)); memory != 0 {
 		newResource.Memory = &memory
 	}
 
-	if localContextData != "" {
+	if localContextData := d.Get("local_context_data").(string); localContextData != "" {
 		var localContextDataMap map[string]*interface{}
 		if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
 			return diag.FromErr(err)
@@ -185,11 +185,15 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 		newResource.LocalContextData = localContextDataMap
 	}
 
-	if platformID != 0 {
+	if deviceID := int64(d.Get("device_id").(int)); deviceID != 0 {
+		newResource.Device = &deviceID
+	}
+
+	if platformID := int64(d.Get("platform_id").(int)); platformID != 0 {
 		newResource.Platform = &platformID
 	}
 
-	if roleID != 0 {
+	if roleID := int64(d.Get("role_id").(int)); roleID != 0 {
 		newResource.Role = &roleID
 	}
 
@@ -197,11 +201,11 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 		newResource.Site = &siteID
 	}
 
-	if tenantID != 0 {
+	if tenantID := int64(d.Get("tenant_id").(int)); tenantID != 0 {
 		newResource.Tenant = &tenantID
 	}
 
-	if vcpus != "" {
+	if vcpus := d.Get("vcpus").(string); vcpus != "" {
 		vcpusFloat, _ := strconv.ParseFloat(vcpus, 32)
 		newResource.Vcpus = &vcpusFloat
 	}
@@ -254,6 +258,10 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
 
 	if err = d.Set("custom_field", customFields); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("device_id", util.GetNestedDeviceID(resource.Device)); err != nil {
 		return diag.FromErr(err)
 	}
 

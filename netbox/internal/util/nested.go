@@ -28,6 +28,14 @@ func GetNestedClusterGroupID(nested *models.NestedClusterGroup) *int64 {
 	return &nested.ID
 }
 
+func GetNestedDeviceID(nested *models.NestedDevice) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}
+
 func GetNestedManufacturerID(nested *models.NestedManufacturer) *int64 {
 	if nested == nil {
 		return nil
