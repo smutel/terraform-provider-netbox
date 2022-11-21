@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/dcim"
+	"github.com/smutel/terraform-provider-netbox/v4/netbox/extras"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/ipam"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/json"
 	"github.com/smutel/terraform-provider-netbox/v4/netbox/tenancy"
@@ -161,10 +162,18 @@ func Provider() *schema.Provider {
 			"netbox_virtualization_cluster":                       virtualization.DataNetboxVirtualizationCluster(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
+			"netbox_dcim_manufacturer":            dcim.ResourceNetboxDcimManufacturer(),
+			"netbox_dcim_device_role":             dcim.ResourceNetboxDcimDeviceRole(),
+			"netbox_dcim_platform":                dcim.ResourceNetboxDcimPlatform(),
+			"netbox_dcim_site":                    dcim.ResourceNetboxDcimSite(),
+			"netbox_extras_custom_field":          extras.ResourceNetboxExtrasCustomField(),
+			"netbox_extras_tag":                   extras.ResourceNetboxExtrasTag(),
 			"netbox_ipam_aggregate":               ipam.ResourceNetboxIpamAggregate(),
+			"netbox_ipam_asn":                     ipam.ResourceNetboxIpamASN(),
 			"netbox_ipam_ip_addresses":            ipam.ResourceNetboxIpamIPAddresses(),
 			"netbox_ipam_ip_range":                ipam.ResourceNetboxIpamIPRange(),
 			"netbox_ipam_prefix":                  ipam.ResourceNetboxIpamPrefix(),
+			"netbox_ipam_rir":                     ipam.ResourceNetboxIpamRIR(),
 			"netbox_ipam_service":                 ipam.ResourceNetboxIpamService(),
 			"netbox_ipam_vlan":                    ipam.ResourceNetboxIpamVlan(),
 			"netbox_ipam_vlan_group":              ipam.ResourceNetboxIpamVlanGroup(),
@@ -174,6 +183,9 @@ func Provider() *schema.Provider {
 			"netbox_tenancy_contact_role":         tenancy.ResourceNetboxTenancyContactRole(),
 			"netbox_tenancy_tenant":               tenancy.ResourceNetboxTenancyTenant(),
 			"netbox_tenancy_tenant_group":         tenancy.ResourceNetboxTenancyTenantGroup(),
+			"netbox_virtualization_cluster":       virtualization.ResourceNetboxVirtualizationCluster(),
+			"netbox_virtualization_cluster_group": virtualization.ResourceNetboxVirtualizationClusterGroup(),
+			"netbox_virtualization_cluster_type":  virtualization.ResourceNetboxVirtualizationClusterType(),
 			"netbox_virtualization_interface":     virtualization.ResourceNetboxVirtualizationInterface(),
 			"netbox_virtualization_vm":            virtualization.ResourceNetboxVirtualizationVM(),
 			"netbox_virtualization_vm_primary_ip": virtualization.ResourceNetboxVirtualizationVMPrimaryIP(),

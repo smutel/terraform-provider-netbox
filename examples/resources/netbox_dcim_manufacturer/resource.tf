@@ -1,7 +1,7 @@
-resource "netbox_ipam_aggregate" "aggregate_test" {
-  prefix = "192.168.56.0/24"
-  rir_id = netbox_ipam_rir.rir_test.id
-  date_created = "2020-12-21"
+resource "netbox_dcim_manufacturer" "manufacturer_test" {
+  name = "Test manufacturer"
+  slug = "Test manufacturer"
+  description = "manufacturer for testing"
 
   tag {
     name = "tag1"
@@ -68,15 +68,15 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = data.netbox_dcim_platform.platform_test.id
+    value = 1
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      data.netbox_dcim_platform.platform_test.id,
-      data.netbox_dcim_platform.platform_test2.id
+      1,
+      2
     ])
   }
 }

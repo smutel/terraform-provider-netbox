@@ -1,7 +1,14 @@
-resource "netbox_ipam_aggregate" "aggregate_test" {
-  prefix = "192.168.56.0/24"
-  rir_id = netbox_ipam_rir.rir_test.id
-  date_created = "2020-12-21"
+resource "netbox_virtualization_cluster" "cluster_test" {
+	name = "Test cluster"
+	type_id = netbox_virtualization_cluster_type.test.id
+
+	comments = <<-EOT
+	Test cluster
+	EOT
+
+	group_id = netbox_virtualization_cluster_group.test.id
+	site_id = netbox_dcim_site.site_test.id
+	tenant_id = netbox_tenancy_tenant.tenant_test.id
 
   tag {
     name = "tag1"
@@ -68,15 +75,15 @@ resource "netbox_ipam_aggregate" "aggregate_test" {
   custom_field {
     name = "cf_object"
     type = "object"
-    value = data.netbox_dcim_platform.platform_test.id
+    value = 1
   }
 
   custom_field {
     name = "cf_multi_object"
     type = "multiobject"
     value = jsonencode([
-      data.netbox_dcim_platform.platform_test.id,
-      data.netbox_dcim_platform.platform_test2.id
+      1,
+      2
     ])
   }
 }
