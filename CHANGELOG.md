@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.0](https://github.com/smutel/terraform-provider-netbox/compare/v5.2.0...v5.3.0) (2022-11-23)
+
+
+### Features
+
+* Add ipam rir resource ([2aa2edd](https://github.com/smutel/terraform-provider-netbox/commit/2aa2edd8e84d8cdc3969dfadf8661780fbd71adc))
+* Add netbox_dcim_device_role resource ([b250d1e](https://github.com/smutel/terraform-provider-netbox/commit/b250d1e884dcfb54ac03f71b0519ccbde7b424b5))
+* Add netbox_dcim_manufacturer ([f214f6a](https://github.com/smutel/terraform-provider-netbox/commit/f214f6aa231ccb77aa0102b760cacc4e0596c6b6))
+* Add netbox_dcim_platform resource ([31e5e14](https://github.com/smutel/terraform-provider-netbox/commit/31e5e14f974a5c5b8ebfeb7749fa5c6cfda8473a))
+* Add netbox_dcim_site resource ([820a3f1](https://github.com/smutel/terraform-provider-netbox/commit/820a3f130a97cb7d669ccab27e7d758c5f8821f5))
+* Add netbox_extras_custom_field resource ([87fbc92](https://github.com/smutel/terraform-provider-netbox/commit/87fbc924c2d31dcfa3f37f63b6ad22adad95c7d2))
+* Add netbox_extras_tag resource ([08a4f8a](https://github.com/smutel/terraform-provider-netbox/commit/08a4f8a3ea0115454870d4dde04773701817ecb6))
+* Add netbox_ipam_asn resource ([4cc2b9b](https://github.com/smutel/terraform-provider-netbox/commit/4cc2b9bacc75791229836e7a78c2590dd40589d8))
+* Add netbox_virtualization_cluster resource ([a292478](https://github.com/smutel/terraform-provider-netbox/commit/a292478f10eefe9534e58a54fea6d09c69e001e8))
+* Add netbox_virtualization_cluster_group resource ([c2782ce](https://github.com/smutel/terraform-provider-netbox/commit/c2782ce8868674b0ddd7b2af1e74f17789ed9d7d))
+* Add netbox_virtualization_cluster_type resource ([6ac1a1e](https://github.com/smutel/terraform-provider-netbox/commit/6ac1a1e0f3bf68a35525f517e267bd1bd35aff55))
+* Add netbox_virtualization_vm_primary_ip resource ([bc2e88a](https://github.com/smutel/terraform-provider-netbox/commit/bc2e88a48b160d7306cb4e89af8f86e62120d794))
+
+
+### Bug Fixes
+
+* Fix linter deprecation warnings ([47c6ddd](https://github.com/smutel/terraform-provider-netbox/commit/47c6ddd12bfdbebade9a4bfe40d161ac1ea5fcfb))
+* Reduce complexity of resourceNetboxVirtualizationVMRead ([c3456ba](https://github.com/smutel/terraform-provider-netbox/commit/c3456bae3bb15e8435515d74d8faae9b18a7e181))
+* Some test case are not working correctly ([80a1b00](https://github.com/smutel/terraform-provider-netbox/commit/80a1b00f22e67e3935b5ae5e434e15af1c3faa25))
+
 ## [5.2.0](https://github.com/smutel/terraform-provider-netbox/compare/v5.1.0...v5.2.0) (2022-11-10)
 
 
