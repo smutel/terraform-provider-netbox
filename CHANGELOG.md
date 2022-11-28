@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.3.1](https://github.com/smutel/terraform-provider-netbox/compare/v5.3.0...v5.3.1) (2022-11-28)
+
+
+### Bug Fixes
+
+* Workaround in ASN resource for 386 arch ([51e547a](https://github.com/smutel/terraform-provider-netbox/commit/51e547abc23f6cdeb2e73364344220f038d5aa95))
+
 ## [5.3.0](https://github.com/smutel/terraform-provider-netbox/compare/v5.2.0...v5.3.0) (2022-11-23)
 
 
