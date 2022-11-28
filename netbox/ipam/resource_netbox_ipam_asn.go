@@ -32,7 +32,7 @@ func ResourceNetboxIpamASN() *schema.Resource {
 			"asn": {
 				Type:         schema.TypeInt,
 				Required:     true,
-				ValidateFunc: validation.IntBetween(1, 4294967295),
+				ValidateFunc: validation.IntAtLeast(1),
 				Description:  "The asn number of this asn (ipam module).",
 			},
 			"content_type": {
