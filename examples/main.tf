@@ -1,6 +1,6 @@
 resource "netbox_dcim_device_role" "device_role_test" {
   name = "Test device role"
-  slug = "Test device role"
+  slug = "Test_device_role"
   description = "Device role for testing"
   color = "00ff00"
 }
@@ -320,7 +320,7 @@ resource "netbox_ipam_prefix" "dynamic_prefix_test" {
   parent_prefix {
     prefix = netbox_ipam_prefix.prefix_test.id
     prefix_length = 26
-  } 
+  }
   description = "Dynamic prefix created by terraform"
 }
 
