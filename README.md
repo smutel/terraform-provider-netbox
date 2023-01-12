@@ -2,7 +2,9 @@
 
 [![Lisence](https://img.shields.io/badge/license-ISC-informational?style=flat-square)](https://github.com/smutel/terraform-provider-netbox/blob/master/LICENSE)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-informational.svg?style=flat-square&logo=git)](https://conventionalcommits.org)
-[![Build Status](https://img.shields.io/github/workflow/status/smutel/terraform-provider-netbox/Master/master?style=flat-square&logo=github-actions)](https://github.com/smutel/terraform-provider-netbox/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/smutel/terraform-provider-netbox/master.yml?branch=master&style=flat-square)](https://github.com/smutel/terraform-provider-netbox/actions/workflows/master.yml)
+[![Issues](https://img.shields.io/github/issues-raw/smutel/terraform-provider-netbox?style=flat-square)](https://github.com/smutel/terraform-provider-netbox/issues)
+[![Last release](https://img.shields.io/github/v/release/smutel/terraform-provider-netbox?style=flat-square)](https://github.com/smutel/terraform-provider-netbox/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/smutel/terraform-provider-netbox?style=flat-square)](https://goreportcard.com/report/github.com/smutel/terraform-provider-netbox)
 
 Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
@@ -24,6 +26,7 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 | 3.0            | 3.x.y            |
 | 3.1            | 4.x.y            |
 | 3.2            | 5.x.y            |
+| 3.3            | 6.x.y            |
 
 ## go-netbox
 
@@ -36,17 +39,17 @@ This project does not use [netbox-community/go-netbox](https://github.com/netbox
 
 Clone repository to: ``$GOPATH/src/github.com/smutel/terraform-provider-netbox``
 
-```bash
-$ mkdir -p $GOPATH/src/github.com/smutel
-$ cd $GOPATH/src/github.com/smutel
-$ git clone git@github.com:smutel/terraform-provider-netbox.git
+```shell
+mkdir -p $GOPATH/src/github.com/smutel
+cd $GOPATH/src/github.com/smutel
+git clone git@github.com:smutel/terraform-provider-netbox.git
 ```
 
 Enter the provider directory and build the provider
 
-```bash
-$ cd $GOPATH/src/github.com/smutel/terraform-provider-netbox
-$ make build
+```shell
+cd $GOPATH/src/github.com/smutel/terraform-provider-netbox
+make build
 ```
 
 # Testing
@@ -54,7 +57,7 @@ $ make build
 To run the tests you need to have a running netbox installation. For example netbox-docker.
 
 To run the tests execute:
-```
+```shell
 export NETBOX_TOKEN=0123456789abcdef0123456789abcdef01234567
 export NETBOX_SCHEME=http
 export NETBOX_URL=localhost:8000
@@ -64,20 +67,20 @@ TF_ACC=1 go test -v ./...
 Scheme and URL are not needed it the default is used (https and localhost:8000)
 
 To run only some tests execute the following:
-```
+```shell
 TF_ACC=1 go test -v ./... -run TestAccNetboxVirtualizationVM
 ```
 
 # Debugging the provider
 
 To run this provider in delve run:
-```bash
-$ dlv exec --accept-multiclient --continue --headless ./terraform-provider-netbox -- -debug
+```shell
+dlv exec --accept-multiclient --continue --headless ./terraform-provider-netbox -- -debug
 ```
 For Visual Studio Code a config is provided in this repo. Pressing <F5> should run the provider in debug mode.
 
 This will output a value for TF_REATTACH_PROVIDER:
-```
+```shell
 Starting: /home/andy/go/bin/dlv dap --check-go-version=false --listen=127.0.0.1:43501 --log-dest=3 from /home/andy/terraform/terraform-provider-netbox
 DAP server listening at: 127.0.0.1:43501
 Type 'dlv help' for list of commands.
@@ -88,9 +91,9 @@ Provider started. To attach Terraform CLI, set the TF_REATTACH_PROVIDERS environ
 ```
 
 In your terrafom directory run the following:
-```bash
-$ export TF_REATTACH_PROVIDER=(Value from above)
-$ terraform plan
+```shell
+export TF_REATTACH_PROVIDER=(Value from above)
+terraform plan
 ```
 
 More information about debugging a terraform provider can be found in the terraform [documentation](https://www.terraform.io/plugin/debugging#starting-a-provider-in-debug-mode)
@@ -108,11 +111,10 @@ Before changing the version of the provider, please remove the temporary folder 
 
 ```hcl
 terraform {
-  required_version = ">= 0.14.0"
   required_providers {
     netbox = {
       source = "smutel/netbox"
-      version = "~> 3.1.0"
+      version = "~> 6.0.0"
     }
   }
 }
@@ -122,16 +124,16 @@ terraform {
 
 You can install the provider manually in your global terraform provider folder.
 
-```bash
-$ export NETBOX_PROVIDER_VERSION=3.1.0
-$ mkdir -p ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64
-$ cp terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION} ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64/terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION}
+```shell
+export NETBOX_PROVIDER_VERSION=6.0.0
+mkdir -p ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64
+cp terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION} ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/${NETBOX_PROVIDER_VERSION}/linux_amd64/terraform-provider-netbox_v${NETBOX_PROVIDER_VERSION}
 ```
 
 ### Manual installation (to test the compiled version = version 0.0.1)
 
-```bash
-$ make localinstall
+```shell
+make localinstall
 ==> Creating folder ~/.terraform.d/plugins/registry.terraform.io/smutel/netbox/0.0.1/linux_amd64
 ==> Installing provider in this folder
 ```
@@ -173,10 +175,10 @@ You can set different environment variables for your test:
 * NETBOX_TOKEN to define the TOKEN to access the application (empty by default)
 * NETBOX_SCHEME to define the SCHEME of the URL (https by default)
 
-```bash
-$ export NETBOX_URL="127.0.0.1:8000"
-$ export NETBOX_TOKEN="c07a2db4adb8b1e7f75e7c4369964e92f7680512"
-$ export NETBOX_SCHEME="http"
-$ cd examples
-$ terraform init & terraform apply
+```shell
+export NETBOX_URL="127.0.0.1:8000"
+export NETBOX_TOKEN="c07a2db4adb8b1e7f75e7c4369964e92f7680512"
+export NETBOX_SCHEME="http"
+cd examples
+terraform init & terraform apply
 ```
