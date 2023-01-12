@@ -352,7 +352,7 @@ func (a *Client) TenancyContactAssignmentsDelete(params *TenancyContactAssignmen
 }
 
 /*
-TenancyContactAssignmentsList Overrides ListModelMixin to allow processing ExportTemplates.
+TenancyContactAssignmentsList tenancy contact assignments list API
 */
 func (a *Client) TenancyContactAssignmentsList(params *TenancyContactAssignmentsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*TenancyContactAssignmentsListOK, error) {
 	// TODO: Validate the params before sending
@@ -703,7 +703,7 @@ func (a *Client) TenancyContactGroupsDelete(params *TenancyContactGroupsDeletePa
 }
 
 /*
-TenancyContactGroupsList Overrides ListModelMixin to allow processing ExportTemplates.
+TenancyContactGroupsList tenancy contact groups list API
 */
 func (a *Client) TenancyContactGroupsList(params *TenancyContactGroupsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*TenancyContactGroupsListOK, error) {
 	// TODO: Validate the params before sending
@@ -1054,7 +1054,7 @@ func (a *Client) TenancyContactRolesDelete(params *TenancyContactRolesDeletePara
 }
 
 /*
-TenancyContactRolesList Overrides ListModelMixin to allow processing ExportTemplates.
+TenancyContactRolesList tenancy contact roles list API
 */
 func (a *Client) TenancyContactRolesList(params *TenancyContactRolesListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*TenancyContactRolesListOK, error) {
 	// TODO: Validate the params before sending
@@ -1405,7 +1405,7 @@ func (a *Client) TenancyContactsDelete(params *TenancyContactsDeleteParams, auth
 }
 
 /*
-TenancyContactsList Overrides ListModelMixin to allow processing ExportTemplates.
+TenancyContactsList tenancy contacts list API
 */
 func (a *Client) TenancyContactsList(params *TenancyContactsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*TenancyContactsListOK, error) {
 	// TODO: Validate the params before sending
@@ -1756,7 +1756,7 @@ func (a *Client) TenancyTenantGroupsDelete(params *TenancyTenantGroupsDeletePara
 }
 
 /*
-TenancyTenantGroupsList Overrides ListModelMixin to allow processing ExportTemplates.
+TenancyTenantGroupsList tenancy tenant groups list API
 */
 func (a *Client) TenancyTenantGroupsList(params *TenancyTenantGroupsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*TenancyTenantGroupsListOK, error) {
 	// TODO: Validate the params before sending
@@ -2107,7 +2107,7 @@ func (a *Client) TenancyTenantsDelete(params *TenancyTenantsDeleteParams, authIn
 }
 
 /*
-TenancyTenantsList Overrides ListModelMixin to allow processing ExportTemplates.
+TenancyTenantsList tenancy tenants list API
 */
 func (a *Client) TenancyTenantsList(params *TenancyTenantsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*TenancyTenantsListOK, error) {
 	// TODO: Validate the params before sending

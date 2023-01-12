@@ -48,7 +48,7 @@ type Rack struct {
 	// Created
 	// Read Only: true
 	// Format: date-time
-	Created strfmt.DateTime `json:"created,omitempty"`
+	Created *strfmt.DateTime `json:"created,omitempty"`
 
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
@@ -77,7 +77,7 @@ type Rack struct {
 	// Last updated
 	// Read Only: true
 	// Format: date-time
-	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
+	LastUpdated *strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// location
 	Location *NestedLocation `json:"location,omitempty"`
@@ -626,7 +626,7 @@ func (m *Rack) ContextValidate(ctx context.Context, formats strfmt.Registry) err
 
 func (m *Rack) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", m.Created); err != nil {
 		return err
 	}
 
@@ -662,7 +662,7 @@ func (m *Rack) contextValidateID(ctx context.Context, formats strfmt.Registry) e
 
 func (m *Rack) contextValidateLastUpdated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
+	if err := validate.ReadOnly(ctx, "last_updated", "body", m.LastUpdated); err != nil {
 		return err
 	}
 
@@ -1164,12 +1164,12 @@ type RackType struct {
 
 	// label
 	// Required: true
-	// Enum: [2-post frame 4-post frame 4-post cabinet Wall-mounted frame Wall-mounted cabinet]
+	// Enum: [2-post frame 4-post frame 4-post cabinet Wall-mounted frame Wall-mounted frame (vertical) Wall-mounted cabinet Wall-mounted cabinet (vertical)]
 	Label *string `json:"label"`
 
 	// value
 	// Required: true
-	// Enum: [2-post-frame 4-post-frame 4-post-cabinet wall-frame wall-cabinet]
+	// Enum: [2-post-frame 4-post-frame 4-post-cabinet wall-frame wall-frame-vertical wall-cabinet wall-cabinet-vertical]
 	Value *string `json:"value"`
 }
 
@@ -1195,7 +1195,7 @@ var rackTypeTypeLabelPropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["2-post frame","4-post frame","4-post cabinet","Wall-mounted frame","Wall-mounted cabinet"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["2-post frame","4-post frame","4-post cabinet","Wall-mounted frame","Wall-mounted frame (vertical)","Wall-mounted cabinet","Wall-mounted cabinet (vertical)"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -1217,8 +1217,14 @@ const (
 	// RackTypeLabelWallDashMountedFrame captures enum value "Wall-mounted frame"
 	RackTypeLabelWallDashMountedFrame string = "Wall-mounted frame"
 
+	// RackTypeLabelWallDashMountedFrameVertical captures enum value "Wall-mounted frame (vertical)"
+	RackTypeLabelWallDashMountedFrameVertical string = "Wall-mounted frame (vertical)"
+
 	// RackTypeLabelWallDashMountedCabinet captures enum value "Wall-mounted cabinet"
 	RackTypeLabelWallDashMountedCabinet string = "Wall-mounted cabinet"
+
+	// RackTypeLabelWallDashMountedCabinetVertical captures enum value "Wall-mounted cabinet (vertical)"
+	RackTypeLabelWallDashMountedCabinetVertical string = "Wall-mounted cabinet (vertical)"
 )
 
 // prop value enum
@@ -1247,7 +1253,7 @@ var rackTypeTypeValuePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["2-post-frame","4-post-frame","4-post-cabinet","wall-frame","wall-cabinet"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["2-post-frame","4-post-frame","4-post-cabinet","wall-frame","wall-frame-vertical","wall-cabinet","wall-cabinet-vertical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -1269,8 +1275,14 @@ const (
 	// RackTypeValueWallDashFrame captures enum value "wall-frame"
 	RackTypeValueWallDashFrame string = "wall-frame"
 
+	// RackTypeValueWallDashFrameDashVertical captures enum value "wall-frame-vertical"
+	RackTypeValueWallDashFrameDashVertical string = "wall-frame-vertical"
+
 	// RackTypeValueWallDashCabinet captures enum value "wall-cabinet"
 	RackTypeValueWallDashCabinet string = "wall-cabinet"
+
+	// RackTypeValueWallDashCabinetDashVertical captures enum value "wall-cabinet-vertical"
+	RackTypeValueWallDashCabinetDashVertical string = "wall-cabinet-vertical"
 )
 
 // prop value enum

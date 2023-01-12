@@ -48,7 +48,7 @@ type WritableRack struct {
 	// Created
 	// Read Only: true
 	// Format: date-time
-	Created strfmt.DateTime `json:"created,omitempty"`
+	Created *strfmt.DateTime `json:"created,omitempty"`
 
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
@@ -77,7 +77,7 @@ type WritableRack struct {
 	// Last updated
 	// Read Only: true
 	// Format: date-time
-	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
+	LastUpdated *strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Location
 	// Required: true
@@ -135,7 +135,7 @@ type WritableRack struct {
 	Tenant *int64 `json:"tenant,omitempty"`
 
 	// Type
-	// Enum: [2-post-frame 4-post-frame 4-post-cabinet wall-frame wall-cabinet]
+	// Enum: [2-post-frame 4-post-frame 4-post-cabinet wall-frame wall-frame-vertical wall-cabinet wall-cabinet-vertical]
 	Type string `json:"type,omitempty"`
 
 	// Height (U)
@@ -485,7 +485,7 @@ var writableRackTypeTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["2-post-frame","4-post-frame","4-post-cabinet","wall-frame","wall-cabinet"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["2-post-frame","4-post-frame","4-post-cabinet","wall-frame","wall-frame-vertical","wall-cabinet","wall-cabinet-vertical"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -507,8 +507,14 @@ const (
 	// WritableRackTypeWallDashFrame captures enum value "wall-frame"
 	WritableRackTypeWallDashFrame string = "wall-frame"
 
+	// WritableRackTypeWallDashFrameDashVertical captures enum value "wall-frame-vertical"
+	WritableRackTypeWallDashFrameDashVertical string = "wall-frame-vertical"
+
 	// WritableRackTypeWallDashCabinet captures enum value "wall-cabinet"
 	WritableRackTypeWallDashCabinet string = "wall-cabinet"
+
+	// WritableRackTypeWallDashCabinetDashVertical captures enum value "wall-cabinet-vertical"
+	WritableRackTypeWallDashCabinetDashVertical string = "wall-cabinet-vertical"
 )
 
 // prop value enum
@@ -637,7 +643,7 @@ func (m *WritableRack) ContextValidate(ctx context.Context, formats strfmt.Regis
 
 func (m *WritableRack) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", m.Created); err != nil {
 		return err
 	}
 
@@ -673,7 +679,7 @@ func (m *WritableRack) contextValidateID(ctx context.Context, formats strfmt.Reg
 
 func (m *WritableRack) contextValidateLastUpdated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
+	if err := validate.ReadOnly(ctx, "last_updated", "body", m.LastUpdated); err != nil {
 		return err
 	}
 
