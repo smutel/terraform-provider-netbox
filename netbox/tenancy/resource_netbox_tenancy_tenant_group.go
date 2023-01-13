@@ -11,8 +11,8 @@ import (
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
 	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/tag"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/util"
 )
 
 func ResourceNetboxTenancyTenantGroup() *schema.Resource {

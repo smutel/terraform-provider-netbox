@@ -38,7 +38,7 @@ type JournalEntry struct {
 
 	// Assigned object
 	// Read Only: true
-	AssignedObject map[string]*string `json:"assigned_object,omitempty"`
+	AssignedObject interface{} `json:"assigned_object,omitempty"`
 
 	// Assigned object id
 	// Required: true
@@ -58,7 +58,7 @@ type JournalEntry struct {
 	// Created
 	// Read Only: true
 	// Format: date-time
-	Created strfmt.DateTime `json:"created,omitempty"`
+	Created *strfmt.DateTime `json:"created,omitempty"`
 
 	// Created by
 	CreatedBy *int64 `json:"created_by,omitempty"`
@@ -80,7 +80,7 @@ type JournalEntry struct {
 	// Last updated
 	// Read Only: true
 	// Format: date-time
-	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
+	LastUpdated *strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// tags
 	Tags []*NestedTag `json:"tags"`
@@ -257,10 +257,6 @@ func (m *JournalEntry) validateURL(formats strfmt.Registry) error {
 func (m *JournalEntry) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateAssignedObject(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateCreated(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -295,14 +291,9 @@ func (m *JournalEntry) ContextValidate(ctx context.Context, formats strfmt.Regis
 	return nil
 }
 
-func (m *JournalEntry) contextValidateAssignedObject(ctx context.Context, formats strfmt.Registry) error {
-
-	return nil
-}
-
 func (m *JournalEntry) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", m.Created); err != nil {
 		return err
 	}
 
@@ -345,7 +336,7 @@ func (m *JournalEntry) contextValidateKind(ctx context.Context, formats strfmt.R
 
 func (m *JournalEntry) contextValidateLastUpdated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
+	if err := validate.ReadOnly(ctx, "last_updated", "body", m.LastUpdated); err != nil {
 		return err
 	}
 

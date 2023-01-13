@@ -10,10 +10,10 @@ import (
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/dcim"
 	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/requestmodifier"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/tag"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/requestmodifier"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/tag"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/util"
 )
 
 func ResourceNetboxDcimSite() *schema.Resource {
@@ -213,7 +213,6 @@ func resourceNetboxDcimSiteCreate(ctx context.Context, d *schema.ResourceData,
 		Slug:            &slug,
 		Status:          d.Get("status").(string),
 		Tags:            tag.ConvertTagsToNestedTags(tags),
-		TimeZone:        d.Get("time_zone").(string),
 	}
 
 	if groupID != 0 {
@@ -224,6 +223,9 @@ func resourceNetboxDcimSiteCreate(ctx context.Context, d *schema.ResourceData,
 	}
 	if tenantID != 0 {
 		newResource.Tenant = &tenantID
+	}
+	if timezone := d.Get("time_zone").(string); timezone != "" {
+		newResource.TimeZone = &timezone
 	}
 
 	resource := dcim.NewDcimSitesCreateParams().WithData(newResource)
@@ -431,7 +433,7 @@ func resourceNetboxDcimSiteUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 	if d.HasChange("time_zone") {
 		timeZone := d.Get("time_zone").(string)
-		params.TimeZone = timeZone
+		params.TimeZone = &timeZone
 		modifiedFields["time_zone"] = timeZone
 	}
 

@@ -37,8 +37,7 @@ import (
 type WritableVirtualMachineWithConfigContext struct {
 
 	// Cluster
-	// Required: true
-	Cluster *int64 `json:"cluster"`
+	Cluster *int64 `json:"cluster,omitempty"`
 
 	// Comments
 	Comments string `json:"comments,omitempty"`
@@ -50,10 +49,13 @@ type WritableVirtualMachineWithConfigContext struct {
 	// Created
 	// Read Only: true
 	// Format: date-time
-	Created strfmt.DateTime `json:"created,omitempty"`
+	Created *strfmt.DateTime `json:"created,omitempty"`
 
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
+
+	// Device
+	Device *int64 `json:"device,omitempty"`
 
 	// Disk (GB)
 	// Maximum: 2.147483647e+09
@@ -71,7 +73,7 @@ type WritableVirtualMachineWithConfigContext struct {
 	// Last updated
 	// Read Only: true
 	// Format: date-time
-	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
+	LastUpdated *strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Local context data
 	LocalContextData interface{} `json:"local_context_data,omitempty"`
@@ -104,8 +106,7 @@ type WritableVirtualMachineWithConfigContext struct {
 	Role *int64 `json:"role,omitempty"`
 
 	// Site
-	// Read Only: true
-	Site string `json:"site,omitempty"`
+	Site *int64 `json:"site,omitempty"`
 
 	// Status
 	// Enum: [offline active planned staged failed decommissioning]
@@ -130,10 +131,6 @@ type WritableVirtualMachineWithConfigContext struct {
 // Validate validates this writable virtual machine with config context
 func (m *WritableVirtualMachineWithConfigContext) Validate(formats strfmt.Registry) error {
 	var res []error
-
-	if err := m.validateCluster(formats); err != nil {
-		res = append(res, err)
-	}
 
 	if err := m.validateCreated(formats); err != nil {
 		res = append(res, err)
@@ -174,15 +171,6 @@ func (m *WritableVirtualMachineWithConfigContext) Validate(formats strfmt.Regist
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *WritableVirtualMachineWithConfigContext) validateCluster(formats strfmt.Registry) error {
-
-	if err := validate.Required("cluster", "body", m.Cluster); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -387,10 +375,6 @@ func (m *WritableVirtualMachineWithConfigContext) ContextValidate(ctx context.Co
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateSite(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateTags(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -407,7 +391,7 @@ func (m *WritableVirtualMachineWithConfigContext) ContextValidate(ctx context.Co
 
 func (m *WritableVirtualMachineWithConfigContext) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", m.Created); err != nil {
 		return err
 	}
 
@@ -434,7 +418,7 @@ func (m *WritableVirtualMachineWithConfigContext) contextValidateID(ctx context.
 
 func (m *WritableVirtualMachineWithConfigContext) contextValidateLastUpdated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
+	if err := validate.ReadOnly(ctx, "last_updated", "body", m.LastUpdated); err != nil {
 		return err
 	}
 
@@ -444,15 +428,6 @@ func (m *WritableVirtualMachineWithConfigContext) contextValidateLastUpdated(ctx
 func (m *WritableVirtualMachineWithConfigContext) contextValidatePrimaryIP(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "primary_ip", "body", string(m.PrimaryIP)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *WritableVirtualMachineWithConfigContext) contextValidateSite(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "site", "body", string(m.Site)); err != nil {
 		return err
 	}
 

@@ -254,6 +254,12 @@ type ExtrasWebhooksListParams struct {
 	*/
 	Offset *int64
 
+	/* Ordering.
+
+	   Which field to use when ordering the results.
+	*/
+	Ordering *string
+
 	// PayloadURL.
 	PayloadURL *string
 
@@ -1007,6 +1013,17 @@ func (o *ExtrasWebhooksListParams) WithOffset(offset *int64) *ExtrasWebhooksList
 // SetOffset adds the offset to the extras webhooks list params
 func (o *ExtrasWebhooksListParams) SetOffset(offset *int64) {
 	o.Offset = offset
+}
+
+// WithOrdering adds the ordering to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) WithOrdering(ordering *string) *ExtrasWebhooksListParams {
+	o.SetOrdering(ordering)
+	return o
+}
+
+// SetOrdering adds the ordering to the extras webhooks list params
+func (o *ExtrasWebhooksListParams) SetOrdering(ordering *string) {
+	o.Ordering = ordering
 }
 
 // WithPayloadURL adds the payloadURL to the extras webhooks list params
@@ -2256,6 +2273,23 @@ func (o *ExtrasWebhooksListParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qOffset != "" {
 
 			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Ordering != nil {
+
+		// query param ordering
+		var qrOrdering string
+
+		if o.Ordering != nil {
+			qrOrdering = *o.Ordering
+		}
+		qOrdering := qrOrdering
+		if qOrdering != "" {
+
+			if err := r.SetQueryParam("ordering", qOrdering); err != nil {
 				return err
 			}
 		}

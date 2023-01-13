@@ -298,7 +298,7 @@ func (a *Client) WirelessWirelessLanGroupsDelete(params *WirelessWirelessLanGrou
 }
 
 /*
-WirelessWirelessLanGroupsList Overrides ListModelMixin to allow processing ExportTemplates.
+WirelessWirelessLanGroupsList wireless wireless lan groups list API
 */
 func (a *Client) WirelessWirelessLanGroupsList(params *WirelessWirelessLanGroupsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*WirelessWirelessLanGroupsListOK, error) {
 	// TODO: Validate the params before sending
@@ -649,7 +649,7 @@ func (a *Client) WirelessWirelessLansDelete(params *WirelessWirelessLansDeletePa
 }
 
 /*
-WirelessWirelessLansList Overrides ListModelMixin to allow processing ExportTemplates.
+WirelessWirelessLansList wireless wireless lans list API
 */
 func (a *Client) WirelessWirelessLansList(params *WirelessWirelessLansListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*WirelessWirelessLansListOK, error) {
 	// TODO: Validate the params before sending
@@ -1000,7 +1000,7 @@ func (a *Client) WirelessWirelessLinksDelete(params *WirelessWirelessLinksDelete
 }
 
 /*
-WirelessWirelessLinksList Overrides ListModelMixin to allow processing ExportTemplates.
+WirelessWirelessLinksList wireless wireless links list API
 */
 func (a *Client) WirelessWirelessLinksList(params *WirelessWirelessLinksListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*WirelessWirelessLinksListOK, error) {
 	// TODO: Validate the params before sending

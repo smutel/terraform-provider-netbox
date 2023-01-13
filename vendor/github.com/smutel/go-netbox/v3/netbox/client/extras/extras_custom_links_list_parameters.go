@@ -239,6 +239,12 @@ type ExtrasCustomLinksListParams struct {
 	*/
 	Offset *int64
 
+	/* Ordering.
+
+	   Which field to use when ordering the results.
+	*/
+	Ordering *string
+
 	// Q.
 	Q *string
 
@@ -883,6 +889,17 @@ func (o *ExtrasCustomLinksListParams) WithOffset(offset *int64) *ExtrasCustomLin
 // SetOffset adds the offset to the extras custom links list params
 func (o *ExtrasCustomLinksListParams) SetOffset(offset *int64) {
 	o.Offset = offset
+}
+
+// WithOrdering adds the ordering to the extras custom links list params
+func (o *ExtrasCustomLinksListParams) WithOrdering(ordering *string) *ExtrasCustomLinksListParams {
+	o.SetOrdering(ordering)
+	return o
+}
+
+// SetOrdering adds the ordering to the extras custom links list params
+func (o *ExtrasCustomLinksListParams) SetOrdering(ordering *string) {
+	o.Ordering = ordering
 }
 
 // WithQ adds the q to the extras custom links list params
@@ -1849,6 +1866,23 @@ func (o *ExtrasCustomLinksListParams) WriteToRequest(r runtime.ClientRequest, re
 		if qOffset != "" {
 
 			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Ordering != nil {
+
+		// query param ordering
+		var qrOrdering string
+
+		if o.Ordering != nil {
+			qrOrdering = *o.Ordering
+		}
+		qOrdering := qrOrdering
+		if qOrdering != "" {
+
+			if err := r.SetQueryParam("ordering", qOrdering); err != nil {
 				return err
 			}
 		}

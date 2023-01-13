@@ -59,7 +59,7 @@ type WritableDeviceWithConfigContext struct {
 	// Created
 	// Read Only: true
 	// Format: date-time
-	Created strfmt.DateTime `json:"created,omitempty"`
+	Created *strfmt.DateTime `json:"created,omitempty"`
 
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
@@ -88,7 +88,7 @@ type WritableDeviceWithConfigContext struct {
 	// Last updated
 	// Read Only: true
 	// Format: date-time
-	LastUpdated strfmt.DateTime `json:"last_updated,omitempty"`
+	LastUpdated *strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Local context data
 	LocalContextData interface{} `json:"local_context_data,omitempty"`
@@ -108,8 +108,8 @@ type WritableDeviceWithConfigContext struct {
 	Platform *int64 `json:"platform,omitempty"`
 
 	// Position (U)
-	// Minimum: 1
-	Position *int64 `json:"position,omitempty"`
+	// Minimum: 0.5
+	Position *float64 `json:"position,omitempty"`
 
 	// Primary ip
 	// Read Only: true
@@ -445,7 +445,7 @@ func (m *WritableDeviceWithConfigContext) validatePosition(formats strfmt.Regist
 		return nil
 	}
 
-	if err := validate.MinimumInt("position", "body", *m.Position, 1, false); err != nil {
+	if err := validate.Minimum("position", "body", *m.Position, 0.5, false); err != nil {
 		return err
 	}
 
@@ -671,7 +671,7 @@ func (m *WritableDeviceWithConfigContext) ContextValidate(ctx context.Context, f
 
 func (m *WritableDeviceWithConfigContext) contextValidateCreated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "created", "body", strfmt.DateTime(m.Created)); err != nil {
+	if err := validate.ReadOnly(ctx, "created", "body", m.Created); err != nil {
 		return err
 	}
 
@@ -698,7 +698,7 @@ func (m *WritableDeviceWithConfigContext) contextValidateID(ctx context.Context,
 
 func (m *WritableDeviceWithConfigContext) contextValidateLastUpdated(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "last_updated", "body", strfmt.DateTime(m.LastUpdated)); err != nil {
+	if err := validate.ReadOnly(ctx, "last_updated", "body", m.LastUpdated); err != nil {
 		return err
 	}
 

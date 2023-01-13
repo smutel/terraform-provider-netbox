@@ -80,11 +80,20 @@ type CircuitsProviderNetworksListParams struct {
 	// Created.
 	Created *string
 
+	// CreatedGt.
+	CreatedGt *string
+
 	// CreatedGte.
 	CreatedGte *string
 
+	// CreatedLt.
+	CreatedLt *string
+
 	// CreatedLte.
 	CreatedLte *string
+
+	// Createdn.
+	Createdn *string
 
 	// Description.
 	Description *string
@@ -137,11 +146,20 @@ type CircuitsProviderNetworksListParams struct {
 	// LastUpdated.
 	LastUpdated *string
 
+	// LastUpdatedGt.
+	LastUpdatedGt *string
+
 	// LastUpdatedGte.
 	LastUpdatedGte *string
 
+	// LastUpdatedLt.
+	LastUpdatedLt *string
+
 	// LastUpdatedLte.
 	LastUpdatedLte *string
+
+	// LastUpdatedn.
+	LastUpdatedn *string
 
 	/* Limit.
 
@@ -184,6 +202,12 @@ type CircuitsProviderNetworksListParams struct {
 	   The initial index from which to return the results.
 	*/
 	Offset *int64
+
+	/* Ordering.
+
+	   Which field to use when ordering the results.
+	*/
+	Ordering *string
 
 	// Provider.
 	Provider *string
@@ -300,6 +324,17 @@ func (o *CircuitsProviderNetworksListParams) SetCreated(created *string) {
 	o.Created = created
 }
 
+// WithCreatedGt adds the createdGt to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithCreatedGt(createdGt *string) *CircuitsProviderNetworksListParams {
+	o.SetCreatedGt(createdGt)
+	return o
+}
+
+// SetCreatedGt adds the createdGt to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetCreatedGt(createdGt *string) {
+	o.CreatedGt = createdGt
+}
+
 // WithCreatedGte adds the createdGte to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) WithCreatedGte(createdGte *string) *CircuitsProviderNetworksListParams {
 	o.SetCreatedGte(createdGte)
@@ -311,6 +346,17 @@ func (o *CircuitsProviderNetworksListParams) SetCreatedGte(createdGte *string) {
 	o.CreatedGte = createdGte
 }
 
+// WithCreatedLt adds the createdLt to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithCreatedLt(createdLt *string) *CircuitsProviderNetworksListParams {
+	o.SetCreatedLt(createdLt)
+	return o
+}
+
+// SetCreatedLt adds the createdLt to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetCreatedLt(createdLt *string) {
+	o.CreatedLt = createdLt
+}
+
 // WithCreatedLte adds the createdLte to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) WithCreatedLte(createdLte *string) *CircuitsProviderNetworksListParams {
 	o.SetCreatedLte(createdLte)
@@ -320,6 +366,17 @@ func (o *CircuitsProviderNetworksListParams) WithCreatedLte(createdLte *string) 
 // SetCreatedLte adds the createdLte to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) SetCreatedLte(createdLte *string) {
 	o.CreatedLte = createdLte
+}
+
+// WithCreatedn adds the createdn to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithCreatedn(createdn *string) *CircuitsProviderNetworksListParams {
+	o.SetCreatedn(createdn)
+	return o
+}
+
+// SetCreatedn adds the createdN to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetCreatedn(createdn *string) {
+	o.Createdn = createdn
 }
 
 // WithDescription adds the description to the circuits provider networks list params
@@ -509,6 +566,17 @@ func (o *CircuitsProviderNetworksListParams) SetLastUpdated(lastUpdated *string)
 	o.LastUpdated = lastUpdated
 }
 
+// WithLastUpdatedGt adds the lastUpdatedGt to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithLastUpdatedGt(lastUpdatedGt *string) *CircuitsProviderNetworksListParams {
+	o.SetLastUpdatedGt(lastUpdatedGt)
+	return o
+}
+
+// SetLastUpdatedGt adds the lastUpdatedGt to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetLastUpdatedGt(lastUpdatedGt *string) {
+	o.LastUpdatedGt = lastUpdatedGt
+}
+
 // WithLastUpdatedGte adds the lastUpdatedGte to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) WithLastUpdatedGte(lastUpdatedGte *string) *CircuitsProviderNetworksListParams {
 	o.SetLastUpdatedGte(lastUpdatedGte)
@@ -520,6 +588,17 @@ func (o *CircuitsProviderNetworksListParams) SetLastUpdatedGte(lastUpdatedGte *s
 	o.LastUpdatedGte = lastUpdatedGte
 }
 
+// WithLastUpdatedLt adds the lastUpdatedLt to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithLastUpdatedLt(lastUpdatedLt *string) *CircuitsProviderNetworksListParams {
+	o.SetLastUpdatedLt(lastUpdatedLt)
+	return o
+}
+
+// SetLastUpdatedLt adds the lastUpdatedLt to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetLastUpdatedLt(lastUpdatedLt *string) {
+	o.LastUpdatedLt = lastUpdatedLt
+}
+
 // WithLastUpdatedLte adds the lastUpdatedLte to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) WithLastUpdatedLte(lastUpdatedLte *string) *CircuitsProviderNetworksListParams {
 	o.SetLastUpdatedLte(lastUpdatedLte)
@@ -529,6 +608,17 @@ func (o *CircuitsProviderNetworksListParams) WithLastUpdatedLte(lastUpdatedLte *
 // SetLastUpdatedLte adds the lastUpdatedLte to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) SetLastUpdatedLte(lastUpdatedLte *string) {
 	o.LastUpdatedLte = lastUpdatedLte
+}
+
+// WithLastUpdatedn adds the lastUpdatedn to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithLastUpdatedn(lastUpdatedn *string) *CircuitsProviderNetworksListParams {
+	o.SetLastUpdatedn(lastUpdatedn)
+	return o
+}
+
+// SetLastUpdatedn adds the lastUpdatedN to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetLastUpdatedn(lastUpdatedn *string) {
+	o.LastUpdatedn = lastUpdatedn
 }
 
 // WithLimit adds the limit to the circuits provider networks list params
@@ -661,6 +751,17 @@ func (o *CircuitsProviderNetworksListParams) WithOffset(offset *int64) *Circuits
 // SetOffset adds the offset to the circuits provider networks list params
 func (o *CircuitsProviderNetworksListParams) SetOffset(offset *int64) {
 	o.Offset = offset
+}
+
+// WithOrdering adds the ordering to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) WithOrdering(ordering *string) *CircuitsProviderNetworksListParams {
+	o.SetOrdering(ordering)
+	return o
+}
+
+// SetOrdering adds the ordering to the circuits provider networks list params
+func (o *CircuitsProviderNetworksListParams) SetOrdering(ordering *string) {
+	o.Ordering = ordering
 }
 
 // WithProvider adds the provider to the circuits provider networks list params
@@ -875,6 +976,23 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		}
 	}
 
+	if o.CreatedGt != nil {
+
+		// query param created__gt
+		var qrCreatedGt string
+
+		if o.CreatedGt != nil {
+			qrCreatedGt = *o.CreatedGt
+		}
+		qCreatedGt := qrCreatedGt
+		if qCreatedGt != "" {
+
+			if err := r.SetQueryParam("created__gt", qCreatedGt); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.CreatedGte != nil {
 
 		// query param created__gte
@@ -892,6 +1010,23 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		}
 	}
 
+	if o.CreatedLt != nil {
+
+		// query param created__lt
+		var qrCreatedLt string
+
+		if o.CreatedLt != nil {
+			qrCreatedLt = *o.CreatedLt
+		}
+		qCreatedLt := qrCreatedLt
+		if qCreatedLt != "" {
+
+			if err := r.SetQueryParam("created__lt", qCreatedLt); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.CreatedLte != nil {
 
 		// query param created__lte
@@ -904,6 +1039,23 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		if qCreatedLte != "" {
 
 			if err := r.SetQueryParam("created__lte", qCreatedLte); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Createdn != nil {
+
+		// query param created__n
+		var qrCreatedn string
+
+		if o.Createdn != nil {
+			qrCreatedn = *o.Createdn
+		}
+		qCreatedn := qrCreatedn
+		if qCreatedn != "" {
+
+			if err := r.SetQueryParam("created__n", qCreatedn); err != nil {
 				return err
 			}
 		}
@@ -1198,6 +1350,23 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		}
 	}
 
+	if o.LastUpdatedGt != nil {
+
+		// query param last_updated__gt
+		var qrLastUpdatedGt string
+
+		if o.LastUpdatedGt != nil {
+			qrLastUpdatedGt = *o.LastUpdatedGt
+		}
+		qLastUpdatedGt := qrLastUpdatedGt
+		if qLastUpdatedGt != "" {
+
+			if err := r.SetQueryParam("last_updated__gt", qLastUpdatedGt); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.LastUpdatedGte != nil {
 
 		// query param last_updated__gte
@@ -1215,6 +1384,23 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		}
 	}
 
+	if o.LastUpdatedLt != nil {
+
+		// query param last_updated__lt
+		var qrLastUpdatedLt string
+
+		if o.LastUpdatedLt != nil {
+			qrLastUpdatedLt = *o.LastUpdatedLt
+		}
+		qLastUpdatedLt := qrLastUpdatedLt
+		if qLastUpdatedLt != "" {
+
+			if err := r.SetQueryParam("last_updated__lt", qLastUpdatedLt); err != nil {
+				return err
+			}
+		}
+	}
+
 	if o.LastUpdatedLte != nil {
 
 		// query param last_updated__lte
@@ -1227,6 +1413,23 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		if qLastUpdatedLte != "" {
 
 			if err := r.SetQueryParam("last_updated__lte", qLastUpdatedLte); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.LastUpdatedn != nil {
+
+		// query param last_updated__n
+		var qrLastUpdatedn string
+
+		if o.LastUpdatedn != nil {
+			qrLastUpdatedn = *o.LastUpdatedn
+		}
+		qLastUpdatedn := qrLastUpdatedn
+		if qLastUpdatedn != "" {
+
+			if err := r.SetQueryParam("last_updated__n", qLastUpdatedn); err != nil {
 				return err
 			}
 		}
@@ -1431,6 +1634,23 @@ func (o *CircuitsProviderNetworksListParams) WriteToRequest(r runtime.ClientRequ
 		if qOffset != "" {
 
 			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Ordering != nil {
+
+		// query param ordering
+		var qrOrdering string
+
+		if o.Ordering != nil {
+			qrOrdering = *o.Ordering
+		}
+		qOrdering := qrOrdering
+		if qOrdering != "" {
+
+			if err := r.SetQueryParam("ordering", qOrdering); err != nil {
 				return err
 			}
 		}
