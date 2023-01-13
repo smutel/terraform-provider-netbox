@@ -23,11 +23,10 @@ The Netbox provider provides resources to interact with [Netbox](https://netbox.
 
 ```terraform
 terraform {
-  required_version = ">= 0.14.0"
   required_providers {
     netbox = {
       source = "smutel/netbox"
-      version = "~> 4.0.0"
+      version = "~> 6.0.0"
     }
   }
 }
