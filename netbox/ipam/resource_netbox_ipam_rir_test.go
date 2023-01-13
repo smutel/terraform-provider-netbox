@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/util"
 )
 
 const resourceNameIpamRIR = "netbox_ipam_rir.test"

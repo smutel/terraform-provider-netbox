@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/util"
 )
 
 func DataNetboxIpamVlan() *schema.Resource {

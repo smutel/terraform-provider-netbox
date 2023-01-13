@@ -11,12 +11,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/dcim"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/extras"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/ipam"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/json"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/tenancy"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/virtualization"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/dcim"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/extras"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/ipam"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/json"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/tenancy"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/virtualization"
 )
 
 const authHeaderName = "Authorization"

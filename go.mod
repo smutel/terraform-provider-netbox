@@ -1,4 +1,4 @@
-module github.com/smutel/terraform-provider-netbox/v4
+module github.com/smutel/terraform-provider-netbox/v6
 
 go 1.18
 

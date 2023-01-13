@@ -10,8 +10,8 @@ import (
 	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
 	"github.com/smutel/go-netbox/v3/netbox/client/extras"
 	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/requestmodifier"
-	"github.com/smutel/terraform-provider-netbox/v4/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/requestmodifier"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/util"
 )
 
 func ResourceNetboxExtrasCustomField() *schema.Resource {
