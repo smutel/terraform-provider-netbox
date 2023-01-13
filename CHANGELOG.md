@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v5.3.1...v6.0.0) (2023-01-13)
+
+
+### Features
+
+* Update to work with Netbox 3.3 ([bbd12f1](https://github.com/smutel/terraform-provider-netbox/commit/bbd12f1f3d029d484f9b3c37bcb409d115ac2a9c))
+
+
+### Enhancements
+
+* Update go dependencies ([5f8a611](https://github.com/smutel/terraform-provider-netbox/commit/5f8a61151f13ed55351d3bb2d2d2c3531174bfc5))
+* Update version to v6 in go files ([ff5eaa5](https://github.com/smutel/terraform-provider-netbox/commit/ff5eaa563ff4dbb6f6441b3577404d3a92abde46))
+
 ### [5.3.1](https://github.com/smutel/terraform-provider-netbox/compare/v5.3.0...v5.3.1) (2022-11-28)
 
 
