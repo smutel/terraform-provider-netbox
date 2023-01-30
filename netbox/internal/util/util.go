@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/go-openapi/strfmt"
 	"github.com/smutel/go-netbox/v3/netbox/models"
@@ -86,4 +87,12 @@ func ToListofStrings(in []interface{}) []string {
 
 func TrimString(val interface{}) string {
 	return strings.TrimSpace(val.(string))
+}
+
+func FieldNameToStructName(k string) string {
+	r := []rune(k)
+	r[0] = unicode.ToUpper(r[0])
+	k = string(r)
+	k = strings.Replace(k, "_", "", -1)
+	return k
 }
