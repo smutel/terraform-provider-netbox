@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v6.0.0...v6.1.0) (2023-02-01)
+
+
+### Features
+
+* Add filter to JSON data sources ([345f1ad](https://github.com/smutel/terraform-provider-netbox/commit/345f1ad09b067fde167e03cd57c03f3f24f5e2d1))
+
 ## [6.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v5.3.1...v6.0.0) (2023-01-13)
 
 
