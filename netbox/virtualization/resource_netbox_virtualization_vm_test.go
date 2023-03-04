@@ -102,7 +102,7 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 	#	type_id = netbox_virtualization_cluster_type.test.id
 	#}
 	data "netbox_virtualization_cluster" "cluster_test" {
-		name = "test"
+		name = "Test Cluster"
 	}
 
 	{{ if eq .extraresources "true" }}

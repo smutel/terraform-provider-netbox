@@ -525,7 +525,7 @@ resource "netbox_ipam_ip_addresses" "dynamic_ip_from_ip_range" {
 }
 
 data "netbox_virtualization_cluster" "cluster_test" {
-  name = "test"
+  name = "Test Cluster"
 }
 
 data "netbox_dcim_platform" "platform_test" {
