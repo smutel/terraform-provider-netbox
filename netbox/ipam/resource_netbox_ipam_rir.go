@@ -90,7 +90,7 @@ var rirRequiredFields = []string{
 	"last_updated",
 	"name",
 	"slug",
-	"tag",
+	"tags",
 }
 
 func resourceNetboxIpamRIRCreate(ctx context.Context, d *schema.ResourceData,
