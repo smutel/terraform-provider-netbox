@@ -26,8 +26,8 @@ func DataNetboxTenancyTenant() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ValidateFunc: validation.StringMatch(
-					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
-					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
+					regexp.MustCompile("^[-a-zA-Z0-9_]{1,100}$"),
+					"Must be like ^[-a-zA-Z0-9_]{1,100}$"),
 			},
 		},
 	}
