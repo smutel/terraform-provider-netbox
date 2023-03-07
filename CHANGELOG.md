@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.1.1](https://github.com/smutel/terraform-provider-netbox/compare/v6.1.0...v6.1.1) (2023-03-07)
+
+
+### Bug Fixes
+
+* Increase size of tenant name/desc/slug ([56a4e84](https://github.com/smutel/terraform-provider-netbox/commit/56a4e84925a7e4f2f99a5aef912fe80aaf51551a))
+
 ## [6.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v6.0.0...v6.1.0) (2023-02-01)
 
 
