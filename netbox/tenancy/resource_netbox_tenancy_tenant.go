@@ -45,7 +45,7 @@ func ResourceNetboxTenancyTenant() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
-				ValidateFunc: validation.StringLenBetween(1, 100),
+				ValidateFunc: validation.StringLenBetween(1, 200),
 				Description:  "The description for this tenant (tenancy module).",
 			},
 			"tenant_group_id": {
@@ -57,15 +57,15 @@ func ResourceNetboxTenancyTenant() *schema.Resource {
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 30),
+				ValidateFunc: validation.StringLenBetween(1, 100),
 				Description:  "The name for this tenant (tenancy module).",
 			},
 			"slug": {
 				Type:     schema.TypeString,
 				Required: true,
 				ValidateFunc: validation.StringMatch(
-					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
-					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
+					regexp.MustCompile("^[-a-zA-Z0-9_]{1,100}$"),
+					"Must be like ^[-a-zA-Z0-9_]{1,100}$"),
 				Description: "The slug for this tenant (tenancy module).",
 			},
 			"tag": &tag.TagSchema,
