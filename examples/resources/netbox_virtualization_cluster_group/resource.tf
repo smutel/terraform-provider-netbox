@@ -1,7 +1,7 @@
-resource "netbox_virtualization_cluster_type" "test" {
+resource "netbox_virtualization_cluster_group" "test" {
   name = "test-{{ .namesuffix }}"
   slug = "test-{{ .namesuffix }}"
-  description = "Test device role"
+  description = "Test cluster group"
 
   tag {
     name = "tag1"
