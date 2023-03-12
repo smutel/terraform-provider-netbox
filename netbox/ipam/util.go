@@ -13,6 +13,8 @@ import (
 
 // Type of vm interface in Netbox
 const vMInterfaceType string = "virtualization.vminterface"
+const deviceInterfaceType string = "dcim.interface"
+const fhrpgroupType string = "ipam.fhrpgroup"
 
 func getNewAvailableIPForIPRange(client *netboxclient.NetBoxAPI, id int64) (*models.IPAddress, error) {
 	params := ipam.NewIpamIPRangesAvailableIpsCreateParams().WithID(id)
@@ -122,6 +124,29 @@ func isprimary(m interface{}, objectID *int64, ipID int64, ip4 bool) (bool, erro
 	}
 
 	return false, nil
+}
+
+func setPrimaryIP(m interface{}, addressID, objectID int64, objectType string, primary bool) error {
+	client := m.(*netboxclient.NetBoxAPI)
+
+	switch objectType {
+	case vMInterfaceType:
+		vmID, err := getVMIDForInterface(client, objectID)
+		if err != nil {
+			return err
+		}
+		err = updatePrimaryStatus(client, vmID, addressID, primary)
+		if err != nil {
+			return err
+		}
+		return nil
+	case deviceInterfaceType:
+		return fmt.Errorf("this provider does not support the primary_ip4 attribute for '%s'", deviceInterfaceType)
+	case fhrpgroupType:
+		return fmt.Errorf("netbox does not support the primary_ip4 attribute for '%s'", fhrpgroupType)
+	default:
+		return fmt.Errorf("unknown object type '%s'", objectType)
+	}
 }
 
 func updatePrimaryStatus(m interface{}, vmid, ipid int64, primary bool) error {

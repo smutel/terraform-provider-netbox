@@ -23,6 +23,18 @@ func ConvertNestedASNsToASNs(asns []*models.NestedASN) []int64 {
 	return tfASNs
 }
 
+func ConvertNestedIPsToIPs(asns []*models.NestedIPAddress) []int64 {
+	var tfASNs []int64
+
+	for _, t := range asns {
+		asn := t.ID
+
+		tfASNs = append(tfASNs, asn)
+	}
+
+	return tfASNs
+}
+
 func ConvertNestedVlansToVlans(vlans []*models.NestedVLAN) []int64 {
 	var tfVlans []int64
 

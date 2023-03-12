@@ -20,12 +20,52 @@ func GetCustomFieldUIVisibilityValue(nested *models.CustomFieldUIVisibility) *st
 	return nested.Value
 }
 
+func GetIPAddressAssignedObject(nested *models.IPAddress) (*string, *int64) {
+	if nested == nil {
+		return nil, nil
+	}
+
+	return nested.AssignedObjectType, nested.AssignedObjectID
+}
+
+func GetIPAddressFamilyLabel(nested *models.IPAddressFamily) *string {
+	if nested == nil {
+		return nil
+	}
+
+	return nested.Label
+}
+
+func GetIPAddressRoleValue(nested *models.IPAddressRole) *string {
+	if nested == nil {
+		return nil
+	}
+
+	return nested.Value
+}
+
+func GetIPAddressStatusValue(nested *models.IPAddressStatus) *string {
+	if nested == nil {
+		return nil
+	}
+
+	return nested.Value
+}
+
 func GetNestedIPAddressAddress(nested *models.NestedIPAddress) *string {
 	if nested == nil {
 		return nil
 	}
 
 	return nested.Address
+}
+
+func GetNestedIPAddressID(nested *models.NestedIPAddress) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
 }
 
 func GetNestedClusterGroupID(nested *models.NestedClusterGroup) *int64 {
@@ -101,6 +141,14 @@ func GetNestedRoleID(nested *models.NestedDeviceRole) *int64 {
 }
 
 func GetNestedVlanID(nested *models.NestedVLAN) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}
+
+func GetNestedVrfID(nested *models.NestedVRF) *int64 {
 	if nested == nil {
 		return nil
 	}
