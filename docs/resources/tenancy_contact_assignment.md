@@ -40,4 +40,11 @@ resource "netbox_tenancy_contact_assignment" "contact_assignment_01" {
 
 - `id` (String) The ID of this resource.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Contact assignments can be imported by id
+terraform import netbox_tenancy_contact_assignment.contact_assignment_01 1
+```

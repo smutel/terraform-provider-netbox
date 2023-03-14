@@ -36,4 +36,11 @@ resource "netbox_virtualization_vm_primary_ip" "name" {
 
 - `id` (String) The ID of this resource.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Virtual machine primary IP assignments can be imported by virtual machine id
+terraform import netbox_virtualization_vm_primary_ip.name 1
+```

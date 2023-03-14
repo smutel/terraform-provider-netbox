@@ -175,12 +175,14 @@ resource "netbox_extras_custom_field" "cf_json" {
 ### Optional
 
 - `choices` (Set of String) Avaialbe choices for selection fields.
-- `default` (String) The default value for this custom field. Encoded as JSON.
+- `default` (String) The default value for this custom field. This value must be valid Json. Strings, List and Dicts should be wrapped in jsonencode()
 - `description` (String) The description of this custom field.
 - `filter_logic` (String) The filter logic for this custom field. Allowed values: "loose" (default), "exact", "disabled"
+- `group_name` (String) Custom fields within the same group will be displayed together.
 - `label` (String) Name of the field as displayed to users (if not provided, the field's name will be used).
 - `object_type` (String) The object type for this custom field for object/multiobject fields
 - `required` (Boolean) If true, this field is required when creating new objects or editing an existing object.
+- `ui_visibility` (String) The filter logic for this custom field. Allowed values: "read-write" (default), "read-only", "hidden"
 - `validation_maximum` (Number) Maximum allowed value (for numeric fields)
 - `validation_minimum` (Number) Minimum allowed value (for numeric fields)
 - `validation_regex` (String) Regular expression to enforce on text field values. Use ^ and $ to force matching of entire string. For example, <code>^[A-Z]{3}$</code> will limit values to exactly three uppercase letters.
@@ -195,4 +197,11 @@ resource "netbox_extras_custom_field" "cf_json" {
 - `last_updated` (String) Date when this custom field was last updated.
 - `url` (String) The link to this custom field (extras module).
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Custom fields can be imported by id
+terraform import netbox_extras_custom_field.cf_text 1
+```

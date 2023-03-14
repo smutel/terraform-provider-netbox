@@ -118,6 +118,7 @@ resource "netbox_virtualization_cluster" "cluster_test" {
 - `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `group_id` (Number) The cluster group of this cluster.
 - `site_id` (Number) The site of this cluster.
+- `status` (String) The status among offline, active, planned, staging or decommissioning (active by default).
 - `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) ID of the tenant where this cluster is attached.
 
@@ -149,4 +150,11 @@ Required:
 - `name` (String) Name of the existing tag.
 - `slug` (String) Slug of the existing tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Clusters can be imported by id
+terraform import netbox_virtualization_cluster.cluster_test 1
+```

@@ -140,4 +140,11 @@ Required:
 - `name` (String) Name of the existing tag.
 - `slug` (String) Slug of the existing tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Aggregates can be imported by id
+terraform import netbox_ipam_aggregate.aggregate_test 1
+```

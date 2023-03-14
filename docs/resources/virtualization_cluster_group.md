@@ -13,10 +13,10 @@ Manage a cluster group (virtualization module) within Netbox.
 ## Example Usage
 
 ```terraform
-resource "netbox_virtualization_cluster_type" "test" {
+resource "netbox_virtualization_cluster_group" "test" {
   name = "test-{{ .namesuffix }}"
   slug = "test-{{ .namesuffix }}"
-  description = "Test device role"
+  description = "Test cluster group"
 
   tag {
     name = "tag1"
@@ -138,4 +138,11 @@ Required:
 - `name` (String) Name of the existing tag.
 - `slug` (String) Slug of the existing tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Cluster groups can be imported by id
+terraform import netbox_virtualization_cluster_group.test 1
+```

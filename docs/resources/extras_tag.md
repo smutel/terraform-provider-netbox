@@ -43,4 +43,11 @@ resource "netbox_extras_tag" "tag_test" {
 - `tagged_items` (Number) The number of items tagged with this tag.
 - `url` (String) The link to this tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Tags can be imported by id
+terraform import netbox_extras_tag.tag_test 1
+```

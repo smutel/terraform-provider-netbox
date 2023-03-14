@@ -23,5 +23,6 @@ description: |-
 
 - `content_type` (String)
 - `id` (String) The ID of this resource.
+- `site_id` (Number)
 
 

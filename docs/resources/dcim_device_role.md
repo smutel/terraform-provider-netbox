@@ -142,4 +142,11 @@ Required:
 - `name` (String) Name of the existing tag.
 - `slug` (String) Slug of the existing tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Device roles can be imported by id
+terraform import netbox_dcim_device_role.device_role_test 1
+```

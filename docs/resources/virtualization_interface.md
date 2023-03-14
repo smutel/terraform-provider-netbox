@@ -104,21 +104,29 @@ resource "netbox_virtualization_interface" "interface_test" {
 
 ### Optional
 
+- `bridge_id` (Number) ID of the bridge interface where this interface (virtualization module) is attached to.
 - `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
 - `description` (String) Description for this interface (virtualization module).
 - `enabled` (Boolean) true or false (true by default)
 - `mac_address` (String) Mac address for this interface (virtualization module)
 - `mode` (String) The mode among access, tagged, tagged-all.
 - `mtu` (Number) The MTU between 1 and 65536 for this interface (virtualization module).
+- `parent_id` (Number) ID of the parent interface where this interface (virtualization module) is attached to.
 - `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tagged_vlans` (Set of Number) List of vlan id tagged for this interface (virtualization module)
 - `untagged_vlan` (Number) Vlan ID untagged for this interface (virtualization module).
+- `vrf_id` (Number) ID of the VRF where this interface (virtualization module) is attached to.
 
 ### Read-Only
 
 - `content_type` (String) The content type of this interface (virtualization module).
+- `count_fhrp_groups` (Number) Number of fhrp groups attached to this interface (virtualization module) is attached to.
+- `count_ipaddresses` (Number) Number of ip addresses attached to this interface (virtualization module) is attached to.
+- `created` (String) Date when this resource was created.
 - `id` (String) The ID of this resource.
+- `last_updated` (String) Date when this resource was last updated.
 - `type` (String) Type of interface among virtualization.vminterface for VM or dcim.interface for device
+- `url` (String) The link to this interface (virtualization module).
 
 <a id="nestedblock--custom_field"></a>
 ### Nested Schema for `custom_field`
@@ -138,4 +146,11 @@ Required:
 - `name` (String) Name of the existing tag.
 - `slug` (String) Slug of the existing tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Virtualization interfaces can be imported by id
+terraform import netbox_virtualization_interface.interface_test 1
+```

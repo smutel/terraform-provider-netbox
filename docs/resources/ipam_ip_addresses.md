@@ -128,11 +128,11 @@ resource "netbox_ipam_ip_addresses" "dynamic_ip_from_ip_range" {
 - `ip_range` (Number) The ip-range id for automatic IP assignment. Required if both prefix and address are not set.
 - `nat_inside_id` (Number) The ID of the NAT inside of this IP address (ipam module).
 - `object_id` (Number) The ID of the object where this resource is attached to.
-- `object_type` (String) The object type among virtualization.vminterface or dcim.interface (empty by default).
+- `object_type` (String) The object type among virtualization.vminterface, dcim.interface or ipam.fhrpgroup (empty by default).
 - `prefix` (Number) The prefix id for automatic IP assignment. Required if both address and ip_range are not set.
 - `primary_ip4` (Boolean, Deprecated) Set this resource as primary IPv4 (false by default).
 - `role` (String) The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this IP address (ipam module).
-- `status` (String) The status among of this IP address (ipam module) container, active, reserved, deprecated (active by default).
+- `status` (String) The status among of this IP address (ipam module) active, reserved, deprecated, dhcp, slaac (active by default).
 - `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) ID of the tenant where this object is attached.
 - `vrf_id` (Number) ID of the vrf attached to this IP address (ipam module).
@@ -140,7 +140,11 @@ resource "netbox_ipam_ip_addresses" "dynamic_ip_from_ip_range" {
 ### Read-Only
 
 - `content_type` (String) The content type of this IP address (ipam module).
+- `created` (String) Date when this aggregate was created.
+- `family` (String) Family of IP address (IPv4 or IPv6).
 - `id` (String) The ID of this resource.
+- `last_updated` (String) Date when this aggregate was last updated.
+- `url` (String) The link to this tag (extra module).
 
 <a id="nestedblock--custom_field"></a>
 ### Nested Schema for `custom_field`
@@ -160,4 +164,11 @@ Required:
 - `name` (String) Name of the existing tag.
 - `slug` (String) Slug of the existing tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# IP addresses can be imported by id
+terraform import netbox_ipam_ip_addresses.ip_test 1
+```

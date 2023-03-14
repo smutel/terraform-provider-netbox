@@ -13,10 +13,10 @@ Manage a tag (extra module) within Netbox.
 ## Example Usage
 
 ```terraform
-resource "netbox_virtualization_cluster_group" "test" {
+resource "netbox_virtualization_cluster_type" "test" {
   name = "test-{{ .namesuffix }}"
   slug = "test-{{ .namesuffix }}"
-  description = "Test device role"
+  description = "Test cluster type"
 
   tag {
     name = "tag1"
@@ -138,4 +138,11 @@ Required:
 - `name` (String) Name of the existing tag.
 - `slug` (String) Slug of the existing tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Cluster types can be imported by id
+terraform import netbox_virtualization_cluster_type.test 1
+```

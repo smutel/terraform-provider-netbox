@@ -16,10 +16,90 @@ Manage a vlan group (ipam module) within Netbox.
 resource "netbox_ipam_vlan_group" "vlan_group_test" {
   name = "TestVlanGroup"
   slug = "TestVlanGroup"
+  description = "Vlan group created by terraform"
+  max_vid = 4094
+  min_vid = 1
+
+  scope {
+    id = 1
+    type = "dcim.site"
+  }
 
   tag {
     name = "tag1"
     slug = "tag1"
+  }
+
+  custom_field {
+    name = "cf_boolean"
+    type = "boolean"
+    value = "true"
+  }
+
+  custom_field {
+    name = "cf_date"
+    type = "date"
+    value = "2020-12-25"
+  }
+
+  custom_field {
+    name = "cf_text"
+    type = "text"
+    value = "some text"
+  }
+
+  custom_field {
+    name = "cf_integer"
+    type = "integer"
+    value = "10"
+  }
+
+  custom_field {
+    name = "cf_selection"
+    type = "select"
+    value = "1"
+  }
+
+  custom_field {
+    name = "cf_url"
+    type = "url"
+    value = "https://github.com"
+  }
+
+  custom_field {
+    name = "cf_multi_selection"
+    type = "multiselect"
+    value = jsonencode([
+      "0",
+      "1"
+    ])
+  }
+
+  custom_field {
+    name = "cf_json"
+    type = "json"
+    value = jsonencode({
+      stringvalue = "string"
+      boolvalue = false
+      dictionary = {
+        numbervalue = 5
+      }
+    })
+  }
+
+  custom_field {
+    name = "cf_object"
+    type = "object"
+    value = 1
+  }
+
+  custom_field {
+    name = "cf_multi_object"
+    type = "multiobject"
+    value = jsonencode([
+      1,
+      2
+    ])
   }
 }
 ```
@@ -34,12 +114,40 @@ resource "netbox_ipam_vlan_group" "vlan_group_test" {
 
 ### Optional
 
+- `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
+- `description` (String) The description of this vlan group (ipam module).
+- `max_vid` (Number) Highest permissible ID of a child vlan (ipam module).
+- `min_vid` (Number) Lowest permissible ID of a child vlan (ipam module).
+- `scope` (Block Set, Max: 1) Scope of this vlan group (ipam module). (see [below for nested schema](#nestedblock--scope))
 - `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 
 ### Read-Only
 
 - `content_type` (String) The content type of this vlan group (ipam module).
+- `created` (String) Date when this resource was created.
 - `id` (String) The ID of this resource.
+- `last_updated` (String) Date when this resource was last updated.
+- `url` (String) The link to this vlan group (ipam module).
+- `vlan_count` (Number) The number of vlans assigned to this vlan group (ipam module).
+
+<a id="nestedblock--custom_field"></a>
+### Nested Schema for `custom_field`
+
+Required:
+
+- `name` (String) Name of the existing custom field.
+- `type` (String) Type of the existing custom field (text, longtext, integer, boolean, date, url, json, select, multiselect, object, multiobject, selection (deprecated), multiple(deprecated)).
+- `value` (String) Value of the existing custom field.
+
+
+<a id="nestedblock--scope"></a>
+### Nested Schema for `scope`
+
+Required:
+
+- `id` (Number) ID of the scope object for this vlan group (ipam module).
+- `type` (String) Type of the scope object. Must me one of "dcim.location", "dcim.rack", "dcim.region", "dcim.site", "dcim.sitegroup", "virtualization.cluster", "virtualization.clustergroup".
+
 
 <a id="nestedblock--tag"></a>
 ### Nested Schema for `tag`
@@ -49,4 +157,11 @@ Required:
 - `name` (String) Name of the existing tag.
 - `slug` (String) Slug of the existing tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# VLAN groups can be imported by id
+terraform import netbox_ipam_vlan_group.vlan_group_test 1
+```

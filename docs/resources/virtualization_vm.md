@@ -111,18 +111,20 @@ resource "netbox_virtualization_vm" "vm_test" {
 
 ### Required
 
-- `cluster_id` (Number) ID of the cluster which host this VM (virtualization module).
 - `name` (String) The name for this VM (virtualization module).
 
 ### Optional
 
+- `cluster_id` (Number) ID of the cluster which host this VM (virtualization module).
 - `comments` (String) Comments for this VM (virtualization module).
 - `custom_field` (Block Set) Existing custom fields to associate to this ressource. (see [below for nested schema](#nestedblock--custom_field))
+- `device_id` (Number) Optionally pin this VM to a specific host device within the cluster.
 - `disk` (Number) The size in GB of the disk for this VM (virtualization module).
 - `local_context_data` (String) Local context data for this VM (virtualization module).
 - `memory` (Number) The size in MB of the memory of this VM (virtualization module).
 - `platform_id` (Number) ID of the platform for this VM (virtualization module).
 - `role_id` (Number) ID of the role for this VM (virtualization module).
+- `site_id` (Number) ID of the site where this VM (virtualization module) is attached. If cluster_id is set and the cluster resides in a site, this must be set and the same as the cluster's site
 - `status` (String) The status among offline, active, planned, staged, failed or decommissioning (active by default).
 - `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) ID of the tenant where this VM (virtualization module) is attached.
@@ -154,4 +156,11 @@ Required:
 - `name` (String) Name of the existing tag.
 - `slug` (String) Slug of the existing tag.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Virtual machines can be imported by id
+terraform import netbox_virtualization_vm.vm_test 1
+```
