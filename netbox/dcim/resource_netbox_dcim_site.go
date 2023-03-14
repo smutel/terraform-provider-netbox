@@ -434,7 +434,11 @@ func resourceNetboxDcimSiteUpdate(ctx context.Context, d *schema.ResourceData,
 	if d.HasChange("time_zone") {
 		timeZone := d.Get("time_zone").(string)
 		params.TimeZone = &timeZone
-		modifiedFields["time_zone"] = timeZone
+		if timeZone != "" {
+			modifiedFields["time_zone"] = timeZone
+		} else {
+			modifiedFields["time_zone"] = nil
+		}
 	}
 
 	resource := dcim.NewDcimSitesPartialUpdateParams().WithData(params)

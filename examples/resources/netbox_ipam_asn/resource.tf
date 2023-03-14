@@ -1,4 +1,4 @@
-resource "netbox_ipam_aggregate" "aggregate_test" {
+resource "netbox_ipam_asn" "asn_test" {
   asn = "65530"
   rir_id = netbox_ipam_rir.rir_test.id
 

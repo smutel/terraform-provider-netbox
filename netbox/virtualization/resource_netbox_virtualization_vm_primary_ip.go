@@ -249,6 +249,9 @@ func resourceNetboxVirtualizationVMPrimaryIPExists(d *schema.ResourceData,
 
 	resourceID := int64(d.Get("virtualmachine_id").(int))
 	resourceIDString := strconv.FormatInt(resourceID, 10)
+	if resourceIDString == "0" {
+		resourceIDString = d.Id()
+	}
 	params := virtualization.NewVirtualizationVirtualMachinesListParams().WithID(
 		&resourceIDString)
 	resources, err := client.Virtualization.VirtualizationVirtualMachinesList(
@@ -258,7 +261,7 @@ func resourceNetboxVirtualizationVMPrimaryIPExists(d *schema.ResourceData,
 	}
 
 	for _, resource := range resources.Payload.Results {
-		if resource.ID == resourceID {
+		if strconv.FormatInt(resource.ID, 10) == resourceIDString {
 			resourceExist = true
 		}
 	}

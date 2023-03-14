@@ -98,15 +98,16 @@ func testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix string, resourc
 			"dcim.site",
 		]
 
-		type         = "boolean"
+		type          = "boolean"
 		{{ if eq .resourcefull "true" }}
-		description  = "Test custom field"
-		label        = "Test Label for CF"
-		weight       = 50
-		#required     = true
-		filter_logic = "disabled"
-		# Fixed in Netbox 3.3
-		#default      = true
+		description   = "Test custom field"
+		group_name    = "testgroup"
+		ui_visibility = "hidden"
+		label         = "Test Label for CF"
+		weight        = 50
+		#required      = true
+		filter_logic  = "disabled"
+		default       = true
 		{{ end }}
 	}
 	`

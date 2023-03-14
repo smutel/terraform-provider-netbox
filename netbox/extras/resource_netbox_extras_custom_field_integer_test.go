@@ -101,12 +101,13 @@ func testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix string, resourc
 		type               = "integer"
 		{{ if eq .resourcefull "true" }}
 		description        = "Test custom field"
+		group_name         = "testgroup"
+		ui_visibility      = "hidden"
 		label              = "Test Label for CF"
 		weight             = 50
 		#required           = true
 		filter_logic       = "disabled"
-		# Fixed in Netbox 3.3
-		#default            = 50
+		default            = 50
 		validation_minimum = 1
 		validation_maximum = 500
 		{{ end }}

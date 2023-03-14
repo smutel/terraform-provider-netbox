@@ -102,10 +102,12 @@ func testAccCheckNetboxExtrasCustomFieldTextConfig(nameSuffix string, resourceFu
 		{{ if eq .resourcefull "true" }}
 		description      = "Test custom field"
 		label            = "Test Label for CF"
+		group_name       = "testgroup"
+		ui_visibility    = "hidden"
 		weight           = 50
 		#required         = true
 		filter_logic     = "disabled"
-		default          = "Default text"
+		default          = jsonencode("Default text")
 		validation_regex = "^.*$"
 		{{ end }}
 	}

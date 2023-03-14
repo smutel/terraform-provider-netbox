@@ -126,6 +126,7 @@ func testAccCheckNetboxVirtualizationClusterConfig(nameSuffix string, resourceFu
 		group_id  = netbox_virtualization_cluster_group.test.id
 		site_id   = netbox_dcim_site.test.id
 		tenant_id = netbox_tenancy_tenant.test.id
+		status    = "decommissioning"
 
 		comments = <<-EOT
 		Test cluster

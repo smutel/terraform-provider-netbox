@@ -12,6 +12,7 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v6/netbox/internal/util"
 )
@@ -37,17 +38,10 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 				ValidateFunc: validation.IsCIDR,
 				Description:  "The IP address (with mask) used for this IP address (ipam module). Required if both prefix and ip_range are not set.",
 			},
-			"ip_range": {
-				Type:        schema.TypeInt,
-				ForceNew:    true,
-				Optional:    true,
-				Description: "The ip-range id for automatic IP assignment. Required if both prefix and address are not set.",
-			},
-			"prefix": {
-				Type:        schema.TypeInt,
-				ForceNew:    true,
-				Optional:    true,
-				Description: "The prefix id for automatic IP assignment. Required if both address and ip_range are not set.",
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this aggregate was created.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
@@ -59,7 +53,7 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
-				ValidateFunc: validation.StringLenBetween(1, 100),
+				ValidateFunc: validation.StringLenBetween(1, 200),
 				Description:  "The description of this IP address (ipam module).",
 			},
 			"dns_name": {
@@ -71,24 +65,52 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 					"Must be like ^[-a-zA-Z0-9_.]{1,255}$"),
 				Description: "The DNS name of this IP address (ipam module).",
 			},
+			"family": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Family of IP address (IPv4 or IPv6).",
+			},
+			"ip_range": {
+				Type:        schema.TypeInt,
+				ForceNew:    true,
+				Optional:    true,
+				Description: "The ip-range id for automatic IP assignment. Required if both prefix and address are not set.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this aggregate was last updated.",
+			},
 			"nat_inside_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Description: "The ID of the NAT inside of this IP address (ipam module).",
 			},
+			// "nat_outside": {
+			// 	Type:        schema.TypeList,
+			// 	Computed:    true,
+			// 	Description: "The IDs of the NAT outside of this IP address (ipam module).",
+			// 	Elem:        schema.TypeInt,
+			// },
 			"object_id": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				ForceNew:    true,
-				Description: "The ID of the object where this resource is attached to.",
+				Type:         schema.TypeInt,
+				Optional:     true,
+				Description:  "The ID of the object where this resource is attached to.",
+				RequiredWith: []string{"object_type"},
 			},
 			"object_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "",
+				Default:  nil,
 				ValidateFunc: validation.StringInSlice([]string{
-					vMInterfaceType, "dcim.interface"}, false),
-				Description: "The object type among virtualization.vminterface or dcim.interface (empty by default).",
+					vMInterfaceType, deviceInterfaceType, fhrpgroupType}, false),
+				Description: "The object type among virtualization.vminterface, dcim.interface or ipam.fhrpgroup (empty by default).",
+			},
+			"prefix": {
+				Type:        schema.TypeInt,
+				ForceNew:    true,
+				Optional:    true,
+				Description: "The prefix id for automatic IP assignment. Required if both address and ip_range are not set.",
 			},
 			"primary_ip4": {
 				Type:        schema.TypeBool,
@@ -113,15 +135,20 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "active",
-				ValidateFunc: validation.StringInSlice([]string{"container", "active",
-					"reserved", "deprecated", "dhcp"}, false),
-				Description: "The status among of this IP address (ipam module) container, active, reserved, deprecated (active by default).",
+				ValidateFunc: validation.StringInSlice([]string{"active",
+					"reserved", "deprecated", "dhcp", "slaac"}, false),
+				Description: "The status among of this IP address (ipam module) active, reserved, deprecated, dhcp, slaac (active by default).",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Description: "ID of the tenant where this object is attached.",
+			},
+			"url": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The link to this tag (extra module).",
 			},
 			"vrf_id": {
 				Type:        schema.TypeInt,
@@ -130,6 +157,13 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 			},
 		},
 	}
+}
+
+var ipAddressRequiredFields = []string{
+	"address",
+	"created",
+	"last_updated",
+	"tags",
 }
 
 func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.ResourceData,
@@ -168,14 +202,9 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	dnsName := d.Get("dns_name").(string)
-	natInsideID := int64(d.Get("nat_inside_id").(int))
-	objectID := int64(d.Get("object_id").(int))
-	objectType := d.Get("object_type").(string)
 	role := d.Get("role").(string)
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int64(d.Get("tenant_id").(int))
-	vrfID := int64(d.Get("vrf_id").(int))
 
 	newResource := &models.WritableIPAddress{
 		Address:      &address,
@@ -187,20 +216,24 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		Tags:         tag.ConvertTagsToNestedTags(tags),
 	}
 
-	if natInsideID != 0 {
+	if natInsideID := int64(d.Get("nat_inside_id").(int)); natInsideID != 0 {
 		newResource.NatInside = &natInsideID
 	}
 
-	if objectID != 0 {
+	objectID := int64(0)
+	objectType := ""
+	if d.Get("object_id").(int) != 0 {
+		objectID = int64(d.Get("object_id").(int))
+		objectType = d.Get("object_type").(string)
 		newResource.AssignedObjectID = &objectID
 		newResource.AssignedObjectType = &objectType
 	}
 
-	if tenantID != 0 {
+	if tenantID := int64(d.Get("tenant_id").(int)); tenantID != 0 {
 		newResource.Tenant = &tenantID
 	}
 
-	if vrfID != 0 {
+	if vrfID := int64(d.Get("vrf_id").(int)); vrfID != 0 {
 		newResource.Vrf = &vrfID
 	}
 
@@ -224,12 +257,7 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 
 	d.SetId(strconv.FormatInt(*addressid, 10))
 	if primaryIP := d.Get("primary_ip4").(bool); primaryIP {
-		vmID, err := getVMIDForInterface(client, objectID)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		err = updatePrimaryStatus(client, vmID, *addressid, primaryIP)
-		if err != nil {
+		if err := setPrimaryIP(m, *addressid, objectID, objectType, true); err != nil {
 			return diag.FromErr(err)
 		}
 	}
@@ -248,125 +276,87 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("address", resource.Address); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
-
-			if err = d.Set("custom_field", customFields); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var description interface{}
-			if resource.Description == "" {
-				description = nil
-			} else {
-				description = resource.Description
-			}
-
-			if err = d.Set("description", description); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var dnsName interface{}
-			if resource.DNSName == "" {
-				dnsName = nil
-			} else {
-				dnsName = resource.DNSName
-			}
-
-			if err = d.Set("dns_name", dnsName); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var natInsideID *int64
-			natInsideID = nil
-			if resource.NatInside != nil {
-				natInsideID = &resource.NatInside.ID
-			}
-
-			if err = d.Set("nat_inside_id", natInsideID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			isPrimary, err := isprimary(m, resource.AssignedObjectID, resource.ID, (*resource.Family.Value == 4))
-			if err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("primary_ip4", isPrimary); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("object_id", resource.AssignedObjectID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			objectType := resource.AssignedObjectType
-			if objectType != nil {
-				*objectType = vMInterfaceType
-
-				if err = d.Set("object_type", *objectType); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("object_type", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			var roleValue *string
-			roleValue = nil
-			if resource.Role != nil {
-				roleValue = resource.Role.Value
-			}
-			if err = d.Set("role", roleValue); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var resourceStatus *string
-			resourceStatus = nil
-			if resource.Status != nil {
-				resourceStatus = resource.Status.Value
-			}
-			if err = d.Set("status", resourceStatus); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var tenantID *int64
-			tenantID = nil
-			if resource.Tenant != nil {
-				tenantID = &resource.Tenant.ID
-			}
-			if err = d.Set("tenant_id", tenantID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var vrfID *int64
-			vrfID = nil
-			if resource.Vrf != nil {
-				vrfID = &resource.Vrf.ID
-			}
-			if err = d.Set("vrf_id", vrfID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			return nil
-		}
+	if len(resources.Payload.Results) != 1 {
+		d.SetId("")
+		return nil
 	}
 
-	d.SetId("")
+	resource := resources.Payload.Results[0]
+
+	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("address", resource.Address); err != nil {
+		return diag.FromErr(err)
+	}
+
+	objectType, objectID := util.GetIPAddressAssignedObject(resource)
+	if err = d.Set("object_id", objectID); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("object_type", objectType); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("created", resource.Created.String()); err != nil {
+		return diag.FromErr(err)
+	}
+
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+
+	if err = d.Set("custom_field", customFields); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("description", resource.Description); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("dns_name", resource.DNSName); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("family", util.GetIPAddressFamilyLabel(resource.Family)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("nat_inside_id", util.GetNestedIPAddressID(resource.NatInside)); err != nil {
+		return diag.FromErr(err)
+	}
+	// if err = d.Set("nat_outside", util.ConvertNestedIPsToIPs(resource.NatOutside)); err != nil {
+	// 	return diag.FromErr(err)
+	// }
+
+	isPrimary, err := isprimary(m, resource.AssignedObjectID, resource.ID, (*resource.Family.Value == 4))
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("primary_ip4", isPrimary); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("role", util.GetIPAddressRoleValue(resource.Role)); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("status", util.GetIPAddressStatusValue(resource.Status)); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("tenant_id", util.GetNestedTenantID(resource.Tenant)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("url", resource.URL); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("vrf_id", util.GetNestedVrfID(resource.Vrf)); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }
@@ -375,12 +365,21 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 	m interface{}) diag.Diagnostics {
 	client := m.(*netboxclient.NetBoxAPI)
 	params := &models.WritableIPAddress{}
-	// primary_ip4 := false
+	modifiedFields := map[string]interface{}{}
 
 	// Required parameters
-	address := d.Get("address").(string)
-	params.Address = &address
-
+	if d.HasChange("address") {
+		address := d.Get("address").(string)
+		params.Address = &address
+	}
+	if d.HasChange("object_id") || d.HasChange("object_type") {
+		objectID := int64(d.Get("object_id").(int))
+		objectType := d.Get("object_type").(string)
+		params.AssignedObjectID = &objectID
+		params.AssignedObjectType = &objectType
+		modifiedFields["assigned_object_id"] = objectID
+		modifiedFields["assigned_object_type"] = objectType
+	}
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
@@ -388,67 +387,41 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 	}
 
 	if d.HasChange("description") {
-		if description, exist := d.GetOk("description"); exist {
-			params.Description = description.(string)
-		} else {
-			params.Description = " "
-		}
+		params.Description = d.Get("description").(string)
+		modifiedFields["description"] = params.Description
 	}
-
 	if d.HasChange("dns_name") {
-		if dnsName, exist := d.GetOk("dns_name"); exist {
-			params.DNSName = dnsName.(string)
-		} else {
-			params.DNSName = " "
-		}
+		params.DNSName = d.Get("dns_name").(string)
+		modifiedFields["dns_name"] = params.DNSName
 	}
-
 	if d.HasChange("nat_inside_id") {
 		natInsideID := int64(d.Get("nat_inside_id").(int))
-		if natInsideID != 0 {
-			params.NatInside = &natInsideID
-		}
+		params.NatInside = &natInsideID
+		modifiedFields["nat_inside"] = natInsideID
 	}
-
-	if d.HasChange("object_id") || d.HasChange("object_type") {
-		// primary_ip4 = true
-		objectID := int64(d.Get("object_id").(int))
-		params.AssignedObjectID = &objectID
-
-		var objectType string
-		if *params.AssignedObjectType == "" {
-			objectType = vMInterfaceType
-		} else {
-			objectType = d.Get("object_type").(string)
-		}
-		*params.AssignedObjectType = objectType
-	}
-
 	if d.HasChange("role") {
 		role := d.Get("role").(string)
 		params.Role = role
+		modifiedFields["role"] = role
 	}
-
 	if d.HasChange("status") {
 		status := d.Get("status").(string)
 		params.Status = status
+		modifiedFields["status"] = status
 	}
-
-	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = tag.ConvertTagsToNestedTags(tags)
-
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		params.Tags = tag.ConvertTagsToNestedTags(tags)
+	}
 	if d.HasChange("tenant_id") {
 		tenantID := int64(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			params.Tenant = &tenantID
-		}
+		params.Tenant = &tenantID
+		modifiedFields["tenant"] = tenantID
 	}
-
 	if d.HasChange("vrf_id") {
 		vrfID := int64(d.Get("vrf_id").(int))
-		if vrfID != 0 {
-			params.Vrf = &vrfID
-		}
+		params.Vrf = &vrfID
+		modifiedFields["vrf"] = vrfID
 	}
 
 	resource := ipam.NewIpamIPAddressesPartialUpdateParams().WithData(
@@ -461,21 +434,22 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 
 	resource.SetID(resourceID)
 
-	_, err = client.Ipam.IpamIPAddressesPartialUpdate(resource, nil)
+	_, err = client.Ipam.IpamIPAddressesPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, ipAddressRequiredFields))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	if !d.GetRawConfig().GetAttr("primary_ip4").IsNull() {
-		if (d.HasChange("object_id") && d.Get("primary_ip4").(bool)) ||
-			(!d.HasChange("object_id") && d.HasChange("primary_ip4")) ||
-			(d.HasChange("primary_ip4") && d.Get("primary_ip4").(bool)) {
+		objectChanged := d.HasChange("object_id") || d.HasChange("object_type")
+		primaryIP4 := d.Get("primary_ip4").(bool)
+
+		if (objectChanged && primaryIP4) ||
+			(!objectChanged && d.HasChange("primary_ip4")) ||
+			(d.HasChange("primary_ip4") && primaryIP4) {
 			objectID := int64(d.Get("object_id").(int))
-			vmID, err := getVMIDForInterface(client, objectID)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-			err = updatePrimaryStatus(client, vmID, resourceID, d.Get("primary_ip4").(bool))
+			objectType := d.Get("object_type").(string)
+
+			err = setPrimaryIP(client, resourceID, objectID, objectType, primaryIP4)
 			if err != nil {
 				return diag.FromErr(err)
 			}
