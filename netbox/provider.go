@@ -165,9 +165,10 @@ func Provider() *schema.Provider {
 			"netbox_virtualization_cluster":                       virtualization.DataNetboxVirtualizationCluster(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"netbox_dcim_manufacturer":            dcim.ResourceNetboxDcimManufacturer(),
 			"netbox_dcim_device_role":             dcim.ResourceNetboxDcimDeviceRole(),
+			"netbox_dcim_manufacturer":            dcim.ResourceNetboxDcimManufacturer(),
 			"netbox_dcim_platform":                dcim.ResourceNetboxDcimPlatform(),
+			"netbox_dcim_rack":                    dcim.ResourceNetboxDcimRack(),
 			"netbox_dcim_rack_role":               dcim.ResourceNetboxDcimRackRole(),
 			"netbox_dcim_site":                    dcim.ResourceNetboxDcimSite(),
 			"netbox_extras_custom_field":          extras.ResourceNetboxExtrasCustomField(),

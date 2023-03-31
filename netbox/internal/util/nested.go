@@ -155,3 +155,43 @@ func GetNestedVrfID(nested *models.NestedVRF) *int64 {
 
 	return &nested.ID
 }
+
+func GetNestedLocationID(nested *models.NestedLocation) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}
+
+func GetNestedRackRoleID(nested *models.NestedRackRole) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}
+
+func GetRackStatusValue(nested *models.RackStatus) *string {
+	if nested == nil {
+		return nil
+	}
+
+	return nested.Value
+}
+
+func GetRackTypeValue(nested *models.RackType) *string {
+	if nested == nil {
+		return nil
+	}
+
+	return nested.Value
+}
+
+func GetRackOuterUnit(nested *models.RackOuterUnit) *string {
+	if nested == nil {
+		return nil
+	}
+
+	return nested.Value
+}
