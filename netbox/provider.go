@@ -168,6 +168,7 @@ func Provider() *schema.Provider {
 			"netbox_dcim_manufacturer":            dcim.ResourceNetboxDcimManufacturer(),
 			"netbox_dcim_device_role":             dcim.ResourceNetboxDcimDeviceRole(),
 			"netbox_dcim_platform":                dcim.ResourceNetboxDcimPlatform(),
+			"netbox_dcim_rack_role":               dcim.ResourceNetboxDcimRackRole(),
 			"netbox_dcim_site":                    dcim.ResourceNetboxDcimSite(),
 			"netbox_extras_custom_field":          extras.ResourceNetboxExtrasCustomField(),
 			"netbox_extras_tag":                   extras.ResourceNetboxExtrasTag(),
