@@ -195,3 +195,11 @@ func GetRackOuterUnit(nested *models.RackOuterUnit) *string {
 
 	return nested.Value
 }
+
+func GetNestedRegionParentID(nested *models.NestedRegion) *int64 {
+	if nested == nil {
+		return nil
+	}
+
+	return &nested.ID
+}

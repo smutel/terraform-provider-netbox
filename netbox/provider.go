@@ -170,6 +170,7 @@ func Provider() *schema.Provider {
 			"netbox_dcim_platform":                dcim.ResourceNetboxDcimPlatform(),
 			"netbox_dcim_rack":                    dcim.ResourceNetboxDcimRack(),
 			"netbox_dcim_rack_role":               dcim.ResourceNetboxDcimRackRole(),
+			"netbox_dcim_region":                  dcim.ResourceNetboxDcimRegion(),
 			"netbox_dcim_site":                    dcim.ResourceNetboxDcimSite(),
 			"netbox_extras_custom_field":          extras.ResourceNetboxExtrasCustomField(),
 			"netbox_extras_tag":                   extras.ResourceNetboxExtrasTag(),
