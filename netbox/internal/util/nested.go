@@ -203,3 +203,11 @@ func GetNestedRegionParentID(nested *models.NestedRegion) *int64 {
 
 	return &nested.ID
 }
+
+func GetLocationStatusValue(nested *models.LocationStatus) *string {
+	if nested == nil {
+		return nil
+	}
+
+	return nested.Value
+}
