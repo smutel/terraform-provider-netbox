@@ -152,6 +152,7 @@ func Provider() *schema.Provider {
 			"netbox_dcim_platform":                                dcim.DataNetboxDcimPlatform(),
 			"netbox_dcim_rack":                                    dcim.DataNetboxDcimRack(),
 			"netbox_dcim_rack_role":                               dcim.DataNetboxDcimRackRole(),
+			"netbox_dcim_region":                                  dcim.DataNetboxDcimRegion(),
 			"netbox_dcim_site":                                    dcim.DataNetboxDcimSite(),
 			"netbox_ipam_aggregate":                               ipam.DataNetboxIpamAggregate(),
 			"netbox_ipam_ip_addresses":                            ipam.DataNetboxIpamIPAddresses(),
