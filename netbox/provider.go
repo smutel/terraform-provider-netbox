@@ -150,6 +150,7 @@ func Provider() *schema.Provider {
 			"netbox_json_wireless_wireless_lans_list":             json.DataNetboxJSONWirelessWirelessLansList(),
 			"netbox_json_wireless_wireless_links_list":            json.DataNetboxJSONWirelessWirelessLinksList(),
 			"netbox_dcim_platform":                                dcim.DataNetboxDcimPlatform(),
+			"netbox_dcim_rack":                                    dcim.DataNetboxDcimRack(),
 			"netbox_dcim_site":                                    dcim.DataNetboxDcimSite(),
 			"netbox_ipam_aggregate":                               ipam.DataNetboxIpamAggregate(),
 			"netbox_ipam_ip_addresses":                            ipam.DataNetboxIpamIPAddresses(),
