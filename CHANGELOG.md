@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.0](https://github.com/smutel/terraform-provider-netbox/compare/v6.2.0...v6.3.0) (2023-04-22)
+
+
+### Features
+
+* Add netbox_dcim_location data ([e32c18a](https://github.com/smutel/terraform-provider-netbox/commit/e32c18ab82325ea7a4b6e70c1bd5685898c62aee))
+* Add netbox_dcim_location resource ([ea33489](https://github.com/smutel/terraform-provider-netbox/commit/ea33489031d91addef212037197dedc479c8c8da))
+* Add netbox_dcim_rack data ([6bf7489](https://github.com/smutel/terraform-provider-netbox/commit/6bf748906adde45d7d7c4af5c9d8e0126877d01b))
+* Add netbox_dcim_rack resource ([5c8fe86](https://github.com/smutel/terraform-provider-netbox/commit/5c8fe86dbf2a56dcf7467fa9f280cfc9c4378855))
+* Add netbox_dcim_rack_role data ([a9932db](https://github.com/smutel/terraform-provider-netbox/commit/a9932dbd2ea7bd4cda38b56fc84b352184610742))
+* Add netbox_dcim_rack_role resource ([a0c4808](https://github.com/smutel/terraform-provider-netbox/commit/a0c4808d057db578e80677075c49b48b3c2a3ca7))
+* Add netbox_dcim_region data ([80ff164](https://github.com/smutel/terraform-provider-netbox/commit/80ff16494f50179bbb82dec689abc2598c6d51eb))
+* Add netbox_dcim_region resource ([6f6970c](https://github.com/smutel/terraform-provider-netbox/commit/6f6970ca377e29ebec3d6d2a144a87399aab5da5))
+
+
+### Enhancements
+
+* Improve test on resource netbox_dcim_site ([8077515](https://github.com/smutel/terraform-provider-netbox/commit/80775156939cd9984d57a8c50af23f00a80d91b5))
+* Replace examples by tests ([3523e3f](https://github.com/smutel/terraform-provider-netbox/commit/3523e3f45e076c191b73eb2bd3242f5747c98b9b))
+
 ## [6.2.0](https://github.com/smutel/terraform-provider-netbox/compare/v6.1.1...v6.2.0) (2023-03-14)
 
 
