@@ -100,10 +100,10 @@ func testAccCheckNetboxDcimSiteConfig(nameSuffix string, resourceFull, extraReso
 	#	slug = "test-{{ .namesuffix }}"
 	#}
 
-	#resource "netbox_dcim_region" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#	slug = "test-{{ .namesuffix }}"
-	#}
+  resource "netbox_dcim_region" "test" {
+  	name = "test-{{ .namesuffix }}"
+  	slug = "test-{{ .namesuffix }}"
+  }
 
 	resource "netbox_ipam_rir" "test" {
 		name = "test-{{ .namesuffix }}"
@@ -134,7 +134,7 @@ func testAccCheckNetboxDcimSiteConfig(nameSuffix string, resourceFull, extraReso
 		description = "Test device role"
 		facility    = "TestFaciliy1"
 		#group_id    = netbox_dcim_site_group.test.id
-		#region_id   = netbox_dcim_region.test.id
+		region_id   = netbox_dcim_region.test.id
 		latitude    = 12.54632
 		longitude   = 41.21632
 		tenant_id   = netbox_tenancy_tenant.test.id

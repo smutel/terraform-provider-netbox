@@ -58,16 +58,14 @@ To run the tests you need to have a running netbox installation. For example net
 
 To run the tests execute:
 ```shell
-export NETBOX_TOKEN=0123456789abcdef0123456789abcdef01234567
-export NETBOX_SCHEME=http
-export NETBOX_URL=localhost:8000
-
+source utils/netbox_docker_variables.sh
 TF_ACC=1 go test -v ./...
 ```
 Scheme and URL are not needed it the default is used (https and localhost:8000)
 
 To run only some tests execute the following:
 ```shell
+source utils/netbox_docker_variables.sh
 TF_ACC=1 go test -v ./... -run TestAccNetboxVirtualizationVM
 ```
 
@@ -165,20 +163,3 @@ For further information, check this [documentation](https://registry.terraform.i
 
 To contribute to this project, please follow the [conventional
 commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/) rules.
-
-## Examples
-
-You can find some examples in the examples folder.
-Each example can be executed directly with command terraform init & terraform apply.
-You can set different environment variables for your test:
-* NETBOX_URL to define the URL and the port (127.0.0.1:8000 by default)
-* NETBOX_TOKEN to define the TOKEN to access the application (empty by default)
-* NETBOX_SCHEME to define the SCHEME of the URL (https by default)
-
-```shell
-export NETBOX_URL="127.0.0.1:8000"
-export NETBOX_TOKEN="c07a2db4adb8b1e7f75e7c4369964e92f7680512"
-export NETBOX_SCHEME="http"
-cd examples
-terraform init & terraform apply
-```
