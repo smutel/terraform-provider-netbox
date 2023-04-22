@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.2.0](https://github.com/smutel/terraform-provider-netbox/compare/v6.1.1...v6.2.0) (2023-03-14)
+
+
+### Features
+
+* Add fields and remove forcenew from netbox_virtualization_interface ([89f477c](https://github.com/smutel/terraform-provider-netbox/commit/89f477cbb2eb187dd222e355175c4cade89f86a5))
+* Add scope field to VLAN group resource ([67e7628](https://github.com/smutel/terraform-provider-netbox/commit/67e762893a894efe9566959c7c386b462e53b589))
+* Add site_id to cluster data source and to vm resource ([a93a3c9](https://github.com/smutel/terraform-provider-netbox/commit/a93a3c92ba51f69aed8a544551491ab62db9ea54))
+* Update ipam_ip_addresses ([df80a60](https://github.com/smutel/terraform-provider-netbox/commit/df80a603255703040d392a2be19ffdaea158fa4f)), closes [#196](https://github.com/smutel/terraform-provider-netbox/issues/196)
+* Update VM resource for Netbox 3.3 ([2144830](https://github.com/smutel/terraform-provider-netbox/commit/214483026966252a292112399731b3b82e673480)), closes [#192](https://github.com/smutel/terraform-provider-netbox/issues/192)
+
+
+### Bug Fixes
+
+* Custom fields default values not null ([53382b9](https://github.com/smutel/terraform-provider-netbox/commit/53382b932bf4c3df9aadd7f2c2af8f11fdad3205))
+* Export files not working with Netbox 3.3 ([6cd4162](https://github.com/smutel/terraform-provider-netbox/commit/6cd4162a586489aab650f9b45a684e1e48e60374)), closes [#187](https://github.com/smutel/terraform-provider-netbox/issues/187)
+* Import does not work for virtualization_vm_primary_ip ([c17026d](https://github.com/smutel/terraform-provider-netbox/commit/c17026d06be926075dc833876606a33417926e13)), closes [#188](https://github.com/smutel/terraform-provider-netbox/issues/188)
+* Removing timezone from dcim_site fails ([b2e2106](https://github.com/smutel/terraform-provider-netbox/commit/b2e2106b9e96cdf2049c3754434e7bbafa2127d3))
+* Status field missing from cluster resource ([74f5147](https://github.com/smutel/terraform-provider-netbox/commit/74f5147d1e921192feab30dd9de2301e0167c558)), closes [#190](https://github.com/smutel/terraform-provider-netbox/issues/190)
+* Trim spaces for vm comment field ([18ec0e8](https://github.com/smutel/terraform-provider-netbox/commit/18ec0e8e8861ea4a639f2a9dfc47b95b7fd4a550))
+* Typo for tags field in ipam_rir resource ([dca1f54](https://github.com/smutel/terraform-provider-netbox/commit/dca1f546ff1c064caab1ff96fa6f4d7dbd06c4a3))
+
 ### [6.1.1](https://github.com/smutel/terraform-provider-netbox/compare/v6.1.0...v6.1.1) (2023-03-07)
 
 
