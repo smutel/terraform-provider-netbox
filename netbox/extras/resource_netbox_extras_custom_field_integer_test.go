@@ -112,6 +112,17 @@ func testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix string, resourc
 		validation_maximum = 500
 		{{ end }}
 	}
+
+	resource "netbox_dcim_site" "test_assign" {
+		name = "test-a-{{ .namesuffix }}"
+		slug = "test-a-{{ .namesuffix }}"
+
+		custom_field {
+			name = netbox_extras_custom_field.test.name
+			type = netbox_extras_custom_field.test.type
+			value = 25
+		}
+	}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,
