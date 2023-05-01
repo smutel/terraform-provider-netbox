@@ -196,7 +196,7 @@ func ConvertCustomFieldsFromTerraformToAPI(stateCustomFields []interface{}, cust
 				toReturn[cfName] = jsonList
 			case customFieldObject:
 				cfValueInt, _ := strconv.Atoi(cfValue)
-				toReturn[cfName] = []int{cfValueInt}
+				toReturn[cfName] = cfValueInt
 			case customFieldMultiObject:
 				var jsonList []interface{}
 				err := json.Unmarshal([]byte(cfValue), &jsonList)

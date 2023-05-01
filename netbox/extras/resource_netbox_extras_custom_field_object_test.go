@@ -115,9 +115,9 @@ func testAccCheckNetboxExtrasCustomFieldObjectConfig(nameSuffix string, resource
 		weight        = 50
 		#required      = true
 		filter_logic  = "disabled"
-		default = jsonencode([
+		default = jsonencode(
 			netbox_dcim_platform.test.id
-		])
+		)
 		{{ end }}
 	}
 	`
