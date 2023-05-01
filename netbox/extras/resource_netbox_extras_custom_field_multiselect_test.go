@@ -99,12 +99,12 @@ func testAccCheckNetboxExtrasCustomFieldMultiSelectConfig(nameSuffix string, res
 		]
 
 		type          = "multiselect"
-		{{ if eq .resourcefull "true" }}
-		description   = "Test custom field"
 		choices = [
 			"test",
 			"test2"
 		]
+		{{ if eq .resourcefull "true" }}
+		description   = "Test custom field"
 		label         = "Test Label for CF"
 		group_name    = "testgroup"
 		ui_visibility = "hidden"
