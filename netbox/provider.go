@@ -152,6 +152,7 @@ func Provider() *schema.Provider {
 			"netbox_json_wireless_wireless_links_list":            json.DataNetboxJSONWirelessWirelessLinksList(),
 			"netbox_dcim_device_role":                             dcim.DataNetboxDcimDeviceRole(),
 			"netbox_dcim_location":                                dcim.DataNetboxDcimLocation(),
+			"netbox_dcim_manufacturer":                            dcim.DataNetboxDcimManufacturer(),
 			"netbox_dcim_platform":                                dcim.DataNetboxDcimPlatform(),
 			"netbox_dcim_rack":                                    dcim.DataNetboxDcimRack(),
 			"netbox_dcim_rack_role":                               dcim.DataNetboxDcimRackRole(),
