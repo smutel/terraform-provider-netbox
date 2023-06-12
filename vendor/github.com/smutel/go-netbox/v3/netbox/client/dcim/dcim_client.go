@@ -787,6 +787,24 @@ type ClientService interface {
 
 	DcimVirtualChassisUpdate(params *DcimVirtualChassisUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualChassisUpdateOK, error)
 
+	DcimVirtualDeviceContextsBulkDelete(params *DcimVirtualDeviceContextsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsBulkDeleteNoContent, error)
+
+	DcimVirtualDeviceContextsBulkPartialUpdate(params *DcimVirtualDeviceContextsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsBulkPartialUpdateOK, error)
+
+	DcimVirtualDeviceContextsBulkUpdate(params *DcimVirtualDeviceContextsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsBulkUpdateOK, error)
+
+	DcimVirtualDeviceContextsCreate(params *DcimVirtualDeviceContextsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsCreateCreated, error)
+
+	DcimVirtualDeviceContextsDelete(params *DcimVirtualDeviceContextsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsDeleteNoContent, error)
+
+	DcimVirtualDeviceContextsList(params *DcimVirtualDeviceContextsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsListOK, error)
+
+	DcimVirtualDeviceContextsPartialUpdate(params *DcimVirtualDeviceContextsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsPartialUpdateOK, error)
+
+	DcimVirtualDeviceContextsRead(params *DcimVirtualDeviceContextsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsReadOK, error)
+
+	DcimVirtualDeviceContextsUpdate(params *DcimVirtualDeviceContextsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsUpdateOK, error)
+
 	SetTransport(transport runtime.ClientTransport)
 }
 
@@ -15262,6 +15280,357 @@ func (a *Client) DcimVirtualChassisUpdate(params *DcimVirtualChassisUpdateParams
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
 	msg := fmt.Sprintf("unexpected success response for dcim_virtual-chassis_update: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+DcimVirtualDeviceContextsBulkDelete dcim virtual device contexts bulk delete API
+*/
+func (a *Client) DcimVirtualDeviceContextsBulkDelete(params *DcimVirtualDeviceContextsBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsBulkDeleteNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDcimVirtualDeviceContextsBulkDeleteParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "dcim_virtual-device-contexts_bulk_delete",
+		Method:             "DELETE",
+		PathPattern:        "/dcim/virtual-device-contexts/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &DcimVirtualDeviceContextsBulkDeleteReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DcimVirtualDeviceContextsBulkDeleteNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for dcim_virtual-device-contexts_bulk_delete: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+DcimVirtualDeviceContextsBulkPartialUpdate dcim virtual device contexts bulk partial update API
+*/
+func (a *Client) DcimVirtualDeviceContextsBulkPartialUpdate(params *DcimVirtualDeviceContextsBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsBulkPartialUpdateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDcimVirtualDeviceContextsBulkPartialUpdateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "dcim_virtual-device-contexts_bulk_partial_update",
+		Method:             "PATCH",
+		PathPattern:        "/dcim/virtual-device-contexts/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &DcimVirtualDeviceContextsBulkPartialUpdateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DcimVirtualDeviceContextsBulkPartialUpdateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for dcim_virtual-device-contexts_bulk_partial_update: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+DcimVirtualDeviceContextsBulkUpdate dcim virtual device contexts bulk update API
+*/
+func (a *Client) DcimVirtualDeviceContextsBulkUpdate(params *DcimVirtualDeviceContextsBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsBulkUpdateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDcimVirtualDeviceContextsBulkUpdateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "dcim_virtual-device-contexts_bulk_update",
+		Method:             "PUT",
+		PathPattern:        "/dcim/virtual-device-contexts/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &DcimVirtualDeviceContextsBulkUpdateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DcimVirtualDeviceContextsBulkUpdateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for dcim_virtual-device-contexts_bulk_update: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+DcimVirtualDeviceContextsCreate dcim virtual device contexts create API
+*/
+func (a *Client) DcimVirtualDeviceContextsCreate(params *DcimVirtualDeviceContextsCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsCreateCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDcimVirtualDeviceContextsCreateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "dcim_virtual-device-contexts_create",
+		Method:             "POST",
+		PathPattern:        "/dcim/virtual-device-contexts/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &DcimVirtualDeviceContextsCreateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DcimVirtualDeviceContextsCreateCreated)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for dcim_virtual-device-contexts_create: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+DcimVirtualDeviceContextsDelete dcim virtual device contexts delete API
+*/
+func (a *Client) DcimVirtualDeviceContextsDelete(params *DcimVirtualDeviceContextsDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsDeleteNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDcimVirtualDeviceContextsDeleteParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "dcim_virtual-device-contexts_delete",
+		Method:             "DELETE",
+		PathPattern:        "/dcim/virtual-device-contexts/{id}/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &DcimVirtualDeviceContextsDeleteReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DcimVirtualDeviceContextsDeleteNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for dcim_virtual-device-contexts_delete: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+DcimVirtualDeviceContextsList dcim virtual device contexts list API
+*/
+func (a *Client) DcimVirtualDeviceContextsList(params *DcimVirtualDeviceContextsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsListOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDcimVirtualDeviceContextsListParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "dcim_virtual-device-contexts_list",
+		Method:             "GET",
+		PathPattern:        "/dcim/virtual-device-contexts/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &DcimVirtualDeviceContextsListReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DcimVirtualDeviceContextsListOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for dcim_virtual-device-contexts_list: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+DcimVirtualDeviceContextsPartialUpdate dcim virtual device contexts partial update API
+*/
+func (a *Client) DcimVirtualDeviceContextsPartialUpdate(params *DcimVirtualDeviceContextsPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsPartialUpdateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDcimVirtualDeviceContextsPartialUpdateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "dcim_virtual-device-contexts_partial_update",
+		Method:             "PATCH",
+		PathPattern:        "/dcim/virtual-device-contexts/{id}/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &DcimVirtualDeviceContextsPartialUpdateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DcimVirtualDeviceContextsPartialUpdateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for dcim_virtual-device-contexts_partial_update: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+DcimVirtualDeviceContextsRead dcim virtual device contexts read API
+*/
+func (a *Client) DcimVirtualDeviceContextsRead(params *DcimVirtualDeviceContextsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsReadOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDcimVirtualDeviceContextsReadParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "dcim_virtual-device-contexts_read",
+		Method:             "GET",
+		PathPattern:        "/dcim/virtual-device-contexts/{id}/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &DcimVirtualDeviceContextsReadReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DcimVirtualDeviceContextsReadOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for dcim_virtual-device-contexts_read: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+DcimVirtualDeviceContextsUpdate dcim virtual device contexts update API
+*/
+func (a *Client) DcimVirtualDeviceContextsUpdate(params *DcimVirtualDeviceContextsUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DcimVirtualDeviceContextsUpdateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDcimVirtualDeviceContextsUpdateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "dcim_virtual-device-contexts_update",
+		Method:             "PUT",
+		PathPattern:        "/dcim/virtual-device-contexts/{id}/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &DcimVirtualDeviceContextsUpdateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DcimVirtualDeviceContextsUpdateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for dcim_virtual-device-contexts_update: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

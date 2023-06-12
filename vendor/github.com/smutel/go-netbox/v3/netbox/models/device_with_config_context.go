@@ -63,6 +63,10 @@ type DeviceWithConfigContext struct {
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
 
+	// Description
+	// Max Length: 200
+	Description string `json:"description,omitempty"`
+
 	// device role
 	// Required: true
 	DeviceRole *NestedDeviceRole `json:"device_role"`
@@ -94,9 +98,8 @@ type DeviceWithConfigContext struct {
 	Location *NestedLocation `json:"location,omitempty"`
 
 	// Name
-	// Required: true
 	// Max Length: 64
-	Name *string `json:"name"`
+	Name *string `json:"name,omitempty"`
 
 	// parent device
 	ParentDevice *NestedDevice `json:"parent_device,omitempty"`
@@ -173,6 +176,10 @@ func (m *DeviceWithConfigContext) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateCreated(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDescription(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -332,6 +339,18 @@ func (m *DeviceWithConfigContext) validateCreated(formats strfmt.Registry) error
 	return nil
 }
 
+func (m *DeviceWithConfigContext) validateDescription(formats strfmt.Registry) error {
+	if swag.IsZero(m.Description) { // not required
+		return nil
+	}
+
+	if err := validate.MaxLength("description", "body", m.Description, 200); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *DeviceWithConfigContext) validateDeviceRole(formats strfmt.Registry) error {
 
 	if err := validate.Required("device_role", "body", m.DeviceRole); err != nil {
@@ -423,9 +442,8 @@ func (m *DeviceWithConfigContext) validateLocation(formats strfmt.Registry) erro
 }
 
 func (m *DeviceWithConfigContext) validateName(formats strfmt.Registry) error {
-
-	if err := validate.Required("name", "body", m.Name); err != nil {
-		return err
+	if swag.IsZero(m.Name) { // not required
+		return nil
 	}
 
 	if err := validate.MaxLength("name", "body", *m.Name, 64); err != nil {

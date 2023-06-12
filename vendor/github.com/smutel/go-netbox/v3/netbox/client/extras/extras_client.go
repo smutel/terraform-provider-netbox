@@ -171,6 +171,24 @@ type ClientService interface {
 
 	ExtrasReportsRun(params *ExtrasReportsRunParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasReportsRunCreated, error)
 
+	ExtrasSavedFiltersBulkDelete(params *ExtrasSavedFiltersBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersBulkDeleteNoContent, error)
+
+	ExtrasSavedFiltersBulkPartialUpdate(params *ExtrasSavedFiltersBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersBulkPartialUpdateOK, error)
+
+	ExtrasSavedFiltersBulkUpdate(params *ExtrasSavedFiltersBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersBulkUpdateOK, error)
+
+	ExtrasSavedFiltersCreate(params *ExtrasSavedFiltersCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersCreateCreated, error)
+
+	ExtrasSavedFiltersDelete(params *ExtrasSavedFiltersDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersDeleteNoContent, error)
+
+	ExtrasSavedFiltersList(params *ExtrasSavedFiltersListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersListOK, error)
+
+	ExtrasSavedFiltersPartialUpdate(params *ExtrasSavedFiltersPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersPartialUpdateOK, error)
+
+	ExtrasSavedFiltersRead(params *ExtrasSavedFiltersReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersReadOK, error)
+
+	ExtrasSavedFiltersUpdate(params *ExtrasSavedFiltersUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersUpdateOK, error)
+
 	ExtrasScriptsList(params *ExtrasScriptsListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasScriptsListOK, error)
 
 	ExtrasScriptsRead(params *ExtrasScriptsReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasScriptsReadOK, error)
@@ -2668,6 +2686,357 @@ func (a *Client) ExtrasReportsRun(params *ExtrasReportsRunParams, authInfo runti
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
 	msg := fmt.Sprintf("unexpected success response for extras_reports_run: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+ExtrasSavedFiltersBulkDelete extras saved filters bulk delete API
+*/
+func (a *Client) ExtrasSavedFiltersBulkDelete(params *ExtrasSavedFiltersBulkDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersBulkDeleteNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExtrasSavedFiltersBulkDeleteParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "extras_saved-filters_bulk_delete",
+		Method:             "DELETE",
+		PathPattern:        "/extras/saved-filters/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &ExtrasSavedFiltersBulkDeleteReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExtrasSavedFiltersBulkDeleteNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for extras_saved-filters_bulk_delete: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+ExtrasSavedFiltersBulkPartialUpdate extras saved filters bulk partial update API
+*/
+func (a *Client) ExtrasSavedFiltersBulkPartialUpdate(params *ExtrasSavedFiltersBulkPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersBulkPartialUpdateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExtrasSavedFiltersBulkPartialUpdateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "extras_saved-filters_bulk_partial_update",
+		Method:             "PATCH",
+		PathPattern:        "/extras/saved-filters/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &ExtrasSavedFiltersBulkPartialUpdateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExtrasSavedFiltersBulkPartialUpdateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for extras_saved-filters_bulk_partial_update: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+ExtrasSavedFiltersBulkUpdate extras saved filters bulk update API
+*/
+func (a *Client) ExtrasSavedFiltersBulkUpdate(params *ExtrasSavedFiltersBulkUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersBulkUpdateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExtrasSavedFiltersBulkUpdateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "extras_saved-filters_bulk_update",
+		Method:             "PUT",
+		PathPattern:        "/extras/saved-filters/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &ExtrasSavedFiltersBulkUpdateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExtrasSavedFiltersBulkUpdateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for extras_saved-filters_bulk_update: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+ExtrasSavedFiltersCreate extras saved filters create API
+*/
+func (a *Client) ExtrasSavedFiltersCreate(params *ExtrasSavedFiltersCreateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersCreateCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExtrasSavedFiltersCreateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "extras_saved-filters_create",
+		Method:             "POST",
+		PathPattern:        "/extras/saved-filters/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &ExtrasSavedFiltersCreateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExtrasSavedFiltersCreateCreated)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for extras_saved-filters_create: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+ExtrasSavedFiltersDelete extras saved filters delete API
+*/
+func (a *Client) ExtrasSavedFiltersDelete(params *ExtrasSavedFiltersDeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersDeleteNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExtrasSavedFiltersDeleteParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "extras_saved-filters_delete",
+		Method:             "DELETE",
+		PathPattern:        "/extras/saved-filters/{id}/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &ExtrasSavedFiltersDeleteReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExtrasSavedFiltersDeleteNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for extras_saved-filters_delete: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+ExtrasSavedFiltersList extras saved filters list API
+*/
+func (a *Client) ExtrasSavedFiltersList(params *ExtrasSavedFiltersListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersListOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExtrasSavedFiltersListParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "extras_saved-filters_list",
+		Method:             "GET",
+		PathPattern:        "/extras/saved-filters/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &ExtrasSavedFiltersListReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExtrasSavedFiltersListOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for extras_saved-filters_list: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+ExtrasSavedFiltersPartialUpdate extras saved filters partial update API
+*/
+func (a *Client) ExtrasSavedFiltersPartialUpdate(params *ExtrasSavedFiltersPartialUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersPartialUpdateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExtrasSavedFiltersPartialUpdateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "extras_saved-filters_partial_update",
+		Method:             "PATCH",
+		PathPattern:        "/extras/saved-filters/{id}/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &ExtrasSavedFiltersPartialUpdateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExtrasSavedFiltersPartialUpdateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for extras_saved-filters_partial_update: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+ExtrasSavedFiltersRead extras saved filters read API
+*/
+func (a *Client) ExtrasSavedFiltersRead(params *ExtrasSavedFiltersReadParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersReadOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExtrasSavedFiltersReadParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "extras_saved-filters_read",
+		Method:             "GET",
+		PathPattern:        "/extras/saved-filters/{id}/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &ExtrasSavedFiltersReadReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExtrasSavedFiltersReadOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for extras_saved-filters_read: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+ExtrasSavedFiltersUpdate extras saved filters update API
+*/
+func (a *Client) ExtrasSavedFiltersUpdate(params *ExtrasSavedFiltersUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ExtrasSavedFiltersUpdateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExtrasSavedFiltersUpdateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "extras_saved-filters_update",
+		Method:             "PUT",
+		PathPattern:        "/extras/saved-filters/{id}/",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &ExtrasSavedFiltersUpdateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExtrasSavedFiltersUpdateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for extras_saved-filters_update: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

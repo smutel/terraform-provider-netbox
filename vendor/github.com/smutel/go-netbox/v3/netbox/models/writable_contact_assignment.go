@@ -72,9 +72,8 @@ type WritableContactAssignment struct {
 	ObjectID *int64 `json:"object_id"`
 
 	// Priority
-	// Required: true
 	// Enum: [primary secondary tertiary inactive]
-	Priority *string `json:"priority"`
+	Priority string `json:"priority,omitempty"`
 
 	// Role
 	// Required: true
@@ -223,13 +222,12 @@ func (m *WritableContactAssignment) validatePriorityEnum(path, location string, 
 }
 
 func (m *WritableContactAssignment) validatePriority(formats strfmt.Registry) error {
-
-	if err := validate.Required("priority", "body", m.Priority); err != nil {
-		return err
+	if swag.IsZero(m.Priority) { // not required
+		return nil
 	}
 
 	// value enum
-	if err := m.validatePriorityEnum("priority", "body", *m.Priority); err != nil {
+	if err := m.validatePriorityEnum("priority", "body", m.Priority); err != nil {
 		return err
 	}
 

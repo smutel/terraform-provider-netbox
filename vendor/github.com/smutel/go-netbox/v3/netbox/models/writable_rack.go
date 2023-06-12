@@ -58,6 +58,10 @@ type WritableRack struct {
 	// Units are numbered top-to-bottom
 	DescUnits bool `json:"desc_units,omitempty"`
 
+	// Description
+	// Max Length: 200
+	Description string `json:"description,omitempty"`
+
 	// Device count
 	// Read Only: true
 	DeviceCount int64 `json:"device_count,omitempty"`
@@ -80,8 +84,21 @@ type WritableRack struct {
 	LastUpdated *strfmt.DateTime `json:"last_updated,omitempty"`
 
 	// Location
-	// Required: true
-	Location *int64 `json:"location"`
+	Location *int64 `json:"location,omitempty"`
+
+	// Max weight
+	//
+	// Maximum load capacity for the rack
+	// Maximum: 2.147483647e+09
+	// Minimum: 0
+	MaxWeight *int64 `json:"max_weight,omitempty"`
+
+	// Mounting depth
+	//
+	// Maximum depth of a mounted device, in millimeters. For four-post racks, this is the distance between the front and rear rails.
+	// Maximum: 32767
+	// Minimum: 0
+	MountingDepth *int64 `json:"mounting_depth,omitempty"`
 
 	// Name
 	// Required: true
@@ -150,6 +167,13 @@ type WritableRack struct {
 	// Format: uri
 	URL strfmt.URI `json:"url,omitempty"`
 
+	// Weight
+	Weight *float64 `json:"weight,omitempty"`
+
+	// Weight unit
+	// Enum: [kg g lb oz]
+	WeightUnit string `json:"weight_unit,omitempty"`
+
 	// Width
 	//
 	// Rail-to-rail width
@@ -169,6 +193,10 @@ func (m *WritableRack) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateDescription(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateFacilityID(formats); err != nil {
 		res = append(res, err)
 	}
@@ -177,7 +205,11 @@ func (m *WritableRack) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateLocation(formats); err != nil {
+	if err := m.validateMaxWeight(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMountingDepth(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -225,6 +257,10 @@ func (m *WritableRack) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateWeightUnit(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateWidth(formats); err != nil {
 		res = append(res, err)
 	}
@@ -259,6 +295,18 @@ func (m *WritableRack) validateCreated(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *WritableRack) validateDescription(formats strfmt.Registry) error {
+	if swag.IsZero(m.Description) { // not required
+		return nil
+	}
+
+	if err := validate.MaxLength("description", "body", m.Description, 200); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *WritableRack) validateFacilityID(formats strfmt.Registry) error {
 	if swag.IsZero(m.FacilityID) { // not required
 		return nil
@@ -283,9 +331,32 @@ func (m *WritableRack) validateLastUpdated(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *WritableRack) validateLocation(formats strfmt.Registry) error {
+func (m *WritableRack) validateMaxWeight(formats strfmt.Registry) error {
+	if swag.IsZero(m.MaxWeight) { // not required
+		return nil
+	}
 
-	if err := validate.Required("location", "body", m.Location); err != nil {
+	if err := validate.MinimumInt("max_weight", "body", *m.MaxWeight, 0, false); err != nil {
+		return err
+	}
+
+	if err := validate.MaximumInt("max_weight", "body", *m.MaxWeight, 2.147483647e+09, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *WritableRack) validateMountingDepth(formats strfmt.Registry) error {
+	if swag.IsZero(m.MountingDepth) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumInt("mounting_depth", "body", *m.MountingDepth, 0, false); err != nil {
+		return err
+	}
+
+	if err := validate.MaximumInt("mounting_depth", "body", *m.MountingDepth, 32767, false); err != nil {
 		return err
 	}
 
@@ -560,6 +631,54 @@ func (m *WritableRack) validateURL(formats strfmt.Registry) error {
 	}
 
 	if err := validate.FormatOf("url", "body", "uri", m.URL.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var writableRackTypeWeightUnitPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["kg","g","lb","oz"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		writableRackTypeWeightUnitPropEnum = append(writableRackTypeWeightUnitPropEnum, v)
+	}
+}
+
+const (
+
+	// WritableRackWeightUnitKg captures enum value "kg"
+	WritableRackWeightUnitKg string = "kg"
+
+	// WritableRackWeightUnitG captures enum value "g"
+	WritableRackWeightUnitG string = "g"
+
+	// WritableRackWeightUnitLb captures enum value "lb"
+	WritableRackWeightUnitLb string = "lb"
+
+	// WritableRackWeightUnitOz captures enum value "oz"
+	WritableRackWeightUnitOz string = "oz"
+)
+
+// prop value enum
+func (m *WritableRack) validateWeightUnitEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, writableRackTypeWeightUnitPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *WritableRack) validateWeightUnit(formats strfmt.Registry) error {
+	if swag.IsZero(m.WeightUnit) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateWeightUnitEnum("weight_unit", "body", m.WeightUnit); err != nil {
 		return err
 	}
 

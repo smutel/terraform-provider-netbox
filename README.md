@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/smutel/terraform-provider-netbox/master.yml?branch=master&style=flat-square)](https://github.com/smutel/terraform-provider-netbox/actions/workflows/master.yml)
 [![Issues](https://img.shields.io/github/issues-raw/smutel/terraform-provider-netbox?style=flat-square)](https://github.com/smutel/terraform-provider-netbox/issues)
 [![Last release](https://img.shields.io/github/v/release/smutel/terraform-provider-netbox?style=flat-square)](https://github.com/smutel/terraform-provider-netbox/releases)
-[![Go Report Card](https://goreportcard.com/badge/github.com/smutel/terraform-provider-netbox/v6?style=flat-square)](https://goreportcard.com/report/github.com/smutel/terraform-provider-netbox/v6)
+[![Go Report Card](https://goreportcard.com/badge/github.com/smutel/terraform-provider-netbox/v7?style=flat-square)](https://goreportcard.com/report/github.com/smutel/terraform-provider-netbox/v7)
 
 Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 
@@ -27,6 +27,7 @@ Terraform provider for [Netbox.](https://netbox.readthedocs.io/en/stable/)
 | 3.1            | 4.x.y            |
 | 3.2            | 5.x.y            |
 | 3.3            | 6.x.y            |
+| 3.4            | 7.x.y            |
 
 ## go-netbox
 
