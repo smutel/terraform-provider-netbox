@@ -170,6 +170,7 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 
 var customFieldRequiredFields = []string{
 	"created",
+	"choices",
 	"last_updated",
 	"name",
 	"slug",

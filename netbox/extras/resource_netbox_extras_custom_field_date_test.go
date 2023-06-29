@@ -110,6 +110,17 @@ func testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix string, resourceFu
 		default       = jsonencode("2022-01-01")
 		{{ end }}
 	}
+
+	resource "netbox_dcim_site" "test_assign" {
+		name = "test-a-{{ .namesuffix }}"
+		slug = "test-a-{{ .namesuffix }}"
+
+		custom_field {
+			name = netbox_extras_custom_field.test.name
+			type = netbox_extras_custom_field.test.type
+			value = "2023-01-25"
+		}
+	}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

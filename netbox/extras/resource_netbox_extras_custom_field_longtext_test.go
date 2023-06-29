@@ -111,6 +111,17 @@ func testAccCheckNetboxExtrasCustomFieldLongtextConfig(nameSuffix string, resour
 		validation_regex = "^.*$"
 		{{ end }}
 	}
+
+	resource "netbox_dcim_site" "test_assign" {
+		name = "test-a-{{ .namesuffix }}"
+		slug = "test-a-{{ .namesuffix }}"
+
+		custom_field {
+			name = netbox_extras_custom_field.test.name
+			type = netbox_extras_custom_field.test.type
+			value = "My text"
+		}
+	}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

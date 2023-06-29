@@ -99,12 +99,12 @@ func testAccCheckNetboxExtrasCustomFieldMultiSelectConfig(nameSuffix string, res
 		]
 
 		type          = "multiselect"
-		{{ if eq .resourcefull "true" }}
-		description   = "Test custom field"
 		choices = [
 			"test",
 			"test2"
 		]
+		{{ if eq .resourcefull "true" }}
+		description   = "Test custom field"
 		label         = "Test Label for CF"
 		group_name    = "testgroup"
 		ui_visibility = "hidden"
@@ -113,6 +113,21 @@ func testAccCheckNetboxExtrasCustomFieldMultiSelectConfig(nameSuffix string, res
 		filter_logic  = "disabled"
 		default       = jsonencode(["test"])
 		{{ end }}
+	}
+
+	resource "netbox_dcim_site" "test_assign" {
+		name = "test-a-{{ .namesuffix }}"
+		slug = "test-a-{{ .namesuffix }}"
+
+		custom_field {
+			name = netbox_extras_custom_field.test.name
+			type = netbox_extras_custom_field.test.type
+			value = jsonencode(
+				[
+					"test2",
+				]
+			)
+		}
 	}
 	`
 	data := map[string]string{

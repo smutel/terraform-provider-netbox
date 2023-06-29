@@ -110,6 +110,17 @@ func testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix string, resourceFul
 		default       = jsonencode("https://netbox.dev/")
 		{{ end }}
 	}
+
+	resource "netbox_dcim_site" "test_assign" {
+		name = "test-a-{{ .namesuffix }}"
+		slug = "test-a-{{ .namesuffix }}"
+
+		custom_field {
+			name = netbox_extras_custom_field.test.name
+			type = netbox_extras_custom_field.test.type
+			value = "http://my.example.url.invalid/path"
+		}
+	}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,
