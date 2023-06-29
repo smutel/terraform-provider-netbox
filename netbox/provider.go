@@ -11,12 +11,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/terraform-provider-netbox/v6/netbox/dcim"
-	"github.com/smutel/terraform-provider-netbox/v6/netbox/extras"
-	"github.com/smutel/terraform-provider-netbox/v6/netbox/ipam"
-	"github.com/smutel/terraform-provider-netbox/v6/netbox/json"
-	"github.com/smutel/terraform-provider-netbox/v6/netbox/tenancy"
-	"github.com/smutel/terraform-provider-netbox/v6/netbox/virtualization"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/dcim"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/extras"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/ipam"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/json"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/tenancy"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/virtualization"
 )
 
 const authHeaderName = "Authorization"
@@ -103,6 +103,7 @@ func Provider() *schema.Provider {
 			"netbox_json_dcim_site_groups_list":                   json.DataNetboxJSONDcimSiteGroupsList(),
 			"netbox_json_dcim_sites_list":                         json.DataNetboxJSONDcimSitesList(),
 			"netbox_json_dcim_virtual_chassis_list":               json.DataNetboxJSONDcimVirtualChassisList(),
+			"netbox_json_dcim_virtual_device_contexts_list":       json.DataNetboxJSONDcimVirtualDeviceContextsList(),
 			"netbox_json_extras_config_contexts_list":             json.DataNetboxJSONExtrasConfigContextsList(),
 			"netbox_json_extras_content_types_list":               json.DataNetboxJSONExtrasContentTypesList(),
 			"netbox_json_extras_custom_fields_list":               json.DataNetboxJSONExtrasCustomFieldsList(),
@@ -112,6 +113,7 @@ func Provider() *schema.Provider {
 			"netbox_json_extras_job_results_list":                 json.DataNetboxJSONExtrasJobResultsList(),
 			"netbox_json_extras_journal_entries_list":             json.DataNetboxJSONExtrasJournalEntriesList(),
 			"netbox_json_extras_object_changes_list":              json.DataNetboxJSONExtrasObjectChangesList(),
+			"netbox_json_extras_saved_filters_list":               json.DataNetboxJSONExtrasSavedFiltersList(),
 			"netbox_json_extras_tags_list":                        json.DataNetboxJSONExtrasTagsList(),
 			"netbox_json_extras_webhooks_list":                    json.DataNetboxJSONExtrasWebhooksList(),
 			"netbox_json_ipam_aggregates_list":                    json.DataNetboxJSONIpamAggregatesList(),

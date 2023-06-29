@@ -4,7 +4,7 @@ import (
 	"flag"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	"github.com/smutel/terraform-provider-netbox/v6/netbox"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website

@@ -13,7 +13,7 @@ DOCKER_COUNT=$(cat ${TMP_JSON_FILE} | jq ".[] | length" | uniq)
 for ((i = 0 ; i < ${DOCKER_COUNT} ; i++)); do
   IMAGE_NAME=$(cat /tmp/docker.json | jq .[$i].Image | xargs | cut -d":" -f1)
 
-  if [ "${IMAGE_NAME}" == "netboxcommunity/netbox" ]; then
+  if [ "${IMAGE_NAME}" == "docker.io/netboxcommunity/netbox" ]; then
     PORTS_COUNT=$(cat /tmp/docker.json | jq ".[$i].Ports | length")
 
     for ((j = 0 ; j < ${PORTS_COUNT} ; j++)); do

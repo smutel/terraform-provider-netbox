@@ -73,7 +73,7 @@ func resourceNetboxTenancyContactAssignmentCreate(ctx context.Context, d *schema
 		Contact:     &contactID,
 		ContentType: &contentType,
 		ObjectID:    &objectID,
-		Priority:    &priority,
+		Priority:    priority,
 		Role:        &contactRoleID,
 	}
 
@@ -155,7 +155,7 @@ func resourceNetboxTenancyContactAssignmentUpdate(ctx context.Context, d *schema
 	params.ObjectID = &objectID
 
 	priority := d.Get("priority").(string)
-	params.Priority = &priority
+	params.Priority = priority
 
 	resource := tenancy.NewTenancyContactAssignmentsPartialUpdateParams().WithData(params)
 

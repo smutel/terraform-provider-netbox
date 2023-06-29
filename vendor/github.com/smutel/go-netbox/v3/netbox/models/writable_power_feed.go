@@ -45,8 +45,8 @@ type WritablePowerFeed struct {
 	// Minimum: 1
 	Amperage int64 `json:"amperage,omitempty"`
 
-	// cable
-	Cable *NestedCable `json:"cable,omitempty"`
+	// Cable
+	Cable *int64 `json:"cable,omitempty"`
 
 	// Cable end
 	// Read Only: true
@@ -77,6 +77,10 @@ type WritablePowerFeed struct {
 
 	// Custom fields
 	CustomFields interface{} `json:"custom_fields,omitempty"`
+
+	// Description
+	// Max Length: 200
+	Description string `json:"description,omitempty"`
 
 	// Display
 	// Read Only: true
@@ -164,15 +168,15 @@ func (m *WritablePowerFeed) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateCable(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateCableEnd(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateCreated(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDescription(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -242,25 +246,6 @@ func (m *WritablePowerFeed) validateAmperage(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *WritablePowerFeed) validateCable(formats strfmt.Registry) error {
-	if swag.IsZero(m.Cable) { // not required
-		return nil
-	}
-
-	if m.Cable != nil {
-		if err := m.Cable.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("cable")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("cable")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *WritablePowerFeed) validateCableEnd(formats strfmt.Registry) error {
 	if swag.IsZero(m.CableEnd) { // not required
 		return nil
@@ -279,6 +264,18 @@ func (m *WritablePowerFeed) validateCreated(formats strfmt.Registry) error {
 	}
 
 	if err := validate.FormatOf("created", "body", "date-time", m.Created.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *WritablePowerFeed) validateDescription(formats strfmt.Registry) error {
+	if swag.IsZero(m.Description) { // not required
+		return nil
+	}
+
+	if err := validate.MaxLength("description", "body", m.Description, 200); err != nil {
 		return err
 	}
 
@@ -575,10 +572,6 @@ func (m *WritablePowerFeed) ContextValidate(ctx context.Context, formats strfmt.
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateCable(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateCableEnd(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -637,22 +630,6 @@ func (m *WritablePowerFeed) contextValidateOccupied(ctx context.Context, formats
 
 	if err := validate.ReadOnly(ctx, "_occupied", "body", m.Occupied); err != nil {
 		return err
-	}
-
-	return nil
-}
-
-func (m *WritablePowerFeed) contextValidateCable(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Cable != nil {
-		if err := m.Cable.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("cable")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("cable")
-			}
-			return err
-		}
 	}
 
 	return nil
