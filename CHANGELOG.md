@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v6.3.0...v7.0.0) (2023-07-03)
+
+
+### Features
+
+* Improve custom field tests to contain usage test ([2eb5668](https://github.com/smutel/terraform-provider-netbox/commit/2eb56682b20a478ea12eb749906e05d2ca9cdfae))
+* Update to work with Netbox 3.4 ([8dbffbf](https://github.com/smutel/terraform-provider-netbox/commit/8dbffbf34c5e62edb77401a6dbd8a5be4305d718))
+
+
+### Bug Fixes
+
+* Fix choices field for select and multiselect custom field ([e7c882c](https://github.com/smutel/terraform-provider-netbox/commit/e7c882cd53f8f5a63e06a6b232733b156379b27d))
+* Value and default for object CF are not lists ([d3b2316](https://github.com/smutel/terraform-provider-netbox/commit/d3b2316cf7ec63e78477aa20c1dd304dde23a496))
+* Wrong conversion of filter name with underscore ([b72f202](https://github.com/smutel/terraform-provider-netbox/commit/b72f202fccf0c3dda55772c748b4092f2ce88ca4))
+
 ## [6.3.0](https://github.com/smutel/terraform-provider-netbox/compare/v6.2.0...v6.3.0) (2023-04-22)
 
 
