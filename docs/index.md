@@ -18,6 +18,9 @@ The Netbox provider provides resources to interact with [Netbox](https://netbox.
 | 2.11           | 2.x.y            |
 | 3.0            | 3.x.y            |
 | 3.1            | 4.x.y            |
+| 3.2            | 5.x.y            |
+| 3.3            | 6.x.y            |
+| 3.4            | 7.x.y            |
 
 ## Example Usage
 
@@ -26,7 +29,7 @@ terraform {
   required_providers {
     netbox = {
       source = "smutel/netbox"
-      version = "~> 6.3.0"
+      version = "~> 7.0.0"
     }
   }
 }
