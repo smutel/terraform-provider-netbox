@@ -13,19 +13,19 @@ jobs:
         go: [ '1.20.x' ]
     steps:
       - name: Check conventional commits in PR
-        uses: Namchee/conventional-pr@v0.12.1
+        uses: Namchee/conventional-pr@v0.13.0
         with:
           access_token: ${{ secrets.github_token }}
           close: false
           strict: false
 
       - name: Checkout
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.5.3
         with:
           fetch-depth: 0
 
       - name: Lint
-        uses: reviewdog/action-golangci-lint@v2.1.3
+        uses: reviewdog/action-golangci-lint@v2.3.3
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
@@ -40,7 +40,7 @@ jobs:
         shell: bash
 
       - name: Go installation
-        uses: actions/setup-go@v3.1.0
+        uses: actions/setup-go@v4.0.1
         with:
           go-version: ${{ matrix.go }}
 

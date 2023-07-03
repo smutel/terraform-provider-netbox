@@ -15,12 +15,12 @@ jobs:
         go: [ '1.20.x' ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.5.3
         with:
           fetch-depth: 0
 
       - name: Lint
-        uses: reviewdog/action-golangci-lint@v2.1.3
+        uses: reviewdog/action-golangci-lint@v2.3.3
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
@@ -34,7 +34,7 @@ jobs:
         shell: bash
 
       - name: Go installation
-        uses: actions/setup-go@v3.1.0
+        uses: actions/setup-go@v4.0.1
         with:
           go-version: ${{ matrix.go }}
 
@@ -51,7 +51,7 @@ jobs:
         shell: bash
 
       - name: Commit changes
-        uses: EndBug/add-and-commit@v9.0.0
+        uses: EndBug/add-and-commit@v9.1.3
         with:
           add: 'netbox docs'
           author_name: smutel
