@@ -2,7 +2,7 @@ terraform {
   required_providers {
     netbox = {
       source = "smutel/netbox"
-      version = "~> 6.3.0"
+      version = "~> 7.0.0"
     }
   }
 }
