@@ -122,8 +122,8 @@ func FieldNameToStructName(k string) string {
 
 	split := strings.Split(k, "_")
 	k = split[0]
-	if len(split) > 1 {
-		r2 := []rune(split[1])
+	for i := 1; i < len(split); i++ {
+		r2 := []rune(split[i])
 		r2[0] = unicode.ToUpper(r2[0])
 		k = k + string(r2)
 	}
