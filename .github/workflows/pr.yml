@@ -18,6 +18,8 @@ jobs:
           access_token: ${{ secrets.github_token }}
           close: false
           strict: false
+          title_pattern: '([fix|enh|feat|ci|chore|docs\-]+)(\([\w\-]+\))?!?: [A-Z][\w\s:\-]+'
+          commit_pattern: '([fix|enh|feat|ci|chore|docs\-]+)(\([\w\-]+\))?!?: [A-Z][\w\s:\-]+'
 
       - name: Checkout
         uses: actions/checkout@v3.5.3
