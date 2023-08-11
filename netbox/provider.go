@@ -2,7 +2,6 @@ package netbox
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"net/http"
 
@@ -214,48 +213,14 @@ func configureProvider(ctx context.Context, d *schema.ResourceData) (interface{}
 	scheme := d.Get("scheme").(string)
 	insecure := d.Get("insecure").(bool)
 
-	var options runtimeclient.TLSClientOptions
-	options.InsecureSkipVerify = insecure
-	tlsConfig, _ := runtimeclient.TLSClientAuth(options)
-
-	headers := make(map[string]string)
-
-	// Create a custom client
-	// Override the default transport with a RoundTripper to inject dynamic headers
-	// Add TLSOptions
-	cli := &http.Client{
-		Transport: &transport{
-			headers:         headers,
-			TLSClientConfig: tlsConfig,
-		},
-	}
-
 	defaultScheme := []string{scheme}
 
-	t := runtimeclient.NewWithClient(url, basepath, defaultScheme, cli)
+	t := runtimeclient.New(url, basepath, defaultScheme)
+	if insecure {
+		t.Transport.(*http.Transport).TLSClientConfig.InsecureSkipVerify = insecure
+	}
 	t.DefaultAuthentication = runtimeclient.APIKeyAuth(authHeaderName, "header",
 		fmt.Sprintf(authHeaderFormat, token))
 
 	return client.New(t, strfmt.Default), nil
-}
-
-type transport struct {
-	headers         map[string]string
-	base            http.RoundTripper
-	TLSClientConfig *tls.Config
-}
-
-func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
-	// Add headers to request
-	for k, v := range t.headers {
-		req.Header.Add(k, v)
-	}
-	base := t.base
-	if base == nil {
-		// init an http.Transport with TLSOptions
-		customTransport := http.DefaultTransport.(*http.Transport).Clone()
-		customTransport.TLSClientConfig = t.TLSClientConfig
-		base = customTransport
-	}
-	return base.RoundTrip(req)
 }
