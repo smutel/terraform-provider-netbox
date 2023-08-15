@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.0.1](https://github.com/smutel/terraform-provider-netbox/compare/v7.0.0...v7.0.1) (2023-08-11)
+
+
+### Bug Fixes
+
+* Enable http transport connection reuse ([2fbd144](https://github.com/smutel/terraform-provider-netbox/commit/2fbd14407d0664f4551651a5246f8866f1f9afbc))
+* Support FieldName with multiple underscores ([c0787ca](https://github.com/smutel/terraform-provider-netbox/commit/c0787ca39726857098456c071e5786d51611a076))
+
 ## [7.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v6.3.0...v7.0.0) (2023-07-03)
 
 
