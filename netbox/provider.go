@@ -186,6 +186,7 @@ func Provider() *schema.Provider {
 			"netbox_ipam_ip_range":                ipam.ResourceNetboxIpamIPRange(),
 			"netbox_ipam_prefix":                  ipam.ResourceNetboxIpamPrefix(),
 			"netbox_ipam_rir":                     ipam.ResourceNetboxIpamRIR(),
+			"netbox_ipam_route_targets":           ipam.ResourceNetboxIpamRouteTargets(),
 			"netbox_ipam_service":                 ipam.ResourceNetboxIpamService(),
 			"netbox_ipam_vlan":                    ipam.ResourceNetboxIpamVlan(),
 			"netbox_ipam_vlan_group":              ipam.ResourceNetboxIpamVlanGroup(),
