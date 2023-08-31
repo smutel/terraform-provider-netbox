@@ -122,7 +122,7 @@ resource "netbox_dcim_site" "site_test" {
 - `physical_address` (String) The physical address of this site (dcim module).
 - `region_id` (Number) The description of this site (dcim module).
 - `shipping_address` (String) The shipping address of this site (dcim module).
-- `status` (String) The status of this site. Alowed values: "active" (default), "planned", "staging", "decommisioning", "retired".
+- `status` (String) The status of this site. Allowed values: "active" (default), "planned", "staging", "decommisioning", "retired".
 - `tag` (Block Set) Existing tag to associate to this resource. (see [below for nested schema](#nestedblock--tag))
 - `tenant_id` (Number) The tenant of this site (dcim module).
 - `time_zone` (String) Timezone this site is in.
