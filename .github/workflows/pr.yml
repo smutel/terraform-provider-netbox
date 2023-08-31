@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: [ '1.21.x' ]
+        go: ['1.21.x']
     steps:
       - name: Check conventional commits in PR
         uses: Namchee/conventional-pr@v0.13.0

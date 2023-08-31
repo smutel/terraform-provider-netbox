@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: [ '1.21.x' ]
+        go: ['1.21.x']
     steps:
       - name: Checkout
         uses: actions/checkout@v3.5.3
@@ -41,7 +41,7 @@ jobs:
       - name: Go fmt
         run: |
           cd "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
-          find . -name "*.go" -exec go fmt {} \;
+          find . -name "*.go" -exec gofmt -s -w {} \;
         shell: bash
 
       - name: Go generate
