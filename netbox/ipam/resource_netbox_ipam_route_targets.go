@@ -57,7 +57,7 @@ func ResourceNetboxIpamRouteTargets() *schema.Resource {
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 100),
+				ValidateFunc: validation.StringLenBetween(1, 21),
 				Description:  "The name of this Route Targets (ipam module).",
 			},
 			"tag": &tag.TagSchema,
