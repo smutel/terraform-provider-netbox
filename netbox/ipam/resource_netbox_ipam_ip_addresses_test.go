@@ -130,9 +130,9 @@ func testAccCheckNetboxIpamIPAddressConfig(nameSuffix string, resourceFull, extr
 		address = "${cidrhost("10.0.0.0/8", {{ .ipnum }} + 2 )}/24"
 	}
 
-	#resource "netbox_ipam_vrf" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_ipam_vrf" "test" {
+		name = "test-{{ .namesuffix }}"
+	}
 	{{ end }}
 
 	resource "netbox_ipam_ip_addresses" "test" {
@@ -143,8 +143,7 @@ func testAccCheckNetboxIpamIPAddressConfig(nameSuffix string, resourceFull, extr
 		dns_name      = "test.example.local"
 		role          = "vip"
 		status        = "reserved"
-		# vrf_id        = netbox_ipam_vrf.test.id
-		vrf_id        = 1
+		vrf_id        = netbox_ipam_vrf.test.id
 		tenant_id     = netbox_tenancy_tenant.test.id
 		nat_inside_id = netbox_ipam_ip_addresses.nat.id
 
