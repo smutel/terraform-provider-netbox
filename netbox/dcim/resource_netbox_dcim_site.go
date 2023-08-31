@@ -142,7 +142,7 @@ func ResourceNetboxDcimSite() *schema.Resource {
 				Optional:     true,
 				Default:      "active",
 				ValidateFunc: validation.StringInSlice([]string{"planned", "staging", "active", "decommisioning", "retired"}, false),
-				Description:  "The status of this site. Alowed values: \"active\" (default), \"planned\", \"staging\", \"decommisioning\", \"retired\".",
+				Description:  "The status of this site. Allowed values: \"active\" (default), \"planned\", \"staging\", \"decommisioning\", \"retired\".",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
