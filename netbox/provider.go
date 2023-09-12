@@ -163,6 +163,7 @@ func Provider() *schema.Provider {
 			"netbox_ipam_ip_addresses":                            ipam.DataNetboxIpamIPAddresses(),
 			"netbox_ipam_ip_range":                                ipam.DataNetboxIpamIPRange(),
 			"netbox_ipam_prefix":                                  ipam.DataNetboxIpamPrefix(),
+			"netbox_ipam_rir":                                     ipam.DataNetboxIpamRir(),
 			"netbox_ipam_role":                                    ipam.DataNetboxIpamRole(),
 			"netbox_ipam_route_targets":                           ipam.DataNetboxIpamRouteTargets(),
 			"netbox_ipam_service":                                 ipam.DataNetboxIpamService(),
