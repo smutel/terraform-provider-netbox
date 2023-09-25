@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v7.0.1...v7.1.0) (2023-09-25)
+
+
+### Features
+
+* Add netbox_dcim_device_role data ([92c401b](https://github.com/smutel/terraform-provider-netbox/commit/92c401b56b6fce60b0beda843c9064b54a1a4aa1))
+* Add netbox_dcim_manufacturer data ([5d5c20f](https://github.com/smutel/terraform-provider-netbox/commit/5d5c20f8abf001dbd8c5b88b54b997c383fc22fa))
+* Add netbox_ipam_asn data ([f6a1a38](https://github.com/smutel/terraform-provider-netbox/commit/f6a1a38ee3a067236ab48a5c7d4fbb33d221a4cf))
+* Add netbox_ipam_ip_range data ([d8f0455](https://github.com/smutel/terraform-provider-netbox/commit/d8f0455e9cc7ec2e1c1db017f3a80aa492152320))
+* Add netbox_ipam_prefix data ([42a3222](https://github.com/smutel/terraform-provider-netbox/commit/42a32228563d9130bbd5b2e1a6a9bbd6aad111bc))
+* Add netbox_ipam_rir data ([8e83bc2](https://github.com/smutel/terraform-provider-netbox/commit/8e83bc229ed14ffa4f757791032838a6926a985d))
+* Add netbox_ipam_route_targets data ([2386105](https://github.com/smutel/terraform-provider-netbox/commit/2386105ae07ef328e7f78970c87cd8447d22d319))
+* Add route targets object ([d766780](https://github.com/smutel/terraform-provider-netbox/commit/d766780056ab1beeb2f77c5dc10174877c5465cf))
+* Add VRF object ([ab11014](https://github.com/smutel/terraform-provider-netbox/commit/ab11014df641a170b5a4e05662204a7766673ae0))
+
+
+### Bug Fixes
+
+* Fix some go report issues ([998af89](https://github.com/smutel/terraform-provider-netbox/commit/998af8949a7d056f1b0f8e7c40ef67fe62d8590e))
+* Typo in data contact role filename ([008f330](https://github.com/smutel/terraform-provider-netbox/commit/008f330cd5a1bc0eeaa3370a9c715f775c7cc548))
+
+
+### Enhancements
+
+* Add some missing examples in doc ([0673b06](https://github.com/smutel/terraform-provider-netbox/commit/0673b061c6f8b36262f289697b0d6470137a02b0))
+* Remove unused exports csv ([d607ba5](https://github.com/smutel/terraform-provider-netbox/commit/d607ba594c9440bb1127bc20f8645b50bc2990e3))
+
 ### [7.0.1](https://github.com/smutel/terraform-provider-netbox/compare/v7.0.0...v7.0.1) (2023-08-11)
 
 
