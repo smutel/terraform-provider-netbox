@@ -2,6 +2,7 @@ package netbox
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net/http"
 
@@ -227,7 +228,7 @@ func configureProvider(ctx context.Context, d *schema.ResourceData) (interface{}
 
 	t := runtimeclient.New(url, basepath, defaultScheme)
 	if insecure {
-		t.Transport.(*http.Transport).TLSClientConfig.InsecureSkipVerify = insecure
+		t.Transport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure} // #nosec G402
 	}
 	t.DefaultAuthentication = runtimeclient.APIKeyAuth(authHeaderName, "header",
 		fmt.Sprintf(authHeaderFormat, token))
