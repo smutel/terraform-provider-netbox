@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.1.1](https://github.com/smutel/terraform-provider-netbox/compare/v7.1.0...v7.1.1) (2023-10-20)
+
+
+### Bug Fixes
+
+* Provider is crashing when insecure=true ([40d8df9](https://github.com/smutel/terraform-provider-netbox/commit/40d8df9c8804e5a77f2eb10b18fea0f6a0139014))
+
 ## [7.1.0](https://github.com/smutel/terraform-provider-netbox/compare/v7.0.1...v7.1.0) (2023-09-25)
 
 
