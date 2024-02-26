@@ -304,6 +304,9 @@ github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
+# github.com/netbox-community/go-netbox/v3 v3.7.1-alpha.0
+## explicit; go 1.18
+github.com/netbox-community/go-netbox/v3
 # github.com/oklog/run v1.1.0
 ## explicit; go 1.13
 github.com/oklog/run
