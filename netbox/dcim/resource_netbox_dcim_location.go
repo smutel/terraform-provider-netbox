@@ -2,16 +2,15 @@ package dcim
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/dcim"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	netbox "github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
@@ -105,123 +104,131 @@ func ResourceNetboxDcimLocation() *schema.Resource {
 	}
 }
 
-var locationRequiredFields = []string{
-	"created",
-	"last_updated",
-	"name",
-	"site",
-	"slug",
-	"status",
-	"tags",
-}
-
 func resourceNetboxDcimLocationCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	name := d.Get("name").(string)
-	parentID := int64(d.Get("parent_id").(int))
-	siteID := int64(d.Get("site_id").(int))
+	parentID := int32(d.Get("parent_id").(int))
+	siteID := int32(d.Get("site_id").(int))
 	slug := d.Get("slug").(string)
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int64(d.Get("tenant_id").(int))
+	tenantID := int32(d.Get("tenant_id").(int))
 
-	newResource := &models.WritableLocation{
-		CustomFields: customFields,
-		Description:  description,
-		Name:         &name,
-		Site:         &siteID,
-		Slug:         &slug,
-		Status:       status,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
+	newResource := netbox.NewWritableLocationRequestWithDefaults()
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(description)
+	newResource.SetName(name)
+	newResource.SetSite(siteID)
+	newResource.SetSlug(slug)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
+	s, err := netbox.NewLocationStatusValueFromValue(status)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+	newResource.SetStatus(*s)
 
 	if parentID != 0 {
-		newResource.Parent = &parentID
+		newResource.SetParent(parentID)
 	}
 
 	if tenantID != 0 {
-		newResource.Tenant = &tenantID
+		newResource.SetTenant(tenantID)
 	}
 
-	resource := dcim.NewDcimLocationsCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Dcim.DcimLocationsCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	resourceCreated, response, err := client.DcimAPI.DcimLocationsCreate(ctx).WritableLocationRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	// NETBOX BUG - TO BE FIXED
+	if resourceCreated.GetId() == 0 {
+		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	}
+
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxDcimLocationRead(ctx, d, m)
 }
 
 func resourceNetboxDcimLocationRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimLocationsListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimLocationsList(params, nil)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.DcimAPI.DcimLocationsRetrieve(ctx, int32(resourceID)).Execute()
 
-	if len(resources.Payload.Results) != 1 {
+	if response.StatusCode == 404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
 	if err = d.Set("custom_field", customFields); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("description", resource.Description); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("depth", resource.Depth); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("depth", resource.GetDepth()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("parent_id", util.GetNestedLocationID(resource.Parent)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("parent_id", resource.GetParent()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("rack_count", resource.RackCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("rack_count", resource.GetRackCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("site_id", util.GetNestedSiteID(resource.Site)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("site_id", resource.GetSite()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("slug", resource.Slug); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("slug", resource.GetSlug()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("status", util.GetLocationStatusValue(resource.Status)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("status", resource.GetStatus().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tenant_id", util.GetNestedTenantID(resource.Tenant)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
@@ -229,67 +236,74 @@ func resourceNetboxDcimLocationRead(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxDcimLocationUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
-	params := &models.WritableLocation{}
+	resource := netbox.NewWritableLocationRequestWithDefaults()
 
-	modifiedFields := map[string]interface{}{}
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
-		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(
-			stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
+		resource.SetCustomFields(customFields)
 	}
+
 	if d.HasChange("description") {
-		description := d.Get("description").(string)
-		params.Description = description
-		modifiedFields["description"] = description
+		if description, exist := d.GetOk("description"); exist {
+			resource.SetDescription(description.(string))
+		} else {
+			resource.SetDescription("")
+		}
 	}
+
 	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
+		resource.SetName(d.Get("name").(string))
 	}
+
 	if d.HasChange("parent_id") {
-		parentID := int64(d.Get("parent_id").(int))
-		params.Parent = &parentID
-		modifiedFields["parent"] = parentID
+		parentID := int32(d.Get("parent_id").(int))
+		if parentID != 0 {
+			resource.SetParent(parentID)
+		} else {
+			resource.SetParentNil()
+		}
 	}
+
 	if d.HasChange("site_id") {
-		siteID := int64(d.Get("site_id").(int))
-		params.Site = &siteID
-		modifiedFields["site"] = siteID
+		siteID := int32(d.Get("site_id").(int))
+		resource.SetSite(siteID)
 	}
+
 	if d.HasChange("slug") {
-		slug := d.Get("slug").(string)
-		params.Slug = &slug
+		resource.SetSlug(d.Get("slug").(string))
 	}
-	if d.HasChange("slug") {
-		params.Status = d.Get("status").(string)
-	}
+
 	if d.HasChange("status") {
-		params.Status = d.Get("status").(string)
+		s, err := netbox.NewLocationStatusValueFromValue(d.Get("status").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetStatus(*s)
 	}
+
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
+
 	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
-		params.Tenant = &tenantID
-		modifiedFields["tenant"] = tenantID
+		tenantID := int32(d.Get("tenant_id").(int))
+		if tenantID != 0 {
+			resource.SetTenant(tenantID)
+		} else {
+			resource.SetTenantNil()
+		}
 	}
 
-	resource := dcim.NewDcimLocationsPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Dcim.DcimLocationsPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, locationRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.DcimAPI.DcimLocationsUpdate(ctx, int32(resourceID)).WritableLocationRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxDcimLocationRead(ctx, d, m)
@@ -297,25 +311,24 @@ func resourceNetboxDcimLocationUpdate(ctx context.Context, d *schema.ResourceDat
 
 func resourceNetboxDcimLocationDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxDcimLocationExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
 
-	resource := dcim.NewDcimLocationsDeleteParams().WithID(id)
-	if _, err := client.Dcim.DcimLocationsDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.DcimAPI.DcimLocationsDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -323,21 +336,19 @@ func resourceNetboxDcimLocationDelete(ctx context.Context, d *schema.ResourceDat
 
 func resourceNetboxDcimLocationExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimLocationsListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimLocationsList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.DcimAPI.DcimLocationsRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

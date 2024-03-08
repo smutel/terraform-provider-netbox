@@ -2,13 +2,13 @@ package ipam
 
 import (
 	"context"
-	"strconv"
+	"errors"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
+	netbox "github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
@@ -59,42 +59,44 @@ func DataNetboxIpamService() *schema.Resource {
 
 func dataNetboxIpamServiceRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	deviceID := int64(d.Get("device_id").(int))
-	deviceIDStr := strconv.FormatInt(deviceID, 10)
-	name := d.Get("name").(string)
-	port := float64(d.Get("port").(int))
+	deviceID := int32(d.Get("device_id").(int))
+	deviceIDArray := []*int32{&deviceID}
+	name := []string{d.Get("name").(string)}
+	port := float32(d.Get("port").(int))
 	protocol := d.Get("protocol").(string)
-	vmID := int64(d.Get("virtualmachine_id").(int))
-	vmIDStr := strconv.FormatInt(vmID, 10)
+	vmID := int32(d.Get("virtualmachine_id").(int))
+	vmIDArray := []*int32{&vmID}
 
-	p := ipam.NewIpamServicesListParams().WithName(&name)
-	p.SetPort(&port)
-	p.SetProtocol(&protocol)
+	request := client.IpamAPI.IpamServicesList(ctx).Name(name)
+	request = request.Port(port)
+	request = request.Protocol(protocol)
 	if deviceID != 0 {
-		p.SetDeviceID(&deviceIDStr)
+		request = request.DeviceId(deviceIDArray)
 	} else if vmID != 0 {
-		p.SetVirtualMachineID(&vmIDStr)
+		request = request.VirtualMachineId(vmIDArray)
 	}
 
-	list, err := client.Ipam.IpamServicesList(p, nil)
+	resource, response, err := request.Execute()
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if *list.Payload.Count < 1 {
-		return diag.Errorf("Your query returned no results. " +
-			"Please change your search criteria and try again.")
-	} else if *list.Payload.Count > 1 {
-		return diag.Errorf("Your query returned more than one result. " +
-			"Please try a more specific search criteria.")
+	if resource.GetCount() < 1 {
+		return util.GenerateErrorMessage(nil, errors.New("Your query returned no results. "+
+			"Please change your search criteria and try again."))
+
+	} else if resource.GetCount() > 1 {
+		return util.GenerateErrorMessage(nil, errors.New("Your query returned more than one result. "+
+			"Please try a more specific search criteria."))
 	}
 
-	r := list.Payload.Results[0]
-	d.SetId(strconv.FormatInt(r.ID, 10))
-	if err = d.Set("content_type", util.ConvertURIContentType(r.URL)); err != nil {
-		return diag.FromErr(err)
+	r := resource.Results[0]
+	d.SetId(fmt.Sprintf("%d", r.GetId()))
+	if err = d.Set("content_type", util.ConvertURLContentType(r.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil

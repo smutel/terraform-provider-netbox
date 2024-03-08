@@ -2,12 +2,12 @@ package ipam
 
 import (
 	"context"
-	"strconv"
+	"errors"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
+	netbox "github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
@@ -32,30 +32,29 @@ func DataNetboxIpamVrf() *schema.Resource {
 }
 
 func dataNetboxIpamVrfRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	id := int64(d.Get("vrf_id").(int))
-	idStr := strconv.FormatInt(id, 10)
+	id := []int32{d.Get("vrf_id").(int32)}
 
-	p := ipam.NewIpamVrfsListParams().WithID(&idStr)
+	resource, response, err := client.IpamAPI.IpamVrfsList(ctx).Id(id).Execute()
 
-	list, err := client.Ipam.IpamVrfsList(p, nil)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if *list.Payload.Count < 1 {
-		return diag.Errorf("Your query returned no results. " +
-			"Please change your search criteria and try again.")
-	} else if *list.Payload.Count > 1 {
-		return diag.Errorf("Your query returned more than one result. " +
-			"Please try a more specific search criteria.")
+	if resource.GetCount() < 1 {
+		return util.GenerateErrorMessage(nil, errors.New("Your query returned no results. "+
+			"Please change your search criteria and try again."))
+
+	} else if resource.GetCount() > 1 {
+		return util.GenerateErrorMessage(nil, errors.New("Your query returned more than one result. "+
+			"Please try a more specific search criteria."))
 	}
 
-	r := list.Payload.Results[0]
-	d.SetId(strconv.FormatInt(r.ID, 10))
-	if err = d.Set("content_type", util.ConvertURIContentType(r.URL)); err != nil {
-		return diag.FromErr(err)
+	r := resource.Results[0]
+	d.SetId(fmt.Sprintf("%d", r.GetId()))
+	if err = d.Set("content_type", util.ConvertURLContentType(r.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil

@@ -2,14 +2,14 @@ package ipam
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -87,240 +87,211 @@ func ResourceNetboxIpamService() *schema.Resource {
 
 func resourceNetboxIpamServiceCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
-	description := d.Get("description").(string)
-	deviceID := int64(d.Get("device_id").(int))
-	IPaddressesID := d.Get("ip_addresses_id").([]interface{})
-	IPaddressesID64 := []int64{}
+	deviceID := int32(d.Get("device_id").(int))
+	IPaddressesID := d.Get("ip_addresses_id").([]int32)
 	name := d.Get("name").(string)
-	ports := d.Get("ports").([]interface{})
-	ports64 := []int64{}
+	ports := d.Get("ports").([]int32)
 	protocol := d.Get("protocol").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	virtualmachineID := int64(d.Get("virtualmachine_id").(int))
+	virtualmachineID := int32(d.Get("virtualmachine_id").(int))
 
-	for _, id := range IPaddressesID {
-		IPaddressesID64 = append(IPaddressesID64, int64(id.(int)))
-	}
+	newResource := netbox.NewWritableServiceRequestWithDefaults()
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(d.Get("description").(string))
+	newResource.SetIpaddresses(IPaddressesID)
+	newResource.SetName(name)
+	newResource.SetPorts(ports)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	for _, p := range ports {
-		ports64 = append(ports64, int64(p.(int)))
+	p, err := netbox.NewPatchedWritableServiceRequestProtocolFromValue(protocol)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-
-	newResource := &models.WritableService{
-		CustomFields: &customFields,
-		Description:  description,
-		Ipaddresses:  IPaddressesID64,
-		Name:         &name,
-		Ports:        ports64,
-		Protocol:     &protocol,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
-	}
+	newResource.SetProtocol(*p)
 
 	if deviceID != 0 {
-		newResource.Device = &deviceID
+		newResource.SetDevice(deviceID)
 	}
 
 	if virtualmachineID != 0 {
-		newResource.VirtualMachine = &virtualmachineID
+		newResource.SetVirtualMachine(virtualmachineID)
 	}
 
-	resource := ipam.NewIpamServicesCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Ipam.IpamServicesCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	resourceCreated, response, err := client.IpamAPI.IpamServicesCreate(ctx).WritableServiceRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	// NETBOX BUG - TO BE FIXED
+	if resourceCreated.GetId() == 0 {
+		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	}
+
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
+
 	return resourceNetboxIpamServiceRead(ctx, d, m)
 }
 
 func resourceNetboxIpamServiceRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := ipam.NewIpamServicesListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamServicesList(params, nil)
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.IpamAPI.IpamServicesRetrieve(ctx, int32(resourceID)).Execute()
+
+	if response.StatusCode == 404 {
+		d.SetId("")
+		return nil
+	}
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
-
-			if err = d.Set("custom_field", customFields); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var description interface{}
-			if resource.Description == "" {
-				description = nil
-			} else {
-				description = resource.Description
-			}
-
-			if err = d.Set("description", description); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Device == nil {
-				if err = d.Set("device_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("device_id", resource.Device.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			IPaddressesObject := resource.Ipaddresses
-			IPaddressesInt := []int64{}
-			for _, ip := range IPaddressesObject {
-				IPaddressesInt = append(IPaddressesInt, ip.ID)
-			}
-			if err = d.Set("ip_addresses_id", IPaddressesInt); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("name", resource.Name); err != nil {
-				return diag.FromErr(err)
-			}
-
-			ports := resource.Ports
-			if err = d.Set("ports", ports); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("protocol", resource.Protocol.Value); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.VirtualMachine == nil {
-				if err = d.Set("virtualmachine_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("virtualmachine_id", resource.VirtualMachine.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			return nil
-		}
+	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	d.SetId("")
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
+
+	if err = d.Set("custom_field", customFields); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("device_id", resource.GetDevice().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("ip_addresses_id", resource.GetIpaddresses()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("ports", resource.GetPorts()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("protocol", resource.GetProtocol().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("vittualmachine_id", resource.GetVirtualMachine().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	return nil
 }
 
 func resourceNetboxIpamServiceUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	params := &models.WritableService{}
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
+	}
+	resource := netbox.NewWritableServiceRequestWithDefaults()
 
 	// Required parameters
-	name := d.Get("name").(string)
-	params.Name = &name
-
-	ports := d.Get("ports").([]interface{})
-	ports64 := []int64{}
-	for _, port := range ports {
-		ports64 = append(ports64, int64(port.(int)))
-	}
-
-	params.Ports = ports64
-
-	protocol := d.Get("protocol").(string)
-	params.Protocol = &protocol
-
-	IPaddressesID := d.Get("ip_addresses_id").([]interface{})
-	IPaddressesID64 := []int64{}
-	for _, id := range IPaddressesID {
-		IPaddressesID64 = append(IPaddressesID64, int64(id.(int)))
-	}
-
-	params.Ipaddresses = IPaddressesID64
-
-	deviceID := int64(d.Get("device_id").(int))
-	if deviceID != 0 {
-		params.Device = &deviceID
-	}
-
-	vmID := int64(d.Get("virtualmachine_id").(int))
-	if vmID != 0 {
-		params.VirtualMachine = &vmID
-	}
+	resource.SetName(d.Get("name").(string))
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
 
 	if d.HasChange("description") {
-		if description, exist := d.GetOk("description"); exist {
-			params.Description = description.(string)
+		resource.SetDescription(d.Get("description").(string))
+	}
+
+	if d.HasChange("device_id") {
+		deviceID := int32(d.Get("device_id").(int))
+		if deviceID != 0 {
+			resource.SetDevice(deviceID)
 		} else {
-			params.Description = " "
+			resource.SetDeviceNil()
 		}
 	}
 
-	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = tag.ConvertTagsToNestedTags(tags)
-
-	resource := ipam.NewIpamServicesPartialUpdateParams().WithData(
-		params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+	if d.HasChange("ip_addresses_id") {
+		IPaddressesID := d.Get("ip_addresses_id").([]int32)
+		resource.SetIpaddresses(IPaddressesID)
 	}
 
-	resource.SetID(resourceID)
+	if d.HasChange("ports") {
+		ports := d.Get("ports").([]int32)
+		resource.SetPorts(ports)
+	}
 
-	_, err = client.Ipam.IpamServicesPartialUpdate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	if d.HasChange("protocol") {
+		p, err := netbox.NewPatchedWritableServiceRequestProtocolFromValue(d.Get("protocol").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetProtocol(*p)
+	}
+
+	if d.HasChange("virtualmachine_id") {
+		vmID := int32(d.Get("virtualmachine_id").(int))
+		if vmID != 0 {
+			resource.SetVirtualMachine(vmID)
+		} else {
+			resource.SetVirtualMachineNil()
+		}
+	}
+
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+	}
+
+	if _, response, err := client.IpamAPI.IpamServicesUpdate(ctx, int32(resourceID)).WritableServiceRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxIpamServiceRead(ctx, d, m)
 }
 
 func resourceNetboxIpamServiceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxIpamServiceExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
 
-	resource := ipam.NewIpamServicesDeleteParams().WithID(id)
-	if _, err := client.Ipam.IpamServicesDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.IpamAPI.IpamServicesDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -328,22 +299,19 @@ func resourceNetboxIpamServiceDelete(ctx context.Context, d *schema.ResourceData
 
 func resourceNetboxIpamServiceExists(d *schema.ResourceData, m interface{}) (b bool,
 	e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	vlanID := d.Id()
-	params := ipam.NewIpamServicesListParams().WithID(&vlanID)
-	vlans, err := client.Ipam.IpamServicesList(params, nil)
-
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, vlan := range vlans.Payload.Results {
-		if strconv.FormatInt(vlan.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.IpamAPI.IpamServicesRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

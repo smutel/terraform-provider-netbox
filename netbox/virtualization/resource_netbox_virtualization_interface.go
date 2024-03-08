@@ -2,23 +2,22 @@ package virtualization
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
 // Type of vm interface in Netbox
-const vMInterfaceType string = "virtualization.vminterface"
+const vmIntefaceType string = "virtualization.vminterface"
 
 func ResourceNetboxVirtualizationInterface() *schema.Resource {
 	return &schema.Resource{
@@ -149,347 +148,279 @@ func ResourceNetboxVirtualizationInterface() *schema.Resource {
 
 func resourceNetboxVirtualizationInterfaceCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-
-	dropFields := []string{
-		"created",
-		"last_updated",
-	}
-	emptyFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	enabled := d.Get("enabled").(bool)
 	mode := d.Get("mode").(string)
-	mtu := int64(d.Get("mtu").(int))
+	mtu := int32(d.Get("mtu").(int))
 	name := d.Get("name").(string)
-	taggedVlans, err := util.ExpandToInt64Slice(d.Get("tagged_vlans").(*schema.Set).List())
+	taggedVlans, err := util.ExpandToInt32Slice(d.Get("tagged_vlans").(*schema.Set).List())
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	tags := d.Get("tag").(*schema.Set).List()
-	untaggedVlan := int64(d.Get("untagged_vlan").(int))
-	virtualmachineID := int64(d.Get("virtualmachine_id").(int))
+	untaggedVlan := int32(d.Get("untagged_vlan").(int))
+	virtualmachineID := int32(d.Get("virtualmachine_id").(int))
 
-	newResource := &models.WritableVMInterface{
-		CustomFields:   &customFields,
-		Description:    description,
-		Enabled:        enabled,
-		Mode:           mode,
-		Name:           &name,
-		TaggedVlans:    taggedVlans,
-		Tags:           tag.ConvertTagsToNestedTags(tags),
-		VirtualMachine: &virtualmachineID,
-	}
+	newResource := netbox.NewWritableVMInterfaceRequestWithDefaults()
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(description)
+	newResource.SetEnabled(enabled)
+	newResource.SetName(name)
+	newResource.SetTaggedVlans(taggedVlans)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+	newResource.SetVirtualMachine(virtualmachineID)
 
-	if !enabled {
-		emptyFields["enabled"] = false
+	modeObj, err := netbox.NewPatchedWritableInterfaceRequestModeFromValue(mode)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+	newResource.SetMode(*modeObj)
 
 	if macAddress := d.Get("mac_address").(string); macAddress != "" {
-		newResource.MacAddress = &macAddress
+		newResource.SetMacAddress(macAddress)
 	}
 
-	if bridgeID := int64(d.Get("bridge_id").(int)); bridgeID != 0 {
-		newResource.Bridge = &bridgeID
+	if bridgeID := int32(d.Get("bridge_id").(int)); bridgeID != 0 {
+		newResource.SetBridge(bridgeID)
 	}
 
-	if parentID := int64(d.Get("parent_id").(int)); parentID != 0 {
-		newResource.Parent = &parentID
+	if parentID := int32(d.Get("parent_id").(int)); parentID != 0 {
+		newResource.SetParent(parentID)
 	}
 
-	if vrfID := int64(d.Get("vrf_id").(int)); vrfID != 0 {
-		newResource.Vrf = &vrfID
+	if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
+		newResource.SetVrf(vrfID)
 	}
 
 	if mtu != 0 {
-		newResource.Mtu = &mtu
+		newResource.SetMtu(mtu)
 	}
 
 	if untaggedVlan != 0 {
-		newResource.UntaggedVlan = &untaggedVlan
+		newResource.SetUntaggedVlan(untaggedVlan)
 	}
 
-	resource := virtualization.NewVirtualizationInterfacesCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Virtualization.VirtualizationInterfacesCreate(
-		resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-
-	if err != nil {
-		return diag.FromErr(err)
+	resourceCreated, response, err := client.VirtualizationAPI.VirtualizationInterfacesCreate(ctx).WritableVMInterfaceRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxVirtualizationInterfaceRead(ctx, d, m)
 }
 
 func resourceNetboxVirtualizationInterfaceRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := virtualization.NewVirtualizationInterfacesListParams().WithID(
-		&resourceID)
-	resources, err := client.Virtualization.VirtualizationInterfacesList(
-		params, nil)
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.VirtualizationAPI.VirtualizationInterfacesRetrieve(ctx, int32(resourceID)).Execute()
+
+	if response.StatusCode == 404 {
+		d.SetId("")
+		return nil
+	}
 
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-				return diag.FromErr(err)
-			}
-			var bridgeID *int64
-			bridgeID = nil
-			if resource.Bridge != nil {
-				bridgeID = &resource.Bridge.ID
-			}
-			if err = d.Set("bridge_id", bridgeID); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("count_fhrp_groups", resource.CountFhrpGroups); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("count_ipaddresses", resource.CountIpaddresses); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("created", resource.Created.String()); err != nil {
-				return diag.FromErr(err)
-			}
-
-			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
-
-			if err = d.Set("custom_field", customFields); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("description", resource.Description); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("enabled", resource.Enabled); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("mac_address", resource.MacAddress); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var mode *string
-			mode = nil
-			if resource.Mode != nil {
-				mode = resource.Mode.Value
-			}
-			if err = d.Set("mode", mode); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("mtu", resource.Mtu); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("name", resource.Name); err != nil {
-				return diag.FromErr(err)
-			}
-			var parentID *int64
-			parentID = nil
-			if resource.Parent != nil {
-				parentID = &resource.Parent.ID
-			}
-			if err = d.Set("parent_id", parentID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("tagged_vlans", util.ConvertNestedVlansToVlans(resource.TaggedVlans)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("tag", tag.ConvertNestedTagsToTags(
-				resource.Tags)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("untagged_vlan", util.GetNestedVlanID(resource.UntaggedVlan)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("virtualmachine_id",
-				resource.VirtualMachine.ID); err != nil {
-				return diag.FromErr(err)
-			}
-			var vrfID *int64
-			vrfID = nil
-			if resource.Vrf != nil {
-				vrfID = &resource.Vrf.ID
-			}
-			if err = d.Set("vrf_id", vrfID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("type", vMInterfaceType); err != nil {
-				return diag.FromErr(err)
-			}
-
-			return nil
-		}
+	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	d.SetId("")
+	if err = d.Set("bridge_id", resource.Bridge.Get().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("count_fhrp_groups", resource.GetCountFhrpGroups()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("count_ipaddresses", resource.GetCountIpaddresses()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
+
+	if err = d.Set("custom_field", customFields); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("enabled", resource.GetEnabled()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("mac_address", resource.GetMacAddress()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("mode", resource.GetMode().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("mtu", resource.GetMtu()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("parent_id", resource.GetParent().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tagged_vlans", resource.GetTaggedVlans()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("untagged_vlan", resource.GetUntaggedVlan().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("virtualmachine_id", resource.GetVirtualMachine().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("vrf_id", resource.GetVrf().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("type", vmIntefaceType); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	return nil
 }
 
 func resourceNetboxVirtualizationInterfaceUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	params := &models.WritableVMInterface{}
-	dropFields := []string{
-		"created",
-		"last_updated",
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.Atoi(d.Id())
+	if err != nil {
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
-	emptyFields := make(map[string]interface{})
+	resource := netbox.NewWritableVMInterfaceRequestWithDefaults()
 
 	if d.HasChange("bridge_id") {
-		bridgeID := int64(d.Get("bridge_id").(int))
-		if bridgeID != 0 {
-			params.Bridge = &bridgeID
+		if bridgeID := int32(d.Get("bridge_id").(int)); bridgeID != 0 {
+			resource.SetBridge(bridgeID)
 		} else {
-			emptyFields["bridge"] = nil
+			resource.SetBridgeNil()
 		}
 	}
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
 
 	if d.HasChange("description") {
-		description := d.Get("description").(string)
-		if description != "" {
-			params.Description = description
-		} else {
-			emptyFields["description"] = ""
-		}
+		resource.SetDescription(d.Get("description").(string))
 	}
 
 	if d.HasChange("enabled") {
-		enabled := d.Get("enabled").(bool)
-		if enabled {
-			params.Enabled = enabled
-		} else {
-			emptyFields["enabled"] = false
-		}
+		resource.SetEnabled(d.Get("enabled").(bool))
 	}
 
 	if d.HasChange("mac_address") {
 		macAddress := d.Get("mac_address").(string)
 		if macAddress != "" {
-			params.MacAddress = &macAddress
+			resource.SetMacAddress(macAddress)
 		} else {
-			emptyFields["mac_address"] = nil
+			resource.SetMacAddressNil()
 		}
 	}
 
 	if d.HasChange("mode") {
-		mode := d.Get("mode").(string)
-		if mode != "" {
-			params.Mode = mode
-		} else {
-			emptyFields["mode"] = nil
+		modeObj, err := netbox.NewPatchedWritableInterfaceRequestModeFromValue(d.Get("mode").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
 		}
+		resource.SetMode(*modeObj)
 	}
 
 	if d.HasChange("mtu") {
-		mtu := int64(d.Get("mtu").(int))
-		if mtu != 0 {
-			params.Mtu = &mtu
+		if mtu := int32(d.Get("mtu").(int)); mtu != 0 {
+			resource.SetMtu(mtu)
 		} else {
-			emptyFields["mtu"] = nil
+			resource.SetMtuNil()
 		}
 	}
 
 	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
-	} else {
-		dropFields = append(dropFields, "name")
+		resource.SetName(d.Get("name").(string))
 	}
 
 	if d.HasChange("parent_id") {
-		parentID := int64(d.Get("parent_id").(int))
-		if parentID != 0 {
-			params.Parent = &parentID
+		if parentID := int32(d.Get("parent_id").(int)); parentID != 0 {
+			resource.SetParent(parentID)
 		} else {
-			emptyFields["parent"] = nil
+			resource.SetParentNil()
 		}
 	}
 
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
-	} else {
-		dropFields = append(dropFields, "tags")
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
 	if d.HasChange("tagged_vlans") {
 		taggedVlans := d.Get("tagged_vlans").(*schema.Set).List()
-		tvlans, err := util.ExpandToInt64Slice(taggedVlans)
+		tvlans, err := util.ExpandToInt32Slice(taggedVlans)
 		if err != nil {
-			return diag.FromErr(err)
+			return util.GenerateErrorMessage(nil, err)
 		}
-		params.TaggedVlans = tvlans
-	} else {
-		dropFields = append(dropFields, "tagged_vlans")
+		resource.SetTaggedVlans(tvlans)
 	}
 
 	if d.HasChange("untagged_vlan") {
-		untaggedVlan := int64(d.Get("untagged_vlan").(int))
-		params.UntaggedVlan = &untaggedVlan
-		if untaggedVlan == 0 {
-			emptyFields["untagged_vlan"] = nil
+		if untaggedVlan := int32(d.Get("untagged_vlan").(int)); untaggedVlan != 0 {
+			resource.SetUntaggedVlan(untaggedVlan)
+		} else {
+			resource.SetUntaggedVlanNil()
 		}
 	}
 
 	if d.HasChange("virtual_machine_id") {
-		virtualMachineID := int64(d.Get("virtual_machine_id").(int))
-		if virtualMachineID != 0 {
-			params.VirtualMachine = &virtualMachineID
-		}
-	} else {
-		dropFields = append(dropFields, "virtual_machine")
+		resource.SetVirtualMachine(int32(d.Get("virtual_machine_id").(int)))
 	}
 
 	if d.HasChange("vrf_id") {
-		vrfID := int64(d.Get("vrf_id").(int))
-		if vrfID != 0 {
-			params.Vrf = &vrfID
+		if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
+			resource.SetVrf(vrfID)
 		} else {
-			emptyFields["vrf"] = nil
+			resource.SetVrfNil()
 		}
 	}
 
-	resource := virtualization.NewVirtualizationInterfacesPartialUpdateParams().WithData(params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
-	}
-
-	resource.SetID(resourceID)
-
-	_, err = client.Virtualization.VirtualizationInterfacesPartialUpdate(
-		resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.VirtualizationAPI.VirtualizationInterfacesUpdate(ctx, int32(resourceID)).WritableVMInterfaceRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxVirtualizationInterfaceRead(ctx, d, m)
@@ -497,51 +428,44 @@ func resourceNetboxVirtualizationInterfaceUpdate(ctx context.Context, d *schema.
 
 func resourceNetboxVirtualizationInterfaceDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxVirtualizationInterfaceExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
 
-	p := virtualization.NewVirtualizationInterfacesDeleteParams().WithID(id)
-	if _, err := client.Virtualization.VirtualizationInterfacesDelete(
-		p, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.VirtualizationAPI.VirtualizationInterfacesDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
 }
 
 func resourceNetboxVirtualizationInterfaceExists(d *schema.ResourceData,
-	m interface{}) (b bool,
-	e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	m interface{}) (b bool, e error) {
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := virtualization.NewVirtualizationInterfacesListParams().WithID(
-		&resourceID)
-	resources, err := client.Virtualization.VirtualizationInterfacesList(
-		params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.VirtualizationAPI.VirtualizationInterfacesRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

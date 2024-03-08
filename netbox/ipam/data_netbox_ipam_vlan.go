@@ -2,12 +2,12 @@ package ipam
 
 import (
 	"context"
-	"strconv"
+	"errors"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
+	"github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
@@ -37,35 +37,34 @@ func DataNetboxIpamVlan() *schema.Resource {
 }
 
 func dataNetboxIpamVlanRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	id := int64(d.Get("vlan_id").(int))
-	idStr := strconv.FormatInt(id, 10)
-	groupID := int64(d.Get("vlan_group_id").(int))
-	groupIDStr := strconv.FormatInt(groupID, 10)
+	vlanID := []int32{int32(d.Get("vlan_id").(int))}
+	groupID := int32(d.Get("vlan_group_id").(int))
+	groupIDArray := []*int32{&groupID}
 
-	p := ipam.NewIpamVlansListParams().WithVid(&idStr)
-	if groupID != 0 {
-		p.SetGroupID(&groupIDStr)
-	}
+	request := client.IpamAPI.IpamVlansList(ctx).Vid(vlanID)
+	request = request.GroupId(groupIDArray)
 
-	list, err := client.Ipam.IpamVlansList(p, nil)
+	resource, response, err := request.Execute()
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if *list.Payload.Count < 1 {
-		return diag.Errorf("Your query returned no results. " +
-			"Please change your search criteria and try again.")
-	} else if *list.Payload.Count > 1 {
-		return diag.Errorf("Your query returned more than one result. " +
-			"Please try a more specific search criteria.")
+	if resource.GetCount() < 1 {
+		return util.GenerateErrorMessage(nil, errors.New("Your query returned no results. "+
+			"Please change your search criteria and try again."))
+
+	} else if resource.GetCount() > 1 {
+		return util.GenerateErrorMessage(nil, errors.New("Your query returned more than one result. "+
+			"Please try a more specific search criteria."))
 	}
 
-	r := list.Payload.Results[0]
-	d.SetId(strconv.FormatInt(r.ID, 10))
-	if err = d.Set("content_type", util.ConvertURIContentType(r.URL)); err != nil {
-		return diag.FromErr(err)
+	r := resource.Results[0]
+	d.SetId(fmt.Sprintf("%d", r.GetId()))
+	if err = d.Set("content_type", util.ConvertURLContentType(r.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil

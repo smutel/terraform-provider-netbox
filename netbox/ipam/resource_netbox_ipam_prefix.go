@@ -2,14 +2,14 @@ package ipam
 
 import (
 	"context"
+	"errors"
+	"net/http"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	netbox "github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -116,287 +116,252 @@ func ResourceNetboxIpamPrefix() *schema.Resource {
 
 func resourceNetboxIpamPrefixCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	var prefix string
-	var prefixid *int64
+	var prefixid int32
+	update := false
+
 	if stateprefix, ok := d.GetOk("prefix"); ok {
 		prefix = stateprefix.(string)
 	} else if pprefix, ok := d.GetOk("parent_prefix"); ok {
 		set := pprefix.(*schema.Set)
 		mappreffix := set.List()[0].(map[string]interface{})
-		parentPrefix := int64(mappreffix["prefix"].(int))
-		prefixlength := int64(mappreffix["prefix_length"].(int))
-		p, err := getNewAvailablePrefix(client, parentPrefix, prefixlength)
+		parentPrefix := int32(mappreffix["prefix"].(int))
+		p, err := getNewAvailablePrefix(ctx, client, parentPrefix)
 		if err != nil {
-			return diag.FromErr(err)
+			return err
 		}
-		prefix = *p.Prefix
-		prefixid = &p.ID
-	} else {
-		return diag.Errorf("exactly one of (prefix, parent_prefix) must be specified")
+		prefix = p.Prefix
+		update = true
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	isPool := d.Get("is_pool").(bool)
-	roleID := int64(d.Get("role_id").(int))
-	siteID := int64(d.Get("site_id").(int))
+	roleID := int32(d.Get("role_id").(int))
+	siteID := int32(d.Get("site_id").(int))
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int64(d.Get("tenant_id").(int))
-	vlanID := int64(d.Get("vlan_id").(int))
-	vrfID := int64(d.Get("vrf_id").(int))
+	tenantID := int32(d.Get("tenant_id").(int))
+	vlanID := int32(d.Get("vlan_id").(int))
+	vrfID := int32(d.Get("vrf_id").(int))
 
-	newResource := &models.WritablePrefix{
-		CustomFields: &customFields,
-		Description:  description,
-		IsPool:       isPool,
-		Prefix:       &prefix,
-		Status:       status,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
+	newResource := netbox.NewWritablePrefixRequestWithDefaults()
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(description)
+	newResource.SetIsPool(isPool)
+	newResource.SetPrefix(prefix)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
+	s, err := netbox.NewPatchedWritablePrefixRequestStatusFromValue(status)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+	newResource.SetStatus(*s)
 
 	if roleID != 0 {
-		newResource.Role = &roleID
+		newResource.SetRole(roleID)
 	}
 
 	if siteID != 0 {
-		newResource.Site = &siteID
+		newResource.SetSite(siteID)
 	}
 
 	if tenantID != 0 {
-		newResource.Tenant = &tenantID
+		newResource.SetTenant(tenantID)
 	}
 
 	if vlanID != 0 {
-		newResource.Vlan = &vlanID
+		newResource.SetVlan(vlanID)
 	}
 
 	if vrfID != 0 {
-		newResource.Vrf = &vrfID
+		newResource.SetVrf(vrfID)
 	}
 
-	if prefixid == nil {
-		resource := ipam.NewIpamPrefixesCreateParams().WithData(newResource)
-
-		resourceCreated, err := client.Ipam.IpamPrefixesCreate(resource, nil)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
-		prefixid = &resourceCreated.Payload.ID
+	var resource *netbox.Prefix
+	var response *http.Response
+	if !update {
+		resource, response, err = client.IpamAPI.IpamPrefixesCreate(ctx).WritablePrefixRequest(*newResource).Execute()
 	} else {
-		resource := ipam.NewIpamPrefixesUpdateParams().WithID(*prefixid).WithData(newResource)
-
-		resourceCreated, err := client.Ipam.IpamPrefixesUpdate(resource, nil)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
-		prefixid = &resourceCreated.Payload.ID
+		resource, response, err = client.IpamAPI.IpamPrefixesUpdate(ctx, prefixid).WritablePrefixRequest(*newResource).Execute()
+	}
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(*prefixid, 10))
+	// NETBOX BUG - TO BE FIXED
+	if resource.GetId() == 0 {
+		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	}
+
+	prefixid = resource.GetId()
+
+	d.SetId(strconv.FormatInt(int64(prefixid), 10))
 
 	return resourceNetboxIpamPrefixRead(ctx, d, m)
 }
 
 func resourceNetboxIpamPrefixRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := ipam.NewIpamPrefixesListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamPrefixesList(params, nil)
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.IpamAPI.IpamPrefixesRetrieve(ctx, int32(resourceID)).Execute()
+
+	if response.StatusCode == 404 {
+		d.SetId("")
+		return nil
+	}
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-				return diag.FromErr(err)
-			}
+	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
-			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
-
-			if err = d.Set("custom_field", customFields); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var description interface{}
-			if resource.Description == "" {
-				description = nil
-			} else {
-				description = resource.Description
-			}
-
-			if err = d.Set("description", description); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("is_pool", resource.IsPool); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("prefix", resource.Prefix); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Role == nil {
-				if err = d.Set("role_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("role_id", resource.Role.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if resource.Site == nil {
-				if err = d.Set("site_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("site_id", resource.Site.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if resource.Status == nil {
-				if err = d.Set("status", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("status", resource.Status.Value); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Tenant == nil {
-				if err = d.Set("tenant_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if resource.Vlan == nil {
-				if err = d.Set("vlan_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("vlan_id", resource.Vlan.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if resource.Vrf == nil {
-				if err = d.Set("vrf_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("vrf_id", resource.Vrf.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			return nil
-		}
+	if err = d.Set("custom_field", customFields); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	d.SetId("")
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("is_pool", resource.GetIsPool()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("prefix", resource.GetPrefix()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("role_id", resource.GetRole().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("site_id", resource.GetSite().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("status", resource.GetStatus().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("vlan_id", resource.GetVlan().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("vrf_id", resource.GetVrf().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	return nil
 }
 
 func resourceNetboxIpamPrefixUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	params := &models.WritablePrefix{}
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
+	}
+	resource := netbox.NewWritablePrefixRequestWithDefaults()
 
 	// Required parameters
-	prefix := d.Get("prefix").(string)
-	params.Prefix = &prefix
+	resource.SetPrefix(d.Get("prefix").(string))
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
 
 	if d.HasChange("description") {
 		if description, exist := d.GetOk("description"); exist {
-			params.Description = description.(string)
+			resource.SetDescription(description.(string))
 		} else {
-			params.Description = " "
+			resource.SetDescription("")
 		}
 	}
 
-	params.IsPool = d.Get("is_pool").(bool)
+	resource.SetIsPool(d.Get("is_pool").(bool))
 
 	if d.HasChange("role_id") {
-		roleID := int64(d.Get("role_id").(int))
+		roleID := int32(d.Get("role_id").(int))
 		if roleID != 0 {
-			params.Role = &roleID
+			resource.SetRole(roleID)
+		} else {
+			resource.SetRoleNil()
 		}
 	}
 
 	if d.HasChange("site_id") {
-		siteID := int64(d.Get("site_id").(int))
+		siteID := int32(d.Get("role_id").(int))
 		if siteID != 0 {
-			params.Site = &siteID
+			resource.SetSite(siteID)
+		} else {
+			resource.SetSiteNil()
 		}
 	}
 
 	if d.HasChange("status") {
-		params.Status = d.Get("status").(string)
+		s, err := netbox.NewPatchedWritablePrefixRequestStatusFromValue(d.Get("status").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetStatus(*s)
 	}
 
-	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = tag.ConvertTagsToNestedTags(tags)
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
+		tenantID := int32(d.Get("tenant_id").(int))
 		if tenantID != 0 {
-			params.Tenant = &tenantID
+			resource.SetTenant(tenantID)
+		} else {
+			resource.SetTenantNil()
 		}
 	}
 
 	if d.HasChange("vlan_id") {
-		vlanID := int64(d.Get("vlan_id").(int))
+		vlanID := int32(d.Get("vlan_id").(int))
 		if vlanID != 0 {
-			params.Vlan = &vlanID
+			resource.SetVlan(vlanID)
+		} else {
+			resource.SetVlanNil()
 		}
 	}
 
 	if d.HasChange("vrf_id") {
-		vrfID := int64(d.Get("vrf_id").(int))
+		vrfID := int32(d.Get("vrf_id").(int))
 		if vrfID != 0 {
-			params.Vrf = &vrfID
+			resource.SetVrf(vrfID)
+		} else {
+			resource.SetVrfNil()
 		}
 	}
 
-	resource := ipam.NewIpamPrefixesPartialUpdateParams().WithData(params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
-	}
-
-	resource.SetID(resourceID)
-
-	_, err = client.Ipam.IpamPrefixesPartialUpdate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.IpamAPI.IpamPrefixesUpdate(ctx, int32(resourceID)).WritablePrefixRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxIpamPrefixRead(ctx, d, m)
@@ -404,25 +369,24 @@ func resourceNetboxIpamPrefixUpdate(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxIpamPrefixDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxIpamPrefixExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
 
-	resource := ipam.NewIpamPrefixesDeleteParams().WithID(id)
-	if _, err := client.Ipam.IpamPrefixesDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.IpamAPI.IpamPrefixesDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -430,21 +394,19 @@ func resourceNetboxIpamPrefixDelete(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxIpamPrefixExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := ipam.NewIpamPrefixesListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamPrefixesList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.IpamAPI.IpamPrefixesRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

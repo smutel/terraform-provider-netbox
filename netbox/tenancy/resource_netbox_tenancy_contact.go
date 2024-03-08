@@ -2,6 +2,7 @@ package tenancy
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -9,11 +10,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
@@ -98,237 +96,169 @@ func ResourceNetboxTenancyContact() *schema.Resource {
 
 func resourceNetboxTenancyContactCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	address := d.Get("address").(string)
 	comments := d.Get("comments").(string)
-	groupID := int64(d.Get("contact_group_id").(int))
+	groupID := int32(d.Get("contact_group_id").(int))
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
-	email := strfmt.Email(d.Get("email").(string))
+	email := d.Get("email").(string)
 	name := d.Get("name").(string)
 	phone := d.Get("phone").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 	title := d.Get("title").(string)
 
-	newResource := &models.WritableContact{
-		Address:      address,
-		Comments:     comments,
-		CustomFields: &customFields,
-		Email:        email,
-		Name:         &name,
-		Phone:        phone,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
-		Title:        title,
-	}
+	newResource := netbox.NewWritableContactRequestWithDefaults()
+	newResource.SetAddress(address)
+	newResource.SetComments(comments)
+	newResource.SetCustomFields(customFields)
+	newResource.SetEmail(email)
+	newResource.SetName(name)
+	newResource.SetPhone(phone)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+	newResource.SetTitle(title)
 
 	if groupID != 0 {
-		newResource.Group = &groupID
+		newResource.SetGroup(groupID)
 	}
 
-	resource := tenancy.NewTenancyContactsCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Tenancy.TenancyContactsCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	resourceCreated, response, err := client.TenancyAPI.TenancyContactsCreate(ctx).WritableContactRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxTenancyContactRead(ctx, d, m)
 }
 
 func resourceNetboxTenancyContactRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := tenancy.NewTenancyContactsListParams().WithID(&resourceID)
-	resources, err := client.Tenancy.TenancyContactsList(params, nil)
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.TenancyAPI.TenancyContactsRetrieve(ctx, int32(resourceID)).Execute()
+
+	if response.StatusCode == 404 {
+		d.SetId("")
+		return nil
+	}
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			var address interface{}
-			if resource.Address == "" {
-				address = nil
-			} else {
-				address = resource.Address
-			}
-
-			if err = d.Set("address", address); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var comments interface{}
-			if resource.Comments == "" {
-				comments = nil
-			} else {
-				comments = resource.Comments
-			}
-
-			if err = d.Set("comments", comments); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Group == nil {
-				if err = d.Set("contact_group_id", 0); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("contact_group_id", resource.Group.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
-
-			if err = d.Set("custom_field", customFields); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var email interface{}
-			if resource.Email.String() == "" {
-				email = nil
-			} else {
-				email = resource.Email.String()
-			}
-
-			if err = d.Set("email", email); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("name", resource.Name); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var phone interface{}
-			if resource.Phone == "" {
-				phone = nil
-			} else {
-				phone = resource.Phone
-			}
-
-			if err = d.Set("phone", phone); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var title interface{}
-			if resource.Title == "" {
-				title = nil
-			} else {
-				title = resource.Title
-			}
-
-			if err = d.Set("title", title); err != nil {
-				return diag.FromErr(err)
-			}
-
-			return nil
-		}
+	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	d.SetId("")
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
+
+	if err = d.Set("custom_field", customFields); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("address", resource.GetAddress()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("comments", resource.GetComments()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("contact_group_id", resource.GetGroup().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("email", resource.GetEmail()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("phone", resource.GetPhone()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("title", resource.GetTitle()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	return nil
 }
 
 func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	dropFields := []string{
-		"created",
-		"last_updated",
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.Atoi(d.Id())
+	if err != nil {
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
-	emptyFields := make(map[string]interface{})
-	params := &models.WritableContact{}
+	resource := netbox.NewWritableContactRequestWithDefaults()
 
 	// Required parameters
 	name := d.Get("name").(string)
-	params.Name = &name
+	resource.SetName(name)
 
 	if d.HasChange("address") {
-		if address, exist := d.GetOk("address"); exist {
-			params.Address = address.(string)
-		} else {
-			params.Address = " "
-		}
+		resource.SetAddress(d.Get("address").(string))
 	}
 
 	if d.HasChange("comments") {
-		if comments, exist := d.GetOk("comments"); exist {
-			params.Comments = comments.(string)
-		} else {
-			params.Comments = " "
-		}
+		resource.SetComments(d.Get("comments").(string))
 	}
 
 	if d.HasChange("contact_group_id") {
-		groupID := int64(d.Get("contact_group_id").(int))
+		groupID := int32(d.Get("contact_group_id").(int))
 		if groupID == 0 {
-			params.Group = nil
+			resource.SetGroupNil()
 		} else {
-			params.Group = &groupID
+			resource.SetGroup(groupID)
 		}
-	} else {
-		dropFields = append(dropFields, "group")
 	}
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
 
 	if d.HasChange("email") {
-		if email, exist := d.GetOk("email"); exist {
-			params.Email = strfmt.Email(email.(string))
-		} else {
-			params.Email = strfmt.Email(" ")
-		}
+		resource.SetEmail(d.Get("email").(string))
 	}
 
 	if d.HasChange("phone") {
-		if phone, exist := d.GetOk("phone"); exist {
-			params.Phone = phone.(string)
-		} else {
-			params.Phone = " "
-		}
+		resource.SetEmail(d.Get("phone").(string))
 	}
 
-	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = tag.ConvertTagsToNestedTags(tags)
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+	}
 
 	if d.HasChange("title") {
-		if title, exist := d.GetOk("title"); exist {
-			params.Title = title.(string)
-		} else {
-			params.Title = " "
-		}
+		resource.SetEmail(d.Get("title").(string))
 	}
 
-	resource := tenancy.NewTenancyContactsPartialUpdateParams().WithData(params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
-	}
-
-	resource.SetID(resourceID)
-
-	_, err = client.Tenancy.TenancyContactsPartialUpdate(resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.TenancyAPI.TenancyContactsUpdate(ctx, int32(resourceID)).WritableContactRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxTenancyContactRead(ctx, d, m)
@@ -336,25 +266,24 @@ func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceD
 
 func resourceNetboxTenancyContactDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxTenancyContactExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
 
-	p := tenancy.NewTenancyContactsDeleteParams().WithID(id)
-	if _, err := client.Tenancy.TenancyContactsDelete(p, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.TenancyAPI.TenancyContactsDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -363,21 +292,19 @@ func resourceNetboxTenancyContactDelete(ctx context.Context, d *schema.ResourceD
 func resourceNetboxTenancyContactExists(d *schema.ResourceData,
 	m interface{}) (b bool,
 	e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := tenancy.NewTenancyContactsListParams().WithID(&resourceID)
-	resources, err := client.Tenancy.TenancyContactsList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.TenancyAPI.TenancyContactsRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

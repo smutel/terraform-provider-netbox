@@ -3,17 +3,16 @@ package virtualization
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
@@ -151,226 +150,220 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 
 func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	clusterID := int64(d.Get("cluster_id").(int))
+	clusterID := int32(d.Get("cluster_id").(int))
 	comments := d.Get("comments").(string)
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	name := d.Get("name").(string)
-	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := &models.WritableVirtualMachineWithConfigContext{
-		Cluster:      &clusterID,
-		Comments:     comments,
-		CustomFields: &customFields,
-		Name:         &name,
-		Status:       status,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
+	newResource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+	newResource.SetCluster(clusterID)
+	newResource.SetComments(comments)
+	newResource.SetCustomFields(customFields)
+	newResource.SetName(name)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
+	s, err := netbox.NewModuleStatusValueFromValue(d.Get("status").(string))
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	newResource.SetStatus(*s)
+
+	if disk := int32(d.Get("disk").(int)); disk != 0 {
+		newResource.SetDisk(disk)
 	}
 
-	if disk := int64(d.Get("disk").(int)); disk != 0 {
-		newResource.Disk = &disk
-	}
-
-	if memory := int64(d.Get("memory").(int)); memory != 0 {
-		newResource.Memory = &memory
+	if memory := int32(d.Get("memory").(int)); memory != 0 {
+		newResource.SetMemory(memory)
 	}
 
 	if localContextData := d.Get("local_context_data").(string); localContextData != "" {
 		var localContextDataMap map[string]*interface{}
 		if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
-			return diag.FromErr(err)
+			return util.GenerateErrorMessage(nil, err)
 		}
-		newResource.LocalContextData = localContextDataMap
+		newResource.SetLocalContextData(localContextDataMap)
 	}
 
-	if deviceID := int64(d.Get("device_id").(int)); deviceID != 0 {
-		newResource.Device = &deviceID
+	if deviceID := int32(d.Get("device_id").(int)); deviceID != 0 {
+		newResource.SetDevice(deviceID)
 	}
 
-	if platformID := int64(d.Get("platform_id").(int)); platformID != 0 {
-		newResource.Platform = &platformID
+	if platformID := int32(d.Get("platform_id").(int)); platformID != 0 {
+		newResource.SetPlatform(platformID)
 	}
 
-	if roleID := int64(d.Get("role_id").(int)); roleID != 0 {
-		newResource.Role = &roleID
+	if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
+		newResource.SetRole(roleID)
 	}
 
-	if siteID := int64(d.Get("site_id").(int)); siteID != 0 {
-		newResource.Site = &siteID
+	if siteID := int32(d.Get("site_id").(int)); siteID != 0 {
+		newResource.SetSite(siteID)
 	}
 
-	if tenantID := int64(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.Tenant = &tenantID
+	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+		newResource.SetTenant(tenantID)
 	}
 
 	if vcpus := d.Get("vcpus").(string); vcpus != "" {
 		vcpusFloat, _ := strconv.ParseFloat(vcpus, 32)
-		newResource.Vcpus = &vcpusFloat
+		newResource.SetVcpus(vcpusFloat)
 	}
 
-	resource := virtualization.NewVirtualizationVirtualMachinesCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Virtualization.VirtualizationVirtualMachinesCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	resourceCreated, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesCreate(ctx).WritableVirtualMachineWithConfigContextRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxVirtualizationVMRead(ctx, d, m)
 }
 
 func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := virtualization.NewVirtualizationVirtualMachinesListParams().WithID(
-		&resourceID)
-	resources, err := client.Virtualization.VirtualizationVirtualMachinesList(
-		params, nil)
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(ctx, int32(resourceID)).Execute()
 
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	if len(resources.Payload.Results) != 1 {
+	if response.StatusCode == 404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
-	if err = d.Set("cluster_id", resource.Cluster.ID); err != nil {
-		return diag.FromErr(err)
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("comments", resource.Comments); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("cluster_id", resource.GetCluster().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("comments", resource.GetComments()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
 	if err = d.Set("custom_field", customFields); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("device_id", util.GetNestedDeviceID(resource.Device)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("device_id", resource.GetDevice().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("disk", resource.Disk); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("disk", resource.GetDisk()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	localContextDataJSON, err := util.GetLocalContextData(resource.LocalContextData)
+	localContextDataJSON, err := util.GetLocalContextData(resource.GetLocalContextData())
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
+
 	if err = d.Set("local_context_data", localContextDataJSON); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("memory", resource.Memory); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("memory", resource.GetMemory()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("platform_id", util.GetNestedPlatformID(resource.Platform)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("platform_id", resource.GetPlatform().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("primary_ip", util.GetNestedIPAddressAddress(resource.PrimaryIP)); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("primary_ip4", util.GetNestedIPAddressAddress(resource.PrimaryIp4)); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("primary_ip6", util.GetNestedIPAddressAddress(resource.PrimaryIp6)); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("role_id", util.GetNestedRoleID(resource.Role)); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("site_id", util.GetNestedSiteID(resource.Site)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("primary_ip", resource.GetPrimaryIp().Address); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("status", resource.Status.Value); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("primary_ip4", resource.GetPrimaryIp4().Address); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("primary_ip6", resource.GetPrimaryIp6().Address); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("tenant_id", util.GetNestedTenantID(resource.Tenant)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("role_id", resource.GetRole().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("vcpus", util.Float2stringptr(resource.Vcpus)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("site_id", resource.GetSite().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+
+	if err = d.Set("status", resource.GetStatus().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("vcpus", resource.GetVcpus()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	return nil
-
 }
 
 func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	dropFields := []string{
-		"created",
-		"last_updated",
-	}
-	emptyFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
-	params := &models.WritableVirtualMachineWithConfigContext{}
+	resourceID, err := strconv.Atoi(d.Id())
+	if err != nil {
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
+	}
+	resource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
 
 	// Required parameters
 	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
-	} else {
-		dropFields = append(dropFields, "name")
+		resource.SetName(d.Get("name").(string))
 	}
+
 	if d.HasChange("cluster_id") {
-		clusterID := int64(d.Get("cluster_id").(int))
-		params.Cluster = &clusterID
-	} else {
-		dropFields = append(dropFields, "cluster")
+		if clusterID := int32(d.Get("cluster_id").(int)); clusterID != 0 {
+			resource.SetCluster(clusterID)
+		} else {
+			resource.SetClusterNil()
+		}
 	}
 
 	if d.HasChange("comments") {
-		comments := d.Get("comments")
-		if comments != "" {
-			params.Comments = comments.(string)
-		} else {
-			emptyFields["comments"] = ""
-		}
+		resource.SetComments(d.Get("comments").(string))
 	}
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
 
 	if d.HasChange("disk") {
-		disk := int64(d.Get("disk").(int))
-		if disk != 0 {
-			params.Disk = &disk
+		if disk := int32(d.Get("disk").(int)); disk != 0 {
+			resource.SetDisk(disk)
 		} else {
-			emptyFields["disk"] = nil
+			resource.SetDiskNil()
 		}
 	}
 
@@ -380,64 +373,61 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 		if localContextData == "" {
 			localContextDataMap = nil
 		} else if err := json.Unmarshal([]byte(localContextData), &localContextDataMap); err != nil {
-			return diag.FromErr(err)
+			return util.GenerateErrorMessage(nil, err)
 		}
-		params.LocalContextData = localContextDataMap
+		resource.SetLocalContextData(localContextDataMap)
 	}
 
 	if d.HasChange("memory") {
-		memory := int64(d.Get("memory").(int))
-		if memory != 0 {
-			params.Memory = &memory
+		if memory := int32(d.Get("memory").(int)); memory != 0 {
+			resource.SetMemory(memory)
 		} else {
-			emptyFields["memory"] = nil
+			resource.SetMemoryNil()
 		}
 	}
 
 	if d.HasChange("platform_id") {
-		platformID := int64(d.Get("platform_id").(int))
-		if platformID != 0 {
-			params.Platform = &platformID
+		if platformID := int32(d.Get("platform_id").(int)); platformID != 0 {
+			resource.SetPlatform(platformID)
 		} else {
-			emptyFields["platform"] = nil
+			resource.SetPlatformNil()
 		}
 	}
 
 	if d.HasChange("role_id") {
-		roleID := int64(d.Get("role_id").(int))
-		if roleID != 0 {
-			params.Role = &roleID
+		if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
+			resource.SetRole(roleID)
 		} else {
-			emptyFields["role"] = nil
+			resource.SetRoleNil()
 		}
 	}
 
 	if d.HasChange("site_id") {
-		siteID := int64(d.Get("site_id").(int))
-		params.Site = &siteID
-		if siteID == 0 {
-			emptyFields["site"] = nil
+		if siteID := int32(d.Get("site_id").(int)); siteID != 0 {
+			resource.SetSite(siteID)
+		} else {
+			resource.SetSiteNil()
 		}
 	}
 
 	if d.HasChange("status") {
-		status := d.Get("status").(string)
-		params.Status = status
+		s, err := netbox.NewModuleStatusValueFromValue(d.Get("status").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetStatus(*s)
 	}
 
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
-	} else {
-		dropFields = append(dropFields, "tags")
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			params.Tenant = &tenantID
+		if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+			resource.SetTenant(tenantID)
 		} else {
-			emptyFields["tenant"] = nil
+			resource.SetTenantNil()
 		}
 	}
 
@@ -445,25 +435,12 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 		vcpus := d.Get("vcpus").(string)
 		if vcpus != "" {
 			vcpusFloat, _ := strconv.ParseFloat(vcpus, 32)
-			params.Vcpus = &vcpusFloat
-		} else {
-			emptyFields["vcpus"] = nil
+			resource.SetVcpus(vcpusFloat)
 		}
 	}
 
-	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
-	}
-
-	resource.SetID(resourceID)
-
-	_, err = client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
-		resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, int32(resourceID)).WritableVirtualMachineWithConfigContextRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxVirtualizationVMRead(ctx, d, m)
@@ -471,26 +448,24 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 
 func resourceNetboxVirtualizationVMDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxVirtualizationVMExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
 
-	p := virtualization.NewVirtualizationVirtualMachinesDeleteParams().WithID(id)
-	if _, err := client.Virtualization.VirtualizationVirtualMachinesDelete(
-		p, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -499,23 +474,19 @@ func resourceNetboxVirtualizationVMDelete(ctx context.Context, d *schema.Resourc
 func resourceNetboxVirtualizationVMExists(d *schema.ResourceData,
 	m interface{}) (b bool,
 	e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := virtualization.NewVirtualizationVirtualMachinesListParams().WithID(
-		&resourceID)
-	resources, err := client.Virtualization.VirtualizationVirtualMachinesList(
-		params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

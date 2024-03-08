@@ -2,16 +2,15 @@ package ipam
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
@@ -85,93 +84,97 @@ var routeTargetsRequiredFields = []string{
 
 func resourceNetboxIpamRouteTargetsCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 
-	comments := d.Get("comments").(string)
-	name := d.Get("name").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := &models.WritableRouteTarget{
-		Comments:     comments,
-		CustomFields: &customFields,
-		Description:  d.Get("description").(string),
-		Name:         &name,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
+	newResource := netbox.NewWritableRouteTargetRequestWithDefaults()
+
+	newResource.SetComments(d.Get("comments").(string))
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(d.Get("description").(string))
+	newResource.SetName(d.Get("name").(string))
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
+	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+		newResource.SetTenant(tenantID)
 	}
 
-	if tenantID := int64(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.Tenant = &tenantID
+	resourceCreated, response, err := client.IpamAPI.IpamRouteTargetsCreate(ctx).WritableRouteTargetRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	resource := ipam.NewIpamRouteTargetsCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Ipam.IpamRouteTargetsCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	// NETBOX BUG - TO BE FIXED
+	if resourceCreated.GetId() == 0 {
+		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamRouteTargetsRead(ctx, d, m)
 }
 
 func resourceNetboxIpamRouteTargetsRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := ipam.NewIpamRouteTargetsListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamRouteTargetsList(params, nil)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.IpamAPI.IpamRouteTargetsRetrieve(ctx, int32(resourceID)).Execute()
 
-	if len(resources.Payload.Results) != 1 {
+	if response.StatusCode == 404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
-
-	if err = d.Set("comments", resource.Comments); err != nil {
-		return diag.FromErr(err)
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("comments", resource.GetComments()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
+
 	if err = d.Set("custom_field", customFields); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("description", resource.Description); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("tenant_id", util.GetNestedTenantID(resource.Tenant)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
@@ -179,61 +182,52 @@ func resourceNetboxIpamRouteTargetsRead(ctx context.Context, d *schema.ResourceD
 
 func resourceNetboxIpamRouteTargetsUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	modiefiedFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
-	params := &models.WritableRouteTarget{}
+	resource := netbox.NewWritableRouteTargetRequestWithDefaults()
 
 	if d.HasChange("comments") {
-		comments := d.Get("comments")
-		if comments != "" {
-			params.Comments = comments.(string)
-		} else {
-			modiefiedFields["comments"] = ""
-		}
+		resource.SetComments(d.Get("comments").(string))
 	}
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
 
 	if d.HasChange("description") {
-		params.Description = d.Get("description").(string)
-		modiefiedFields["description"] = params.Description
+		if description, exist := d.GetOk("description"); exist {
+			resource.SetDescription(description.(string))
+		} else {
+			resource.SetDescription("")
+		}
 	}
 
 	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
+		resource.SetName(d.Get("name").(string))
 	}
 
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
+		tenantID := int32(d.Get("tenant_id").(int))
 		if tenantID != 0 {
-			params.Tenant = &tenantID
+			resource.SetTenant(tenantID)
 		} else {
-			modiefiedFields["tenant"] = nil
+			resource.SetTenantNil()
 		}
 	}
 
-	resource := ipam.NewIpamRouteTargetsPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Ipam.IpamRouteTargetsPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modiefiedFields, routeTargetsRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.IpamAPI.IpamRouteTargetsUpdate(ctx, int32(resourceID)).WritableRouteTargetRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxIpamRouteTargetsRead(ctx, d, m)
@@ -241,25 +235,24 @@ func resourceNetboxIpamRouteTargetsUpdate(ctx context.Context, d *schema.Resourc
 
 func resourceNetboxIpamRouteTargetsDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxIpamRouteTargetsExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
 
-	resource := ipam.NewIpamRouteTargetsDeleteParams().WithID(id)
-	if _, err := client.Ipam.IpamRouteTargetsDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.IpamAPI.IpamRouteTargetsDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -267,21 +260,19 @@ func resourceNetboxIpamRouteTargetsDelete(ctx context.Context, d *schema.Resourc
 
 func resourceNetboxIpamRouteTargetsExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := ipam.NewIpamRouteTargetsListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamRouteTargetsList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.IpamAPI.IpamRouteTargetsRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

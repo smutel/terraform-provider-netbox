@@ -4,12 +4,12 @@ package json
 import (
 	"context"
 	"encoding/json"
+  "errors"
 	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/dcim"
+	netbox "github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
@@ -18,7 +18,7 @@ import (
 
 func DataNetboxJSONDcimModuleBayTemplatesList() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get json output from the dcim_module_bay_templates_list Netbox endpoint.",
+		Description: "Get json output from the DcimModuleBayTemplatesList Netbox endpoint.",
 		ReadContext: dataNetboxJSONDcimModuleBayTemplatesListRead,
 
 		Schema: map[string]*schema.Schema{
@@ -57,11 +57,10 @@ func DataNetboxJSONDcimModuleBayTemplatesList() *schema.Resource {
 }
 
 func dataNetboxJSONDcimModuleBayTemplatesListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	params := dcim.NewDcimModuleBayTemplatesListParams()
-	limit := int64(d.Get("limit").(int))
-	params.Limit = &limit
+  limit := int32(d.Get("limit").(int))
+  request := client.DcimAPI.DcimModuleBayTemplatesList(ctx)
 
 	if filter, ok := d.GetOk("filter"); ok {
 		var filterParams = filter.(*schema.Set)
@@ -70,23 +69,25 @@ func dataNetboxJSONDcimModuleBayTemplatesListRead(ctx context.Context, d *schema
 			v := f.(map[string]interface{})["value"]
 			kString := k.(string)
 			vString := v.(string)
-			field := reflect.ValueOf(params).Elem().FieldByName(util.FieldNameToStructName(kString))
-			if field != (reflect.Value{}) {
-				field.Set(reflect.ValueOf(&vString))
-			} else {
-				return diag.Errorf("Field %s does not exist in schema.", kString)
-			}
+      method := reflect.ValueOf(request).MethodByName("Set" + kString).Interface().(func(string))
+      method(vString)
 		}
 	}
 
-	list, err := client.Dcim.DcimModuleBayTemplatesList(params, nil)
+	resource, response, err := request.Execute()
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	tmp := list.Payload.Results
-	resultLength := int64(len(tmp))
-	desiredLength := *list.Payload.Count
+	if resource.GetCount() < 1 {
+		return util.GenerateErrorMessage(nil, errors.New("Your query returned no results. "+
+			"Please change your search criteria and try again."))
+	}
+
+  tmp := resource.Results
+	resultLength := int32(len(tmp))
+	desiredLength := *resource.Count
 	if limit > 0 && limit < desiredLength {
 		desiredLength = limit
 	}
@@ -94,23 +95,24 @@ func dataNetboxJSONDcimModuleBayTemplatesListRead(ctx context.Context, d *schema
 		limit = resultLength
 	}
 	offset := limit
-	params.Offset = &offset
-	for int64(len(tmp)) < desiredLength {
-		offset = int64(len(tmp))
+  request = request.Offset(offset)
+
+	for int32(len(tmp)) < desiredLength {
+		offset = int32(len(tmp))
 		if limit > desiredLength-offset {
 			limit = desiredLength - offset
 		}
-		list, err = client.Dcim.DcimModuleBayTemplatesList(params, nil)
+    request.Execute()
 		if err != nil {
-			return diag.FromErr(err)
+		  return util.GenerateErrorMessage(response, err)
 		}
-		tmp = append(tmp, list.Payload.Results...)
+		tmp = append(tmp, resource.Results...)
 	}
 
 	j, _ := json.Marshal(tmp)
 
 	if err = d.Set("json", string(j)); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 	d.SetId("NetboxJSONDcimModuleBayTemplatesList")
 

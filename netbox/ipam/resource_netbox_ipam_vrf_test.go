@@ -98,7 +98,7 @@ func testAccCheckNetboxIPAMVrfConfig(nameSuffix string, resourceFull, extraResou
 		name = "test-{{ .namesuffix }}"
 		slug = "test-{{ .namesuffix }}"
 	}
-  
+
   resource "netbox_tenancy_tenant" "test" {
     name = "test-{{ .namesuffix }}"
     slug = "test-{{ .namesuffix }}"

@@ -2,16 +2,14 @@ package extras
 
 import (
 	"context"
+	"errors"
 	"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/extras"
-	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
+	netbox "github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
@@ -87,84 +85,76 @@ func ResourceNetboxExtrasTag() *schema.Resource {
 	}
 }
 
-var tagRequiredFields = []string{
-	"created",
-	"last_updated",
-	"name",
-	"slug",
-}
-
 func resourceNetboxExtrasTagCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	name := d.Get("name").(string)
-	slug := d.Get("slug").(string)
+	newResource := netbox.NewTagRequestWithDefaults()
+	newResource.SetName(d.Get("name").(string))
+	newResource.SetSlug(d.Get("slug").(string))
+	newResource.SetDescription(d.Get("description").(string))
+	newResource.SetColor(d.Get("color").(string))
 
-	newResource := &models.Tag{
-		Name:        &name,
-		Slug:        &slug,
-		Description: d.Get("description").(string),
-		Color:       d.Get("color").(string),
+	resourceCreated, response, err := client.ExtrasAPI.ExtrasTagsCreate(ctx).TagRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	resource := extras.NewExtrasTagsCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Extras.ExtrasTagsCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	// NETBOX BUG - TO BE FIXED
+	if resourceCreated.GetId() == 0 {
+		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(strconv.FormatInt(int64(resourceCreated.GetId()), 10))
 
 	return resourceNetboxExtrasTagRead(ctx, d, m)
 }
 
 func resourceNetboxExtrasTagRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := extras.NewExtrasTagsListParams().WithID(&resourceID)
-	resources, err := client.Extras.ExtrasTagsList(params, nil)
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.ExtrasAPI.ExtrasTagsRetrieve(ctx, int32(resourceID)).Execute()
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if len(resources.Payload.Results) != 1 {
-		d.SetId("")
-		return nil
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	resource := resources.Payload.Results[0]
-
-	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("color", resource.GetColor()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("color", resource.Color); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("description", resource.Description); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("slug", resource.GetSlug()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("slug", resource.Slug); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tagged_items", resource.GetObjectTypes()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tagged_items", resource.TaggedItems); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
@@ -172,39 +162,29 @@ func resourceNetboxExtrasTagRead(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxExtrasTagUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	modifiedFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
-	}
-
-	params := &models.Tag{}
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource := netbox.NewTagRequestWithDefaults()
 
 	if d.HasChange("color") {
-		params.Color = d.Get("color").(string)
+		resource.SetColor(d.Get("color").(string))
 	}
+
 	if d.HasChange("description") {
-		params.Description = d.Get("description").(string)
-		modifiedFields["description"] = params.Description
+		resource.SetDescription(d.Get("description").(string))
 	}
+
 	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
+		resource.SetName(d.Get("name").(string))
 	}
+
 	if d.HasChange("slug") {
-		slug := d.Get("slug").(string)
-		params.Slug = &slug
+		resource.SetName(d.Get("slug").(string))
 	}
 
-	resource := extras.NewExtrasTagsPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Extras.ExtrasTagsPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, tagRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.ExtrasAPI.ExtrasTagsUpdate(ctx, int32(resourceID)).TagRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxExtrasTagRead(ctx, d, m)
@@ -212,25 +192,24 @@ func resourceNetboxExtrasTagUpdate(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxExtrasTagDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxExtrasTagExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
 
-	resource := extras.NewExtrasTagsDeleteParams().WithID(id)
-	if _, err := client.Extras.ExtrasTagsDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.ExtrasAPI.ExtrasTagsDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -238,21 +217,19 @@ func resourceNetboxExtrasTagDelete(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxExtrasTagExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := extras.NewExtrasTagsListParams().WithID(&resourceID)
-	resources, err := client.Extras.ExtrasTagsList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.ExtrasAPI.ExtrasTagsRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

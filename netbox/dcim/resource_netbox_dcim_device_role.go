@@ -2,17 +2,15 @@ package dcim
 
 import (
 	"context"
+	"errors"
 	"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/dcim"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	netbox "github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
@@ -102,112 +100,107 @@ func ResourceNetboxDcimDeviceRole() *schema.Resource {
 	}
 }
 
-var deviceRoleRequiredFields = []string{
-	"created",
-	"last_updated",
-	"name",
-	"slug",
-	"tags",
-}
-
 func resourceNetboxDcimDeviceRoleCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	name := d.Get("name").(string)
 	slug := d.Get("slug").(string)
+	color := d.Get("color").(string)
+	vmRole := d.Get("vm_role").(bool)
+	description := d.Get("description").(string)
 	tags := d.Get("tag").(*schema.Set).List()
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 
-	newResource := &models.DeviceRole{
-		Color:        d.Get("color").(string),
-		CustomFields: customFields,
-		Description:  d.Get("description").(string),
-		Name:         &name,
-		Slug:         &slug,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
-		VMRole:       d.Get("vm_role").(bool),
+	newResource := netbox.NewWritableDeviceRoleRequestWithDefaults()
+	newResource.SetName(name)
+	newResource.SetSlug(slug)
+	newResource.SetColor(color)
+	newResource.SetVmRole(vmRole)
+	newResource.SetDescription(description)
+	newResource.SetCustomFields(customFields)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
+	resourceCreated, response, err := client.DcimAPI.DcimDeviceRolesCreate(ctx).WritableDeviceRoleRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	dropFields := []string{}
-	emptyFields := make(map[string]interface{})
-	if !newResource.VMRole {
-		emptyFields["vm_role"] = false
+	// NETBOX BUG - TO BE FIXED
+	if resourceCreated.GetId() == 0 {
+		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
 	}
 
-	resource := dcim.NewDcimDeviceRolesCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Dcim.DcimDeviceRolesCreate(resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(strconv.FormatInt(int64(resourceCreated.GetId()), 10))
 
 	return resourceNetboxDcimDeviceRoleRead(ctx, d, m)
 }
 
 func resourceNetboxDcimDeviceRoleRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimDeviceRolesListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimDeviceRolesList(params, nil)
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.DcimAPI.DcimDeviceRolesRetrieve(ctx, int32(resourceID)).Execute()
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if len(resources.Payload.Results) != 1 {
-		d.SetId("")
-		return nil
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	resource := resources.Payload.Results[0]
-
-	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("color", resource.GetColor()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("color", resource.Color); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
-	}
+
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
 	if err = d.Set("custom_field", customFields); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("description", resource.Description); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("device_count", resource.DeviceCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("device_count", resource.GetDeviceCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("slug", resource.Slug); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("slug", resource.GetSlug()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("virtualmachine_count", resource.VirtualmachineCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("virtualmachine_count", resource.GetVirtualmachineCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("vm_role", resource.VMRole); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("vm_role", resource.GetVmRole()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
@@ -215,52 +208,41 @@ func resourceNetboxDcimDeviceRoleRead(ctx context.Context, d *schema.ResourceDat
 
 func resourceNetboxDcimDeviceRoleUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	modifiedFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
-	}
+	name := d.Get("name").(string)
+	slug := d.Get("slug").(string)
 
-	params := &models.DeviceRole{}
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource := netbox.NewWritableDeviceRoleRequestWithDefaults()
+	resource.SetName(name)
+	resource.SetSlug(slug)
 
 	if d.HasChange("color") {
-		params.Color = d.Get("color").(string)
+		resource.SetColor(d.Get("color").(string))
 	}
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
+
 	if d.HasChange("description") {
-		params.Description = d.Get("description").(string)
-		modifiedFields["description"] = params.Description
+		resource.SetDescription(d.Get("description").(string))
 	}
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
-	}
-	if d.HasChange("slug") {
-		slug := d.Get("slug").(string)
-		params.Slug = &slug
-	}
+
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
+
 	if d.HasChange("vm_role") {
-		params.VMRole = d.Get("vm_role").(bool)
-		modifiedFields["vm_role"] = d.Get("vm_role").(bool)
+		resource.SetVmRole(d.Get("vm_role").(bool))
 	}
 
-	resource := dcim.NewDcimDeviceRolesPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Dcim.DcimDeviceRolesPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, deviceRoleRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.DcimAPI.DcimDeviceRolesUpdate(ctx, int32(resourceID)).WritableDeviceRoleRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxDcimDeviceRoleRead(ctx, d, m)
@@ -268,25 +250,24 @@ func resourceNetboxDcimDeviceRoleUpdate(ctx context.Context, d *schema.ResourceD
 
 func resourceNetboxDcimDeviceRoleDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxDcimDeviceRoleExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
 
-	resource := dcim.NewDcimDeviceRolesDeleteParams().WithID(id)
-	if _, err := client.Dcim.DcimDeviceRolesDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.DcimAPI.DcimDeviceRolesDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -294,21 +275,19 @@ func resourceNetboxDcimDeviceRoleDelete(ctx context.Context, d *schema.ResourceD
 
 func resourceNetboxDcimDeviceRoleExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimDeviceRolesListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimDeviceRolesList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.DcimAPI.DcimDeviceRolesRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

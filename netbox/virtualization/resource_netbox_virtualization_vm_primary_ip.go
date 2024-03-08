@@ -2,14 +2,14 @@ package virtualization
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
-	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
+	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
 func ResourceNetboxVirtualizationVMPrimaryIP() *schema.Resource {
@@ -50,148 +50,107 @@ func ResourceNetboxVirtualizationVMPrimaryIP() *schema.Resource {
 
 func resourceNetboxVirtualizationVMPrimaryIPCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxVirtualizationVMPrimaryIPExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
-		return diag.Errorf("virtual machine with ID %d does not exist", d.Get("virtualmachine_id"))
+		return util.GenerateErrorMessage(nil, fmt.Errorf("virtual machine with ID %d does not exist", d.Get("virtualmachine_id")))
 	}
 
-	dropFields := []string{
-		"created",
-		"last_updated",
-		"name",
-		"cluster",
-		"tags",
-	}
-	emptyFields := make(map[string]interface{})
+	vmID := int32(d.Get("virtualmachine_id").(int))
 
-	vmID := int64(d.Get("virtualmachine_id").(int))
-
-	newResource := &models.WritableVirtualMachineWithConfigContext{}
-	if primaryIP4ID := int64(d.Get("primary_ip4_id").(int)); primaryIP4ID != 0 {
-		newResource.PrimaryIp4 = &primaryIP4ID
-	}
-	if primaryIP6ID := int64(d.Get("primary_ip6_id").(int)); primaryIP6ID != 0 {
-		newResource.PrimaryIp6 = &primaryIP6ID
+	newResource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+	if primaryIP4ID := int32(d.Get("primary_ip4_id").(int)); primaryIP4ID != 0 {
+		newResource.SetPrimaryIp4(primaryIP4ID)
 	}
 
-	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(newResource).WithID(vmID)
-
-	resourceCreated, err := client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if primaryIP6ID := int32(d.Get("primary_ip6_id").(int)); primaryIP6ID != 0 {
+		newResource.SetPrimaryIp6(primaryIP6ID)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	resourceCreated, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, vmID).WritableVirtualMachineWithConfigContextRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
+
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxVirtualizationVMPrimaryIPRead(ctx, d, m)
 }
 
 func resourceNetboxVirtualizationVMPrimaryIPRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := virtualization.NewVirtualizationVirtualMachinesListParams().WithID(
-		&resourceID)
-	resources, err := client.Virtualization.VirtualizationVirtualMachinesList(
-		params, nil)
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(ctx, int32(resourceID)).Execute()
+
+	if response.StatusCode == 404 {
+		d.SetId("")
+		return nil
+	}
 
 	if err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
+
+	// Setting this is only needed for imported resources
+	if err := d.Set("virtualmachine_id", resource.GetId()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err := d.Set("primary_ip4_id", resource.GetPrimaryIp4().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err := d.Set("primary_ip6_id", resource.GetPrimaryIp6().Id); err != nil {
 		return diag.FromErr(err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-
-			// Setting this is only needed for imported resources
-			if err := d.Set("virtualmachine_id", resource.ID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var primaryIP4ID *int64
-			primaryIP4ID = nil
-			if resource.PrimaryIp4 != nil {
-				primaryIP4ID = &resource.PrimaryIp4.ID
-			}
-			if err := d.Set("primary_ip4_id", primaryIP4ID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var primaryIP6ID *int64
-			primaryIP6ID = nil
-			if resource.PrimaryIp6 != nil {
-				primaryIP6ID = &resource.PrimaryIp6.ID
-			}
-			if err := d.Set("primary_ip6_id", primaryIP6ID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			return nil
-		}
-	}
-
-	d.SetId("")
 	return nil
 }
 
 func resourceNetboxVirtualizationVMPrimaryIPUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxVirtualizationVMPrimaryIPExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
-		return diag.Errorf("virtual machine with ID %d does not exist", d.Get("virtualmachine_id"))
+		return util.GenerateErrorMessage(nil, fmt.Errorf("virtual machine with ID %d does not exist", d.Get("virtualmachine_id")))
 	}
 
-	dropFields := []string{
-		"created",
-		"last_updated",
-		"name",
-		"cluster",
-		"tags",
+	resourceID, err := strconv.Atoi(d.Id())
+	if err != nil {
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
-	emptyFields := make(map[string]interface{})
-
-	params := &models.WritableVirtualMachineWithConfigContext{}
+	resource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
 
 	if d.HasChange("primary_ip4_id") {
-		primaryIP4ID := int64(d.Get("primary_ip4_id").(int))
-		params.PrimaryIp4 = &primaryIP4ID
-		if primaryIP4ID == 0 {
-			emptyFields["primary_ip4"] = nil
+		if primaryIP4ID := int32(d.Get("primary_ip4_id").(int)); primaryIP4ID != 0 {
+			resource.SetPrimaryIp4(primaryIP4ID)
+		} else {
+			resource.SetPrimaryIp4Nil()
 		}
 	}
+
 	if d.HasChange("primary_ip6_id") {
-		primaryIP6ID := int64(d.Get("primary_ip6_id").(int))
-		params.PrimaryIp6 = &primaryIP6ID
-		if primaryIP6ID == 0 {
-			emptyFields["primary_ip6"] = nil
+		if primaryIP6ID := int32(d.Get("primary_ip6_id").(int)); primaryIP6ID != 0 {
+			resource.SetPrimaryIp6(primaryIP6ID)
+		} else {
+			resource.SetPrimaryIp6Nil()
 		}
 	}
 
-	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
-	}
-
-	resource.SetID(resourceID)
-
-	_, err = client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
-		resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, int32(resourceID)).WritableVirtualMachineWithConfigContextRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxVirtualizationVMPrimaryIPRead(ctx, d, m)
@@ -199,44 +158,34 @@ func resourceNetboxVirtualizationVMPrimaryIPUpdate(ctx context.Context, d *schem
 
 func resourceNetboxVirtualizationVMPrimaryIPDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxVirtualizationVMPrimaryIPExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	dropFields := []string{
-		"created",
-		"last_updated",
-		"name",
-		"cluster",
-		"tags",
-	}
-	emptyFields := map[string]interface{}{
-		"primary_ip4": nil,
-		"primary_ip6": nil,
-	}
-
-	params := &models.WritableVirtualMachineWithConfigContext{}
-
-	resource := virtualization.NewVirtualizationVirtualMachinesPartialUpdateParams().WithData(params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
 
-	resource.SetID(resourceID)
+	resource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
 
-	_, err = client.Virtualization.VirtualizationVirtualMachinesPartialUpdate(
-		resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if primaryIP4ID := int32(d.Get("primary_ip4_id").(int)); primaryIP4ID != 0 {
+		resource.SetPrimaryIp4Nil()
+	}
+
+	if primaryIP6ID := int32(d.Get("primary_ip6_id").(int)); primaryIP6ID != 0 {
+		resource.SetPrimaryIp6Nil()
+	}
+
+	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, int32(resourceID)).WritableVirtualMachineWithConfigContextRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -244,27 +193,23 @@ func resourceNetboxVirtualizationVMPrimaryIPDelete(ctx context.Context, d *schem
 
 func resourceNetboxVirtualizationVMPrimaryIPExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := int64(d.Get("virtualmachine_id").(int))
-	resourceIDString := strconv.FormatInt(resourceID, 10)
-	if resourceIDString == "0" {
-		resourceIDString = d.Id()
-	}
-	params := virtualization.NewVirtualizationVirtualMachinesListParams().WithID(
-		&resourceIDString)
-	resources, err := client.Virtualization.VirtualizationVirtualMachinesList(
-		params, nil)
-	if err != nil {
-		return resourceExist, err
-	}
-
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == resourceIDString {
-			resourceExist = true
+	resourceID := d.Get("virtualmachine_id").(int)
+	if resourceID == 0 {
+		var err error
+		resourceID, err = strconv.Atoi(d.Id())
+		if err != nil {
+			return false, err
 		}
 	}
 
-	return resourceExist, nil
+	_, http, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
+	}
 }

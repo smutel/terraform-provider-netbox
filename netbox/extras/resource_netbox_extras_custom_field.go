@@ -3,15 +3,14 @@ package extras
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/extras"
-	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
+	"github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
@@ -37,6 +36,11 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 					Type:         schema.TypeString,
 					ValidateFunc: validation.StringLenBetween(1, 100),
 				},
+			},
+			"custom_fied_choices_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "ID of the custom field choices",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
@@ -131,12 +135,19 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 				}, false),
 				Description: "Type of the custom field (text, longtext, integer, boolean, url, json, select, multiselect, object, multiobject).",
 			},
-			"ui_visibility": {
+			"ui_visible": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      "read-write",
-				ValidateFunc: validation.StringInSlice([]string{"read-write", "read-only", "hidden"}, false),
-				Description:  "The filter logic for this custom field. Allowed values: \"read-write\" (default), \"read-only\", \"hidden\"",
+				Default:      "always",
+				ValidateFunc: validation.StringInSlice([]string{"always", "if-set", "hidden"}, false),
+				Description:  "The filter logic for this custom field. Allowed values: \"always\" (default), \"if-set\", \"hidden\"",
+			},
+			"ui_editable": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      "yes",
+				ValidateFunc: validation.StringInSlice([]string{"yes", "no", "hidden"}, false),
+				Description:  "The filter logic for this custom field. Allowed values: \"yes\" (default), \"no\", \"hidden\"",
 			},
 			"url": {
 				Type:        schema.TypeString,
@@ -168,54 +179,47 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 	}
 }
 
-var customFieldRequiredFields = []string{
-	"created",
-	"choices",
-	"last_updated",
-	"name",
-	"slug",
-	"tags",
-	"content_types",
-}
-
 func resourceNetboxExtrasCustomFieldCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	name := d.Get("name").(string)
-	validationMaximum := int64(d.Get("validation_maximum").(int))
-	var validationMaximumPtr *int64
-	if validationMaximum != 0 {
-		validationMaximumPtr = &validationMaximum
-	} else {
-		validationMaximumPtr = nil
-	}
-	validationMinimum := int64(d.Get("validation_minimum").(int))
-	var validationMinimumPtr *int64
-	if validationMinimum != 0 {
-		validationMinimumPtr = &validationMinimum
-	} else {
-		validationMinimumPtr = nil
-	}
-	weight := int64(d.Get("weight").(int))
+	newResource := netbox.NewWritableCustomFieldRequestWithDefaults()
+	newResource.SetContentTypes(util.ToListofStrings(d.Get("content_types").(*schema.Set).List()))
+	newResource.SetDescription(d.Get("description").(string))
+	newResource.SetGroupName(d.Get("group_name").(string))
+	newResource.SetLabel(d.Get("label").(string))
+	newResource.SetName(d.Get("name").(string))
+	newResource.SetObjectType(d.Get("object_type").(string))
+	newResource.SetRequired(d.Get("required").(bool))
+	newResource.SetValidationMaximum(int64(d.Get("validation_maximum").(int)))
+	newResource.SetValidationMinimum(int64(d.Get("validation_minimum").(int)))
+	newResource.SetValidationRegex(d.Get("validation_regex").(string))
+	newResource.SetWeight(int32(d.Get("weight").(int)))
+	newResource.SetChoiceSet(int32(d.Get("custom_fied_choices_id").(int)))
 
-	newResource := &models.WritableCustomField{
-		Choices:           util.ToListofStrings(d.Get("choices").(*schema.Set).List()),
-		ContentTypes:      util.ToListofStrings(d.Get("content_types").(*schema.Set).List()),
-		Description:       d.Get("description").(string),
-		FilterLogic:       d.Get("filter_logic").(string),
-		GroupName:         d.Get("group_name").(string),
-		Label:             d.Get("label").(string),
-		Name:              &name,
-		ObjectType:        d.Get("object_type").(string),
-		Required:          d.Get("required").(bool),
-		Type:              d.Get("type").(string),
-		UIVisibility:      d.Get("ui_visibility").(string),
-		ValidationMaximum: validationMaximumPtr,
-		ValidationMinimum: validationMinimumPtr,
-		ValidationRegex:   d.Get("validation_regex").(string),
-		Weight:            &weight,
+	t, err := netbox.NewPatchedWritableCustomFieldRequestTypeFromValue(d.Get("type").(string))
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+	newResource.SetType(*t)
+
+	f, err := netbox.NewPatchedWritableCustomFieldRequestFilterLogicFromValue(d.Get("filter_logic").(string))
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	newResource.SetFilterLogic(*f)
+
+	v, err := netbox.NewPatchedWritableCustomFieldRequestUiVisibleFromValue(d.Get("ui_visible").(string))
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	newResource.SetUiVisible(*v)
+
+	e, err := netbox.NewPatchedWritableCustomFieldRequestUiEditableFromValue(d.Get("ui_editable").(string))
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	newResource.SetUiEditable(*e)
 
 	if defaultstring := d.Get("default").(string); defaultstring != "" {
 		var jsonMap interface{}
@@ -223,108 +227,133 @@ func resourceNetboxExtrasCustomFieldCreate(ctx context.Context, d *schema.Resour
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		newResource.Default = jsonMap
+		newResource.SetDefault(jsonMap)
 	}
 
-	resource := extras.NewExtrasCustomFieldsCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Extras.ExtrasCustomFieldsCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	resourceCreated, response, err := client.ExtrasAPI.ExtrasCustomFieldsCreate(ctx).WritableCustomFieldRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	// NETBOX BUG - TO BE FIXED
+	if resourceCreated.GetId() == 0 {
+		return util.GenerateErrorMessage(response, errors.New("Bug Netbox - TO BE FIXED"))
+	}
+
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxExtrasCustomFieldRead(ctx, d, m)
 }
 
 func resourceNetboxExtrasCustomFieldRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := extras.NewExtrasCustomFieldsListParams().WithID(&resourceID)
-	resources, err := client.Extras.ExtrasCustomFieldsList(params, nil)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.ExtrasAPI.ExtrasCustomFieldsRetrieve(ctx, int32(resourceID)).Execute()
 
-	if len(resources.Payload.Results) != 1 {
+	if response.StatusCode == 404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
 
-	if err = d.Set("choices", resource.Choices); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("custom_fied_choices_id", resource.GetChoiceSet()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("content_types", resource.ContentTypes); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("content_types", resource.GetContentTypes()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("data_type", resource.DataType); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("data_type", resource.GetDataType()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+
 	if resource.Default != nil {
-		jsonValue, _ := json.Marshal(resource.Default)
+		jsonValue, _ := json.Marshal(resource.GetDefault())
 		if err = d.Set("default", string(jsonValue)); err != nil {
-			return diag.FromErr(err)
+			return util.GenerateErrorMessage(nil, err)
 		}
 	} else {
 		if err = d.Set("default", nil); err != nil {
-			return diag.FromErr(err)
+			return util.GenerateErrorMessage(nil, err)
 		}
 	}
-	if err = d.Set("description", resource.Description); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("filter_logic", resource.FilterLogic.Value); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("filter_logic", resource.GetFilterLogic().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("group_name", resource.GroupName); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("group_name", resource.GetGroupName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("label", resource.Label); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("label", resource.GetLabel()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("object_type", resource.ObjectType); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("object_type", resource.GetObjectType()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("required", resource.Required); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("required", resource.GetRequired()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("type", resource.Type.Value); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("type", resource.GetType().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("ui_visibility", util.GetCustomFieldUIVisibilityValue(resource.UIVisibility)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("ui_visible", resource.GetUiVisible().Label); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("ui_editable", resource.GetUiVisible().Label); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("validation_maximum", resource.ValidationMaximum); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("validation_minimum", resource.ValidationMinimum); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("validation_maximum", resource.GetValidationMaximum()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("validation_regex", resource.ValidationRegex); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("validation_minimum", resource.GetValidationMinimum()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("weight", resource.Weight); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("validation_regex", resource.GetValidationRegex()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("weight", resource.GetWeight()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
@@ -332,21 +361,26 @@ func resourceNetboxExtrasCustomFieldRead(ctx context.Context, d *schema.Resource
 
 func resourceNetboxExtrasCustomFieldUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	modifiedFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
-	params := &models.WritableCustomField{}
+	resource := netbox.NewWritableCustomFieldRequestWithDefaults()
 
-	if d.HasChange("choices") {
-		params.Choices = util.ToListofStrings(d.Get("choices").(*schema.Set).List())
+	if d.HasChange("custom_fied_choices_id") {
+		if cfcID, exist := d.GetOk("custom_fied_choices_id"); exist {
+			resource.SetChoiceSet(int32(cfcID.(int)))
+		} else {
+			resource.SetChoiceSetNil()
+		}
 	}
+
 	if d.HasChange("content_types") {
-		params.ContentTypes = util.ToListofStrings(d.Get("content_types").(*schema.Set).List())
+		resource.SetContentTypes(util.ToListofStrings(d.Get("content_types").(*schema.Set).List()))
 	}
+
 	if d.HasChange("default") {
 		if defaultstring := d.Get("default").(string); defaultstring != "" {
 			var jsonMap interface{}
@@ -354,73 +388,92 @@ func resourceNetboxExtrasCustomFieldUpdate(ctx context.Context, d *schema.Resour
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			params.Default = jsonMap
-		} else {
-			modifiedFields["default"] = nil
+			resource.SetDefault(jsonMap)
 		}
 	}
+
 	if d.HasChange("description") {
-		params.Description = d.Get("description").(string)
-		modifiedFields["description"] = params.Description
+		resource.SetDescription(d.Get("description").(string))
 	}
+
 	if d.HasChange("filter_logic") {
-		params.FilterLogic = d.Get("filter_logic").(string)
+		f, err := netbox.NewPatchedWritableCustomFieldRequestFilterLogicFromValue(d.Get("filter_logic").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetFilterLogic(*f)
 	}
+
 	if d.HasChange("group_name") {
-		params.GroupName = d.Get("group_name").(string)
-		modifiedFields["group_name"] = params.GroupName
+		resource.SetGroupName(d.Get("group_name").(string))
 	}
+
 	if d.HasChange("label") {
-		params.Label = d.Get("label").(string)
-		modifiedFields["label"] = params.Label
+		resource.SetLabel(d.Get("label").(string))
 	}
+
 	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
+		resource.SetName(d.Get("name").(string))
 	}
+
 	if d.HasChange("object_type") {
-		params.ObjectType = d.Get("object_type").(string)
+		resource.SetObjectType(d.Get("object_type").(string))
 	}
+
 	if d.HasChange("required") {
-		params.Required = d.Get("required").(bool)
-		modifiedFields["required"] = params.Required
+		resource.SetRequired(d.Get("required").(bool))
 	}
+
 	if d.HasChange("type") {
-		params.Type = d.Get("type").(string)
+		t, err := netbox.NewPatchedWritableCustomFieldRequestTypeFromValue(d.Get("type").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetType(*t)
 	}
-	if d.HasChange("ui_visibility") {
-		params.UIVisibility = d.Get("ui_visibility").(string)
+
+	if d.HasChange("ui_visible") {
+		v, err := netbox.NewPatchedWritableCustomFieldRequestUiVisibleFromValue(d.Get("ui_visible").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetUiVisible(*v)
 	}
+
+	if d.HasChange("ui_editable") {
+		e, err := netbox.NewPatchedWritableCustomFieldRequestUiEditableFromValue(d.Get("ui_editable").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetUiEditable(*e)
+	}
+
 	if d.HasChange("validation_maximum") {
-		validationMaximum := int64(d.Get("validation_maximum").(int))
-		params.ValidationMaximum = &validationMaximum
-		if d.GetRawConfig().GetAttr("validation_maximum").IsNull() {
-			modifiedFields["validation_maximum"] = nil
+		if vm, exist := d.GetOk("validation_maximum"); exist {
+			resource.SetValidationMaximum(int64(vm.(int)))
+		} else {
+			resource.SetValidationMaximumNil()
 		}
 	}
+
 	if d.HasChange("validation_minimum") {
-		validationMinimum := int64(d.Get("validation_minimum").(int))
-		params.ValidationMinimum = &validationMinimum
-		if d.GetRawConfig().GetAttr("validation_minimum").IsNull() {
-			modifiedFields["validation_minimum"] = nil
+		if vm, exist := d.GetOk("validation_minimum"); exist {
+			resource.SetValidationMinimum(int64(vm.(int)))
+		} else {
+			resource.SetValidationMinimumNil()
 		}
 	}
+
 	if d.HasChange("validation_regex") {
-		params.ValidationRegex = d.Get("validation_regex").(string)
-		modifiedFields["validation_regex"] = params.ValidationRegex
+		resource.SetValidationRegex(d.Get("validation_regex").(string))
 	}
+
 	if d.HasChange("weight") {
-		weight := int64(d.Get("weight").(int))
-		params.Weight = &weight
+		resource.SetWeight(int32(d.Get("weight").(int)))
 	}
 
-	resource := extras.NewExtrasCustomFieldsPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Extras.ExtrasCustomFieldsPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, customFieldRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.ExtrasAPI.ExtrasCustomFieldsUpdate(ctx, int32(resourceID)).WritableCustomFieldRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxExtrasCustomFieldRead(ctx, d, m)
@@ -428,25 +481,24 @@ func resourceNetboxExtrasCustomFieldUpdate(ctx context.Context, d *schema.Resour
 
 func resourceNetboxExtrasCustomFieldDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxExtrasCustomFieldExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
 
-	resource := extras.NewExtrasCustomFieldsDeleteParams().WithID(id)
-	if _, err := client.Extras.ExtrasCustomFieldsDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.ExtrasAPI.ExtrasCustomFieldsDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -454,21 +506,19 @@ func resourceNetboxExtrasCustomFieldDelete(ctx context.Context, d *schema.Resour
 
 func resourceNetboxExtrasCustomFieldExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := extras.NewExtrasCustomFieldsListParams().WithID(&resourceID)
-	resources, err := client.Extras.ExtrasCustomFieldsList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.DcimAPI.DcimDeviceRolesRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }
