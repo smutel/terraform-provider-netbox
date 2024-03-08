@@ -3,11 +3,16 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"path"
 	"regexp"
+	"runtime"
 	"strings"
 	"unicode"
 
 	"github.com/go-openapi/strfmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 )
 
@@ -95,10 +100,10 @@ func GetLocalContextData(data interface{}) (*string, error) {
 	return &jsonstring, nil
 }
 
-func ToListofInts(in []interface{}) []int64 {
-	out := make([]int64, len(in))
+func ToListofInts(in []interface{}) []int32 {
+	out := make([]int32, len(in))
 	for i := range in {
-		out[i] = int64(in[i].(int))
+		out[i] = int32(in[i].(int))
 	}
 	return out
 }
@@ -129,4 +134,43 @@ func FieldNameToStructName(k string) string {
 	}
 
 	return k
+}
+
+func GenerateErrorMessage(response *http.Response, err error) diag.Diagnostics {
+	var diags diag.Diagnostics
+
+	msg := ""
+	pc, file, line, ok := runtime.Caller(1)
+	if ok {
+		msg += "File: " + path.Base(file) + "\n"
+		msg += "Function: " + path.Base(runtime.FuncForPC(pc).Name()) + "\n"
+		msg += fmt.Sprintf("%s%d\n", "Line: ", line)
+	}
+
+	if err != nil {
+		msg += "Error: " + err.Error() + "\n"
+	} else {
+		msg += "Error: unknown error from Netbox\n"
+	}
+
+	if response != nil {
+		bytes, readErr := io.ReadAll(response.Body)
+		msg += "URL: " + response.Request.URL.String() + "\n"
+		msg += "Method: " + response.Request.Method + "\n"
+		if readErr == nil {
+			msg += "Response: " + string(bytes) + "\n"
+		} else {
+			msg += "Response: error (" + readErr.Error() + ")\n"
+		}
+	} else {
+		msg += "No additional information from Netbox\n"
+	}
+
+	providerDiag := diag.Diagnostic{
+		Summary: "Error with Netbox API",
+		Detail:  msg,
+	}
+	diags = append(diags, providerDiag)
+
+	return diags
 }

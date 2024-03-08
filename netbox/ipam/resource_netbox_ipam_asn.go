@@ -2,16 +2,15 @@ package ipam
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	netbox "github.com/netbox-community/go-netbox/v3"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
@@ -23,7 +22,7 @@ func ResourceNetboxIpamASN() *schema.Resource {
 		ReadContext:   resourceNetboxIpamASNRead,
 		UpdateContext: resourceNetboxIpamASNUpdate,
 		DeleteContext: resourceNetboxIpamASNDelete,
-		// Exists:        resourceNetboxIpamASNExists,
+		Exists:        resourceNetboxIpamASNExists,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -88,107 +87,108 @@ func ResourceNetboxIpamASN() *schema.Resource {
 	}
 }
 
-var asnRequiredFields = []string{
-	"created",
-	"last_updated",
-	"asn",
-	"rir",
-	"tag",
-}
-
 func resourceNetboxIpamASNCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 
 	asn := int64(d.Get("asn").(int))
-	rirID := int64(d.Get("rir_id").(int))
+	rirID := int32(d.Get("rir_id").(int))
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := &models.WritableASN{
-		Asn:          &asn,
-		CustomFields: &customFields,
-		Description:  d.Get("description").(string),
-		Rir:          &rirID,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
+	newResource := netbox.NewWritableASNRequestWithDefaults()
+	newResource.SetAsn(asn)
+	newResource.SetRir(rirID)
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(d.Get("description").(string))
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
+	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+		newResource.SetTenant(tenantID)
 	}
 
-	if tenantID := int64(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.Tenant = &tenantID
+	resourceCreated, response, err := client.IpamAPI.IpamAsnsCreate(ctx).WritableASNRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	resource := ipam.NewIpamAsnsCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Ipam.IpamAsnsCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	// NETBOX BUG - TO BE FIXED
+	if resourceCreated.GetId() == 0 {
+		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamASNRead(ctx, d, m)
 }
 
 func resourceNetboxIpamASNRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := ipam.NewIpamAsnsListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamAsnsList(params, nil)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.IpamAPI.IpamAsnsRetrieve(ctx, int32(resourceID)).Execute()
 
-	if len(resources.Payload.Results) != 1 {
+	if response.StatusCode == 404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
 
-	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("asn", resource.GetAsn()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("asn", resource.Asn); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
+
 	if err = d.Set("custom_field", customFields); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("description", resource.Description); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("provider_count", resource.ProviderCount); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("rir_id", resource.Rir); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("site_count", resource.SiteCount); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("tenant_id", util.GetNestedTenantID(resource.Tenant)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("provider_count", resource.GetProviderCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("rir_id", resource.GetRir().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("site_count", resource.GetSiteCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
@@ -196,51 +196,55 @@ func resourceNetboxIpamASNRead(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxIpamASNUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	modiefiedFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
 		return diag.Errorf("Unable to convert ID into int64")
 	}
-	params := &models.WritableASN{}
+	resource := netbox.NewWritableASNRequestWithDefaults()
+	//resource.SetAsn(int64(d.Get("asn").(int)))
+	//resource.SetRir(int32(d.Get("rir_id").(int)))
 
 	if d.HasChange("asn") {
-		asnID := int64(d.Get("asn").(int))
-		params.Asn = &asnID
+		resource.SetAsn(int64(d.Get("asn").(int)))
 	}
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
+
 	if d.HasChange("description") {
-		params.Description = d.Get("description").(string)
-		modiefiedFields["description"] = params.Description
+		if description, exist := d.GetOk("description"); exist {
+			resource.SetDescription(description.(string))
+		} else {
+			resource.SetDescription("")
+		}
 	}
+
 	if d.HasChange("rir_id") {
-		rirID := int64(d.Get("rir_id").(int))
-		params.Rir = &rirID
+		rirID := int32(d.Get("rir_id").(int))
+		resource.SetRir(rirID)
 	}
 
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
-		params.Tenant = &tenantID
-		modiefiedFields["tenant"] = tenantID
+		tenantID := int32(d.Get("tenant_id").(int))
+		if tenantID != 0 {
+			resource.SetTenant(tenantID)
+		} else {
+			resource.SetTenantNil()
+		}
 	}
 
-	resource := ipam.NewIpamAsnsPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Ipam.IpamAsnsPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modiefiedFields, asnRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.IpamAPI.IpamAsnsUpdate(ctx, int32(resourceID)).WritableASNRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxIpamASNRead(ctx, d, m)
@@ -248,25 +252,24 @@ func resourceNetboxIpamASNUpdate(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxIpamASNDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxIpamASNExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
 		return diag.Errorf("Unable to convert ID into int64")
 	}
 
-	resource := ipam.NewIpamAsnsDeleteParams().WithID(id)
-	if _, err := client.Ipam.IpamAsnsDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.IpamAPI.IpamAsnsDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -274,21 +277,19 @@ func resourceNetboxIpamASNDelete(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxIpamASNExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := ipam.NewIpamAsnsListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamAsnsList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.IpamAPI.IpamAsnsRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

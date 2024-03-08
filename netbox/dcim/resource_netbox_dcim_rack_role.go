@@ -2,18 +2,18 @@ package dcim
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/dcim"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	netbox "github.com/netbox-community/go-netbox/v3"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
 func ResourceNetboxDcimRackRole() *schema.Resource {
@@ -84,17 +84,9 @@ func ResourceNetboxDcimRackRole() *schema.Resource {
 	}
 }
 
-var rackRoleRequiredFields = []string{
-	"created",
-	"last_updated",
-	"name",
-	"slug",
-	"tags",
-}
-
 func resourceNetboxDcimRackRoleCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
@@ -102,80 +94,86 @@ func resourceNetboxDcimRackRoleCreate(ctx context.Context, d *schema.ResourceDat
 	slug := d.Get("slug").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := &models.RackRole{
-		Color:        d.Get("color").(string),
-		CustomFields: customFields,
-		Description:  d.Get("description").(string),
-		Name:         &name,
-		Slug:         &slug,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
+	newResource := netbox.NewRackRoleRequestWithDefaults()
+	newResource.SetColor(d.Get("color").(string))
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(d.Get("description").(string))
+	newResource.SetName(name)
+	newResource.SetSlug(slug)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
+	resourceCreated, response, err := client.DcimAPI.DcimRackRolesCreate(ctx).RackRoleRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	dropFields := []string{}
-	emptyFields := make(map[string]interface{})
-
-	resource := dcim.NewDcimRackRolesCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Dcim.DcimRackRolesCreate(resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-	if err != nil {
-		return diag.FromErr(err)
+	// NETBOX BUG - TO BE FIXED
+	if resourceCreated.GetId() == 0 {
+		return util.GenerateErrorMessage(response, errors.New("Bug Netbox - TO BE FIXED"))
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxDcimRackRoleRead(ctx, d, m)
 }
 
 func resourceNetboxDcimRackRoleRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimRackRolesListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimRackRolesList(params, nil)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.DcimAPI.DcimRackRolesRetrieve(ctx, int32(resourceID)).Execute()
 
-	if len(resources.Payload.Results) != 1 {
+	if response.StatusCode == 404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
 
-	if err = d.Set("color", resource.Color); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("color", resource.GetColor()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
 	if err = d.Set("custom_field", customFields); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("rack_count", resource.GetRackCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("slug", resource.GetSlug()); err != nil {
 		return diag.FromErr(err)
 	}
-	if err = d.Set("description", resource.Description); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("rack_count", resource.RackCount); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("slug", resource.Slug); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
@@ -183,48 +181,43 @@ func resourceNetboxDcimRackRoleRead(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxDcimRackRoleUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	modifiedFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
 		return diag.Errorf("Unable to convert ID into int64")
 	}
-
-	params := &models.RackRole{}
+	resource := netbox.NewRackRoleRequestWithDefaults()
 
 	if d.HasChange("color") {
-		params.Color = d.Get("color").(string)
+		resource.SetColor(d.Get("color").(string))
 	}
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
+
 	if d.HasChange("description") {
-		params.Description = d.Get("description").(string)
-		modifiedFields["description"] = params.Description
+		resource.SetDescription(d.Get("description").(string))
 	}
+
 	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
+		resource.SetName(d.Get("name").(string))
 	}
+
 	if d.HasChange("slug") {
-		slug := d.Get("slug").(string)
-		params.Slug = &slug
+		resource.SetSlug(d.Get("slug").(string))
 	}
+
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
-	resource := dcim.NewDcimRackRolesPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Dcim.DcimRackRolesPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, rackRoleRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.DcimAPI.DcimRackRolesUpdate(ctx, int32(resourceID)).RackRoleRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxDcimRackRoleRead(ctx, d, m)
@@ -232,25 +225,24 @@ func resourceNetboxDcimRackRoleUpdate(ctx context.Context, d *schema.ResourceDat
 
 func resourceNetboxDcimRackRoleDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxDcimRackRoleExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
 		return diag.Errorf("Unable to convert ID into int64")
 	}
 
-	resource := dcim.NewDcimRackRolesDeleteParams().WithID(id)
-	if _, err := client.Dcim.DcimRackRolesDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.DcimAPI.DcimRackRolesDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -258,21 +250,19 @@ func resourceNetboxDcimRackRoleDelete(ctx context.Context, d *schema.ResourceDat
 
 func resourceNetboxDcimRackRoleExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimRackRolesListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimRackRolesList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.DcimAPI.DcimRackRolesRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

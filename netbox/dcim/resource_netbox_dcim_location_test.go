@@ -91,44 +91,62 @@ func TestAccNetboxDcimLocationMinimalFullMinimal(t *testing.T) {
 }
 
 func testAccCheckNetboxDcimLocationConfig(nameSuffix string, resourceFull, extraResources bool) string {
+	// template := `
+	// {{ if eq .extraresources "true" }}
+	// resource "netbox_extras_tag" "test" {
+	// name = "test-{{ .namesuffix }}"
+	// slug = "test-{{ .namesuffix }}"
+	// }
+
+	// resource "netbox_tenancy_tenant" "test" {
+	// name = "test-{{ .namesuffix }}"
+	// slug = "test-{{ .namesuffix }}"
+	// }
+
+	// resource "netbox_dcim_location" "test2" {
+	// name        = "test2-{{ .namesuffix }}"
+	// site_id     = netbox_dcim_site.test.id
+	// slug        = "test2-{{ .namesuffix }}"
+	// }
+	// {{ end }}
+
+	// resource "netbox_dcim_site" "test" {
+	// name = "test-{{ .namesuffix }}"
+	// slug = "test-{{ .namesuffix }}"
+	// }
+
+	// resource "netbox_dcim_location" "test" {
+	// name        = "test-{{ .namesuffix }}"
+	// site_id     = netbox_dcim_site.test.id
+	// slug        = "test-{{ .namesuffix }}"
+
+	// {{ if eq .resourcefull "true" }}
+	// description = "Test location"
+	// parent_id = netbox_dcim_location.test2.id
+	// status = "staging"
+	// tag {
+	// name = netbox_extras_tag.test.name
+	// slug = netbox_extras_tag.test.slug
+	// }
+	// tenant_id = netbox_tenancy_tenant.test.id
+	// {{ end }}
+	// }
+	// `
 	template := `
-  {{ if eq .extraresources "true" }}
-  resource "netbox_extras_tag" "test" {
-    name = "test-{{ .namesuffix }}"
-    slug = "test-{{ .namesuffix }}"
-  }
-
-  resource "netbox_tenancy_tenant" "test" {
-    name = "test-{{ .namesuffix }}"
-    slug = "test-{{ .namesuffix }}"
-  }
-
-  resource "netbox_dcim_location" "test2" {
-		name        = "test2-{{ .namesuffix }}"
-    site_id     = netbox_dcim_site.test.id
-		slug        = "test2-{{ .namesuffix }}"
-  }
-  {{ end }}
-
-  resource "netbox_dcim_site" "test" {
-    name = "test-{{ .namesuffix }}"
-    slug = "test-{{ .namesuffix }}"
-  }
-
 	resource "netbox_dcim_location" "test" {
 		name        = "test-{{ .namesuffix }}"
-    site_id     = netbox_dcim_site.test.id
+    site_id     = 1
 		slug        = "test-{{ .namesuffix }}"
 
     {{ if eq .resourcefull "true" }}
     description = "Test location"
-    parent_id = netbox_dcim_location.test2.id
+    parent_id = 1
     status = "staging"
     tag {
-      name = netbox_extras_tag.test.name
-      slug = netbox_extras_tag.test.slug
+	    name = "test"
+	    slug = "test"
     }
-    tenant_id = netbox_tenancy_tenant.test.id
+    tenant_id = 1
     {{ end }}
 	}
 	`

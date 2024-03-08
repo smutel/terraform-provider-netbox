@@ -2,16 +2,16 @@ package dcim
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/dcim"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	netbox "github.com/netbox-community/go-netbox/v3"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
@@ -29,6 +29,11 @@ func ResourceNetboxDcimPlatform() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"config_template_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "The config template used for this platform (dcim module).",
+			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -67,17 +72,6 @@ func ResourceNetboxDcimPlatform() *schema.Resource {
 				ValidateFunc: validation.StringLenBetween(1, 100),
 				Description:  "The name of this platform (dcim module).",
 			},
-			"napalm_args": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Argument for the napalm driver.",
-			},
-			"napalm_driver": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(0, 50),
-				Description:  "The napalm driver",
-			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
@@ -99,112 +93,117 @@ func ResourceNetboxDcimPlatform() *schema.Resource {
 	}
 }
 
-var platformRequiredFields = []string{
-	"created",
-	"last_updated",
-	"name",
-	"slug",
-	"tags",
-}
-
 func resourceNetboxDcimPlatformCreate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
+	configTemplateID := int32(d.Get("config_template_id").(int))
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
-	manufacturerID := int64(d.Get("manufacturer_id").(int))
+	description := d.Get("description").(string)
+	manufacturerID := int32(d.Get("manufacturer_id").(int))
 	name := d.Get("name").(string)
-	napalmArgs := d.Get("napalm_args").(string)
 	slug := d.Get("slug").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := &models.WritablePlatform{
-		CustomFields: customFields,
-		Description:  d.Get("description").(string),
-		Name:         &name,
-		NapalmArgs:   &napalmArgs,
-		NapalmDriver: d.Get("napalm_driver").(string),
-		Slug:         &slug,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
-	}
+	newResource := netbox.NewWritablePlatformRequestWithDefaults()
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(description)
+	newResource.SetName(name)
+	newResource.SetSlug(slug)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
 	if manufacturerID != 0 {
-		newResource.Manufacturer = &manufacturerID
+		newResource.SetManufacturer(manufacturerID)
 	}
 
-	resource := dcim.NewDcimPlatformsCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Dcim.DcimPlatformsCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	if configTemplateID != 0 {
+		newResource.SetConfigTemplate(configTemplateID)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	resourceCreated, response, err := client.DcimAPI.DcimPlatformsCreate(ctx).WritablePlatformRequest(*newResource).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
+
+	// NETBOX BUG - TO BE FIXED
+	if resourceCreated.GetId() == 0 {
+		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	}
+
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxDcimPlatformRead(ctx, d, m)
 }
 
 func resourceNetboxDcimPlatformRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimPlatformsListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimPlatformsList(params, nil)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	resourceID, _ := strconv.Atoi(d.Id())
+	resource, response, err := client.DcimAPI.DcimPlatformsRetrieve(ctx, int32(resourceID)).Execute()
 
-	if len(resources.Payload.Results) != 1 {
+	if response.StatusCode == 404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
 
-	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("config_template_id", resource.GetConfigTemplate().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("content_type", util.ConvertURIContentType(strfmt.URI(resource.GetUrl()))); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
 	if err = d.Set("custom_field", customFields); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("description", resource.Description); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("device_count", resource.DeviceCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("device_count", resource.GetDeviceCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("manufacturer_id", util.GetNestedManufacturerID(resource.Manufacturer)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("manufacturer_id", resource.GetManufacturer().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("napalm_args", resource.NapalmArgs); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("slug", resource.GetSlug()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("napalm_driver", resource.NapalmDriver); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("slug", resource.Slug); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("virtualmachine_count", resource.VirtualmachineCount); err != nil {
+
+	if err = d.Set("virtualmachine_count", resource.GetVirtualmachineCount()); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -213,60 +212,51 @@ func resourceNetboxDcimPlatformRead(ctx context.Context, d *schema.ResourceData,
 
 func resourceNetboxDcimPlatformUpdate(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	modifiedFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
 	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
 		return diag.Errorf("Unable to convert ID into int64")
 	}
-	params := &models.WritablePlatform{}
+	resource := netbox.NewWritablePlatformRequestWithDefaults()
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		resource.SetCustomFields(customFields)
 	}
+
 	if d.HasChange("description") {
-		description := d.Get("description").(string)
-		params.Description = description
-		modifiedFields["description"] = description
+		if description, exist := d.GetOk("description"); exist {
+			resource.SetDescription(description.(string))
+		} else {
+			resource.SetDescription("")
+		}
 	}
+
 	if d.HasChange("manufacturer_id") {
-		manufacturerID := int64(d.Get("manufacturer_id").(int))
-		params.Manufacturer = &manufacturerID
-		modifiedFields["manufacturer"] = manufacturerID
+		if manufacturerID, exist := d.GetOk("manufacturer_id"); exist {
+			resource.SetManufacturer(int32(manufacturerID.(int)))
+		} else {
+			resource.SetManufacturerNil()
+		}
 	}
+
 	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
+		resource.SetName(d.Get("name").(string))
 	}
-	if d.HasChange("napalm_args") {
-		napalmArgs := d.Get("napalm_args").(string)
-		params.NapalmArgs = &napalmArgs
-		modifiedFields["napalm_args"] = napalmArgs
-	}
-	if d.HasChange("napalm_driver") {
-		napalmDriver := d.Get("napalm_driver").(string)
-		params.NapalmDriver = napalmDriver
-		modifiedFields["napalm_driver"] = napalmDriver
-	}
+
 	if d.HasChange("slug") {
-		slug := d.Get("slug").(string)
-		params.Slug = &slug
+		resource.SetSlug(d.Get("slug").(string))
 	}
+
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
-	resource := dcim.NewDcimPlatformsPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Dcim.DcimPlatformsPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, platformRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.DcimAPI.DcimPlatformsUpdate(ctx, int32(resourceID)).WritablePlatformRequest(*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxDcimPlatformRead(ctx, d, m)
@@ -274,25 +264,24 @@ func resourceNetboxDcimPlatformUpdate(ctx context.Context, d *schema.ResourceDat
 
 func resourceNetboxDcimPlatformDelete(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxDcimPlatformExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
 		return diag.Errorf("Unable to convert ID into int64")
 	}
 
-	resource := dcim.NewDcimPlatformsDeleteParams().WithID(id)
-	if _, err := client.Dcim.DcimPlatformsDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.DcimAPI.DcimPlatformsDestroy(ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
@@ -300,21 +289,19 @@ func resourceNetboxDcimPlatformDelete(ctx context.Context, d *schema.ResourceDat
 
 func resourceNetboxDcimPlatformExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimPlatformsListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimPlatformsList(params, nil)
+	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.DcimAPI.DcimPlatformsRetrieve(nil, int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == 404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == 200 {
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return resourceExist, nil
 }

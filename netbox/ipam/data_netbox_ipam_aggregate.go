@@ -2,13 +2,13 @@ package ipam
 
 import (
 	"context"
-	"strconv"
+	"fmt"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
+	netbox "github.com/netbox-community/go-netbox/v3"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
@@ -40,30 +40,29 @@ func DataNetboxIpamAggregate() *schema.Resource {
 
 func dataNetboxIpamAggregateRead(ctx context.Context, d *schema.ResourceData,
 	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	prefix := d.Get("prefix").(string)
-	rirID := d.Get("rir_id").(string)
+	rirID := []int32{int32(d.Get("rir_id").(int))}
 
-	p := ipam.NewIpamAggregatesListParams().WithPrefix(&prefix).WithRirID(&rirID)
+	resource, response, err := client.IpamAPI.IpamAggregatesList(ctx).Prefix(prefix).RirId(rirID).Execute()
 
-	list, err := client.Ipam.IpamAggregatesList(p, nil)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if *list.Payload.Count < 1 {
+	if resource.GetCount() < 1 {
 		return diag.Errorf("Your query returned no results. " +
 			"Please change your search criteria and try again.")
-	} else if *list.Payload.Count > 1 {
+	} else if resource.GetCount() > 1 {
 		return diag.Errorf("Your query returned more than one result. " +
 			"Please try a more specific search criteria.")
 	}
 
-	r := list.Payload.Results[0]
-	d.SetId(strconv.FormatInt(r.ID, 10))
-	if err = d.Set("content_type", util.ConvertURIContentType(r.URL)); err != nil {
-		return diag.FromErr(err)
+	r := resource.Results[0]
+	d.SetId(fmt.Sprintf("%d", r.GetId()))
+	if err = d.Set("content_type", util.ConvertURIContentType(strfmt.URI(r.GetUrl()))); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
