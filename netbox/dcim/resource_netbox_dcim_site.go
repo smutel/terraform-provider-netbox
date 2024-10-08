@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxDcimSite() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a site (dcim module) within Netbox.",
+		Description:   "Manage a site within Netbox.",
 		CreateContext: resourceNetboxDcimSiteCreate,
 		ReadContext:   resourceNetboxDcimSiteRead,
 		UpdateContext: resourceNetboxDcimSiteUpdate,
@@ -31,26 +32,27 @@ func ResourceNetboxDcimSite() *schema.Resource {
 			"asns": {
 				Type:        schema.TypeSet,
 				Optional:    true,
-				Description: "ASNs",
+				Description: "Array of ASNs for this site.",
 				Elem: &schema.Schema{
-					Type: schema.TypeInt,
+					Type:        schema.TypeInt,
+					Description: "One of ASNs for this site.",
 				},
 			},
 			"circuit_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of circuits associated to this site (dcim module).",
+				Description: "The number of circuits associated to this site.",
 			},
 			"comments": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				StateFunc:   util.TrimString,
-				Description: "Comments for this site (dcim module).",
+				Description: "Comments for this site.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this site (dcim module).",
+				Description: "The content type of this site.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -62,79 +64,79 @@ func ResourceNetboxDcimSite() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 100),
-				Description:  "The description of this site (dcim module).",
+				Description:  "The description of this site.",
 			},
 			"device_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of devices associated to this site (dcim module).",
+				Description: "The number of devices associated to this site.",
 			},
 			"facility": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 50),
-				Description:  "Local facility ID or description.",
+				Description:  "Local facility ID or description of this site.",
 			},
 			"group_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The site group for this site (dcim module).",
+				Description: "The site group for this site.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this site was last updated.",
+				Description: "Date when this site was updated.",
 			},
 			"latitude": {
 				Type:        schema.TypeFloat,
 				Optional:    true,
-				Description: "GPS coordinate (latitude).",
+				Description: "GPS coordinate (latitude) of this site.",
 			},
 			"longitude": {
 				Type:        schema.TypeFloat,
 				Optional:    true,
-				Description: "GPS coordinate (longitude)",
+				Description: "GPS coordinate (longitude) of this site.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this site (dcim module).",
+				Description:  "The name of this site.",
 			},
 			"physical_address": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 200),
 				StateFunc:    util.TrimString,
-				Description:  "The physical address of this site (dcim module).",
+				Description:  "The physical address of this site.",
 			},
 			"prefix_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of prefixes associated to this site (dcim module).",
+				Description: "The number of prefixes associated to this site.",
 			},
 			"rack_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of racks associated to this site (dcim module).",
+				Description: "The number of racks associated to this site.",
 			},
 			"region_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The description of this site (dcim module).",
+				Description: "The description of this site.",
 			},
 			"shipping_address": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 200),
 				StateFunc:    util.TrimString,
-				Description:  "The shipping address of this site (dcim module).",
+				Description:  "The shipping address of this site.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this site (dcim module).",
+				Description:  "The slug of this site.",
 			},
 			"status": {
 				Type:         schema.TypeString,
@@ -147,7 +149,7 @@ func ResourceNetboxDcimSite() *schema.Resource {
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The tenant of this site (dcim module).",
+				Description: "The tenant of this site.",
 			},
 			"time_zone": {
 				Type:        schema.TypeString,
@@ -157,17 +159,17 @@ func ResourceNetboxDcimSite() *schema.Resource {
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this site (dcim module).",
+				Description: "The link to this site.",
 			},
 			"virtualmachine_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of virtual machines associated to this site (dcim module).",
+				Description: "The number of virtual machines associated to this site.",
 			},
 			"vlan_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of vlans associated to this site (dcim module).",
+				Description: "The number of vlans associated to this site.",
 			},
 		},
 	}
@@ -211,32 +213,43 @@ func resourceNetboxDcimSiteCreate(ctx context.Context, d *schema.ResourceData,
 	newResource.SetStatus(*s)
 
 	if groupID != 0 {
-		newResource.SetGroup(groupID)
+		b, err := brief.GetBriefSiteGroupRequestFromID(client, ctx, groupID)
+		if err != nil {
+			return err
+		}
+		newResource.SetGroup(*b)
 	}
 
 	if regionID != 0 {
-		newResource.SetRegion(regionID)
+		b, err := brief.GetBriefRegionRequestFromID(client, ctx, regionID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRegion(*b)
 	}
 
 	if tenantID != 0 {
-		newResource.SetTenant(tenantID)
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
 	if timezone := d.Get("time_zone").(string); timezone != "" {
 		newResource.SetTimeZone(timezone)
 	}
 
-	resourceCreated, response, err := client.DcimAPI.DcimSitesCreate(ctx).WritableSiteRequest(*newResource).Execute()
+	_, response, err := client.DcimAPI.DcimSitesCreate(ctx).WritableSiteRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return util.GenerateErrorMessage(response, errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxDcimSiteRead(ctx, d, m)
 }
@@ -257,7 +270,7 @@ func resourceNetboxDcimSiteRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("asns", resource.GetAsns()); err != nil {
+	if err = d.Set("asns", util.ConvertASNsToInts(resource.GetAsns())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -381,6 +394,10 @@ func resourceNetboxDcimSiteUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 	resource := netbox.NewWritableSiteRequestWithDefaults()
 
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
+
 	if d.HasChange("asns") {
 		resource.SetAsns(util.ToListofInts(d.Get("asns").(*schema.Set).List()))
 	}
@@ -405,7 +422,11 @@ func resourceNetboxDcimSiteUpdate(ctx context.Context, d *schema.ResourceData,
 
 	if d.HasChange("group_id") {
 		if groupID, exist := d.GetOk("group_id"); exist {
-			resource.SetGroup(int32(groupID.(int)))
+			b, err := brief.GetBriefSiteGroupRequestFromID(client, ctx, int32(groupID.(int)))
+			if err != nil {
+				return err
+			}
+			resource.SetGroup(*b)
 		} else {
 			resource.SetGroupNil()
 		}
@@ -419,17 +440,17 @@ func resourceNetboxDcimSiteUpdate(ctx context.Context, d *schema.ResourceData,
 		resource.SetLongitude(d.Get("longitude").(float64))
 	}
 
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
 	if d.HasChange("physical_address") {
 		resource.SetPhysicalAddress(d.Get("physical_address").(string))
 	}
 
 	if d.HasChange("region_id") {
 		if regionID, exist := d.GetOk("region_id"); exist {
-			resource.SetRegion(int32(regionID.(int)))
+			b, err := brief.GetBriefRegionRequestFromID(client, ctx, int32(regionID.(int)))
+			if err != nil {
+				return err
+			}
+			resource.SetRegion(*b)
 		} else {
 			resource.SetRegionNil()
 		}
@@ -443,27 +464,22 @@ func resourceNetboxDcimSiteUpdate(ctx context.Context, d *schema.ResourceData,
 		resource.SetStatus(*s)
 	}
 
-	if d.HasChange("slug") {
-		resource.SetSlug(d.Get("slug").(string))
-	}
-
 	if d.HasChange("shipping_address") {
 		resource.SetShippingAddress(d.Get("shipping_address").(string))
 	}
 
-	if d.HasChange("tenant_id") {
-		tenantID := int32(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			resource.SetTenant(tenantID)
-		} else {
-			resource.SetTenantNil()
-		}
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int32(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+		if tenantID, exist := d.GetOk("tenant_id"); exist {
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, int32(tenantID.(int)))
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}

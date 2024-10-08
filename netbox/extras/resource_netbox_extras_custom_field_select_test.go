@@ -92,39 +92,53 @@ func TestAccNetboxExtrasCustomFieldSelectMinimalFullMinimal(t *testing.T) {
 
 func testAccCheckNetboxExtrasCustomFieldSelectConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
-	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+	resource "netbox_extras_custom_field_choice_set" "test" {
+		name = "extrascfselect-{{ .namesuffix }}"
+    extra_choices {
+      value = "extra_choice_1"
+      label = "Extra choice 1"
+    }
+
+    extra_choices {
+      value = "extra_choice_2"
+      label = "Extra choice 2"
+    }
+  }
+
+  resource "netbox_extras_custom_field" "test" {
+		name = "extrascfselect_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
 
 		type          = "select"
-		choices = [
-			"test",
-			"test2"
-		]
-		{{ if eq .resourcefull "true" }}
+		choice_set_name = netbox_extras_custom_field_choice_set.test.name
+
+    {{ if eq .resourcefull "true" }}
 		description   = "Test custom field"
 		label         = "Test Label for CF"
 		group_name    = "testgroup"
 		ui_visibility = "hidden"
 		weight        = 50
+		ui_editable   = "no"
 		#required      = true
 		filter_logic  = "disabled"
-		default       = jsonencode("test")
+    default       = jsonencode("extra_choice_1")
 		{{ end }}
 	}
 
-	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+  {{ if eq .extraresources "true" }}
+  resource "netbox_dcim_site" "test_assign" {
+    name = "extrascfselect-{{ .namesuffix }}"
+    slug = "extrascfselect-{{ .namesuffix }}"
 
-		custom_field {
-			name = netbox_extras_custom_field.test.name
-			type = netbox_extras_custom_field.test.type
-			value = "test2"
-		}
-	}
+    custom_field {
+      name = netbox_extras_custom_field.test.name
+      type = netbox_extras_custom_field.test.type
+      value = "extra_choice_2"
+    }
+  }
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

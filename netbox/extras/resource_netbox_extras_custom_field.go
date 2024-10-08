@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -16,7 +17,7 @@ import (
 
 func ResourceNetboxExtrasCustomField() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a custom field (extras module) within Netbox. *CAVEAT*: This module is mostly intended for testing. Be careful when changing custom fields in production.",
+		Description:   "Manage a custom field within Netbox. *CAVEAT*: This module is mostly intended for testing. Be careful when changing custom fields in production.",
 		CreateContext: resourceNetboxExtrasCustomFieldCreate,
 		ReadContext:   resourceNetboxExtrasCustomFieldRead,
 		UpdateContext: resourceNetboxExtrasCustomFieldUpdate,
@@ -27,15 +28,10 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"choices": {
-				Type:        schema.TypeSet,
+			"choice_set_name": {
+				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     nil,
-				Description: "Avaialbe choices for selection fields.",
-				Elem: &schema.Schema{
-					Type:         schema.TypeString,
-					ValidateFunc: validation.StringLenBetween(1, 100),
-				},
+				Description: "Name of the extras_custom_field_choice_set to use for this multiselect.",
 			},
 			"custom_fied_choices_id": {
 				Type:        schema.TypeInt,
@@ -45,14 +41,15 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this custom field (extras module).",
+				Description: "The content type of this custom field.",
 			},
 			"content_types": {
 				Type:        schema.TypeSet,
 				Required:    true,
-				Description: "The content types this field should be assigned to.",
+				Description: "Array of content types this field should be assigned to.",
 				Elem: &schema.Schema{
-					Type: schema.TypeString,
+					Type:        schema.TypeString,
+					Description: "One of the content type this field should be assigned to.",
 				},
 			},
 			"created": {
@@ -69,6 +66,21 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "The default value for this custom field. This value must be valid Json. Strings, List and Dicts should be wrapped in jsonencode()",
+				DiffSuppressFunc: func(k, oldValue, newValue string, d *schema.ResourceData) bool {
+					if d.Get("type").(string) == "object" && fmt.Sprintf("\"%s\"", oldValue) == newValue {
+						return true
+					} else if d.Get("type").(string) == "multiobject" {
+						oldValueUpdated := strings.Replace(oldValue, "[", "[\"", -1)
+						oldValueUpdated = strings.Replace(oldValueUpdated, ",", "\",\"", -1)
+						oldValueUpdated = strings.Replace(oldValueUpdated, "]", "\"]", -1)
+						if oldValueUpdated == newValue {
+							return true
+						}
+					} else if d.Get("type").(string) != "object" && d.Get("type").(string) != "multiobject" && oldValue == newValue {
+						return true
+					}
+					return false
+				},
 			},
 			"description": {
 				Type:         schema.TypeString,
@@ -105,7 +117,7 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
-				Description:  "The name of this custom field (extras module).",
+				Description:  "The name of this custom field.",
 			},
 			"object_type": {
 				Type:        schema.TypeString,
@@ -135,7 +147,7 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 				}, false),
 				Description: "Type of the custom field (text, longtext, integer, boolean, url, json, select, multiselect, object, multiobject).",
 			},
-			"ui_visible": {
+			"ui_visibility": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      "always",
@@ -152,7 +164,7 @@ func ResourceNetboxExtrasCustomField() *schema.Resource {
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this custom field (extras module).",
+				Description: "The link to this custom field.",
 			},
 			"validation_maximum": {
 				Type:        schema.TypeInt,
@@ -184,18 +196,17 @@ func resourceNetboxExtrasCustomFieldCreate(ctx context.Context, d *schema.Resour
 	client := m.(*netbox.APIClient)
 
 	newResource := netbox.NewWritableCustomFieldRequestWithDefaults()
-	newResource.SetContentTypes(util.ToListofStrings(d.Get("content_types").(*schema.Set).List()))
+	newResource.SetObjectTypes(util.ToListofStrings(d.Get("content_types").(*schema.Set).List()))
 	newResource.SetDescription(d.Get("description").(string))
 	newResource.SetGroupName(d.Get("group_name").(string))
 	newResource.SetLabel(d.Get("label").(string))
 	newResource.SetName(d.Get("name").(string))
-	newResource.SetObjectType(d.Get("object_type").(string))
 	newResource.SetRequired(d.Get("required").(bool))
 	newResource.SetValidationMaximum(int64(d.Get("validation_maximum").(int)))
 	newResource.SetValidationMinimum(int64(d.Get("validation_minimum").(int)))
 	newResource.SetValidationRegex(d.Get("validation_regex").(string))
 	newResource.SetWeight(int32(d.Get("weight").(int)))
-	newResource.SetChoiceSet(int32(d.Get("custom_fied_choices_id").(int)))
+	newResource.SetRelatedObjectType(d.Get("object_type").(string))
 
 	t, err := netbox.NewPatchedWritableCustomFieldRequestTypeFromValue(d.Get("type").(string))
 	if err != nil {
@@ -209,11 +220,13 @@ func resourceNetboxExtrasCustomFieldCreate(ctx context.Context, d *schema.Resour
 	}
 	newResource.SetFilterLogic(*f)
 
-	v, err := netbox.NewPatchedWritableCustomFieldRequestUiVisibleFromValue(d.Get("ui_visible").(string))
-	if err != nil {
-		return util.GenerateErrorMessage(nil, err)
+	if visibilityAtt, ok := d.GetOk("ui_visibility"); ok {
+		v, err := netbox.NewPatchedWritableCustomFieldRequestUiVisibleFromValue(visibilityAtt.(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		newResource.SetUiVisible(*v)
 	}
-	newResource.SetUiVisible(*v)
 
 	e, err := netbox.NewPatchedWritableCustomFieldRequestUiEditableFromValue(d.Get("ui_editable").(string))
 	if err != nil {
@@ -225,22 +238,48 @@ func resourceNetboxExtrasCustomFieldCreate(ctx context.Context, d *schema.Resour
 		var jsonMap interface{}
 		err := json.Unmarshal([]byte(defaultstring), &jsonMap)
 		if err != nil {
-			return diag.FromErr(err)
+			return util.GenerateErrorMessage(nil, err)
 		}
-		newResource.SetDefault(jsonMap)
+
+		if d.Get("type").(string) == "object" {
+			id, err := strconv.Atoi(jsonMap.(string))
+			if err != nil {
+				return util.GenerateErrorMessage(nil, err)
+			}
+			newResource.SetDefault(id)
+		} else if d.Get("type").(string) == "multiobject" {
+			arrayIDStr := jsonMap.([]interface{})
+			var arrayID = make([]int, len(arrayIDStr))
+
+			for i, IDStr := range arrayIDStr {
+				id, err := strconv.Atoi(IDStr.(string))
+				if err != nil {
+					return util.GenerateErrorMessage(nil, err)
+				}
+
+				arrayID[i] = id
+			}
+			newResource.SetDefault(arrayID)
+		} else {
+			newResource.SetDefault(jsonMap)
+		}
 	}
 
-	resourceCreated, response, err := client.ExtrasAPI.ExtrasCustomFieldsCreate(ctx).WritableCustomFieldRequest(*newResource).Execute()
+	if csn, exist := d.GetOk("choice_set_name"); exist {
+		c := netbox.NewBriefCustomFieldChoiceSetRequest(csn.(string))
+		newResource.SetChoiceSet(*c)
+	}
+
+	_, response, err := client.ExtrasAPI.ExtrasCustomFieldsCreate(ctx).WritableCustomFieldRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return util.GenerateErrorMessage(response, errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxExtrasCustomFieldRead(ctx, d, m)
 }
@@ -252,16 +291,11 @@ func resourceNetboxExtrasCustomFieldRead(ctx context.Context, d *schema.Resource
 	resourceID, _ := strconv.Atoi(d.Id())
 	resource, response, err := client.ExtrasAPI.ExtrasCustomFieldsRetrieve(ctx, int32(resourceID)).Execute()
 
-	if response.StatusCode == 404 {
-		d.SetId("")
-		return nil
-	}
-
 	if err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("custom_fied_choices_id", resource.GetChoiceSet()); err != nil {
+	if err = d.Set("choice_set_name", resource.GetChoiceSet().Name); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -269,7 +303,7 @@ func resourceNetboxExtrasCustomFieldRead(ctx context.Context, d *schema.Resource
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("content_types", resource.GetContentTypes()); err != nil {
+	if err = d.Set("content_types", resource.GetObjectTypes()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -281,15 +315,14 @@ func resourceNetboxExtrasCustomFieldRead(ctx context.Context, d *schema.Resource
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if resource.Default != nil {
-		jsonValue, _ := json.Marshal(resource.GetDefault())
-		if err = d.Set("default", string(jsonValue)); err != nil {
+	if resource.GetDefault() != nil {
+		if jsonValue, err := json.Marshal(resource.GetDefault()); err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		} else if err = d.Set("default", string(jsonValue)); err != nil {
 			return util.GenerateErrorMessage(nil, err)
 		}
-	} else {
-		if err = d.Set("default", nil); err != nil {
-			return util.GenerateErrorMessage(nil, err)
-		}
+	} else if err = d.Set("default", nil); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("description", resource.GetDescription()); err != nil {
@@ -316,7 +349,7 @@ func resourceNetboxExtrasCustomFieldRead(ctx context.Context, d *schema.Resource
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("object_type", resource.GetObjectType()); err != nil {
+	if err = d.Set("object_type", resource.GetRelatedObjectType()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -328,11 +361,11 @@ func resourceNetboxExtrasCustomFieldRead(ctx context.Context, d *schema.Resource
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("ui_visible", resource.GetUiVisible().Label); err != nil {
+	if err = d.Set("ui_visibility", resource.GetUiVisible().Value); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("ui_editable", resource.GetUiVisible().Label); err != nil {
+	if err = d.Set("ui_editable", resource.GetUiEditable().Value); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -369,16 +402,22 @@ func resourceNetboxExtrasCustomFieldUpdate(ctx context.Context, d *schema.Resour
 	}
 	resource := netbox.NewWritableCustomFieldRequestWithDefaults()
 
-	if d.HasChange("custom_fied_choices_id") {
-		if cfcID, exist := d.GetOk("custom_fied_choices_id"); exist {
-			resource.SetChoiceSet(int32(cfcID.(int)))
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	t, err := netbox.NewPatchedWritableCustomFieldRequestTypeFromValue(d.Get("type").(string))
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	resource.SetType(*t)
+	resource.SetObjectTypes(util.ToListofStrings(d.Get("content_types").(*schema.Set).List()))
+
+	if d.HasChange("choice_set_name") {
+		if csn, exist := d.GetOk("choice_set_name"); exist {
+			c := netbox.NewBriefCustomFieldChoiceSetRequest(csn.(string))
+			resource.SetChoiceSet(*c)
 		} else {
 			resource.SetChoiceSetNil()
 		}
-	}
-
-	if d.HasChange("content_types") {
-		resource.SetContentTypes(util.ToListofStrings(d.Get("content_types").(*schema.Set).List()))
 	}
 
 	if d.HasChange("default") {
@@ -386,9 +425,32 @@ func resourceNetboxExtrasCustomFieldUpdate(ctx context.Context, d *schema.Resour
 			var jsonMap interface{}
 			err := json.Unmarshal([]byte(defaultstring), &jsonMap)
 			if err != nil {
-				return diag.FromErr(err)
+				return util.GenerateErrorMessage(nil, err)
 			}
-			resource.SetDefault(jsonMap)
+			if d.Get("type").(string) == "object" {
+				id, err := strconv.Atoi(jsonMap.(string))
+				if err != nil {
+					return util.GenerateErrorMessage(nil, err)
+				}
+				resource.SetDefault(id)
+			} else if d.Get("type").(string) == "multiobject" {
+				arrayIDStr := jsonMap.([]interface{})
+				var arrayID = make([]int, len(arrayIDStr))
+
+				for i, IDStr := range arrayIDStr {
+					id, err := strconv.Atoi(IDStr.(string))
+					if err != nil {
+						return util.GenerateErrorMessage(nil, err)
+					}
+
+					arrayID[i] = id
+				}
+				resource.SetDefault(arrayID)
+			} else {
+				resource.SetDefault(jsonMap)
+			}
+		} else {
+			resource.SetDefault(nil)
 		}
 	}
 
@@ -412,32 +474,22 @@ func resourceNetboxExtrasCustomFieldUpdate(ctx context.Context, d *schema.Resour
 		resource.SetLabel(d.Get("label").(string))
 	}
 
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
 	if d.HasChange("object_type") {
-		resource.SetObjectType(d.Get("object_type").(string))
+		resource.SetRelatedObjectType(d.Get("object_type").(string))
 	}
 
 	if d.HasChange("required") {
 		resource.SetRequired(d.Get("required").(bool))
 	}
 
-	if d.HasChange("type") {
-		t, err := netbox.NewPatchedWritableCustomFieldRequestTypeFromValue(d.Get("type").(string))
-		if err != nil {
-			return util.GenerateErrorMessage(nil, err)
+	if visibleAtt, ok := d.GetOk("ui_visibility"); ok {
+		if d.HasChange("ui_visibility") {
+			v, err := netbox.NewPatchedWritableCustomFieldRequestUiVisibleFromValue(visibleAtt.(string))
+			if err != nil {
+				return util.GenerateErrorMessage(nil, err)
+			}
+			resource.SetUiVisible(*v)
 		}
-		resource.SetType(*t)
-	}
-
-	if d.HasChange("ui_visible") {
-		v, err := netbox.NewPatchedWritableCustomFieldRequestUiVisibleFromValue(d.Get("ui_visible").(string))
-		if err != nil {
-			return util.GenerateErrorMessage(nil, err)
-		}
-		resource.SetUiVisible(*v)
 	}
 
 	if d.HasChange("ui_editable") {
@@ -513,7 +565,7 @@ func resourceNetboxExtrasCustomFieldExists(d *schema.ResourceData,
 		return false, err
 	}
 
-	_, http, err := client.DcimAPI.DcimDeviceRolesRetrieve(nil, int32(resourceID)).Execute()
+	_, http, err := client.ExtrasAPI.ExtrasCustomFieldsRetrieve(nil, int32(resourceID)).Execute()
 	if err != nil && http.StatusCode == 404 {
 		return false, nil
 	} else if err == nil && http.StatusCode == 200 {

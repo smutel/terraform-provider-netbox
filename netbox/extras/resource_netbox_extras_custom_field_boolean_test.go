@@ -93,7 +93,7 @@ func TestAccNetboxExtrasCustomFieldBooleanMinimalFullMinimal(t *testing.T) {
 func testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfboolean_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
@@ -103,24 +103,27 @@ func testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix string, resourc
 		description   = "Test custom field"
 		group_name    = "testgroup"
 		ui_visibility = "hidden"
+		ui_editable   = "no"
 		label         = "Test Label for CF"
 		weight        = 50
-		#required      = true
+    #required      = true
 		filter_logic  = "disabled"
-		default       = true
+    default       = true
 		{{ end }}
 	}
 
-	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+  {{ if eq .extraresources "true" }}
+  resource "netbox_dcim_site" "test_assign" {
+    name = "extrascfboolean-{{ .namesuffix }}"
+    slug = "extrascfboolean-{{ .namesuffix }}"
 
-		custom_field {
-			name = netbox_extras_custom_field.test.name
-			type = netbox_extras_custom_field.test.type
-			value = false
-		}
-	}
+    custom_field {
+      name = netbox_extras_custom_field.test.name
+      type = netbox_extras_custom_field.test.type
+      value = false
+    }
+  }
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

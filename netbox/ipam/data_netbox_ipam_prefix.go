@@ -14,21 +14,21 @@ import (
 
 func DataNetboxIpamPrefix() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about prefix (ipam module) from netbox.",
+		Description: "Get info about prefix from netbox.",
 		ReadContext: dataNetboxIpamPrefixRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this prefix (ipam module).",
+				Description: "The content type of this prefix.",
 			},
 			"prefix": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
 				ValidateFunc: validation.IsCIDRNetwork(0, 256),
-				Description:  "The prefix (IP address/mask) used for this prefix (ipam module).",
+				Description:  "The prefix (IP address/mask) used for this prefix.",
 			},
 		},
 	}

@@ -18,7 +18,7 @@ import (
 
 func ResourceNetboxTenancyContactRole() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a contact role (tenancy module) within Netbox.",
+		Description:   "Manage a contact role within Netbox.",
 		CreateContext: resourceNetboxTenancyContactRoleCreate,
 		ReadContext:   resourceNetboxTenancyContactRoleRead,
 		UpdateContext: resourceNetboxTenancyContactRoleUpdate,
@@ -32,7 +32,12 @@ func ResourceNetboxTenancyContactRole() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this contact role (tenancy module).",
+				Description: "The content type of this contact role.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this contact role was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -40,13 +45,18 @@ func ResourceNetboxTenancyContactRole() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "Description for this contact role (tenancy module).",
+				Description:  "Description for this contact role.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Last date when this contact role was updated.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "Name of this contact role (tenancy module).",
+				Description:  "Name of this contact role.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -54,7 +64,7 @@ func ResourceNetboxTenancyContactRole() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
-				Description: "Slug of this contact role (tenancy module).",
+				Description: "Slug of this contact role.",
 			},
 			"tag": &tag.TagSchema,
 		},
@@ -79,12 +89,16 @@ func resourceNetboxTenancyContactRoleCreate(ctx context.Context, d *schema.Resou
 	newResource.SetSlug(slug)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	resourceCreated, response, err := client.TenancyAPI.TenancyContactRolesCreate(ctx).ContactRoleRequest(*newResource).Execute()
+	_, response, err := client.TenancyAPI.TenancyContactRolesCreate(ctx).ContactRoleRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
+	}
 
 	return resourceNetboxTenancyContactRoleRead(ctx, d, m)
 }
@@ -108,11 +122,23 @@ func resourceNetboxTenancyContactRoleRead(ctx context.Context, d *schema.Resourc
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	if err = d.Set("custom_field", customFields); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -176,7 +202,7 @@ func resourceNetboxTenancyContactRoleDelete(ctx context.Context, d *schema.Resou
 
 	resourceExists, err := resourceNetboxTenancyContactRoleExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
@@ -205,7 +231,7 @@ func resourceNetboxTenancyContactRoleExists(d *schema.ResourceData,
 		return false, err
 	}
 
-	_, http, err := client.TenancyAPI.TenancyContactsRetrieve(nil, int32(resourceID)).Execute()
+	_, http, err := client.TenancyAPI.TenancyContactRolesRetrieve(nil, int32(resourceID)).Execute()
 	if err != nil && http.StatusCode == 404 {
 		return false, nil
 	} else if err == nil && http.StatusCode == 200 {

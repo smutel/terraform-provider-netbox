@@ -92,15 +92,15 @@ func TestAccNetboxExtrasCustomFieldObjectMinimalFullMinimal(t *testing.T) {
 
 func testAccCheckNetboxExtrasCustomFieldObjectConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
-	{{ if eq .extraresources "true" }}
-	resource "netbox_dcim_platform" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
-	}
-	{{ end }}
+  {{ if eq .extraresources "true" }}
+  resource "netbox_dcim_platform" "test" {
+    name = "extrascfobject-{{ .namesuffix }}"
+    slug = "extrascfobject-{{ .namesuffix }}"
+  }
+  {{ end }}
 
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfobject_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
@@ -111,28 +111,31 @@ func testAccCheckNetboxExtrasCustomFieldObjectConfig(nameSuffix string, resource
 		description   = "Test custom field"
 		group_name    = "testgroup"
 		ui_visibility = "hidden"
+		ui_editable   = "no"
 		label         = "Test Label for CF"
 		weight        = 50
-		#required      = true
+    		#required      = true
 		filter_logic  = "disabled"
-		default = jsonencode(
-			netbox_dcim_platform.test.id
-		)
+    		{{ if eq .extraresources "true" }}
+    		default = jsonencode(
+      			netbox_dcim_platform.test.id
+    		)
+    		{{ end }}
 		{{ end }}
 	}
 
-	{{ if eq .extraresources "true" }}
-	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+  {{ if eq .extraresources "true" }}
+  resource "netbox_dcim_site" "test_assign" {
+    name = "extrascfobject-{{ .namesuffix }}"
+    slug = "extrascfobject-{{ .namesuffix }}"
 
-		custom_field {
-			name = netbox_extras_custom_field.test.name
-			type = netbox_extras_custom_field.test.type
-			value = netbox_dcim_platform.test.id
-		}
-	}
-	{{ end }}
+    custom_field {
+      name = netbox_extras_custom_field.test.name
+      type = netbox_extras_custom_field.test.type
+      value = netbox_dcim_platform.test.id
+    }
+  }
+  {{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

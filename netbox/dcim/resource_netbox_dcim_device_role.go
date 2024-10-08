@@ -3,6 +3,7 @@ package dcim
 import (
 	"context"
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxDcimDeviceRole() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a device role (dcim module) within Netbox.",
+		Description:   "Manage a device role within Netbox.",
 		CreateContext: resourceNetboxDcimDeviceRoleCreate,
 		ReadContext:   resourceNetboxDcimDeviceRoleRead,
 		UpdateContext: resourceNetboxDcimDeviceRoleUpdate,
@@ -28,11 +29,6 @@ func ResourceNetboxDcimDeviceRole() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"content_type": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "The content type of this device role (dcim module).",
-			},
 			"color": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -43,6 +39,11 @@ func ResourceNetboxDcimDeviceRole() *schema.Resource {
 						regexp.MustCompile("^[0-9a-f]{1,6}$"),
 						"^[0-9a-f]{1,6})$")),
 				Description: "The color of this device role. Default is grey (#9e9e9e).",
+			},
+			"content_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this device role.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -71,19 +72,19 @@ func ResourceNetboxDcimDeviceRole() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this device role (dcim module).",
+				Description:  "The name of this device role.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this device role (dcim module).",
+				Description:  "The slug of this device role.",
 			},
 			"tag": &tag.TagSchema,
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this device role (dcim module).",
+				Description: "The link to this device role.",
 			},
 			"virtualmachine_count": {
 				Type:        schema.TypeInt,
@@ -113,7 +114,7 @@ func resourceNetboxDcimDeviceRoleCreate(ctx context.Context, d *schema.ResourceD
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 
-	newResource := netbox.NewWritableDeviceRoleRequestWithDefaults()
+	newResource := netbox.NewDeviceRoleRequestWithDefaults()
 	newResource.SetName(name)
 	newResource.SetSlug(slug)
 	newResource.SetColor(color)
@@ -122,17 +123,16 @@ func resourceNetboxDcimDeviceRoleCreate(ctx context.Context, d *schema.ResourceD
 	newResource.SetCustomFields(customFields)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	resourceCreated, response, err := client.DcimAPI.DcimDeviceRolesCreate(ctx).WritableDeviceRoleRequest(*newResource).Execute()
+	_, response, err := client.DcimAPI.DcimDeviceRolesCreate(ctx).DeviceRoleRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(strconv.FormatInt(int64(resourceCreated.GetId()), 10))
 
 	return resourceNetboxDcimDeviceRoleRead(ctx, d, m)
 }
@@ -148,11 +148,11 @@ func resourceNetboxDcimDeviceRoleRead(ctx context.Context, d *schema.ResourceDat
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+	if err = d.Set("color", resource.GetColor()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("color", resource.GetColor()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -160,12 +160,12 @@ func resourceNetboxDcimDeviceRoleRead(ctx context.Context, d *schema.ResourceDat
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
+	// resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	// customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
-	if err = d.Set("custom_field", customFields); err != nil {
-		return util.GenerateErrorMessage(nil, err)
-	}
+	// if err = d.Set("custom_field", customFields); err != nil {
+	// return util.GenerateErrorMessage(nil, err)
+	// }
 
 	if err = d.Set("description", resource.GetDescription()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
@@ -187,7 +187,7 @@ func resourceNetboxDcimDeviceRoleRead(ctx context.Context, d *schema.ResourceDat
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.GetTags())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -210,13 +210,15 @@ func resourceNetboxDcimDeviceRoleUpdate(ctx context.Context, d *schema.ResourceD
 	m interface{}) diag.Diagnostics {
 	client := m.(*netbox.APIClient)
 
-	name := d.Get("name").(string)
-	slug := d.Get("slug").(string)
+	resourceID, err := strconv.Atoi(d.Id())
+	if err != nil {
+		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
+	}
+	resource := netbox.NewDeviceRoleRequestWithDefaults()
 
-	resourceID, _ := strconv.Atoi(d.Id())
-	resource := netbox.NewWritableDeviceRoleRequestWithDefaults()
-	resource.SetName(name)
-	resource.SetSlug(slug)
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
 
 	if d.HasChange("color") {
 		resource.SetColor(d.Get("color").(string))
@@ -241,7 +243,7 @@ func resourceNetboxDcimDeviceRoleUpdate(ctx context.Context, d *schema.ResourceD
 		resource.SetVmRole(d.Get("vm_role").(bool))
 	}
 
-	if _, response, err := client.DcimAPI.DcimDeviceRolesUpdate(ctx, int32(resourceID)).WritableDeviceRoleRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.DcimAPI.DcimDeviceRolesUpdate(ctx, int32(resourceID)).DeviceRoleRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 

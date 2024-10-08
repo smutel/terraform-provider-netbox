@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -18,7 +19,7 @@ import (
 
 func ResourceNetboxIpamAggregate() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage an aggregate (ipam module) within Netbox.",
+		Description:   "Manage an aggregate within Netbox.",
 		CreateContext: resourceNetboxIpamAggregateCreate,
 		ReadContext:   resourceNetboxIpamAggregateRead,
 		UpdateContext: resourceNetboxIpamAggregateUpdate,
@@ -32,7 +33,7 @@ func ResourceNetboxIpamAggregate() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this aggregate (ipam module).",
+				Description: "The content type of this aggregate.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -59,7 +60,7 @@ func ResourceNetboxIpamAggregate() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The description of this aggregate (ipam module).",
+				Description:  "The description of this aggregate.",
 			},
 			"family": {
 				Type:        schema.TypeString,
@@ -75,12 +76,12 @@ func ResourceNetboxIpamAggregate() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.IsCIDRNetwork(0, 256),
-				Description:  "The network prefix of this aggregate (ipam module).",
+				Description:  "The network prefix of this aggregate.",
 			},
 			"rir_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The RIR id linked to this aggregate (ipam module).",
+				Description: "The RIR id linked to this aggregate.",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
@@ -91,7 +92,7 @@ func ResourceNetboxIpamAggregate() *schema.Resource {
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this tag (extra module).",
+				Description: "The link to this tag.",
 			},
 		},
 	}
@@ -113,23 +114,35 @@ func resourceNetboxIpamAggregateCreate(ctx context.Context, d *schema.ResourceDa
 	newResource.SetCustomFields(customFields)
 	newResource.SetDescription(description)
 	newResource.SetPrefix(prefix)
-	newResource.SetRir(rirID)
+	b, err := brief.GetBriefRIRRequestFromID(client, ctx, rirID)
+	if err != nil {
+		return err
+	}
+	newResource.SetRir(*b)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
 	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.SetTenant(tenantID)
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
 	if dateAdded != "" {
 		newResource.SetDateAdded(dateAdded)
 	}
 
-	resourceCreated, response, err := client.IpamAPI.IpamAggregatesCreate(ctx).WritableAggregateRequest(*newResource).Execute()
-	if response.StatusCode != 201 && err != nil {
-		return util.GenerateErrorMessage(response, err)
+	_, response, errDiag := client.IpamAPI.IpamAggregatesCreate(ctx).WritableAggregateRequest(*newResource).Execute()
+	if response.StatusCode != 201 && errDiag != nil {
+		return util.GenerateErrorMessage(response, errDiag)
 	}
 
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
+	}
 
 	return resourceNetboxIpamAggregateRead(ctx, d, m)
 }
@@ -150,7 +163,7 @@ func resourceNetboxIpamAggregateRead(ctx context.Context, d *schema.ResourceData
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -213,7 +226,12 @@ func resourceNetboxIpamAggregateUpdate(ctx context.Context, d *schema.ResourceDa
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
 	resource := netbox.NewWritableAggregateRequestWithDefaults()
-	resource.SetRir(int32(d.Get("rir_id").(int)))
+	rirID := int32(d.Get("rir_id").(int))
+	b, errDiag := brief.GetBriefRIRRequestFromID(client, ctx, rirID)
+	if errDiag != nil {
+		return errDiag
+	}
+	resource.SetRir(*b)
 	resource.SetPrefix(d.Get("prefix").(string))
 
 	if d.HasChange("custom_field") {
@@ -238,16 +256,6 @@ func resourceNetboxIpamAggregateUpdate(ctx context.Context, d *schema.ResourceDa
 		}
 	}
 
-	if d.HasChange("prefix") {
-		prefix := d.Get("prefix").(string)
-		resource.SetPrefix(prefix)
-	}
-
-	if d.HasChange("rir_id") {
-		rirID := int32(d.Get("rir_id").(int))
-		resource.SetRir(rirID)
-	}
-
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
 		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
@@ -256,7 +264,11 @@ func resourceNetboxIpamAggregateUpdate(ctx context.Context, d *schema.ResourceDa
 	if d.HasChange("tenant_id") {
 		tenantID := int32(d.Get("tenant_id").(int))
 		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}

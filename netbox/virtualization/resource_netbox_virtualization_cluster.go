@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxVirtualizationCluster() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a cluster (virtualization module) within Netbox.",
+		Description:   "Manage a cluster within Netbox.",
 		CreateContext: resourceNetboxVirtualizationClusterCreate,
 		ReadContext:   resourceNetboxVirtualizationClusterRead,
 		UpdateContext: resourceNetboxVirtualizationClusterUpdate,
@@ -31,13 +32,13 @@ func ResourceNetboxVirtualizationCluster() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this cluster (virtualization module).",
+				Description: "The content type of this cluster.",
 			},
 			"comments": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				StateFunc:   util.TrimString,
-				Description: "Comments for this cluster (virtualization module).",
+				Description: "Comments for this cluster.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -64,7 +65,7 @@ func ResourceNetboxVirtualizationCluster() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this cluster (virtualization module).",
+				Description:  "The name of this cluster.",
 			},
 			"site_id": {
 				Type:        schema.TypeInt,
@@ -95,7 +96,7 @@ func ResourceNetboxVirtualizationCluster() *schema.Resource {
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this cluster (virtualization module).",
+				Description: "The link to this cluster.",
 			},
 			"virtualmachine_count": {
 				Type:        schema.TypeInt,
@@ -124,32 +125,53 @@ func resourceNetboxVirtualizationClusterCreate(ctx context.Context, d *schema.Re
 	newResource.SetCustomFields(customFields)
 	newResource.SetName(name)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
-	newResource.SetType(typeID)
 
-	s, err := netbox.NewClusterStatusValueFromValue(d.Get("status").(string))
+	b, err := brief.GetBriefClusterTypeRequestFromID(client, ctx, typeID)
 	if err != nil {
-		return util.GenerateErrorMessage(nil, err)
+		return err
+	}
+	newResource.SetType(*b)
+
+	if groupID != 0 {
+		b, err := brief.GetBriefClusterGroupRequestFromID(client, ctx, groupID)
+		if err != nil {
+			return err
+		}
+		newResource.SetGroup(*b)
+	}
+
+	s, errDiag := netbox.NewClusterStatusValueFromValue(d.Get("status").(string))
+	if errDiag != nil {
+		return util.GenerateErrorMessage(nil, errDiag)
 	}
 	newResource.SetStatus(*s)
 
-	if groupID != 0 {
-		newResource.SetGroup(groupID)
-	}
-
 	if siteID != 0 {
-		newResource.SetSite(siteID)
+		b, err := brief.GetBriefSiteRequestFromID(client, ctx, siteID)
+		if err != nil {
+			return err
+		}
+		newResource.SetSite(*b)
 	}
 
 	if tenantID != 0 {
-		newResource.SetTenant(tenantID)
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
-	resourceCreated, response, err := client.VirtualizationAPI.VirtualizationClustersCreate(ctx).WritableClusterRequest(*newResource).Execute()
-	if response.StatusCode != 201 && err != nil {
+	_, response, errDiag := client.VirtualizationAPI.VirtualizationClustersCreate(ctx).WritableClusterRequest(*newResource).Execute()
+	if response.StatusCode != 201 && errDiag != nil {
+		return util.GenerateErrorMessage(response, errDiag)
+	}
+
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
 		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxVirtualizationClusterRead(ctx, d, m)
 }
@@ -170,7 +192,11 @@ func resourceNetboxVirtualizationClusterRead(ctx context.Context, d *schema.Reso
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("comments", resource.GetComments()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -193,7 +219,7 @@ func resourceNetboxVirtualizationClusterRead(ctx context.Context, d *schema.Reso
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("last_updated", resource.GetLastUpdated()); err != nil {
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -242,6 +268,15 @@ func resourceNetboxVirtualizationClusterUpdate(ctx context.Context, d *schema.Re
 	}
 	resource := netbox.NewWritableClusterRequestWithDefaults()
 
+	// Required parameters
+	resource.SetName(d.Get("name").(string))
+	typeID := int32(d.Get("type_id").(int))
+	b, errDiag := brief.GetBriefClusterTypeRequestFromID(client, ctx, typeID)
+	if errDiag != nil {
+		return errDiag
+	}
+	resource.SetType(*b)
+
 	if d.HasChange("comments") {
 		resource.SetComments(d.Get("comments").(string))
 	}
@@ -255,15 +290,14 @@ func resourceNetboxVirtualizationClusterUpdate(ctx context.Context, d *schema.Re
 	if d.HasChange("group_id") {
 		groupID := int32(d.Get("group_id").(int))
 		if groupID != 0 {
-			resource.SetGroup(groupID)
+			b, err := brief.GetBriefClusterGroupRequestFromID(client, ctx, groupID)
+			if err != nil {
+				return err
+			}
+			resource.SetGroup(*b)
 		} else {
 			resource.SetGroupNil()
 		}
-	}
-
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		resource.SetName(name)
 	}
 
 	if d.HasChange("status") {
@@ -277,7 +311,11 @@ func resourceNetboxVirtualizationClusterUpdate(ctx context.Context, d *schema.Re
 	if d.HasChange("site_id") {
 		siteID := int32(d.Get("site_id").(int))
 		if siteID != 0 {
-			resource.SetSite(siteID)
+			b, err := brief.GetBriefSiteRequestFromID(client, ctx, siteID)
+			if err != nil {
+				return err
+			}
+			resource.SetSite(*b)
 		} else {
 			resource.SetSiteNil()
 		}
@@ -291,15 +329,14 @@ func resourceNetboxVirtualizationClusterUpdate(ctx context.Context, d *schema.Re
 	if d.HasChange("tenant_id") {
 		tenantID := int32(d.Get("tenant_id").(int))
 		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}
-	}
-
-	if d.HasChange("type_id") {
-		typeID := int32(d.Get("type_id").(int))
-		resource.SetType(typeID)
 	}
 
 	if _, response, err := client.VirtualizationAPI.VirtualizationClustersUpdate(ctx, int32(resourceID)).WritableClusterRequest(*resource).Execute(); err != nil {

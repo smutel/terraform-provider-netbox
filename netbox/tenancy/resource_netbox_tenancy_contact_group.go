@@ -18,7 +18,7 @@ import (
 
 func ResourceNetboxTenancyContactGroup() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a contact group (tenancy module) within Netbox.",
+		Description:   "Manage a contact group within Netbox.",
 		CreateContext: resourceNetboxTenancyContactGroupCreate,
 		ReadContext:   resourceNetboxTenancyContactGroupRead,
 		UpdateContext: resourceNetboxTenancyContactGroupUpdate,
@@ -32,7 +32,12 @@ func ResourceNetboxTenancyContactGroup() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this contact group (tenancy module).",
+				Description: "The content type of this contact group.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this contact group was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -40,13 +45,18 @@ func ResourceNetboxTenancyContactGroup() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "Description for this contact group (tenancy module).",
+				Description:  "Description for this contact group.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Last date when this contact group was updated.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name for this contact group (tenancy module).",
+				Description:  "The name for this contact group.",
 			},
 			"parent_id": {
 				Type:        schema.TypeInt,
@@ -60,7 +70,7 @@ func ResourceNetboxTenancyContactGroup() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
-				Description: "The slug for this contact group (tenancy module).",
+				Description: "The slug for this contact group.",
 			},
 			"tag": &tag.TagSchema,
 		},
@@ -116,7 +126,11 @@ func resourceNetboxTenancyContactGroupRead(ctx context.Context, d *schema.Resour
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -128,6 +142,10 @@ func resourceNetboxTenancyContactGroupRead(ctx context.Context, d *schema.Resour
 	}
 
 	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -170,8 +188,6 @@ func resourceNetboxTenancyContactGroupUpdate(ctx context.Context, d *schema.Reso
 	parentID := int32(d.Get("parent_id").(int))
 	if parentID != 0 {
 		resource.SetParent(parentID)
-	} else {
-		resource.SetParentNil()
 	}
 
 	if d.HasChange("custom_field") {

@@ -18,7 +18,7 @@ import (
 
 func ResourceNetboxDcimRackRole() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a rack role (dcim module) within Netbox.",
+		Description:   "Manage a rack role within Netbox.",
 		CreateContext: resourceNetboxDcimRackRoleCreate,
 		ReadContext:   resourceNetboxDcimRackRoleRead,
 		UpdateContext: resourceNetboxDcimRackRoleUpdate,
@@ -40,6 +40,11 @@ func ResourceNetboxDcimRackRole() *schema.Resource {
 						"^[0-9a-f]{1,6})$")),
 				Description: "The color of this rack role. Default is grey (#9e9e9e).",
 			},
+			"content_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this rack.",
+			},
 			"created": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -50,7 +55,7 @@ func ResourceNetboxDcimRackRole() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 100),
-				Description:  "The description of this rack role (dcim module).",
+				Description:  "The description of this rack role.",
 			},
 			"rack_count": {
 				Type:        schema.TypeInt,
@@ -66,19 +71,19 @@ func ResourceNetboxDcimRackRole() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this rack role (dcim module).",
+				Description:  "The name of this rack role.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this rack role (dcim module).",
+				Description:  "The slug of this rack role.",
 			},
 			"tag": &tag.TagSchema,
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this rack role (dcim module).",
+				Description: "The link to this rack role.",
 			},
 		},
 	}
@@ -102,18 +107,16 @@ func resourceNetboxDcimRackRoleCreate(ctx context.Context, d *schema.ResourceDat
 	newResource.SetSlug(slug)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	resourceCreated, response, err := client.DcimAPI.DcimRackRolesCreate(ctx).RackRoleRequest(*newResource).Execute()
+	_, response, err := client.DcimAPI.DcimRackRolesCreate(ctx).RackRoleRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return util.GenerateErrorMessage(response, errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
-
 	return resourceNetboxDcimRackRoleRead(ctx, d, m)
 }
 
@@ -134,6 +137,10 @@ func resourceNetboxDcimRackRoleRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if err = d.Set("color", resource.GetColor()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -165,7 +172,7 @@ func resourceNetboxDcimRackRoleRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if err = d.Set("slug", resource.GetSlug()); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
@@ -189,6 +196,10 @@ func resourceNetboxDcimRackRoleUpdate(ctx context.Context, d *schema.ResourceDat
 	}
 	resource := netbox.NewRackRoleRequestWithDefaults()
 
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
+
 	if d.HasChange("color") {
 		resource.SetColor(d.Get("color").(string))
 	}
@@ -201,14 +212,6 @@ func resourceNetboxDcimRackRoleUpdate(ctx context.Context, d *schema.ResourceDat
 
 	if d.HasChange("description") {
 		resource.SetDescription(d.Get("description").(string))
-	}
-
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
-	if d.HasChange("slug") {
-		resource.SetSlug(d.Get("slug").(string))
 	}
 
 	if d.HasChange("tag") {

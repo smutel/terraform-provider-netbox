@@ -14,21 +14,25 @@ import (
 
 func DataNetboxVirtualizationCluster() *schema.Resource {
 	return &schema.Resource{
+		Description: "Get info about cluster from Netbox.",
 		ReadContext: dataNetboxVirtualizationClusterRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this cluster.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "The name of this cluster.",
 			},
 			"site_id": {
-				Type:     schema.TypeInt,
-				Computed: true,
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "The ID of site where this cluster is located.",
 			},
 		},
 	}
@@ -58,6 +62,10 @@ func dataNetboxVirtualizationClusterRead(ctx context.Context, d *schema.Resource
 	r := resource.Results[0]
 	d.SetId(fmt.Sprintf("%d", r.GetId()))
 	if err = d.Set("content_type", util.ConvertURLContentType(r.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("site_id", r.GetSite().Id); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 

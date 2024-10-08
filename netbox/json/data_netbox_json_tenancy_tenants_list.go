@@ -87,7 +87,7 @@ func dataNetboxJSONTenancyTenantsListRead(ctx context.Context, d *schema.Resourc
 
   tmp := resource.Results
 	resultLength := int32(len(tmp))
-	desiredLength := *resource.Count
+  desiredLength := resource.GetCount()
 	if limit > 0 && limit < desiredLength {
 		desiredLength = limit
 	}
@@ -102,7 +102,8 @@ func dataNetboxJSONTenancyTenantsListRead(ctx context.Context, d *schema.Resourc
 		if limit > desiredLength-offset {
 			limit = desiredLength - offset
 		}
-    request.Execute()
+
+    _, _, err := request.Execute()
 		if err != nil {
 		  return util.GenerateErrorMessage(response, err)
 		}

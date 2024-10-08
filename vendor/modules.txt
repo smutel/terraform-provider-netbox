@@ -66,13 +66,6 @@ github.com/cloudflare/circl/sign/ed448
 # github.com/fatih/color v1.17.0
 ## explicit; go 1.17
 github.com/fatih/color
-# github.com/go-logr/logr v1.4.2
-## explicit; go 1.18
-github.com/go-logr/logr
-github.com/go-logr/logr/funcr
-# github.com/go-logr/stdr v1.2.2
-## explicit; go 1.16
-github.com/go-logr/stdr
 # github.com/go-openapi/analysis v0.23.0
 ## explicit; go 1.20
 github.com/go-openapi/analysis
@@ -98,14 +91,6 @@ github.com/go-openapi/loads
 # github.com/go-openapi/runtime v0.28.0
 ## explicit; go 1.20
 github.com/go-openapi/runtime
-github.com/go-openapi/runtime/client
-github.com/go-openapi/runtime/logger
-github.com/go-openapi/runtime/middleware
-github.com/go-openapi/runtime/middleware/denco
-github.com/go-openapi/runtime/middleware/header
-github.com/go-openapi/runtime/middleware/untyped
-github.com/go-openapi/runtime/security
-github.com/go-openapi/runtime/yamlpc
 # github.com/go-openapi/spec v0.21.0
 ## explicit; go 1.20
 github.com/go-openapi/spec
@@ -304,8 +289,6 @@ github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
-# github.com/netbox-community/go-netbox/v3 v3.7.7-0
-## explicit; go 1.18
 # github.com/netbox-community/go-netbox/v4 v4.0.3-0
 ## explicit; go 1.18
 github.com/netbox-community/go-netbox/v4
@@ -315,11 +298,6 @@ github.com/oklog/run
 # github.com/oklog/ulid v1.3.1
 ## explicit
 github.com/oklog/ulid
-# github.com/opentracing/opentracing-go v1.2.0
-## explicit; go 1.14
-github.com/opentracing/opentracing-go
-github.com/opentracing/opentracing-go/ext
-github.com/opentracing/opentracing-go/log
 # github.com/posener/complete v1.2.3
 ## explicit; go 1.13
 github.com/posener/complete
@@ -333,16 +311,6 @@ github.com/russross/blackfriday
 github.com/shopspring/decimal
 # github.com/smutel/go-netbox/v3 v3.4.0
 ## explicit; go 1.16
-github.com/smutel/go-netbox/v3/netbox/client
-github.com/smutel/go-netbox/v3/netbox/client/circuits
-github.com/smutel/go-netbox/v3/netbox/client/dcim
-github.com/smutel/go-netbox/v3/netbox/client/extras
-github.com/smutel/go-netbox/v3/netbox/client/ipam
-github.com/smutel/go-netbox/v3/netbox/client/status
-github.com/smutel/go-netbox/v3/netbox/client/tenancy
-github.com/smutel/go-netbox/v3/netbox/client/users
-github.com/smutel/go-netbox/v3/netbox/client/virtualization
-github.com/smutel/go-netbox/v3/netbox/client/wireless
 github.com/smutel/go-netbox/v3/netbox/models
 # github.com/spf13/cast v1.5.0
 ## explicit; go 1.18
@@ -379,28 +347,6 @@ go.mongodb.org/mongo-driver/bson/bsonrw
 go.mongodb.org/mongo-driver/bson/bsontype
 go.mongodb.org/mongo-driver/bson/primitive
 go.mongodb.org/mongo-driver/x/bsonx/bsoncore
-# go.opentelemetry.io/otel v1.27.0
-## explicit; go 1.21
-go.opentelemetry.io/otel
-go.opentelemetry.io/otel/attribute
-go.opentelemetry.io/otel/baggage
-go.opentelemetry.io/otel/codes
-go.opentelemetry.io/otel/internal
-go.opentelemetry.io/otel/internal/attribute
-go.opentelemetry.io/otel/internal/baggage
-go.opentelemetry.io/otel/internal/global
-go.opentelemetry.io/otel/propagation
-go.opentelemetry.io/otel/semconv/internal/v2
-go.opentelemetry.io/otel/semconv/v1.17.0
-go.opentelemetry.io/otel/semconv/v1.17.0/httpconv
-# go.opentelemetry.io/otel/metric v1.27.0
-## explicit; go 1.21
-go.opentelemetry.io/otel/metric
-go.opentelemetry.io/otel/metric/embedded
-# go.opentelemetry.io/otel/trace v1.27.0
-## explicit; go 1.21
-go.opentelemetry.io/otel/trace
-go.opentelemetry.io/otel/trace/embedded
 # golang.org/x/crypto v0.24.0
 ## explicit; go 1.18
 golang.org/x/crypto/argon2

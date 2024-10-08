@@ -94,14 +94,14 @@ func testAccCheckNetboxDcimRackRoleConfig(nameSuffix string, resourceFull, extra
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "dcimrackrole-{{ .namesuffix }}"
+		slug = "dcimrackrole-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_dcim_rack_role" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name        = "dcimrackrole-{{ .namesuffix }}"
+		slug        = "dcimrackrole-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test rack role"
 		color = "00ff00"

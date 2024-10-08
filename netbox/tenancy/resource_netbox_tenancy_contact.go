@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -18,7 +19,7 @@ import (
 
 func ResourceNetboxTenancyContact() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a contact (tenancy module) within Netbox.",
+		Description:   "Manage a contact within Netbox.",
 		CreateContext: resourceNetboxTenancyContactCreate,
 		ReadContext:   resourceNetboxTenancyContactRead,
 		UpdateContext: resourceNetboxTenancyContactUpdate,
@@ -34,24 +35,29 @@ func ResourceNetboxTenancyContact() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The address for this contact (tenancy module).",
+				Description:  "The address for this contact.",
 			},
 			"comments": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     nil,
-				Description: "Comments for this contact (tenancy module).",
+				Description: "Comments for this contact.",
 			},
 			"contact_group_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     0,
-				Description: "ID of the group where this contact (tenancy module) belongs to.",
+				Description: "ID of the group where this contact belongs to.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this contact (tenancy module).",
+				Description: "The content type of this contact.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this contact was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"email": {
@@ -67,20 +73,25 @@ func ResourceNetboxTenancyContact() *schema.Resource {
 					}
 					return
 				},
-				Description: "The e-mail for this contact (tenancy module).",
+				Description: "The e-mail for this contact.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Last date when this contact was updated.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name for this contact (tenancy module).",
+				Description:  "The name for this contact.",
 			},
 			"phone": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 50),
-				Description:  "The phone for this contact (tenancy module).",
+				Description:  "The phone for this contact.",
 			},
 			"tag": &tag.TagSchema,
 			"title": {
@@ -88,7 +99,7 @@ func ResourceNetboxTenancyContact() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The title for this contact (tenancy module).",
+				Description:  "The title for this contact.",
 			},
 		},
 	}
@@ -109,7 +120,7 @@ func resourceNetboxTenancyContactCreate(ctx context.Context, d *schema.ResourceD
 	tags := d.Get("tag").(*schema.Set).List()
 	title := d.Get("title").(string)
 
-	newResource := netbox.NewWritableContactRequestWithDefaults()
+	newResource := netbox.NewContactRequestWithDefaults()
 	newResource.SetAddress(address)
 	newResource.SetComments(comments)
 	newResource.SetCustomFields(customFields)
@@ -120,15 +131,23 @@ func resourceNetboxTenancyContactCreate(ctx context.Context, d *schema.ResourceD
 	newResource.SetTitle(title)
 
 	if groupID != 0 {
-		newResource.SetGroup(groupID)
+		b, err := brief.GetBriefContactGroupRequestFromID(client, ctx, groupID)
+		if err != nil {
+			return err
+		}
+		newResource.SetGroup(*b)
 	}
 
-	resourceCreated, response, err := client.TenancyAPI.TenancyContactsCreate(ctx).WritableContactRequest(*newResource).Execute()
+	_, response, err := client.TenancyAPI.TenancyContactsCreate(ctx).ContactRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
+	}
 
 	return resourceNetboxTenancyContactRead(ctx, d, m)
 }
@@ -147,14 +166,6 @@ func resourceNetboxTenancyContactRead(ctx context.Context, d *schema.ResourceDat
 
 	if err != nil {
 		return util.GenerateErrorMessage(response, err)
-	}
-
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
-		return util.GenerateErrorMessage(nil, err)
-	}
-
-	if err = d.Set("created", resource.GetCreated().String()); err != nil {
-		return util.GenerateErrorMessage(nil, err)
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
@@ -176,11 +187,19 @@ func resourceNetboxTenancyContactRead(ctx context.Context, d *schema.ResourceDat
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("email", resource.GetEmail()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -211,7 +230,7 @@ func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceD
 	if err != nil {
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
-	resource := netbox.NewWritableContactRequestWithDefaults()
+	resource := netbox.NewContactRequestWithDefaults()
 
 	// Required parameters
 	name := d.Get("name").(string)
@@ -230,7 +249,11 @@ func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceD
 		if groupID == 0 {
 			resource.SetGroupNil()
 		} else {
-			resource.SetGroup(groupID)
+			b, err := brief.GetBriefContactGroupRequestFromID(client, ctx, groupID)
+			if err != nil {
+				return err
+			}
+			resource.SetGroup(*b)
 		}
 	}
 
@@ -245,7 +268,7 @@ func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceD
 	}
 
 	if d.HasChange("phone") {
-		resource.SetEmail(d.Get("phone").(string))
+		resource.SetPhone(d.Get("phone").(string))
 	}
 
 	if d.HasChange("tag") {
@@ -254,10 +277,10 @@ func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceD
 	}
 
 	if d.HasChange("title") {
-		resource.SetEmail(d.Get("title").(string))
+		resource.SetTitle(d.Get("title").(string))
 	}
 
-	if _, response, err := client.TenancyAPI.TenancyContactsUpdate(ctx, int32(resourceID)).WritableContactRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.TenancyAPI.TenancyContactsUpdate(ctx, int32(resourceID)).ContactRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 

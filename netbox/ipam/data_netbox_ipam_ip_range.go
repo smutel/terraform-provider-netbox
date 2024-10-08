@@ -14,14 +14,14 @@ import (
 
 func DataNetboxIpamIPRange() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about IP addresses (ipam module) from netbox.",
+		Description: "Get info about IP addresses from netbox.",
 		ReadContext: dataNetboxIpamIPRangeRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this IP range (ipam module).",
+				Description: "The content type of this IP range.",
 			},
 			"start_address": {
 				Type:         schema.TypeString,
@@ -33,7 +33,7 @@ func DataNetboxIpamIPRange() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.IsCIDR,
-				Description:  "The last address of this IP range (ipam module)",
+				Description:  "The last address of this IP range",
 			},
 		},
 	}

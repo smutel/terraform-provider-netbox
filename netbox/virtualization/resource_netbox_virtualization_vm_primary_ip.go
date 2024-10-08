@@ -9,12 +9,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
 func ResourceNetboxVirtualizationVMPrimaryIP() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a primary ip assignment for a VM (virtualization module) resource within Netbox.",
+		Description:   "Manage a primary ip assignment for a VM resource within Netbox.",
 		CreateContext: resourceNetboxVirtualizationVMPrimaryIPCreate,
 		ReadContext:   resourceNetboxVirtualizationVMPrimaryIPRead,
 		UpdateContext: resourceNetboxVirtualizationVMPrimaryIPUpdate,
@@ -25,6 +26,11 @@ func ResourceNetboxVirtualizationVMPrimaryIP() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"content_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this primary ip assignment.",
+			},
 			"virtualmachine_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
@@ -62,22 +68,53 @@ func resourceNetboxVirtualizationVMPrimaryIPCreate(ctx context.Context, d *schem
 	}
 
 	vmID := int32(d.Get("virtualmachine_id").(int))
-
-	newResource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
-	if primaryIP4ID := int32(d.Get("primary_ip4_id").(int)); primaryIP4ID != 0 {
-		newResource.SetPrimaryIp4(primaryIP4ID)
-	}
-
-	if primaryIP6ID := int32(d.Get("primary_ip6_id").(int)); primaryIP6ID != 0 {
-		newResource.SetPrimaryIp6(primaryIP6ID)
-	}
-
-	resourceCreated, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, vmID).WritableVirtualMachineWithConfigContextRequest(*newResource).Execute()
+	oldResource, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(nil, int32(vmID)).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
+	newResource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+	newResource.SetName(oldResource.GetName())
+	if oldResource.GetCluster().Id != 0 {
+		b, errDiag := brief.GetBriefClusterRequestFromID(client, ctx, oldResource.GetCluster().Id)
+		if errDiag != nil {
+			return errDiag
+		}
+		newResource.SetCluster(*b)
+	}
+	if oldResource.GetSite().Id != 0 {
+		b, errDiag := brief.GetBriefSiteRequestFromID(client, ctx, oldResource.GetSite().Id)
+		if errDiag != nil {
+			return errDiag
+		}
+		newResource.SetSite(*b)
+	}
+	if primaryIP4ID := int32(d.Get("primary_ip4_id").(int)); primaryIP4ID != 0 {
+		b, err := brief.GetBriefIPAdressRequestFromID(client, ctx, primaryIP4ID)
+		if err != nil {
+			return err
+		}
+		newResource.SetPrimaryIp4(*b)
+	}
+
+	if primaryIP6ID := int32(d.Get("primary_ip6_id").(int)); primaryIP6ID != 0 {
+		b, err := brief.GetBriefIPAdressRequestFromID(client, ctx, primaryIP6ID)
+		if err != nil {
+			return err
+		}
+		newResource.SetPrimaryIp6(*b)
+	}
+
+	_, response, errDiag := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, vmID).WritableVirtualMachineWithConfigContextRequest(*newResource).Execute()
+	if response.StatusCode != 201 && errDiag != nil {
+		return util.GenerateErrorMessage(response, errDiag)
+	}
+
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
+	}
 
 	return resourceNetboxVirtualizationVMPrimaryIPRead(ctx, d, m)
 }
@@ -98,6 +135,10 @@ func resourceNetboxVirtualizationVMPrimaryIPRead(ctx context.Context, d *schema.
 		return util.GenerateErrorMessage(response, err)
 	}
 
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	// Setting this is only needed for imported resources
 	if err := d.Set("virtualmachine_id", resource.GetId()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
@@ -108,7 +149,7 @@ func resourceNetboxVirtualizationVMPrimaryIPRead(ctx context.Context, d *schema.
 	}
 
 	if err := d.Set("primary_ip6_id", resource.GetPrimaryIp6().Id); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
@@ -131,25 +172,54 @@ func resourceNetboxVirtualizationVMPrimaryIPUpdate(ctx context.Context, d *schem
 	if err != nil {
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
-	resource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+
+	oldResource, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(nil, int32(resourceID)).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
+
+	newResource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+	newResource.SetName(oldResource.GetName())
+	if oldResource.GetCluster().Id != 0 {
+		b, errDiag := brief.GetBriefClusterRequestFromID(client, ctx, oldResource.GetCluster().Id)
+		if errDiag != nil {
+			return errDiag
+		}
+		newResource.SetCluster(*b)
+	}
+	if oldResource.GetSite().Id != 0 {
+		b, errDiag := brief.GetBriefSiteRequestFromID(client, ctx, oldResource.GetSite().Id)
+		if errDiag != nil {
+			return errDiag
+		}
+		newResource.SetSite(*b)
+	}
 
 	if d.HasChange("primary_ip4_id") {
 		if primaryIP4ID := int32(d.Get("primary_ip4_id").(int)); primaryIP4ID != 0 {
-			resource.SetPrimaryIp4(primaryIP4ID)
+			b, err := brief.GetBriefIPAdressRequestFromID(client, ctx, primaryIP4ID)
+			if err != nil {
+				return err
+			}
+			newResource.SetPrimaryIp4(*b)
 		} else {
-			resource.SetPrimaryIp4Nil()
+			newResource.SetPrimaryIp4Nil()
 		}
 	}
 
 	if d.HasChange("primary_ip6_id") {
 		if primaryIP6ID := int32(d.Get("primary_ip6_id").(int)); primaryIP6ID != 0 {
-			resource.SetPrimaryIp6(primaryIP6ID)
+			b, err := brief.GetBriefIPAdressRequestFromID(client, ctx, primaryIP6ID)
+			if err != nil {
+				return err
+			}
+			newResource.SetPrimaryIp6(*b)
 		} else {
-			resource.SetPrimaryIp6Nil()
+			newResource.SetPrimaryIp6Nil()
 		}
 	}
 
-	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, int32(resourceID)).WritableVirtualMachineWithConfigContextRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, int32(resourceID)).WritableVirtualMachineWithConfigContextRequest(*newResource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
@@ -174,17 +244,37 @@ func resourceNetboxVirtualizationVMPrimaryIPDelete(ctx context.Context, d *schem
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
 
-	resource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+	oldResource, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(nil, int32(resourceID)).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
+
+	newResource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+	newResource.SetName(oldResource.GetName())
+	if oldResource.GetCluster().Id != 0 {
+		b, errDiag := brief.GetBriefClusterRequestFromID(client, ctx, oldResource.GetCluster().Id)
+		if errDiag != nil {
+			return errDiag
+		}
+		newResource.SetCluster(*b)
+	}
+	if oldResource.GetSite().Id != 0 {
+		b, errDiag := brief.GetBriefSiteRequestFromID(client, ctx, oldResource.GetSite().Id)
+		if errDiag != nil {
+			return errDiag
+		}
+		newResource.SetSite(*b)
+	}
 
 	if primaryIP4ID := int32(d.Get("primary_ip4_id").(int)); primaryIP4ID != 0 {
-		resource.SetPrimaryIp4Nil()
+		newResource.SetPrimaryIp4Nil()
 	}
 
 	if primaryIP6ID := int32(d.Get("primary_ip6_id").(int)); primaryIP6ID != 0 {
-		resource.SetPrimaryIp6Nil()
+		newResource.SetPrimaryIp6Nil()
 	}
 
-	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, int32(resourceID)).WritableVirtualMachineWithConfigContextRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, int32(resourceID)).WritableVirtualMachineWithConfigContextRequest(*newResource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 

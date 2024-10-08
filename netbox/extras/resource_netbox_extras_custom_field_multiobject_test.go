@@ -94,48 +94,51 @@ func testAccCheckNetboxExtrasCustomFieldMultiObjectConfig(nameSuffix string, res
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_platform" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "extrascfmultiobject-{{ .namesuffix }}"
+		slug = "extrascfmultiobject-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfmultiobject_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
 
 		type          = "multiobject"
 		object_type   = "dcim.platform"
-		{{ if eq .resourcefull "true" }}
+    {{ if eq .resourcefull "true" }}
 		description   = "Test custom field"
 		label         = "Test Label for CF"
 		group_name    = "testgroup"
 		ui_visibility = "hidden"
+		ui_editable   = "no"
 		weight        = 50
-		#required      = true
+    #required      = true
 		filter_logic  = "disabled"
-		default       = jsonencode([
-			netbox_dcim_platform.test.id
+	  {{ if eq .extraresources "true" }}
+    default       = jsonencode([
+      netbox_dcim_platform.test.id
 		])
-		{{ end }}
+    {{ end }}
+    {{ end }}
 	}
 
-	{{ if eq .extraresources "true" }}
-	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+  {{ if eq .extraresources "true" }}
+  resource "netbox_dcim_site" "test_assign" {
+    name = "extrascfmultiobject-{{ .namesuffix }}"
+    slug = "extrascfmultiobject-{{ .namesuffix }}"
 
-		custom_field {
-			name = netbox_extras_custom_field.test.name
-			type = netbox_extras_custom_field.test.type
-			value = jsonencode(
-				[
-					netbox_dcim_platform.test.id,
-				]
-			)
-		}
-	}
+    custom_field {
+      name = netbox_extras_custom_field.test.name
+      type = netbox_extras_custom_field.test.type
+      value = jsonencode(
+        [
+          netbox_dcim_platform.test.id,
+        ]
+      )
+    }
+  }
 	{{ end }}
 	`
 	data := map[string]string{

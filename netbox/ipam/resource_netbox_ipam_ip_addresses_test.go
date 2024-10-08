@@ -97,42 +97,42 @@ func testAccCheckNetboxIpamIPAddressConfig(nameSuffix string, resourceFull, extr
 	const template = `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_virtualization_cluster_type" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamipaddress-{{ .namesuffix }}"
+		slug = "ipamipaddress-{{ .namesuffix }}"
 	}
 
-	resource "netbox_virtualization_cluster" "test" {
-		name = "test-{{ .namesuffix }}"
-		type_id = netbox_virtualization_cluster_type.test.id
-	}
+  resource "netbox_virtualization_cluster" "test" {
+    name = "ipamipaddress-{{ .namesuffix }}"
+    type_id = netbox_virtualization_cluster_type.test.id
+  }
 
 	resource "netbox_virtualization_vm" "test" {
-		name       = "test-{{ .namesuffix }}"
+		name       = "ipamipaddress-{{ .namesuffix }}"
 		cluster_id = netbox_virtualization_cluster.test.id
 	}
 
-	resource "netbox_virtualization_interface" "test" {
-		name              = "test-{{ .namesuffix }}"
-		virtualmachine_id = netbox_virtualization_vm.test.id
-	}
+  resource "netbox_virtualization_interface" "test" {
+    name              = "ipamipaddress-{{ .namesuffix }}"
+    virtualmachine_id = netbox_virtualization_vm.test.id
+  }
 
-	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
-	}
+  resource "netbox_extras_tag" "test" {
+    name = "ipamipaddress-{{ .namesuffix }}"
+    slug = "ipamipaddress-{{ .namesuffix }}"
+  }
 
-	resource "netbox_tenancy_tenant" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
-	}
+  resource "netbox_tenancy_tenant" "test" {
+    name = "ipamipaddress-{{ .namesuffix }}"
+    slug = "ipamipaddress-{{ .namesuffix }}"
+  }
 
-	resource "netbox_ipam_ip_addresses" "nat" {
-		address = "${cidrhost("10.0.0.0/8", {{ .ipnum }} + 2 )}/24"
-	}
+  resource "netbox_ipam_ip_addresses" "nat" {
+    address = "${cidrhost("10.0.0.0/8", {{ .ipnum }} + 2 )}/24"
+  }
 
 	resource "netbox_ipam_vrf" "test" {
-		name = "test-{{ .namesuffix }}"
-	}
+    name = "ipamipaddress-{{ .namesuffix }}"
+  }
 	{{ end }}
 
 	resource "netbox_ipam_ip_addresses" "test" {
@@ -144,16 +144,16 @@ func testAccCheckNetboxIpamIPAddressConfig(nameSuffix string, resourceFull, extr
 		role          = "vip"
 		status        = "reserved"
 		vrf_id        = netbox_ipam_vrf.test.id
-		tenant_id     = netbox_tenancy_tenant.test.id
-		nat_inside_id = netbox_ipam_ip_addresses.nat.id
+    tenant_id     = netbox_tenancy_tenant.test.id
+    nat_inside_id = netbox_ipam_ip_addresses.nat.id
 
-		object_id   = netbox_virtualization_interface.test.id
-		object_type = "virtualization.vminterface"
+    object_id   = netbox_virtualization_interface.test.id
+    object_type = "virtualization.vminterface"
 
-		tag {
-			name = netbox_extras_tag.test.name
-			slug = netbox_extras_tag.test.slug
-		}
+    tag {
+      name = netbox_extras_tag.test.name
+      slug = netbox_extras_tag.test.slug
+    }
 		{{ end }}
 	}
 	`

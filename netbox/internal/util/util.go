@@ -12,8 +12,24 @@ import (
 	"unicode"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/netbox-community/go-netbox/v4"
 	"github.com/smutel/go-netbox/v3/netbox/models"
 )
+
+type GenericResponse struct {
+	Id     int32                  `json:"id"`
+	Others map[string]interface{} `json:"-"`
+}
+
+func ConvertASNsToInts(asns []netbox.ASN) []int32 {
+	var tfASNs []int32
+
+	for _, t := range asns {
+		tfASNs = append(tfASNs, t.GetId())
+	}
+
+	return tfASNs
+}
 
 func ConvertNestedASNsToASNs(asns []*models.NestedASN) []int64 {
 	var tfASNs []int64
@@ -39,11 +55,11 @@ func ConvertNestedIPsToIPs(asns []*models.NestedIPAddress) []int64 {
 	return tfASNs
 }
 
-func ConvertNestedVlansToVlans(vlans []*models.NestedVLAN) []int64 {
-	var tfVlans []int64
+func ConvertAPIVlansToVlans(vlans []netbox.VLAN) []int32 {
+	var tfVlans []int32
 
 	for _, t := range vlans {
-		vlan := t.ID
+		vlan := t.GetId()
 
 		tfVlans = append(tfVlans, vlan)
 	}
@@ -127,6 +143,33 @@ func ToListofStrings(in []interface{}) []string {
 	return out
 }
 
+func ToInterfaceArrayToInteraceArrayArray(in []interface{}) [][]interface{} {
+	out := make([][]interface{}, len(in))
+	for i, extraChoice := range in {
+		e := extraChoice.(map[string]interface{})
+
+		extraChoiceArray := make([]interface{}, 2)
+		extraChoiceArray[0] = e["value"].(string)
+		extraChoiceArray[1] = e["label"].(string)
+
+		out[i] = extraChoiceArray
+	}
+	return out
+}
+
+func ToInterfaceArrayArrayToInteraceArray(in [][]interface{}) []interface{} {
+	out := make([]interface{}, len(in))
+
+	for i, extraChoiceArray := range in {
+		e := make(map[string]interface{})
+		e["value"] = extraChoiceArray[0]
+		e["label"] = extraChoiceArray[1]
+		out[i] = e
+	}
+
+	return out
+}
+
 func TrimString(val interface{}) string {
 	return strings.TrimSpace(val.(string))
 }
@@ -184,4 +227,19 @@ func GenerateErrorMessage(response *http.Response, err error) diag.Diagnostics {
 	diags = append(diags, providerDiag)
 
 	return diags
+}
+
+func UnmarshalID(body io.ReadCloser) (int32, error) {
+	byteValue, err := io.ReadAll(body)
+	var gr GenericResponse
+
+	if err != nil {
+		return 0, err
+	}
+
+	if err := json.Unmarshal(byteValue, &gr); err != nil {
+		return 0, err
+	} else {
+		return gr.Id, nil
+	}
 }

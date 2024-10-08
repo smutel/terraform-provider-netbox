@@ -91,96 +91,65 @@ func TestAccNetboxDcimRackMinimalFullMinimal(t *testing.T) {
 }
 
 func testAccCheckNetboxDcimRackConfig(nameSuffix string, resourceFull, extraResources bool) string {
-	// template := `
-	// {{ if eq .extraresources "true" }}
-	// resource "netbox_extras_tag" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-
-	// resource "netbox_dcim_rack_role" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-
-	// resource "netbox_tenancy_tenant" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-
-	// resource "netbox_dcim_location" "test" {
-	// name        = "test-{{ .namesuffix }}"
-	// site_id     = netbox_dcim_site.test.id
-	// slug        = "test-{{ .namesuffix }}"
-	// }
-	// {{ end }}
-
-	// resource "netbox_dcim_site" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-
-	// resource "netbox_dcim_rack" "test" {
-	// name        = "test-{{ .namesuffix }}"
-	// site_id     = netbox_dcim_site.test.id
-	// height      = 10
-	// width       = 10
-
-	// {{ if eq .resourcefull "true" }}
-	// asset_tag = "test-{{ .namesuffix }}"
-	// comments = <<-EOT
-	// Comments for Test Rack
-	// Multiline
-	// EOT
-	// desc_units = true
-	// facility = "test-{{ .namesuffix }}"
-	// // location_id = netbox_dcim_location.test.id
-	// outer_depth = 1
-	// outer_unit = "mm"
-	// outer_width = 2
-	// role_id = netbox_dcim_rack_role.test.id
-	// serial = "test-{{ .namesuffix }}"
-	// status = "reserved"
-	// tag {
-	// name = netbox_extras_tag.test.name
-	// slug = netbox_extras_tag.test.slug
-	// }
-	// tenant_id = netbox_tenancy_tenant.test.id
-	// type = "4-post-frame"
-	// {{ end }}
-	// }
-	// `
 	template := `
-	resource "netbox_dcim_rack" "test" {
-		name        = "test-{{ .namesuffix }}"
-    site_id     = 1
+  {{ if eq .extraresources "true" }}
+  resource "netbox_extras_tag" "test" {
+    name = "dcimrack-{{ .namesuffix }}"
+    slug = "dcimrack-{{ .namesuffix }}"
+  }
+
+  resource "netbox_dcim_rack_role" "test" {
+    name = "dcimrack-{{ .namesuffix }}"
+    slug = "dcimrack-{{ .namesuffix }}"
+  }
+
+  resource "netbox_tenancy_tenant" "test" {
+    name = "dcimrack-{{ .namesuffix }}"
+    slug = "dcimrack-{{ .namesuffix }}"
+  }
+
+  resource "netbox_dcim_location" "test" {
+    name        = "dcimrack-{{ .namesuffix }}"
+    site_id     = netbox_dcim_site.test.id
+    slug        = "dcimrack-{{ .namesuffix }}"
+  }
+  {{ end }}
+
+  resource "netbox_dcim_site" "test" {
+    name = "dcimrack-{{ .namesuffix }}"
+    slug = "dcimrack-{{ .namesuffix }}"
+  }
+
+  resource "netbox_dcim_rack" "test" {
+    name        = "dcimrack-{{ .namesuffix }}"
+    site_id     = netbox_dcim_site.test.id
     height      = 10
     width       = 10
 
     {{ if eq .resourcefull "true" }}
-		asset_tag = "test-{{ .namesuffix }}"
+    asset_tag = "dcimrack-{{ .namesuffix }}"
     comments = <<-EOT
     Comments for Test Rack
     Multiline
     EOT
     desc_units = true
-    facility = "test-{{ .namesuffix }}"
-    location_id = 1
+    facility = "dcimrack-{{ .namesuffix }}"
+    location_id = netbox_dcim_location.test.id
     outer_depth = 1
     outer_unit = "mm"
     outer_width = 2
-    role_id = 1
-    serial = "test-{{ .namesuffix }}"
+    role_id = netbox_dcim_rack_role.test.id
+    serial = "dcimrack-{{ .namesuffix }}"
     status = "reserved"
     tag {
-      name = "test"
-      slug = "test"
+      name = netbox_extras_tag.test.name
+      slug = netbox_extras_tag.test.slug
     }
-    tenant_id = 1
+    tenant_id = netbox_tenancy_tenant.test.id
     type = "4-post-frame"
     {{ end }}
-	}
-	`
+  }
+  `
 	data := map[string]string{
 		"namesuffix":     nameSuffix,
 		"resourcefull":   strconv.FormatBool(resourceFull),

@@ -94,14 +94,14 @@ func testAccCheckNetboxVirtualizationClusterTypeConfig(nameSuffix string, resour
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualclustertype-{{ .namesuffix }}"
+		slug = "virtualclustertype-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_virtualization_cluster_type" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name        = "virtualclustertype-{{ .namesuffix }}"
+		slug        = "virtualclustertype-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test device role"
 

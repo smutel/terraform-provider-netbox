@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -18,7 +19,7 @@ import (
 
 func ResourceNetboxTenancyTenant() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a tenant (tenancy module) within Netbox.",
+		Description:   "Manage a tenant within Netbox.",
 		CreateContext: resourceNetboxTenancyTenantCreate,
 		ReadContext:   resourceNetboxTenancyTenantRead,
 		UpdateContext: resourceNetboxTenancyTenantUpdate,
@@ -33,12 +34,17 @@ func ResourceNetboxTenancyTenant() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     nil,
-				Description: "Comments for this tenant (tenancy module).",
+				Description: "Comments for this tenant.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this tenant (tenancy module).",
+				Description: "The content type of this tenant.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this tenant was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -46,19 +52,24 @@ func ResourceNetboxTenancyTenant() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The description for this tenant (tenancy module).",
+				Description:  "The description for this tenant.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Last date when this tenant was updated.",
 			},
 			"tenant_group_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     0,
-				Description: "ID of the group where this tenant (tenancy module) is attached to.",
+				Description: "ID of the group where this tenant is attached to.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name for this tenant (tenancy module).",
+				Description:  "The name for this tenant.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -66,7 +77,7 @@ func ResourceNetboxTenancyTenant() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,100}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,100}$"),
-				Description: "The slug for this tenant (tenancy module).",
+				Description: "The slug for this tenant.",
 			},
 			"tag": &tag.TagSchema,
 		},
@@ -86,7 +97,7 @@ func resourceNetboxTenancyTenantCreate(ctx context.Context, d *schema.ResourceDa
 	slug := d.Get("slug").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := netbox.NewWritableTenantRequestWithDefaults()
+	newResource := netbox.NewTenantRequestWithDefaults()
 	newResource.SetComments(comments)
 	newResource.SetCustomFields(customFields)
 	newResource.SetDescription(description)
@@ -95,15 +106,23 @@ func resourceNetboxTenancyTenantCreate(ctx context.Context, d *schema.ResourceDa
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
 	if groupID != 0 {
-		newResource.SetGroup(groupID)
+		b, err := brief.GetBriefTenantGroupRequestFromID(client, ctx, groupID)
+		if err != nil {
+			return err
+		}
+		newResource.SetGroup(*b)
 	}
 
-	resourceCreated, response, err := client.TenancyAPI.TenancyTenantsCreate(ctx).WritableTenantRequest(*newResource).Execute()
+	_, response, err := client.TenancyAPI.TenancyTenantsCreate(ctx).TenantRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
+	}
 
 	return resourceNetboxTenancyTenantRead(ctx, d, m)
 }
@@ -128,7 +147,11 @@ func resourceNetboxTenancyTenantRead(ctx context.Context, d *schema.ResourceData
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -140,6 +163,10 @@ func resourceNetboxTenancyTenantRead(ctx context.Context, d *schema.ResourceData
 	}
 
 	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -170,7 +197,7 @@ func resourceNetboxTenancyTenantUpdate(ctx context.Context, d *schema.ResourceDa
 	if err != nil {
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
-	resource := netbox.NewWritableTenantRequestWithDefaults()
+	resource := netbox.NewTenantRequestWithDefaults()
 
 	// Required parameters
 	name := d.Get("name").(string)
@@ -196,7 +223,11 @@ func resourceNetboxTenancyTenantUpdate(ctx context.Context, d *schema.ResourceDa
 	if d.HasChange("tenant_group_id") {
 		groupID := int32(d.Get("tenant_group_id").(int))
 		if groupID != 0 {
-			resource.SetGroup(groupID)
+			b, err := brief.GetBriefTenantGroupRequestFromID(client, ctx, groupID)
+			if err != nil {
+				return err
+			}
+			resource.SetGroup(*b)
 		} else {
 			resource.SetGroupNil()
 		}
@@ -207,7 +238,7 @@ func resourceNetboxTenancyTenantUpdate(ctx context.Context, d *schema.ResourceDa
 		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
-	if _, response, err := client.TenancyAPI.TenancyTenantsUpdate(ctx, int32(resourceID)).WritableTenantRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.TenancyAPI.TenancyTenantsUpdate(ctx, int32(resourceID)).TenantRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 

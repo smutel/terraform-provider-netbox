@@ -13,19 +13,19 @@ import (
 
 func DataNetboxIpamVlan() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about vlan (ipam module) from netbox.",
+		Description: "Get info about vlan from netbox.",
 		ReadContext: dataNetboxIpamVlanRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this vlan (ipam module).",
+				Description: "The content type of this vlan.",
 			},
 			"vlan_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The ID of the vlan (ipam module).",
+				Description: "The ID of the vlan.",
 			},
 			"vlan_group_id": {
 				Type:        schema.TypeInt,

@@ -14,20 +14,20 @@ import (
 
 func DataNetboxIpamRir() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about prefix (ipam module) from netbox.",
+		Description: "Get info about prefix from netbox.",
 		ReadContext: dataNetboxIpamRirRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this rir (ipam module).",
+				Description: "The content type of this rir.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this rir (ipam module).",
+				Description:  "The slug of this rir.",
 			},
 		},
 	}

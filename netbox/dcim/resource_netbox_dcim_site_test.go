@@ -95,24 +95,24 @@ func TestAccNetboxDcimSiteMinimalFullMinimal(t *testing.T) {
 func testAccCheckNetboxDcimSiteConfig(nameSuffix string, resourceFull, extraResources bool, asn int64) string {
 	template := `
 	{{ if eq .extraresources "true" }}
-	#resource "netbox_dcim_site_group" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#	slug = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_dcim_site_group" "test" {
+		name = "dcimsite-{{ .namesuffix }}"
+		slug = "dcimsite-{{ .namesuffix }}"
+	}
 
-  resource "netbox_dcim_region" "test" {
-  	name = "test-{{ .namesuffix }}"
-  	slug = "test-{{ .namesuffix }}"
-  }
+  	resource "netbox_dcim_region" "test" {
+  		name = "dcimsite-{{ .namesuffix }}"
+  		slug = "dcimsite-{{ .namesuffix }}"
+  	}
 
 	resource "netbox_ipam_rir" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "dcimsite-{{ .namesuffix }}"
+		slug = "dcimsite-{{ .namesuffix }}"
 	}
 
 	resource "netbox_tenancy_tenant" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "dcimsite-{{ .namesuffix }}"
+		slug = "dcimsite-{{ .namesuffix }}"
 	}
 
 	resource "netbox_ipam_asn" "test" {
@@ -121,19 +121,19 @@ func testAccCheckNetboxDcimSiteConfig(nameSuffix string, resourceFull, extraReso
 	}
 
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "dcimsite-{{ .namesuffix }}"
+		slug = "dcimsite-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_dcim_site" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name        = "dcimsite-{{ .namesuffix }}"
+		slug        = "dcimsite-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		status           = "planned"
 		description = "Test device role"
 		facility    = "TestFaciliy1"
-		#group_id    = netbox_dcim_site_group.test.id
+		group_id    = netbox_dcim_site_group.test.id
 		region_id   = netbox_dcim_region.test.id
 		latitude    = 12.54632
 		longitude   = 41.21632

@@ -13,19 +13,19 @@ import (
 
 func DataNetboxIpamVrf() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about vrf (ipam module) from netbox.",
+		Description: "Get info about vrf from netbox.",
 		ReadContext: dataNetboxIpamVrfRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this vrf (ipam module).",
+				Description: "The content type of this vrf.",
 			},
 			"vrf_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The ID of the vrf (ipam module).",
+				Description: "The ID of the vrf.",
 			},
 		},
 	}

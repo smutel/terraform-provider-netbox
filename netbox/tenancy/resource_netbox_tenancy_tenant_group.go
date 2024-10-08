@@ -17,7 +17,7 @@ import (
 
 func ResourceNetboxTenancyTenantGroup() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a tenant group (tenancy module) within Netbox.",
+		Description:   "Manage a tenant group within Netbox.",
 		CreateContext: resourceNetboxTenancyTenantGroupCreate,
 		ReadContext:   resourceNetboxTenancyTenantGroupRead,
 		UpdateContext: resourceNetboxTenancyTenantGroupUpdate,
@@ -31,21 +31,31 @@ func ResourceNetboxTenancyTenantGroup() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this tenant group (tenancy module).",
+				Description: "The content type of this tenant group.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this tenant group was created.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Last date when this tenant group was updated.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 50),
-				Description:  "The name for this tenant group (tenancy module).",
+				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "The name for this tenant group.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
 				Required: true,
 				ValidateFunc: validation.StringMatch(
-					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
-					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
-				Description: "The slug for this tenant group (tenancy module).",
+					regexp.MustCompile("^[-a-zA-Z0-9_]{1,100}$"),
+					"Must be like ^[-a-zA-Z0-9_]{1,100}$"),
+				Description: "The slug for this tenant group.",
 			},
 			"tag": &tag.TagSchema,
 		},
@@ -65,12 +75,16 @@ func resourceNetboxTenancyTenantGroupCreate(ctx context.Context, d *schema.Resou
 	newResource.SetSlug(slug)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	resourceCreated, response, err := client.TenancyAPI.TenancyTenantGroupsCreate(ctx).WritableTenantGroupRequest(*newResource).Execute()
+	_, response, err := client.TenancyAPI.TenancyTenantGroupsCreate(ctx).WritableTenantGroupRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
+	}
 
 	return resourceNetboxTenancyTenantGroupRead(ctx, d, m)
 }
@@ -89,6 +103,18 @@ func resourceNetboxTenancyTenantGroupRead(ctx context.Context, d *schema.Resourc
 
 	if err != nil {
 		return util.GenerateErrorMessage(response, err)
+	}
+
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("name", resource.GetName()); err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxDcimRegion() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a region (dcim module) within Netbox.",
+		Description:   "Manage a region within Netbox.",
 		CreateContext: resourceNetboxDcimRegionCreate,
 		ReadContext:   resourceNetboxDcimRegionRead,
 		UpdateContext: resourceNetboxDcimRegionUpdate,
@@ -28,50 +29,57 @@ func ResourceNetboxDcimRegion() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"content_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this region.",
+			},
 			"created": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this region (dcim module) was created.",
+				Description: "Date when this region was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"depth": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Depth of this region (dcim module).",
+				Description: "Depth of this region.",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 200),
-				Description:  "Description of this region (dcim module).",
+				Description:  "Description of this region.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this region was last updated (dcim module).",
+				Description: "Last date when this region was updated.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this region (dcim module).",
+				Description:  "The name of this region.",
 			},
 			"parent_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The ID of the parent for this region (dcim module).",
+				Description: "The ID of the parent for this region.",
 			},
 			"slug": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this site (dcim module).",
+				Type:     schema.TypeString,
+				Required: true,
+				ValidateFunc: validation.StringMatch(
+					regexp.MustCompile("^[-a-zA-Z0-9_]{1,100}$"),
+					"Must be like ^[-a-zA-Z0-9_]{1,100}$"),
+				Description: "The slug, unique identifier used in URLs, of this region.",
 			},
 			"tag": &tag.TagSchema,
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this region (dcim module).",
+				Description: "The link to this region.",
 			},
 		},
 	}
@@ -100,17 +108,16 @@ func resourceNetboxDcimRegionCreate(ctx context.Context, d *schema.ResourceData,
 		newResource.SetParent(parentID)
 	}
 
-	resourceCreated, response, err := client.DcimAPI.DcimRegionsCreate(ctx).WritableRegionRequest(*newResource).Execute()
+	_, response, err := client.DcimAPI.DcimRegionsCreate(ctx).WritableRegionRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return util.GenerateErrorMessage(response, errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxDcimRegionRead(ctx, d, m)
 }
@@ -133,6 +140,14 @@ func resourceNetboxDcimRegionRead(ctx context.Context, d *schema.ResourceData,
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
+
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
 
 	if err = d.Set("custom_field", customFields); err != nil {
 		return util.GenerateErrorMessage(nil, err)
@@ -183,6 +198,10 @@ func resourceNetboxDcimRegionUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 	resource := netbox.NewWritableRegionRequestWithDefaults()
 
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
@@ -193,20 +212,10 @@ func resourceNetboxDcimRegionUpdate(ctx context.Context, d *schema.ResourceData,
 		resource.SetDescription(d.Get("description").(string))
 	}
 
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
 	if d.HasChange("parent_id") {
 		if parentID, exist := d.GetOk("parent_id"); exist {
 			resource.SetParent(int32(parentID.(int)))
-		} else {
-			resource.SetParentNil()
 		}
-	}
-
-	if d.HasChange("slug") {
-		resource.SetSlug(d.Get("slug").(string))
 	}
 
 	if d.HasChange("tag") {

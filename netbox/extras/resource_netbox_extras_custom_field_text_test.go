@@ -93,7 +93,7 @@ func TestAccNetboxExtrasCustomFieldTextMinimalFullMinimal(t *testing.T) {
 func testAccCheckNetboxExtrasCustomFieldTextConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascftext_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
@@ -104,24 +104,27 @@ func testAccCheckNetboxExtrasCustomFieldTextConfig(nameSuffix string, resourceFu
 		label            = "Test Label for CF"
 		group_name       = "testgroup"
 		ui_visibility    = "hidden"
+		ui_editable      = "no"
 		weight           = 50
 		#required         = true
 		filter_logic     = "disabled"
-		default          = jsonencode("Default text")
+    		default          = jsonencode("Default text")
 		validation_regex = "^.*$"
 		{{ end }}
 	}
 
-	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+  {{ if eq .extraresources "true" }}
+  resource "netbox_dcim_site" "test_assign" {
+    name = "extrascftext-{{ .namesuffix }}"
+    slug = "extrascftext-{{ .namesuffix }}"
 
-		custom_field {
-			name = netbox_extras_custom_field.test.name
-			type = netbox_extras_custom_field.test.type
-			value = "My text"
-		}
-	}
+    custom_field {
+      name = netbox_extras_custom_field.test.name
+      type = netbox_extras_custom_field.test.type
+      value = "My text"
+    }
+  }
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

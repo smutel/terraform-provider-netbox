@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -18,7 +19,7 @@ import (
 
 func ResourceNetboxIpamIPAddresses() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage an IP address (ipam module) within Netbox.",
+		Description:   "Manage an IP address within Netbox.",
 		CreateContext: resourceNetboxIpamIPAddressesCreate,
 		ReadContext:   resourceNetboxIpamIPAddressesRead,
 		UpdateContext: resourceNetboxIpamIPAddressesUpdate,
@@ -35,7 +36,7 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 				Optional:     true,
 				ExactlyOneOf: []string{"address", "prefix", "ip_range"},
 				ValidateFunc: validation.IsCIDR,
-				Description:  "The IP address (with mask) used for this IP address (ipam module). Required if both prefix and ip_range are not set.",
+				Description:  "The IP address (with mask) used for this IP address. Required if both prefix and ip_range are not set.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -45,7 +46,7 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this IP address (ipam module).",
+				Description: "The content type of this IP address.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -53,7 +54,7 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The description of this IP address (ipam module).",
+				Description:  "The description of this IP address.",
 			},
 			"dns_name": {
 				Type:     schema.TypeString,
@@ -62,7 +63,7 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_.]{1,255}$"),
 					"Must be like ^[-a-zA-Z0-9_.]{1,255}$"),
-				Description: "The DNS name of this IP address (ipam module).",
+				Description: "The DNS name of this IP address.",
 			},
 			"family": {
 				Type:        schema.TypeString,
@@ -83,12 +84,12 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 			"nat_inside_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The ID of the NAT inside of this IP address (ipam module).",
+				Description: "The ID of the NAT inside of this IP address.",
 			},
 			// "nat_outside": {
 			// 	Type:        schema.TypeList,
 			// 	Computed:    true,
-			// 	Description: "The IDs of the NAT outside of this IP address (ipam module).",
+			// 	Description: "The IDs of the NAT outside of this IP address.",
 			// 	Elem:        schema.TypeInt,
 			// },
 			"object_id": {
@@ -111,16 +112,6 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 				Optional:    true,
 				Description: "The prefix id for automatic IP assignment. Required if both address and ip_range are not set.",
 			},
-			"primary_ip4": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     false,
-				Deprecated:  "Use new netbox_virtualization_primary_ip resource instead",
-				Description: "Set this resource as primary IPv4 (false by default).",
-				DiffSuppressFunc: func(k, oldValue, newValue string, d *schema.ResourceData) bool {
-					return d.GetRawConfig().GetAttr("primary_ip4").IsNull()
-				},
-			},
 			"role": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -128,7 +119,7 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"loopback",
 					"secondary", "anycast", "vip", "vrrp", "hsrp", "glbp", "carp"},
 					false),
-				Description: "The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this IP address (ipam module).",
+				Description: "The role among loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp of this IP address.",
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -136,7 +127,7 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 				Default:  "active",
 				ValidateFunc: validation.StringInSlice([]string{"active",
 					"reserved", "deprecated", "dhcp", "slaac"}, false),
-				Description: "The status among of this IP address (ipam module) active, reserved, deprecated, dhcp, slaac (active by default).",
+				Description: "The status among of this IP address active, reserved, deprecated, dhcp, slaac (active by default).",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
@@ -147,12 +138,12 @@ func ResourceNetboxIpamIPAddresses() *schema.Resource {
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this tag (extra module).",
+				Description: "The link to this tag.",
 			},
 			"vrf_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the vrf attached to this IP address (ipam module).",
+				Description: "ID of the vrf attached to this IP address.",
 			},
 		},
 	}
@@ -172,7 +163,7 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		}
 		address = ip.GetAddress()
 		if err := d.Set("address", address); err != nil {
-			return diag.FromErr(err)
+			return util.GenerateErrorMessage(nil, err)
 		}
 	} else if rangeid, ok := d.GetOk("ip_range"); ok {
 		ip, errDiag := getNewAvailableIPForIPRange(client, ctx, int32(rangeid.(int)))
@@ -181,7 +172,7 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		}
 		address = ip.GetAddress()
 		if err := d.Set("address", address); err != nil {
-			return diag.FromErr(err)
+			return util.GenerateErrorMessage(nil, err)
 		}
 	} else {
 		return util.GenerateErrorMessage(nil, errors.New("exactly one of "+
@@ -219,11 +210,9 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 		newResource.SetNatInside(natInsideID)
 	}
 
-	objectID := int32(0)
 	objectID64 := int64(0)
 	objectType := ""
 	if d.Get("object_id").(int) != 0 {
-		objectID = int32(d.Get("object_id").(int))
 		objectID64 = int64(d.Get("object_id").(int))
 		objectType = d.Get("object_type").(string)
 		newResource.SetAssignedObjectId(objectID64)
@@ -231,38 +220,30 @@ func resourceNetboxIpamIPAddressesCreate(ctx context.Context, d *schema.Resource
 	}
 
 	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.SetTenant(tenantID)
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
 	if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
-		newResource.SetVrf(vrfID)
-	}
-
-	addressid := int32(0)
-
-	requestAddress := []string{address}
-	resource, response, err := client.IpamAPI.IpamIpAddressesList(ctx).Address(requestAddress).Execute()
-	if response.StatusCode == 200 {
-		addressid = resource.Results[0].GetId()
-	}
-
-	if addressid == 0 {
-		resourceCreated, response, err := client.IpamAPI.IpamIpAddressesCreate(ctx).WritableIPAddressRequest(*newResource).Execute()
-		if response.StatusCode != 201 && err != nil {
-			return util.GenerateErrorMessage(response, err)
-		}
-		addressid = resourceCreated.GetId()
-	} else {
-		if _, response, err := client.IpamAPI.IpamIpAddressesUpdate(ctx, int32(addressid)).WritableIPAddressRequest(*newResource).Execute(); err != nil {
-			return util.GenerateErrorMessage(response, err)
-		}
-	}
-
-	d.SetId(fmt.Sprintf("%d", addressid))
-	if primaryIP := d.Get("primary_ip4").(bool); primaryIP {
-		if err := setPrimaryIP(ctx, client, addressid, objectID, objectType, true); err != nil {
+		b, err := brief.GetBriefVRFRequestFromID(client, ctx, vrfID)
+		if err != nil {
 			return err
 		}
+		newResource.SetVrf(*b)
+	}
+
+	_, response, errDiag := client.IpamAPI.IpamIpAddressesCreate(ctx).WritableIPAddressRequest(*newResource).Execute()
+	if response.StatusCode != 201 && errDiag != nil {
+		return util.GenerateErrorMessage(response, errDiag)
+	}
+
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
 
 	return resourceNetboxIpamIPAddressesRead(ctx, d, m)
@@ -284,15 +265,15 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 	}
 
 	if err = d.Set("address", resource.GetAddress()); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("object_id", resource.GetAssignedObjectId()); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("object_type", resource.GetAssignedObjectType()); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("created", resource.GetCreated().String()); err != nil {
@@ -314,7 +295,7 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("family", resource.GetFamily().Value); err != nil {
+	if err = d.Set("family", resource.GetFamily().Label); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -329,15 +310,6 @@ func resourceNetboxIpamIPAddressesRead(ctx context.Context, d *schema.ResourceDa
 	// if err = d.Set("nat_outside", resource.GetNatOutside().Id); err != nil {
 	// return util.GenerateErrorMessage(nil, err)
 	// }
-
-	isPrimary, errDiag := isprimary(ctx, client, resource.GetAssignedObjectId(), resource.GetId(), (*resource.GetFamily().Value == 4))
-	if err != nil {
-		return errDiag
-	}
-
-	if err = d.Set("primary_ip4", isPrimary); err != nil {
-		return util.GenerateErrorMessage(nil, err)
-	}
 
 	if err = d.Set("role", resource.GetRole().Value); err != nil {
 		return util.GenerateErrorMessage(nil, err)
@@ -377,15 +349,18 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 	resource := netbox.NewWritableIPAddressRequestWithDefaults()
 
 	// Required parameters
-	if d.HasChange("address") {
-		resource.SetAddress(d.Get("address").(string))
-	}
+	resource.SetAddress(d.Get("address").(string))
 
 	if d.HasChange("object_id") || d.HasChange("object_type") {
 		objectID := int64(d.Get("object_id").(int))
 		objectType := d.Get("object_type").(string)
-		resource.SetAssignedObjectId(objectID)
-		resource.SetAssignedObjectType(objectType)
+		if objectID != 0 {
+			resource.SetAssignedObjectId(objectID)
+			resource.SetAssignedObjectType(objectType)
+		} else {
+			resource.SetAssignedObjectIdNil()
+			resource.SetAssignedObjectTypeNil()
+		}
 	}
 
 	if d.HasChange("custom_field") {
@@ -407,8 +382,7 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 	}
 
 	if d.HasChange("nat_inside_id") {
-		natInsideID := int32(d.Get("nat_inside_id").(int))
-		if natInsideID != 0 {
+		if natInsideID := int32(d.Get("nat_inside_id").(int)); natInsideID != 0 {
 			resource.SetNatInside(natInsideID)
 		} else {
 			resource.SetNatInsideNil()
@@ -439,18 +413,24 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int32(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+		if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}
 	}
 
 	if d.HasChange("vrf_id") {
-		vrfID := int32(d.Get("vrf_id").(int))
-		if vrfID != 0 {
-			resource.SetVrf(vrfID)
+		if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
+			b, err := brief.GetBriefVRFRequestFromID(client, ctx, vrfID)
+			if err != nil {
+				return err
+			}
+			resource.SetVrf(*b)
 		} else {
 			resource.SetVrfNil()
 		}
@@ -458,23 +438,6 @@ func resourceNetboxIpamIPAddressesUpdate(ctx context.Context, d *schema.Resource
 
 	if _, response, err := client.IpamAPI.IpamIpAddressesUpdate(ctx, int32(resourceID)).WritableIPAddressRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
-	}
-
-	if !d.GetRawConfig().GetAttr("primary_ip4").IsNull() {
-		objectChanged := d.HasChange("object_id") || d.HasChange("object_type")
-		primaryIP4 := d.Get("primary_ip4").(bool)
-
-		if (objectChanged && primaryIP4) ||
-			(!objectChanged && d.HasChange("primary_ip4")) ||
-			(d.HasChange("primary_ip4") && primaryIP4) {
-			objectID := int32(d.Get("object_id").(int))
-			objectType := d.Get("object_type").(string)
-
-			errDiag := setPrimaryIP(ctx, client, int32(resourceID), objectID, objectType, primaryIP4)
-			if errDiag != nil {
-				return errDiag
-			}
-		}
 	}
 
 	return resourceNetboxIpamIPAddressesRead(ctx, d, m)

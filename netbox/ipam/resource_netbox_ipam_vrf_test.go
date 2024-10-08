@@ -95,13 +95,13 @@ func testAccCheckNetboxIPAMVrfConfig(nameSuffix string, resourceFull, extraResou
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamvrf-{{ .namesuffix }}"
+		slug = "ipamvrf-{{ .namesuffix }}"
 	}
 
   resource "netbox_tenancy_tenant" "test" {
-    name = "test-{{ .namesuffix }}"
-    slug = "test-{{ .namesuffix }}"
+    name = "ipamvrf-{{ .namesuffix }}"
+    slug = "ipamvrf-{{ .namesuffix }}"
   }
 
   resource "netbox_ipam_route_targets" "rt_export_test" {
@@ -114,12 +114,12 @@ func testAccCheckNetboxIPAMVrfConfig(nameSuffix string, resourceFull, extraResou
 	{{ end }}
 
 	resource "netbox_ipam_vrf" "test" {
-		name        = "test-{{ .namesuffix }}"
+		name        = "ipamvrf-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
     # enforce_unique = false
     export_targets = [ netbox_ipam_route_targets.rt_export_test.id ]
     import_targets = [ netbox_ipam_route_targets.rt_import_test.id ]
-		rd = "test-{{ .namesuffix }}"
+		rd = "ipamvrf-{{ .namesuffix }}"
     description = "Test Vrf"
 		comments = <<-EOT
 		Test Vrf

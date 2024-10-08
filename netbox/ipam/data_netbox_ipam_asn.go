@@ -14,7 +14,7 @@ import (
 
 func DataNetboxIpamAsn() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about aggregate (ipam module) from Netbox.",
+		Description: "Get info about aggregate from Netbox.",
 		ReadContext: dataNetboxIpamAsnRead,
 
 		Schema: map[string]*schema.Schema{
@@ -22,17 +22,17 @@ func DataNetboxIpamAsn() *schema.Resource {
 				Type:         schema.TypeInt,
 				Required:     true,
 				ValidateFunc: validation.IntAtLeast(1),
-				Description:  "The asn number of this asn (ipam module).",
+				Description:  "The asn number of this asn.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this aggregate (ipam module).",
+				Description: "The content type of this aggregate.",
 			},
 			"rir_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The rir for this asn (ipam module).",
+				Description: "The rir for this asn.",
 			},
 		},
 	}

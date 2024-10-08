@@ -15,14 +15,14 @@ import (
 
 func DataNetboxIpamRole() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about role (ipam module) from netbox.",
+		Description: "Get info about role from netbox.",
 		ReadContext: dataNetboxIpamRoleRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this role (ipam module).",
+				Description: "The content type of this role.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -30,7 +30,7 @@ func DataNetboxIpamRole() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
-				Description: "The slug of the role (ipam module).",
+				Description: "The slug of the role.",
 			},
 		},
 	}

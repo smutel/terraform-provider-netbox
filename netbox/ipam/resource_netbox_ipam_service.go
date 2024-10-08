@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxIpamService() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage an service (ipam module) within Netbox.",
+		Description:   "Manage a service within Netbox.",
 		CreateContext: resourceNetboxIpamServiceCreate,
 		ReadContext:   resourceNetboxIpamServiceRead,
 		UpdateContext: resourceNetboxIpamServiceUpdate,
@@ -31,7 +32,12 @@ func ResourceNetboxIpamService() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this service (ipam module).",
+				Description: "The content type of this service.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this VRF was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -39,47 +45,54 @@ func ResourceNetboxIpamService() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The description of this service (ipam module).",
+				Description:  "The description of this service.",
 			},
 			"device_id": {
 				Type:         schema.TypeInt,
 				Optional:     true,
 				ExactlyOneOf: []string{"device_id", "virtualmachine_id"},
-				Description:  "ID of the device linked to this service (ipam module).",
+				Description:  "ID of the device linked to this service.",
 			},
 			"ip_addresses_id": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{
-					Type: schema.TypeInt,
+					Type:        schema.TypeInt,
+					Description: "One of the IP address attached to this service.",
 				},
-				Description: "Array of ID of IP addresses attached to this service (ipam module).",
+				Description: "Array of ID of IP addresses attached to this service.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Last date when this service was updated.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
-				Description:  "The name for this service (ipam module).",
+				Description:  "The name for this service.",
 			},
 			"ports": {
 				Type:     schema.TypeList,
 				Required: true,
 				Elem: &schema.Schema{
-					Type: schema.TypeInt,
+					Type:        schema.TypeInt,
+					Description: "One of the port for this service.",
 				},
-				Description: "Array of ports of this service (ipam module).",
+				Description: "Array of ports of this service.",
 			},
 			"protocol": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringInSlice([]string{"tcp", "udp"}, false),
-				Description:  "The protocol of this service (ipam module) (tcp or udp).",
+				Description:  "The protocol of this service (tcp or udp).",
 			},
 			"tag": &tag.TagSchema,
 			"virtualmachine_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the VM linked to this service (ipam module).",
+				Description: "ID of the VM linked to this service.",
 			},
 		},
 	}
@@ -92,9 +105,20 @@ func resourceNetboxIpamServiceCreate(ctx context.Context, d *schema.ResourceData
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	deviceID := int32(d.Get("device_id").(int))
-	IPaddressesID := d.Get("ip_addresses_id").([]int32)
+
+	IPaddresses := d.Get("ip_addresses_id").([]interface{})
+	IPaddressesID, err := util.ExpandToInt32Slice(IPaddresses)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	name := d.Get("name").(string)
-	ports := d.Get("ports").([]int32)
+	ports := d.Get("ports").([]interface{})
+	portsID, err := util.ExpandToInt32Slice(ports)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	protocol := d.Get("protocol").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 	virtualmachineID := int32(d.Get("virtualmachine_id").(int))
@@ -104,7 +128,7 @@ func resourceNetboxIpamServiceCreate(ctx context.Context, d *schema.ResourceData
 	newResource.SetDescription(d.Get("description").(string))
 	newResource.SetIpaddresses(IPaddressesID)
 	newResource.SetName(name)
-	newResource.SetPorts(ports)
+	newResource.SetPorts(portsID)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
 	p, err := netbox.NewPatchedWritableServiceRequestProtocolFromValue(protocol)
@@ -114,24 +138,31 @@ func resourceNetboxIpamServiceCreate(ctx context.Context, d *schema.ResourceData
 	newResource.SetProtocol(*p)
 
 	if deviceID != 0 {
-		newResource.SetDevice(deviceID)
+		b, err := brief.GetBriefDeviceRequestFromID(client, ctx, deviceID)
+		if err != nil {
+			return err
+		}
+		newResource.SetDevice(*b)
 	}
 
 	if virtualmachineID != 0 {
-		newResource.SetVirtualMachine(virtualmachineID)
+		b, err := brief.GetBriefVirtualMachineRequestFromID(client, ctx, virtualmachineID)
+		if err != nil {
+			return err
+		}
+		newResource.SetVirtualMachine(*b)
 	}
 
-	resourceCreated, response, err := client.IpamAPI.IpamServicesCreate(ctx).WritableServiceRequest(*newResource).Execute()
+	_, response, err := client.IpamAPI.IpamServicesCreate(ctx).WritableServiceRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamServiceRead(ctx, d, m)
 }
@@ -152,7 +183,7 @@ func resourceNetboxIpamServiceRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -179,6 +210,10 @@ func resourceNetboxIpamServiceRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	if err = d.Set("name", resource.GetName()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
@@ -195,7 +230,7 @@ func resourceNetboxIpamServiceRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("vittualmachine_id", resource.GetVirtualMachine().Id); err != nil {
+	if err = d.Set("virtualmachine_id", resource.GetVirtualMachine().Id); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -214,6 +249,18 @@ func resourceNetboxIpamServiceUpdate(ctx context.Context, d *schema.ResourceData
 
 	// Required parameters
 	resource.SetName(d.Get("name").(string))
+	ports := d.Get("ports").([]interface{})
+	portsID, err := util.ExpandToInt32Slice(ports)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	resource.SetPorts(portsID)
+
+	p, err := netbox.NewPatchedWritableServiceRequestProtocolFromValue(d.Get("protocol").(string))
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	resource.SetProtocol(*p)
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
@@ -228,34 +275,33 @@ func resourceNetboxIpamServiceUpdate(ctx context.Context, d *schema.ResourceData
 	if d.HasChange("device_id") {
 		deviceID := int32(d.Get("device_id").(int))
 		if deviceID != 0 {
-			resource.SetDevice(deviceID)
+			b, err := brief.GetBriefDeviceRequestFromID(client, ctx, deviceID)
+			if err != nil {
+				return err
+			}
+			resource.SetDevice(*b)
 		} else {
 			resource.SetDeviceNil()
 		}
 	}
 
 	if d.HasChange("ip_addresses_id") {
-		IPaddressesID := d.Get("ip_addresses_id").([]int32)
-		resource.SetIpaddresses(IPaddressesID)
-	}
-
-	if d.HasChange("ports") {
-		ports := d.Get("ports").([]int32)
-		resource.SetPorts(ports)
-	}
-
-	if d.HasChange("protocol") {
-		p, err := netbox.NewPatchedWritableServiceRequestProtocolFromValue(d.Get("protocol").(string))
+		IPaddresses := d.Get("ip_addresses_id").([]interface{})
+		IPaddressesID, err := util.ExpandToInt32Slice(IPaddresses)
 		if err != nil {
 			return util.GenerateErrorMessage(nil, err)
 		}
-		resource.SetProtocol(*p)
+		resource.SetIpaddresses(IPaddressesID)
 	}
 
 	if d.HasChange("virtualmachine_id") {
 		vmID := int32(d.Get("virtualmachine_id").(int))
 		if vmID != 0 {
-			resource.SetVirtualMachine(vmID)
+			b, err := brief.GetBriefVirtualMachineRequestFromID(client, ctx, vmID)
+			if err != nil {
+				return err
+			}
+			resource.SetVirtualMachine(*b)
 		} else {
 			resource.SetVirtualMachineNil()
 		}

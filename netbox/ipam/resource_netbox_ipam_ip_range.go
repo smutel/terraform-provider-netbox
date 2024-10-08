@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxIpamIPRange() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage an ip range (ipam module) within Netbox.",
+		Description:   "Manage an ip range within Netbox.",
 		CreateContext: resourceNetboxIpamIPRangeCreate,
 		ReadContext:   resourceNetboxIpamIPRangeRead,
 		UpdateContext: resourceNetboxIpamIPRangeUpdate,
@@ -31,7 +32,12 @@ func ResourceNetboxIpamIPRange() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this prefix (ipam module).",
+				Description: "The content type of this ip range.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this ip range was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -39,7 +45,12 @@ func ResourceNetboxIpamIPRange() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The description of this prefix (ipam module).",
+				Description:  "The description of this prefix.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this site was last updated.",
 			},
 			"start_address": {
 				Type:         schema.TypeString,
@@ -61,7 +72,7 @@ func ResourceNetboxIpamIPRange() *schema.Resource {
 			"role_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the role attached to this prefix (ipam module).",
+				Description: "ID of the role attached to this prefix.",
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -75,12 +86,12 @@ func ResourceNetboxIpamIPRange() *schema.Resource {
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the tenant where this prefix (ipam module) is attached.",
+				Description: "ID of the tenant where this ip range is attached.",
 			},
 			"vrf_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the vrf attached to this prefix (ipam module).",
+				Description: "ID of the vrf attached to this ip range.",
 			},
 		},
 	}
@@ -96,11 +107,8 @@ func resourceNetboxIpamIPRangeCreate(ctx context.Context, d *schema.ResourceData
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
-	roleID := int32(d.Get("role_id").(int))
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int32(d.Get("tenant_id").(int))
-	vrfID := int32(d.Get("vrf_id").(int))
 
 	newResource := netbox.NewWritableIPRangeRequestWithDefaults()
 	newResource.SetCustomFields(customFields)
@@ -115,29 +123,40 @@ func resourceNetboxIpamIPRangeCreate(ctx context.Context, d *schema.ResourceData
 	}
 	newResource.SetStatus(*s)
 
-	if roleID != 0 {
-		newResource.SetRole(roleID)
+	if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
+		b, err := brief.GetBriefVlanRoleRequestFromID(client, ctx, roleID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRole(*b)
 	}
 
-	if tenantID != 0 {
-		newResource.SetTenant(tenantID)
+	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
-	if vrfID != 0 {
-		newResource.SetVrf(vrfID)
+	if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
+		b, err := brief.GetBriefVRFRequestFromID(client, ctx, vrfID)
+		if err != nil {
+			return err
+		}
+		newResource.SetVrf(*b)
 	}
 
-	resourceCreated, response, err := client.IpamAPI.IpamIpRangesCreate(ctx).WritableIPRangeRequest(*newResource).Execute()
+	_, response, err := client.IpamAPI.IpamIpRangesCreate(ctx).WritableIPRangeRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamIPRangeRead(ctx, d, m)
 }
@@ -158,7 +177,11 @@ func resourceNetboxIpamIPRangeRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -170,6 +193,10 @@ func resourceNetboxIpamIPRangeRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -239,9 +266,12 @@ func resourceNetboxIpamIPRangeUpdate(ctx context.Context, d *schema.ResourceData
 	}
 
 	if d.HasChange("role_id") {
-		roleID := int32(d.Get("role_id").(int))
-		if roleID != 0 {
-			resource.SetRole(roleID)
+		if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
+			b, err := brief.GetBriefVlanRoleRequestFromID(client, ctx, roleID)
+			if err != nil {
+				return err
+			}
+			resource.SetRole(*b)
 		} else {
 			resource.SetRoleNil()
 		}
@@ -261,18 +291,24 @@ func resourceNetboxIpamIPRangeUpdate(ctx context.Context, d *schema.ResourceData
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int32(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+		if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}
 	}
 
 	if d.HasChange("vrf_id") {
-		vrfID := int32(d.Get("vrf_id").(int))
-		if vrfID != 0 {
-			resource.SetVrf(vrfID)
+		if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
+			b, err := brief.GetBriefVRFRequestFromID(client, ctx, vrfID)
+			if err != nil {
+				return err
+			}
+			resource.SetVrf(*b)
 		} else {
 			resource.SetVrfNil()
 		}

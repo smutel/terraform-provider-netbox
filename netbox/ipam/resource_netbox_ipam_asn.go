@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxIpamASN() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a asn (ipam module) within Netbox.",
+		Description:   "Manage a ASN within Netbox.",
 		CreateContext: resourceNetboxIpamASNCreate,
 		ReadContext:   resourceNetboxIpamASNRead,
 		UpdateContext: resourceNetboxIpamASNUpdate,
@@ -32,17 +33,17 @@ func ResourceNetboxIpamASN() *schema.Resource {
 				Type:         schema.TypeInt,
 				Required:     true,
 				ValidateFunc: validation.IntAtLeast(1),
-				Description:  "The asn number of this asn (ipam module).",
+				Description:  "The ASN number of this ASN.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this asn (ipam module).",
+				Description: "The content type of this ASN.",
 			},
 			"created": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this asn was created.",
+				Description: "Date when this ASN was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -50,38 +51,38 @@ func ResourceNetboxIpamASN() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The description of this asn (ipam module).",
+				Description:  "The description of this ASN.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this rir was created.",
+				Description: "Last date when this ASN was updated.",
 			},
 			"provider_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of providers for this asn (ipam module).",
+				Description: "The number of providers for this ASN.",
 			},
 			"rir_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The rir for this asn (ipam module).",
+				Description: "The RIR for this ASN.",
 			},
 			"site_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of sites for this asn (ipam module).",
+				Description: "The number of sites for this ASN.",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The rir for this asn (ipam module).",
+				Description: "The rir for this ASN.",
 			},
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this asn (ipam module).",
+				Description: "The link to this ASN.",
 			},
 		},
 	}
@@ -98,28 +99,36 @@ func resourceNetboxIpamASNCreate(ctx context.Context, d *schema.ResourceData,
 	rirID := int32(d.Get("rir_id").(int))
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := netbox.NewWritableASNRequestWithDefaults()
+	newResource := netbox.NewASNRequestWithDefaults()
 	newResource.SetAsn(asn)
-	newResource.SetRir(rirID)
 	newResource.SetCustomFields(customFields)
 	newResource.SetDescription(d.Get("description").(string))
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
+	b, err := brief.GetBriefRIRRequestFromID(client, ctx, rirID)
+	if err != nil {
+		return err
+	}
+	newResource.SetRir(*b)
+
 	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.SetTenant(tenantID)
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
-	resourceCreated, response, err := client.IpamAPI.IpamAsnsCreate(ctx).WritableASNRequest(*newResource).Execute()
-	if response.StatusCode != 201 && err != nil {
+	_, response, errDiag := client.IpamAPI.IpamAsnsCreate(ctx).ASNRequest(*newResource).Execute()
+	if response.StatusCode != 201 && errDiag != nil {
+		return util.GenerateErrorMessage(response, errDiag)
+	}
+
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
 		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
-	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamASNRead(ctx, d, m)
 }
@@ -144,7 +153,7 @@ func resourceNetboxIpamASNRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -202,13 +211,16 @@ func resourceNetboxIpamASNUpdate(ctx context.Context, d *schema.ResourceData,
 	if err != nil {
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
-	resource := netbox.NewWritableASNRequestWithDefaults()
-	//resource.SetAsn(int64(d.Get("asn").(int)))
-	//resource.SetRir(int32(d.Get("rir_id").(int)))
+	resource := netbox.NewASNRequestWithDefaults()
 
-	if d.HasChange("asn") {
-		resource.SetAsn(int64(d.Get("asn").(int)))
+	// Required fields
+	resource.SetAsn(int64(d.Get("asn").(int)))
+	rirID := int32(d.Get("rir_id").(int))
+	b, errDiag := brief.GetBriefRIRRequestFromID(client, ctx, rirID)
+	if errDiag != nil {
+		return errDiag
 	}
+	resource.SetRir(*b)
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
@@ -224,11 +236,6 @@ func resourceNetboxIpamASNUpdate(ctx context.Context, d *schema.ResourceData,
 		}
 	}
 
-	if d.HasChange("rir_id") {
-		rirID := int32(d.Get("rir_id").(int))
-		resource.SetRir(rirID)
-	}
-
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
 		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
@@ -237,13 +244,17 @@ func resourceNetboxIpamASNUpdate(ctx context.Context, d *schema.ResourceData,
 	if d.HasChange("tenant_id") {
 		tenantID := int32(d.Get("tenant_id").(int))
 		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}
 	}
 
-	if _, response, err := client.IpamAPI.IpamAsnsUpdate(ctx, int32(resourceID)).WritableASNRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.IpamAPI.IpamAsnsUpdate(ctx, int32(resourceID)).ASNRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 

@@ -93,8 +93,8 @@ func TestAccNetboxExtrasTagMinimalFullMinimal(t *testing.T) {
 func testAccCheckNetboxExtrasTagConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
 	resource "netbox_extras_tag" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name        = "extrastag-{{ .namesuffix }}"
+		slug        = "extrastag-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test tag"
 		color       = "00ff00"

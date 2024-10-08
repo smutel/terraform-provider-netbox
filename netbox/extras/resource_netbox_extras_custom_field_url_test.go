@@ -93,7 +93,7 @@ func TestAccNetboxExtrasCustomFieldURLMinimalFullMinimal(t *testing.T) {
 func testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfurl_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
@@ -104,23 +104,26 @@ func testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix string, resourceFul
 		label         = "Test Label for CF"
 		group_name    = "testgroup"
 		ui_visibility = "hidden"
+		ui_editable   = "no"
 		weight        = 50
 		#required      = true
 		filter_logic  = "disabled"
-		default       = jsonencode("https://netbox.dev/")
+    		default       = jsonencode("https://netbox.dev/")
 		{{ end }}
 	}
 
-	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+  {{ if eq .extraresources "true" }}
+  resource "netbox_dcim_site" "test_assign" {
+    name = "extrascfurl-{{ .namesuffix }}"
+    slug = "extrascfurl-{{ .namesuffix }}"
 
-		custom_field {
-			name = netbox_extras_custom_field.test.name
-			type = netbox_extras_custom_field.test.type
-			value = "http://my.example.url.invalid/path"
-		}
-	}
+    custom_field {
+      name = netbox_extras_custom_field.test.name
+      type = netbox_extras_custom_field.test.type
+      value = "http://my.example.url.invalid/path"
+    }
+  }
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

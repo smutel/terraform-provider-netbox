@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxIpamVlan() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a vlan (ipam module) within Netbox.",
+		Description:   "Manage a vlan within Netbox.",
 		CreateContext: resourceNetboxIpamVlanCreate,
 		ReadContext:   resourceNetboxIpamVlanRead,
 		UpdateContext: resourceNetboxIpamVlanUpdate,
@@ -31,7 +32,12 @@ func ResourceNetboxIpamVlan() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this vlan (ipam module).",
+				Description: "The content type of this vlan.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this vlan was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -39,28 +45,35 @@ func ResourceNetboxIpamVlan() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The description of this vlan (ipam module).",
+				Description:  "The description of this vlan.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Last date when this vlan was updated.",
 			},
 			"vlan_group_id": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Description: "ID of the group where this vlan (ipam module) belongs to.",
+				Type:          schema.TypeInt,
+				Optional:      true,
+				Description:   "ID of the group where this vlan belongs to.",
+				ConflictsWith: []string{"site_id"},
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
-				Description:  "The name for this vlan (ipam module).",
+				Description:  "The name for this vlan.",
 			},
 			"role_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the role attached to this vlan (ipam module).",
+				Description: "ID of the role attached to this vlan.",
 			},
 			"site_id": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Description: "ID of the site where this vlan (ipam module) is located.",
+				Type:          schema.TypeInt,
+				Optional:      true,
+				Description:   "ID of the site where this vlan is located.",
+				ConflictsWith: []string{"vlan_group_id"},
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -68,13 +81,13 @@ func ResourceNetboxIpamVlan() *schema.Resource {
 				Default:  "active",
 				ValidateFunc: validation.StringInSlice([]string{"active", "reserved",
 					"deprecated"}, false),
-				Description: "The description of this vlan (ipam module).",
+				Description: "The description of this vlan.",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the tenant where this vlan (ipam module) is attached.",
+				Description: "ID of the tenant where this vlan is attached.",
 			},
 			"vlan_id": {
 				Type:        schema.TypeInt,
@@ -91,13 +104,9 @@ func resourceNetboxIpamVlanCreate(ctx context.Context, d *schema.ResourceData,
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
-	groupID := int32(d.Get("vlan_group_id").(int))
 	name := d.Get("name").(string)
-	roleID := int32(d.Get("role_id").(int))
-	siteID := int32(d.Get("site_id").(int))
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int32(d.Get("tenant_id").(int))
 
 	newResource := netbox.NewWritableVLANRequestWithDefaults()
 	newResource.SetCustomFields(customFields)
@@ -112,33 +121,48 @@ func resourceNetboxIpamVlanCreate(ctx context.Context, d *schema.ResourceData,
 	}
 	newResource.SetStatus(*s)
 
-	if groupID != 0 {
-		newResource.SetGroup(groupID)
+	if groupID := int32(d.Get("vlan_group_id").(int)); groupID != 0 {
+		b, err := brief.GetBriefVlanGroupRequestFromID(client, ctx, groupID)
+		if err != nil {
+			return err
+		}
+		newResource.SetGroup(*b)
 	}
 
-	if roleID != 0 {
-		newResource.SetRole(roleID)
+	if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
+		b, err := brief.GetBriefVlanRoleRequestFromID(client, ctx, roleID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRole(*b)
 	}
 
-	if siteID != 0 {
-		newResource.SetSite(siteID)
+	if siteID := int32(d.Get("site_id").(int)); siteID != 0 {
+		b, err := brief.GetBriefSiteRequestFromID(client, ctx, siteID)
+		if err != nil {
+			return err
+		}
+		newResource.SetSite(*b)
 	}
 
-	if tenantID != 0 {
-		newResource.SetTenant(tenantID)
+	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
-	resourceCreated, response, err := client.IpamAPI.IpamVlansCreate(ctx).WritableVLANRequest(*newResource).Execute()
+	_, response, err := client.IpamAPI.IpamVlansCreate(ctx).WritableVLANRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamVlanRead(ctx, d, m)
 }
@@ -159,7 +183,11 @@ func resourceNetboxIpamVlanRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -171,6 +199,10 @@ func resourceNetboxIpamVlanRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -190,7 +222,7 @@ func resourceNetboxIpamVlanRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("status", resource.GetStatus().Label); err != nil {
+	if err = d.Set("status", resource.GetStatus().Value); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -235,27 +267,36 @@ func resourceNetboxIpamVlanUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if d.HasChange("vlan_group_id") {
-		groupID := int32(d.Get("vlan_group_id").(int))
-		if groupID != 0 {
-			resource.SetGroup(groupID)
+		if groupID := int32(d.Get("vlan_group_id").(int)); groupID != 0 {
+			b, err := brief.GetBriefVlanGroupRequestFromID(client, ctx, groupID)
+			if err != nil {
+				return err
+			}
+			resource.SetGroup(*b)
 		} else {
 			resource.SetGroupNil()
 		}
 	}
 
 	if d.HasChange("role_id") {
-		roleID := int32(d.Get("role_id").(int))
-		if roleID != 0 {
-			resource.SetRole(roleID)
+		if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
+			b, err := brief.GetBriefVlanRoleRequestFromID(client, ctx, roleID)
+			if err != nil {
+				return err
+			}
+			resource.SetRole(*b)
 		} else {
 			resource.SetRoleNil()
 		}
 	}
 
 	if d.HasChange("site_id") {
-		siteID := int32(d.Get("site_id").(int))
-		if siteID != 0 {
-			resource.SetSite(siteID)
+		if siteID := int32(d.Get("site_id").(int)); siteID != 0 {
+			b, err := brief.GetBriefSiteRequestFromID(client, ctx, siteID)
+			if err != nil {
+				return err
+			}
+			resource.SetSite(*b)
 		} else {
 			resource.SetSiteNil()
 		}
@@ -275,9 +316,12 @@ func resourceNetboxIpamVlanUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int32(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+		if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}

@@ -15,14 +15,14 @@ import (
 
 func DataNetboxDcimSite() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about site (dcim module) from netbox.",
+		Description: "Get info about site from netbox.",
 		ReadContext: dataNetboxDcimSiteRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this site (dcim module).",
+				Description: "The content type of this site.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -30,7 +30,7 @@ func DataNetboxDcimSite() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
-				Description: "The slug of the site (dcim module).",
+				Description: "The slug of the site.",
 			},
 		},
 	}

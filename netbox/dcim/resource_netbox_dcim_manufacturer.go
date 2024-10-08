@@ -17,7 +17,7 @@ import (
 
 func ResourceNetboxDcimManufacturer() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a tag (extra module) within Netbox.",
+		Description:   "Manage a manufacturer within Netbox.",
 		CreateContext: resourceNetboxDcimManufacturerCreate,
 		ReadContext:   resourceNetboxDcimManufacturerRead,
 		UpdateContext: resourceNetboxDcimManufacturerUpdate,
@@ -31,7 +31,7 @@ func ResourceNetboxDcimManufacturer() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this manufacturer (dcim module).",
+				Description: "The content type of this manufacturer.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -43,17 +43,17 @@ func ResourceNetboxDcimManufacturer() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 100),
-				Description:  "The description of this manufacturer (dcim module).",
+				Description:  "The description of this manufacturer.",
 			},
 			"devicetype_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of device types of this manufacturer (dcim module).",
+				Description: "The number of device types of this manufacturer.",
 			},
 			"inventoryitem_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of inventory items of this manufacturer (dcim module).",
+				Description: "The number of inventory items of this manufacturer.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
@@ -64,24 +64,24 @@ func ResourceNetboxDcimManufacturer() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this manufacturer (dcim module).",
+				Description:  "The name of this manufacturer.",
 			},
 			"platform_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of platforms of this manufacturer (dcim module).",
+				Description: "The number of platforms of this manufacturer.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this manufacturer (dcim module).",
+				Description:  "The slug of this manufacturer.",
 			},
 			"tag": &tag.TagSchema,
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this manufacturer (dcim module).",
+				Description: "The link to this manufacturer.",
 			},
 		},
 	}
@@ -105,17 +105,16 @@ func resourceNetboxDcimManufacturerCreate(ctx context.Context, d *schema.Resourc
 	newResource.SetSlug(slug)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	resourceCreated, response, err := client.DcimAPI.DcimManufacturersCreate(ctx).ManufacturerRequest(*newResource).Execute()
+	_, response, err := client.DcimAPI.DcimManufacturersCreate(ctx).ManufacturerRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxDcimManufacturerRead(ctx, d, m)
 }
@@ -156,11 +155,11 @@ func resourceNetboxDcimManufacturerRead(ctx context.Context, d *schema.ResourceD
 	}
 
 	if err = d.Set("devicetype_count", resource.GetDevicetypeCount()); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("inventoryitem_count", resource.GetInventoryitemCount()); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
@@ -172,7 +171,7 @@ func resourceNetboxDcimManufacturerRead(ctx context.Context, d *schema.ResourceD
 	}
 
 	if err = d.Set("platform_count", resource.GetPlatformCount()); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("slug", resource.GetSlug()); err != nil {
@@ -200,6 +199,10 @@ func resourceNetboxDcimManufacturerUpdate(ctx context.Context, d *schema.Resourc
 	}
 	resource := netbox.NewManufacturerRequestWithDefaults()
 
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
@@ -212,14 +215,6 @@ func resourceNetboxDcimManufacturerUpdate(ctx context.Context, d *schema.Resourc
 		} else {
 			resource.SetDescription("")
 		}
-	}
-
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
-	if d.HasChange("slug") {
-		resource.SetSlug(d.Get("slug").(string))
 	}
 
 	if d.HasChange("tag") {

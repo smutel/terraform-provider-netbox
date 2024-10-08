@@ -84,6 +84,12 @@ func TestAccNetboxIpamAggregateMinimalFullMinimal(t *testing.T) {
 				),
 			},
 			{
+				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix, false, true, prefix),
+				Check: resource.ComposeTestCheckFunc(
+					util.TestAccResourceExists(resourceNameNetboxIpamAggregate),
+				),
+			},
+			{
 				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix, false, false, prefix),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameNetboxIpamAggregate),
@@ -94,56 +100,40 @@ func TestAccNetboxIpamAggregateMinimalFullMinimal(t *testing.T) {
 }
 
 func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string, resourceFull, extraResources bool, prefix string) string {
-	// template := `
-	// resource "netbox_ipam_rir" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-
-	// {{ if eq .extraresources "true" }}
-	// resource "netbox_extras_tag" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-
-	// resource "netbox_tenancy_tenant" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-	// {{ end }}
-
-	// resource "netbox_ipam_aggregate" "test" {
-	// prefix = "{{ .prefix }}"
-	// rir_id = netbox_ipam_rir.test.id
-
-	// {{ if eq .resourcefull "true" }}
-	// tenant_id = netbox_tenancy_tenant.test.id
-	// date_added = "1971-01-02"
-	// description = "Test Aggregate"
-	// tag {
-	// name = netbox_extras_tag.test.name
-	// slug = netbox_extras_tag.test.slug
-	// }
-	// {{ end }}
-	// }
-	// `
-
 	template := `
-	resource "netbox_ipam_aggregate" "test" {
-		prefix = "{{ .prefix }}"
-		rir_id = 1
+  resource "netbox_ipam_rir" "test" {
+    name = "ipamaggregate-{{ .namesuffix }}"
+    slug = "ipamaggregate-{{ .namesuffix }}"
+  }
 
-		{{ if eq .resourcefull "true" }}
-		tenant_id = 1
-		date_added = "1971-01-02"
-		description = "Test Aggregate"
-	  tag {
-	    name = "test"
-	    slug = "test"
-	  }
-		{{ end }}
-	}
-	`
+  {{ if eq .extraresources "true" }}
+  resource "netbox_extras_tag" "test" {
+    name = "ipamaggregate-{{ .namesuffix }}"
+    slug = "ipamaggregate-{{ .namesuffix }}"
+  }
+
+  resource "netbox_tenancy_tenant" "test" {
+    name = "ipamaggregate-{{ .namesuffix }}"
+    slug = "ipamaggregate-{{ .namesuffix }}"
+  }
+  {{ end }}
+
+  resource "netbox_ipam_aggregate" "test" {
+    prefix = "{{ .prefix }}"
+    rir_id = netbox_ipam_rir.test.id
+
+    {{ if eq .resourcefull "true" }}
+    tenant_id = netbox_tenancy_tenant.test.id
+    date_added = "1971-01-02"
+    description = "Test Aggregate"
+    tag {
+      name = netbox_extras_tag.test.name
+      slug = netbox_extras_tag.test.slug
+    }
+    {{ end }}
+  }
+  `
+
 	data := map[string]string{
 		"namesuffix":     nameSuffix,
 		"prefix":         prefix,

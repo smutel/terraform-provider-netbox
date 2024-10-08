@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxIpamRouteTargets() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a Route Targets (ipam module) within Netbox.",
+		Description:   "Manage a Route Targets within Netbox.",
 		CreateContext: resourceNetboxIpamRouteTargetsCreate,
 		ReadContext:   resourceNetboxIpamRouteTargetsRead,
 		UpdateContext: resourceNetboxIpamRouteTargetsUpdate,
@@ -38,7 +39,12 @@ func ResourceNetboxIpamRouteTargets() *schema.Resource {
 				Optional:    true,
 				Default:     nil,
 				StateFunc:   util.TrimString,
-				Description: "Comments for this Route Targets (ipam module).",
+				Description: "Comments for this Route Targets.",
+			},
+			"content_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this Route Targets.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -46,7 +52,7 @@ func ResourceNetboxIpamRouteTargets() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The description of this Route Targets (ipam module).",
+				Description:  "The description of this Route Targets.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
@@ -57,19 +63,19 @@ func ResourceNetboxIpamRouteTargets() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 21),
-				Description:  "The name of this Route Targets (ipam module).",
+				Description:  "The name of this Route Targets.",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     nil,
-				Description: "ID of the tenant where this Route Targets (ipam module) is attached.",
+				Description: "ID of the tenant where this Route Targets is attached.",
 			},
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this Route Targets (ipam module).",
+				Description: "The link to this Route Targets.",
 			},
 		},
 	}
@@ -91,7 +97,7 @@ func resourceNetboxIpamRouteTargetsCreate(ctx context.Context, d *schema.Resourc
 
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := netbox.NewWritableRouteTargetRequestWithDefaults()
+	newResource := netbox.NewRouteTargetRequestWithDefaults()
 
 	newResource.SetComments(d.Get("comments").(string))
 	newResource.SetCustomFields(customFields)
@@ -100,20 +106,23 @@ func resourceNetboxIpamRouteTargetsCreate(ctx context.Context, d *schema.Resourc
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
 	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.SetTenant(tenantID)
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
-	resourceCreated, response, err := client.IpamAPI.IpamRouteTargetsCreate(ctx).WritableRouteTargetRequest(*newResource).Execute()
+	_, response, err := client.IpamAPI.IpamRouteTargetsCreate(ctx).RouteTargetRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamRouteTargetsRead(ctx, d, m)
 }
@@ -134,7 +143,7 @@ func resourceNetboxIpamRouteTargetsRead(ctx context.Context, d *schema.ResourceD
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -188,7 +197,10 @@ func resourceNetboxIpamRouteTargetsUpdate(ctx context.Context, d *schema.Resourc
 	if err != nil {
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
-	resource := netbox.NewWritableRouteTargetRequestWithDefaults()
+	resource := netbox.NewRouteTargetRequestWithDefaults()
+
+	// Required fields
+	resource.SetName(d.Get("name").(string))
 
 	if d.HasChange("comments") {
 		resource.SetComments(d.Get("comments").(string))
@@ -208,25 +220,24 @@ func resourceNetboxIpamRouteTargetsUpdate(ctx context.Context, d *schema.Resourc
 		}
 	}
 
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
 		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int32(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+		if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}
 	}
 
-	if _, response, err := client.IpamAPI.IpamRouteTargetsUpdate(ctx, int32(resourceID)).WritableRouteTargetRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.IpamAPI.IpamRouteTargetsUpdate(ctx, int32(resourceID)).RouteTargetRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 

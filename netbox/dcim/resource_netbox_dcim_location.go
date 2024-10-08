@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxDcimLocation() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a location (dcim module) within Netbox.",
+		Description:   "Manage a location within Netbox.",
 		CreateContext: resourceNetboxDcimLocationCreate,
 		ReadContext:   resourceNetboxDcimLocationRead,
 		UpdateContext: resourceNetboxDcimLocationUpdate,
@@ -28,77 +29,82 @@ func ResourceNetboxDcimLocation() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"content_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this location.",
+			},
 			"created": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this location (dcim module) was created.",
+				Description: "Date when this location was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"depth": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Depth of this location (dcim module).",
+				Description: "Depth of this location.",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 200),
-				Description:  "Description of this location (dcim module).",
+				Description:  "Description of this location.",
 			},
 			"device_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Number of devices in this location (dcim module).",
+				Description: "Number of devices in this location.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this location was last updated (dcim module).",
+				Description: "Date when this location was last updated.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this location (dcim module).",
+				Description:  "The name of this location.",
 			},
 			"parent_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The ID of the parent for this location (dcim module).",
+				Description: "The ID of the parent for this location.",
 			},
 			"rack_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Number of racks in this location (dcim module).",
+				Description: "Number of racks in this location.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this site (dcim module).",
+				Description:  "The slug of this site.",
 			},
 			"site_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The site where this location (dcim module) is.",
+				Description: "The site where this location is.",
 			},
 			"status": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      "active",
 				ValidateFunc: validation.StringInSlice([]string{"planned", "staging", "active", "decommissioning", "retired"}, false),
-				Description:  "The status among planned, staging, active, decommissioning or retired (active by default) of this location (dcim module).",
+				Description:  "The status among planned, staging, active, decommissioning or retired (active by default) of this location.",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The tenant of this location (dcim module).",
+				Description: "The tenant of this location.",
 			},
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this location (dcim module).",
+				Description: "The link to this location.",
 			},
 		},
 	}
@@ -123,7 +129,6 @@ func resourceNetboxDcimLocationCreate(ctx context.Context, d *schema.ResourceDat
 	newResource.SetCustomFields(customFields)
 	newResource.SetDescription(description)
 	newResource.SetName(name)
-	newResource.SetSite(siteID)
 	newResource.SetSlug(slug)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
@@ -137,21 +142,32 @@ func resourceNetboxDcimLocationCreate(ctx context.Context, d *schema.ResourceDat
 		newResource.SetParent(parentID)
 	}
 
-	if tenantID != 0 {
-		newResource.SetTenant(tenantID)
+	if siteID != 0 {
+		b, err := brief.GetBriefSiteRequestFromID(client, ctx, siteID)
+		if err != nil {
+			return err
+		}
+		newResource.SetSite(*b)
 	}
 
-	resourceCreated, response, err := client.DcimAPI.DcimLocationsCreate(ctx).WritableLocationRequest(*newResource).Execute()
+	if tenantID != 0 {
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
+	}
+
+	_, response, err := client.DcimAPI.DcimLocationsCreate(ctx).WritableLocationRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxDcimLocationRead(ctx, d, m)
 }
@@ -170,6 +186,10 @@ func resourceNetboxDcimLocationRead(ctx context.Context, d *schema.ResourceData,
 
 	if err != nil {
 		return util.GenerateErrorMessage(response, err)
+	}
+
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if err = d.Set("created", resource.GetCreated().String()); err != nil {
@@ -199,7 +219,7 @@ func resourceNetboxDcimLocationRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("parent_id", resource.GetParent()); err != nil {
+	if err = d.Set("parent_id", resource.GetParent().Id); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -207,7 +227,7 @@ func resourceNetboxDcimLocationRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("site_id", resource.GetSite()); err != nil {
+	if err = d.Set("site_id", resource.GetSite().Id); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -244,6 +264,16 @@ func resourceNetboxDcimLocationUpdate(ctx context.Context, d *schema.ResourceDat
 	}
 	resource := netbox.NewWritableLocationRequestWithDefaults()
 
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
+
+	b, errDiag := brief.GetBriefSiteRequestFromID(client, ctx, int32(d.Get("site_id").(int)))
+	if errDiag != nil {
+		return errDiag
+	}
+	resource.SetSite(*b)
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
@@ -258,26 +288,11 @@ func resourceNetboxDcimLocationUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
 	if d.HasChange("parent_id") {
 		parentID := int32(d.Get("parent_id").(int))
 		if parentID != 0 {
 			resource.SetParent(parentID)
-		} else {
-			resource.SetParentNil()
 		}
-	}
-
-	if d.HasChange("site_id") {
-		siteID := int32(d.Get("site_id").(int))
-		resource.SetSite(siteID)
-	}
-
-	if d.HasChange("slug") {
-		resource.SetSlug(d.Get("slug").(string))
 	}
 
 	if d.HasChange("status") {
@@ -294,9 +309,12 @@ func resourceNetboxDcimLocationUpdate(ctx context.Context, d *schema.ResourceDat
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int32(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+		if tenantID, exist := d.GetOk("tenant_id"); exist {
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, int32(tenantID.(int)))
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}

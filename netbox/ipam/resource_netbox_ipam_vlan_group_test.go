@@ -95,19 +95,19 @@ func testAccCheckNetboxIpamVlanGroupConfig(nameSuffix string, resourceFull, extr
 	const template = `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_site" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamvlangroup-{{ .namesuffix }}"
+		slug = "ipamvlangroup-{{ .namesuffix }}"
 	}
 
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamvlangroup-{{ .namesuffix }}"
+		slug = "ipamvlangroup-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_ipam_vlan_group" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name        = "ipamvlangroup-{{ .namesuffix }}"
+		slug        = "ipamvlangroup-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test Vlan group"
 		max_vid     = 2369

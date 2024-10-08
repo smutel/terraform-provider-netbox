@@ -18,7 +18,7 @@ import (
 
 func ResourceNetboxIpamVlanGroup() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a vlan group (ipam module) within Netbox.",
+		Description:   "Manage a vlan group within Netbox.",
 		CreateContext: resourceNetboxIpamVlanGroupCreate,
 		ReadContext:   resourceNetboxIpamVlanGroupRead,
 		UpdateContext: resourceNetboxIpamVlanGroupUpdate,
@@ -32,7 +32,7 @@ func ResourceNetboxIpamVlanGroup() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this vlan group (ipam module).",
+				Description: "The content type of this vlan group.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -44,7 +44,7 @@ func ResourceNetboxIpamVlanGroup() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 100),
-				Description:  "The description of this vlan group (ipam module).",
+				Description:  "The description of this vlan group.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
@@ -56,20 +56,20 @@ func ResourceNetboxIpamVlanGroup() *schema.Resource {
 				Optional:     true,
 				Default:      4094,
 				ValidateFunc: validation.IntBetween(1, 4094),
-				Description:  "Highest permissible ID of a child vlan (ipam module).",
+				Description:  "Highest permissible ID of a child vlan.",
 			},
 			"min_vid": {
 				Type:         schema.TypeInt,
 				Optional:     true,
 				Default:      1,
 				ValidateFunc: validation.IntBetween(1, 4094),
-				Description:  "Lowest permissible ID of a child vlan (ipam module).",
+				Description:  "Lowest permissible ID of a child vlan.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
-				Description:  "The name for this vlan group (ipam module).",
+				Description:  "The name for this vlan group.",
 			},
 			"scope": {
 				Type:     schema.TypeSet,
@@ -80,7 +80,7 @@ func ResourceNetboxIpamVlanGroup() *schema.Resource {
 						"id": {
 							Type:        schema.TypeInt,
 							Required:    true,
-							Description: "ID of the scope object for this vlan group (ipam module).",
+							Description: "ID of the scope object for this vlan group.",
 						},
 						"type": {
 							Type:         schema.TypeString,
@@ -90,7 +90,7 @@ func ResourceNetboxIpamVlanGroup() *schema.Resource {
 						},
 					},
 				},
-				Description: "Scope of this vlan group (ipam module).",
+				Description: "Scope of this vlan group.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -98,18 +98,18 @@ func ResourceNetboxIpamVlanGroup() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
-				Description: "The slug for this vlan group (ipam module).",
+				Description: "The slug for this vlan group.",
 			},
 			"tag": &tag.TagSchema,
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this vlan group (ipam module).",
+				Description: "The link to this vlan group.",
 			},
 			"vlan_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of vlans assigned to this vlan group (ipam module).",
+				Description: "The number of vlans assigned to this vlan group.",
 			},
 		},
 	}
@@ -140,17 +140,16 @@ func resourceNetboxIpamVlanGroupCreate(ctx context.Context, d *schema.ResourceDa
 		newResource.SetScopeType(scopeType)
 	}
 
-	resourceCreated, response, err := client.IpamAPI.IpamVlanGroupsCreate(ctx).VLANGroupRequest(*newResource).Execute()
+	_, response, err := client.IpamAPI.IpamVlanGroupsCreate(ctx).VLANGroupRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamVlanGroupRead(ctx, d, m)
 }
@@ -171,7 +170,7 @@ func resourceNetboxIpamVlanGroupRead(ctx context.Context, d *schema.ResourceData
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -247,6 +246,7 @@ func resourceNetboxIpamVlanGroupUpdate(ctx context.Context, d *schema.ResourceDa
 
 	// Required parameters
 	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
@@ -277,10 +277,6 @@ func resourceNetboxIpamVlanGroupUpdate(ctx context.Context, d *schema.ResourceDa
 			resource.SetScopeIdNil()
 			resource.SetScopeTypeNil()
 		}
-	}
-
-	if d.HasChange("slug") {
-		resource.SetSlug(d.Get("slug").(string))
 	}
 
 	if d.HasChange("tag") {
@@ -322,7 +318,6 @@ func resourceNetboxIpamVlanGroupDelete(ctx context.Context, d *schema.ResourceDa
 func resourceNetboxIpamVlanGroupExists(d *schema.ResourceData, m interface{}) (b bool,
 	e error) {
 	client := m.(*netbox.APIClient)
-	resourceExist := false
 
 	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
@@ -337,6 +332,4 @@ func resourceNetboxIpamVlanGroupExists(d *schema.ResourceData, m interface{}) (b
 	} else {
 		return false, err
 	}
-
-	return resourceExist, nil
 }

@@ -72,7 +72,7 @@ func convertArrayInterfaceJSONString(arrayInterface []interface{}) string {
 	for _, item := range arrayInterface {
 		switch v := item.(type) {
 		case map[string]interface{}:
-			arrayString = append(arrayString, string(v["id"].(json.Number)))
+			arrayString = append(arrayString, fmt.Sprintf("%.0f", v["id"].(float64)))
 		default:
 			arrayString = append(arrayString, v)
 		}
@@ -80,9 +80,9 @@ func convertArrayInterfaceJSONString(arrayInterface []interface{}) string {
 
 	if len(arrayString) > 1 {
 		switch arrayString[0].(type) {
-		case json.Number:
+		case float64:
 			sort.Slice(arrayString, func(i, j int) bool {
-				return arrayString[i].(json.Number) < arrayString[j].(json.Number)
+				return arrayString[i].(float64) < arrayString[j].(float64)
 			})
 		case string:
 			sort.Slice(arrayString, func(i, j int) bool {
@@ -127,7 +127,7 @@ func UpdateCustomFieldsFromAPI(stateCustomFields, customFields interface{}) []ma
 								strValue = convertArrayInterfaceJSONString(v)
 							}
 						case map[string]interface{}:
-							strValue = string(v["id"].(json.Number))
+							strValue = fmt.Sprintf("%.0f", v["id"].(float64))
 						default:
 							strValue = fmt.Sprintf("%v", v)
 						}

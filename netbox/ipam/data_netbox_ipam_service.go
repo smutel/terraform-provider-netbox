@@ -14,44 +14,44 @@ import (
 
 func DataNetboxIpamService() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about a service (ipam module) from netbox.",
+		Description: "Get info about a service from netbox.",
 		ReadContext: dataNetboxIpamServiceRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this service (ipam module).",
+				Description: "The content type of this service.",
 			},
 			"device_id": {
 				Type:          schema.TypeInt,
 				Optional:      true,
 				ConflictsWith: []string{"virtualmachine_id"},
-				Description:   "ID of the device linked to this service (ipam module).",
+				Description:   "ID of the device linked to this service.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 50),
-				Description:  "The name of this service (ipam module).",
+				Description:  "The name of this service.",
 			},
 			"port": {
 				Type:         schema.TypeInt,
 				Required:     true,
 				ValidateFunc: validation.IntBetween(1, 65535),
-				Description:  "The port of this service (ipam module).",
+				Description:  "The port of this service.",
 			},
 			"protocol": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringInSlice([]string{"tcp", "udp"}, false),
-				Description:  "The protocol of this service (ipam module) (tcp or udp).",
+				Description:  "The protocol of this service (tcp or udp).",
 			},
 			"virtualmachine_id": {
 				Type:          schema.TypeInt,
 				Optional:      true,
 				ConflictsWith: []string{"device_id"},
-				Description:   "ID of the VM linked to this service (ipam module).",
+				Description:   "ID of the VM linked to this service.",
 			},
 		},
 	}
@@ -71,7 +71,12 @@ func dataNetboxIpamServiceRead(ctx context.Context, d *schema.ResourceData,
 
 	request := client.IpamAPI.IpamServicesList(ctx).Name(name)
 	request = request.Port(port)
-	request = request.Protocol(protocol)
+	p, err := netbox.NewIpamServiceTemplatesListProtocolParameterFromValue(protocol)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	request = request.Protocol(*p)
+
 	if deviceID != 0 {
 		request = request.DeviceId(deviceIDArray)
 	} else if vmID != 0 {

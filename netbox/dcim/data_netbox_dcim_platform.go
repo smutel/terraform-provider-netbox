@@ -15,17 +15,17 @@ import (
 
 func DataNetboxDcimPlatform() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about platform (dcim module) from netbox.",
+		Description: "Get info about platform from netbox.",
 		ReadContext: dataNetboxDcimPlatformRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Description: "Content type of this platform (dcim module).",
+				Description: "Content type of this platform.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"slug": {
-				Description: "Slug of this platform (dcim module).",
+				Description: "Slug of this platform.",
 				Type:        schema.TypeString,
 				Required:    true,
 				ValidateFunc: validation.StringMatch(

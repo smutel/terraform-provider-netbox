@@ -20,7 +20,7 @@ func TestAccNetboxIpamRIRMinimal(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIpamRIRConfig(nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRIR),
 				),
@@ -42,7 +42,7 @@ func TestAccNetboxIpamRIRFull(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxIpamRIRConfig(nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRIR),
 				),
@@ -64,25 +64,25 @@ func TestAccNetboxIpamRIRMininmalFullMinimal(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIpamRIRConfig(nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRIR),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxIpamRIRConfig(nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRIR),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxIpamRIRConfig(nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRIR),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMRIRConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIpamRIRConfig(nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRIR),
 				),
@@ -91,18 +91,18 @@ func TestAccNetboxIpamRIRMininmalFullMinimal(t *testing.T) {
 	})
 }
 
-func testAccCheckNetboxIPAMRIRConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxIpamRIRConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamrir-{{ .namesuffix }}"
+		slug = "ipamrir-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_ipam_rir" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name        = "ipamrir-{{ .namesuffix }}"
+		slug        = "ipamrir-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test RIR"
 		is_private  = true

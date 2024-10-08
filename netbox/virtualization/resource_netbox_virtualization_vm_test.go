@@ -93,39 +93,39 @@ func TestAccNetboxVirtualizationVMMinimalFullMinimal(t *testing.T) {
 func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
 	resource "netbox_virtualization_cluster_type" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 
 	resource "netbox_virtualization_cluster" "test" {
-		name = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
 		type_id = netbox_virtualization_cluster_type.test.id
 	}
 
 	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_platform" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 
 	resource "netbox_dcim_device_role" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 
 	resource "netbox_tenancy_tenant" "test" {
- 		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+ 		name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_virtualization_vm" "test" {
-		name            = "test-{{ .namesuffix }}"
+		name            = "virtualvm-{{ .namesuffix }}"
 		cluster_id      = netbox_virtualization_cluster.test.id
 
 		{{ if eq .resourcefull "true" }}

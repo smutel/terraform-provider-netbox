@@ -95,13 +95,13 @@ func testAccCheckNetboxIPAMRouteTargetsConfig(nameSuffix string, resourceFull, e
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamrt-{{ .namesuffix }}"
+		slug = "ipamrt-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_ipam_route_targets" "test" {
-		name        = "test-{{ .namesuffix }}"
+		name        = "ipamrt-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		comments        = <<-EOT
 		Route Targets created by terraform

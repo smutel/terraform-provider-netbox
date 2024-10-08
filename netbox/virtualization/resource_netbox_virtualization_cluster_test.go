@@ -103,10 +103,10 @@ func testAccCheckNetboxVirtualizationClusterConfig(nameSuffix string, resourceFu
 		slug = "test-{{ .namesuffix }}"
 	}
 
-	resource "netbox_virtualization_cluster_group" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
-	}
+  resource "netbox_virtualization_cluster_group" "test" {
+    name = "test-{{ .namesuffix }}"
+    slug = "test-{{ .namesuffix }}"
+  }
 
 	resource "netbox_tenancy_tenant" "test" {
 		name = "test-{{ .namesuffix }}"

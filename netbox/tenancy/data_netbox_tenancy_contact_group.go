@@ -14,17 +14,20 @@ import (
 
 func DataNetboxTenancyContactGroup() *schema.Resource {
 	return &schema.Resource{
+		Description: "Get info about contact group from Netbox.",
 		ReadContext: dataNetboxTenancyContactGroupRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this contact group.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
+				Description:  "The slug of this contact group",
 			},
 		},
 	}

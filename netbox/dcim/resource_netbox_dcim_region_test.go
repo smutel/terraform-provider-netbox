@@ -96,22 +96,22 @@ func testAccCheckNetboxDcimRegionConfig(nameSuffix string, resourceFull, extraRe
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "dcimregion-{{ .namesuffix }}"
+		slug = "dcimregion-{{ .namesuffix }}"
 	}
 
-  resource "netbox_dcim_region" "test2" {
+  	resource "netbox_dcim_region" "test2" {
 		name        = "test2-{{ .namesuffix }}"
 		slug        = "test2-{{ .namesuffix }}"
-  }
-  {{ end }}
+  	}
+  	{{ end }}
 
 	resource "netbox_dcim_region" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name        = "dcimregion-{{ .namesuffix }}"
+		slug        = "dcimregion-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test region"
-    parent_id = netbox_dcim_region.test2.id
+    		parent_id = netbox_dcim_region.test2.id
 
 		tag {
 			name = netbox_extras_tag.test.name

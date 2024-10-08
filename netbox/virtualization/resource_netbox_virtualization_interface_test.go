@@ -100,17 +100,17 @@ func TestAccNetboxVirtualizationInterfaceMinimalFullMinimal(t *testing.T) {
 func testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
 	resource "netbox_virtualization_cluster_type" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualinterface-{{ .namesuffix }}"
+		slug = "virtualinterface-{{ .namesuffix }}"
 	}
 
 	resource "netbox_virtualization_cluster" "test" {
-		name = "test-{{ .namesuffix }}"
+		name = "virtualinterface-{{ .namesuffix }}"
 		type_id = netbox_virtualization_cluster_type.test.id
 	}
 
 	resource "netbox_virtualization_vm" "test" {
-		name            = "test-{{ .namesuffix }}"
+		name            = "virtualinterface-{{ .namesuffix }}"
 		cluster_id      = netbox_virtualization_cluster.test.id
 	}
 
@@ -126,27 +126,28 @@ func testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix string, resource
 	}
 
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualinterface-{{ .namesuffix }}"
+		slug = "virtualinterface-{{ .namesuffix }}"
 	}
 
-	resource "netbox_ipam_vlan" "tagged" {
-		name = "test-{{ .namesuffix }}"
-		vlan_id = 1501
-	}
+  resource "netbox_ipam_vlan" "tagged" {
+    name = "virtualinterface-{{ .namesuffix }}"
+    vlan_id = 1501
+  }
 
-	resource "netbox_ipam_vlan" "untagged" {
-		name = "test-{{ .namesuffix }}"
-		vlan_id = 1101
-	}
+  resource "netbox_ipam_vlan" "untagged" {
+    name = "virtualinterface-{{ .namesuffix }}"
+    vlan_id = 1101
+  }
 
-	#resource "netbox_ipam_vrf" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_ipam_vrf" "test" {
+	  name = "rd-{{ .namesuffix }}"
+    rd   = "rd-{{ .namesuffix }}"
+	}
 	{{ end }}
 
 	resource "netbox_virtualization_interface" "test" {
-		name            = "test-{{ .namesuffix }}"
+		name            = "virtualinterface-{{ .namesuffix }}"
 		virtualmachine_id = netbox_virtualization_vm.test.id
 
 		{{ if eq .resourcefull "true" }}
@@ -155,13 +156,13 @@ func testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix string, resource
 		mtu = 1300
 		enabled = false
 		mode = "tagged"
-		tagged_vlans = [
-			netbox_ipam_vlan.tagged.id,
-		]
-		untagged_vlan = netbox_ipam_vlan.untagged.id
+    tagged_vlans = [
+      netbox_ipam_vlan.tagged.id,
+    ]
+    untagged_vlan = netbox_ipam_vlan.untagged.id
 		parent_id = netbox_virtualization_interface.parent.id
 		bridge_id = netbox_virtualization_interface.bridge.id
-		#vrf_id = netbox_ipam_vrf.test.id
+		vrf_id = netbox_ipam_vrf.test.id
 
 		tag {
 			name = netbox_extras_tag.test.name

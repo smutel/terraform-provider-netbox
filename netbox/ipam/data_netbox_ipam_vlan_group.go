@@ -15,14 +15,14 @@ import (
 
 func DataNetboxIpamVlanGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about a vlan group (ipam module) from netbox.",
+		Description: "Get info about a vlan group from netbox.",
 		ReadContext: dataNetboxIpamVlanGroupRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this vlan group (ipam module).",
+				Description: "The content type of this vlan group.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -30,7 +30,7 @@ func DataNetboxIpamVlanGroup() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
-				Description: "The slug of the vlan group (ipam module).",
+				Description: "The slug of the vlan group.",
 			},
 		},
 	}

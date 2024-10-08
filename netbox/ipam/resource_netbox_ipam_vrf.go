@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxIpamVrf() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a vrf (ipam module) within Netbox.",
+		Description:   "Manage a vrf within Netbox.",
 		CreateContext: resourceNetboxIpamVrfCreate,
 		ReadContext:   resourceNetboxIpamVrfRead,
 		UpdateContext: resourceNetboxIpamVrfUpdate,
@@ -31,7 +32,7 @@ func ResourceNetboxIpamVrf() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this VRF (ipam module).",
+				Description: "The content type of this VRF.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -43,7 +44,7 @@ func ResourceNetboxIpamVrf() *schema.Resource {
 				Optional:    true,
 				Default:     nil,
 				StateFunc:   util.TrimString,
-				Description: "Comments for this VRF (ipam module).",
+				Description: "Comments for this VRF.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -51,29 +52,31 @@ func ResourceNetboxIpamVrf() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The description of this VRF (ipam module).",
+				Description:  "The description of this VRF.",
 			},
 			"enforce_unique": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "Prevent duplicate prefixes/IP addresses within this VRF (ipam module)",
+				Description: "Prevent duplicate prefixes/IP addresses within this VRF",
 			},
 			"export_targets": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{
-					Type: schema.TypeInt,
+					Type:        schema.TypeInt,
+					Description: "One of the ID of exported vrf targets attached to this VRF.",
 				},
-				Description: "Array of ID of exported vrf targets attached to this VRF (ipam module).",
+				Description: "Array of ID of exported vrf targets attached to this VRF.",
 			},
 			"import_targets": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{
-					Type: schema.TypeInt,
+					Type:        schema.TypeInt,
+					Description: "One of the ID of imported vrf targets attached to this VRF.",
 				},
-				Description: "Array of ID of imported vrf targets attached to this VRF (ipam module).",
+				Description: "Array of ID of imported vrf targets attached to this VRF.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
@@ -84,25 +87,25 @@ func ResourceNetboxIpamVrf() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this VRF (ipam module).",
+				Description:  "The name of this VRF.",
 			},
 			"rd": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(1, 21),
-				Description:  "The Route Distinguisher (RFC 4364) of this VRF (ipam module).",
+				Description:  "The Route Distinguisher (RFC 4364) of this VRF.",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     nil,
-				Description: "ID of the tenant where this VRF (ipam module) is attached.",
+				Description: "ID of the tenant where this VRF is attached.",
 			},
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this VRF (ipam module).",
+				Description: "The link to this VRF.",
 			},
 		},
 	}
@@ -129,7 +132,7 @@ func resourceNetboxIpamVrfCreate(ctx context.Context, d *schema.ResourceData,
 		importTargetsID = append(importTargetsID, int32(id.(int)))
 	}
 
-	newResource := netbox.NewWritableVRFRequestWithDefaults()
+	newResource := netbox.NewVRFRequestWithDefaults()
 	newResource.SetComments(d.Get("comments").(string))
 	newResource.SetCustomFields(customFields)
 	newResource.SetDescription(d.Get("description").(string))
@@ -141,20 +144,23 @@ func resourceNetboxIpamVrfCreate(ctx context.Context, d *schema.ResourceData,
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
 	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.SetTenant(tenantID)
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
-	resourceCreated, response, err := client.IpamAPI.IpamVrfsCreate(ctx).WritableVRFRequest(*newResource).Execute()
+	_, response, err := client.IpamAPI.IpamVrfsCreate(ctx).VRFRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamVrfRead(ctx, d, m)
 }
@@ -179,7 +185,7 @@ func resourceNetboxIpamVrfRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -202,11 +208,24 @@ func resourceNetboxIpamVrfRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("export_targets", resource.GetExportTargets()); err != nil {
+	exportTargets := resource.GetExportTargets()
+	exportTargetsID := []int32{}
+	importTargets := resource.GetImportTargets()
+	importTargetsID := []int32{}
+
+	for _, exportTarget := range exportTargets {
+		exportTargetsID = append(exportTargetsID, exportTarget.GetId())
+	}
+
+	for _, importTarget := range importTargets {
+		importTargetsID = append(importTargetsID, importTarget.GetId())
+	}
+
+	if err = d.Set("export_targets", exportTargetsID); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("import_targets", resource.GetImportTargets()); err != nil {
+	if err = d.Set("import_targets", importTargetsID); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -245,7 +264,10 @@ func resourceNetboxIpamVrfUpdate(ctx context.Context, d *schema.ResourceData,
 	if err != nil {
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
-	resource := netbox.NewWritableVRFRequestWithDefaults()
+	resource := netbox.NewVRFRequestWithDefaults()
+
+	// Required fields
+	resource.SetName(d.Get("name").(string))
 
 	if d.HasChange("comments") {
 		resource.SetComments(d.Get("comments").(string))
@@ -266,15 +288,25 @@ func resourceNetboxIpamVrfUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if d.HasChange("export_targets") {
-		resource.SetExportTargets(d.Get("export_targets").([]int32))
+		exportTargets := d.Get("export_targets").([]interface{})
+		exportTargetsID := []int32{}
+
+		for _, id := range exportTargets {
+			exportTargetsID = append(exportTargetsID, int32(id.(int)))
+		}
+
+		resource.SetExportTargets(exportTargetsID)
 	}
 
 	if d.HasChange("import_targets") {
-		resource.SetImportTargets(d.Get("import_targets").([]int32))
-	}
+		importTargets := d.Get("import_targets").([]interface{})
+		importTargetsID := []int32{}
 
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
+		for _, id := range importTargets {
+			importTargetsID = append(importTargetsID, int32(id.(int)))
+		}
+
+		resource.SetImportTargets(importTargetsID)
 	}
 
 	if d.HasChange("rd") {
@@ -287,15 +319,18 @@ func resourceNetboxIpamVrfUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int32(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+		if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}
 	}
 
-	if _, response, err := client.IpamAPI.IpamVrfsUpdate(ctx, int32(resourceID)).WritableVRFRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.IpamAPI.IpamVrfsUpdate(ctx, int32(resourceID)).VRFRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
@@ -330,7 +365,6 @@ func resourceNetboxIpamVrfDelete(ctx context.Context, d *schema.ResourceData,
 func resourceNetboxIpamVrfExists(d *schema.ResourceData,
 	m interface{}) (b bool, e error) {
 	client := m.(*netbox.APIClient)
-	resourceExist := false
 
 	resourceID, err := strconv.Atoi(d.Id())
 	if err != nil {
@@ -345,6 +379,4 @@ func resourceNetboxIpamVrfExists(d *schema.ResourceData,
 	} else {
 		return false, err
 	}
-
-	return resourceExist, nil
 }

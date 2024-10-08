@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -21,7 +22,7 @@ const vmIntefaceType string = "virtualization.vminterface"
 
 func ResourceNetboxVirtualizationInterface() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage an interface (virtualization module) resource within Netbox.",
+		Description:   "Manage an interface resource within Netbox.",
 		CreateContext: resourceNetboxVirtualizationInterfaceCreate,
 		ReadContext:   resourceNetboxVirtualizationInterfaceRead,
 		UpdateContext: resourceNetboxVirtualizationInterfaceUpdate,
@@ -35,22 +36,22 @@ func ResourceNetboxVirtualizationInterface() *schema.Resource {
 			"bridge_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the bridge interface where this interface (virtualization module) is attached to.",
+				Description: "ID of the bridge interface where this interface is attached to.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this interface (virtualization module).",
+				Description: "The content type of this interface.",
 			},
 			"count_fhrp_groups": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Number of fhrp groups attached to this interface (virtualization module) is attached to.",
+				Description: "Number of fhrp groups attached to this interface is attached to.",
 			},
 			"count_ipaddresses": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Number of ip addresses attached to this interface (virtualization module) is attached to.",
+				Description: "Number of ip addresses attached to this interface is attached to.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -63,7 +64,7 @@ func ResourceNetboxVirtualizationInterface() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "Description for this interface (virtualization module).",
+				Description:  "Description for this interface.",
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -82,7 +83,7 @@ func ResourceNetboxVirtualizationInterface() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^([A-Z0-9]{2}:){5}[A-Z0-9]{2}$"),
 					"Must be like AA:AA:AA:AA:AA"),
-				Description: "Mac address for this interface (virtualization module)",
+				Description: "Mac address for this interface",
 			},
 			"mode": {
 				Type:     schema.TypeString,
@@ -95,26 +96,27 @@ func ResourceNetboxVirtualizationInterface() *schema.Resource {
 				Type:         schema.TypeInt,
 				Optional:     true,
 				ValidateFunc: validation.IntBetween(1, 65536),
-				Description:  "The MTU between 1 and 65536 for this interface (virtualization module).",
+				Description:  "The MTU between 1 and 65536 for this interface.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 64),
-				Description:  "Description for this interface (virtualization module)",
+				Description:  "Name of this interface",
 			},
 			"parent_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the parent interface where this interface (virtualization module) is attached to.",
+				Description: "ID of the parent interface where this interface is attached to.",
 			},
 			"tagged_vlans": {
 				Type: schema.TypeSet,
 				Elem: &schema.Schema{
-					Type: schema.TypeInt,
+					Type:        schema.TypeInt,
+					Description: "One of the vlan id tagged for this interface",
 				},
 				Optional:    true,
-				Description: "List of vlan id tagged for this interface (virtualization module)",
+				Description: "List of vlan id tagged for this interface",
 			},
 			"tag": &tag.TagSchema,
 			"type": {
@@ -125,22 +127,22 @@ func ResourceNetboxVirtualizationInterface() *schema.Resource {
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this interface (virtualization module).",
+				Description: "The link to this interface.",
 			},
 			"untagged_vlan": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "Vlan ID untagged for this interface (virtualization module).",
+				Description: "Vlan ID untagged for this interface.",
 			},
 			"virtualmachine_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "ID of the VM where this interface (virtualization module) is attached to.",
+				Description: "ID of the VM where this interface is attached to.",
 			},
 			"vrf_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the VRF where this interface (virtualization module) is attached to.",
+				Description: "ID of the VRF where this interface is attached to.",
 			},
 		},
 	}
@@ -159,7 +161,7 @@ func resourceNetboxVirtualizationInterfaceCreate(ctx context.Context, d *schema.
 	name := d.Get("name").(string)
 	taggedVlans, err := util.ExpandToInt32Slice(d.Get("tagged_vlans").(*schema.Set).List())
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 	tags := d.Get("tag").(*schema.Set).List()
 	untaggedVlan := int32(d.Get("untagged_vlan").(int))
@@ -172,7 +174,12 @@ func resourceNetboxVirtualizationInterfaceCreate(ctx context.Context, d *schema.
 	newResource.SetName(name)
 	newResource.SetTaggedVlans(taggedVlans)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
-	newResource.SetVirtualMachine(virtualmachineID)
+
+	b, errDiag := brief.GetBriefVirtualMachineRequestFromID(client, ctx, virtualmachineID)
+	if errDiag != nil {
+		return errDiag
+	}
+	newResource.SetVirtualMachine(*b)
 
 	modeObj, err := netbox.NewPatchedWritableInterfaceRequestModeFromValue(mode)
 	if err != nil {
@@ -193,7 +200,11 @@ func resourceNetboxVirtualizationInterfaceCreate(ctx context.Context, d *schema.
 	}
 
 	if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
-		newResource.SetVrf(vrfID)
+		b, err := brief.GetBriefVRFRequestFromID(client, ctx, vrfID)
+		if err != nil {
+			return err
+		}
+		newResource.SetVrf(*b)
 	}
 
 	if mtu != 0 {
@@ -201,7 +212,11 @@ func resourceNetboxVirtualizationInterfaceCreate(ctx context.Context, d *schema.
 	}
 
 	if untaggedVlan != 0 {
-		newResource.SetUntaggedVlan(untaggedVlan)
+		b, err := brief.GetBriefVLANRequestFromID(client, ctx, untaggedVlan)
+		if err != nil {
+			return err
+		}
+		newResource.SetUntaggedVlan(*b)
 	}
 
 	resourceCreated, response, err := client.VirtualizationAPI.VirtualizationInterfacesCreate(ctx).WritableVMInterfaceRequest(*newResource).Execute()
@@ -230,11 +245,11 @@ func resourceNetboxVirtualizationInterfaceRead(ctx context.Context, d *schema.Re
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("bridge_id", resource.Bridge.Get().Id); err != nil {
+	if err = d.Set("bridge_id", resource.GetBridge().Id); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -246,7 +261,7 @@ func resourceNetboxVirtualizationInterfaceRead(ctx context.Context, d *schema.Re
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("created", resource.GetCreated()); err != nil {
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -265,7 +280,7 @@ func resourceNetboxVirtualizationInterfaceRead(ctx context.Context, d *schema.Re
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("last_updated", resource.GetLastUpdated()); err != nil {
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -289,7 +304,7 @@ func resourceNetboxVirtualizationInterfaceRead(ctx context.Context, d *schema.Re
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("tagged_vlans", resource.GetTaggedVlans()); err != nil {
+	if err = d.Set("tagged_vlans", util.ConvertAPIVlansToVlans(resource.GetTaggedVlans())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -325,6 +340,15 @@ func resourceNetboxVirtualizationInterfaceUpdate(ctx context.Context, d *schema.
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int"))
 	}
 	resource := netbox.NewWritableVMInterfaceRequestWithDefaults()
+
+	// Required parameters
+	resource.SetName(d.Get("name").(string))
+	virtualmachineID := int32(d.Get("virtualmachine_id").(int))
+	b, errDiag := brief.GetBriefVirtualMachineRequestFromID(client, ctx, virtualmachineID)
+	if errDiag != nil {
+		return errDiag
+	}
+	resource.SetVirtualMachine(*b)
 
 	if d.HasChange("bridge_id") {
 		if bridgeID := int32(d.Get("bridge_id").(int)); bridgeID != 0 {
@@ -373,10 +397,6 @@ func resourceNetboxVirtualizationInterfaceUpdate(ctx context.Context, d *schema.
 		}
 	}
 
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
 	if d.HasChange("parent_id") {
 		if parentID := int32(d.Get("parent_id").(int)); parentID != 0 {
 			resource.SetParent(parentID)
@@ -401,19 +421,23 @@ func resourceNetboxVirtualizationInterfaceUpdate(ctx context.Context, d *schema.
 
 	if d.HasChange("untagged_vlan") {
 		if untaggedVlan := int32(d.Get("untagged_vlan").(int)); untaggedVlan != 0 {
-			resource.SetUntaggedVlan(untaggedVlan)
+			b, err := brief.GetBriefVLANRequestFromID(client, ctx, untaggedVlan)
+			if err != nil {
+				return err
+			}
+			resource.SetUntaggedVlan(*b)
 		} else {
 			resource.SetUntaggedVlanNil()
 		}
 	}
 
-	if d.HasChange("virtual_machine_id") {
-		resource.SetVirtualMachine(int32(d.Get("virtual_machine_id").(int)))
-	}
-
 	if d.HasChange("vrf_id") {
 		if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
-			resource.SetVrf(vrfID)
+			b, err := brief.GetBriefVRFRequestFromID(client, ctx, vrfID)
+			if err != nil {
+				return err
+			}
+			resource.SetVrf(*b)
 		} else {
 			resource.SetVrfNil()
 		}

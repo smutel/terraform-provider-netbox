@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -19,7 +20,7 @@ import (
 
 func ResourceNetboxVirtualizationVM() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a VM (virtualization module) resource within Netbox.",
+		Description:   "Manage a VM resource within Netbox.",
 		CreateContext: resourceNetboxVirtualizationVMCreate,
 		ReadContext:   resourceNetboxVirtualizationVMRead,
 		UpdateContext: resourceNetboxVirtualizationVMUpdate,
@@ -34,19 +35,24 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     nil,
-				Description: "ID of the cluster which host this VM (virtualization module).",
+				Description: "ID of the cluster which host this VM.",
 			},
 			"comments": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     nil,
 				StateFunc:   util.TrimString,
-				Description: "Comments for this VM (virtualization module).",
+				Description: "Comments for this VM.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this VM (virtualization module).",
+				Description: "The content type of this VM.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this VM was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"device_id": {
@@ -59,59 +65,64 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     nil,
-				Description: "The size in GB of the disk for this VM (virtualization module).",
+				Description: "The size in GB of the disk for this VM.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Last date when this VM was updated.",
 			},
 			"local_context_data": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Local context data for this VM (virtualization module).",
+				Description: "Local context data for this VM.",
 			},
 			"memory": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     nil,
-				Description: "The size in MB of the memory of this VM (virtualization module).",
+				Description: "The size in MB of the memory of this VM.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 64),
-				Description:  "The name for this VM (virtualization module).",
+				Description:  "The name for this VM.",
 			},
 			"platform_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     nil,
-				Description: "ID of the platform for this VM (virtualization module).",
+				Description: "ID of the platform for this VM.",
 			},
 			"primary_ip": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Default:     nil,
-				Description: "Primary IP of this VM (virtualization module). Can be IPv4 or IPv6. See [Netbox docs|https://docs.netbox.dev/en/stable/models/virtualization/virtualmachine/] for more information.",
+				Description: "Primary IP of this VM. Can be IPv4 or IPv6. See [Netbox docs|https://docs.netbox.dev/en/stable/models/virtualization/virtualmachine/] for more information.",
 			},
 			"primary_ip4": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Default:     nil,
-				Description: "Primary IPv4 of this VM (virtualization module).",
+				Description: "Primary IPv4 of this VM.",
 			},
 			"primary_ip6": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Default:     nil,
-				Description: "Primary IPv6 of this VM (virtualization module).",
+				Description: "Primary IPv6 of this VM.",
 			},
 			"role_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     nil,
-				Description: "ID of the role for this VM (virtualization module).",
+				Description: "ID of the role for this VM.",
 			},
 			"site_id": {
 				Type:         schema.TypeInt,
 				Optional:     true,
-				Description:  "ID of the site where this VM (virtualization module) is attached. If cluster_id is set and the cluster resides in a site, this must be set and the same as the cluster's site",
+				Description:  "ID of the site where this VM is attached. If cluster_id is set and the cluster resides in a site, this must be set and the same as the cluster's site",
 				AtLeastOneOf: []string{"cluster_id", "site_id"},
 			},
 			"status": {
@@ -127,7 +138,7 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     nil,
-				Description: "ID of the tenant where this VM (virtualization module) is attached.",
+				Description: "ID of the tenant where this VM is attached.",
 			},
 			"vcpus": {
 				Type:     schema.TypeString,
@@ -142,7 +153,7 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 					}
 					return false
 				},
-				Description: "The number of VCPUS for this VM (virtualization module).",
+				Description: "The number of VCPUS for this VM.",
 			},
 		},
 	}
@@ -160,15 +171,20 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 	tags := d.Get("tag").(*schema.Set).List()
 
 	newResource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
-	newResource.SetCluster(clusterID)
 	newResource.SetComments(comments)
 	newResource.SetCustomFields(customFields)
 	newResource.SetName(name)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	s, err := netbox.NewModuleStatusValueFromValue(d.Get("status").(string))
+	b, err := brief.GetBriefClusterRequestFromID(client, ctx, clusterID)
 	if err != nil {
-		return util.GenerateErrorMessage(nil, err)
+		return err
+	}
+	newResource.SetCluster(*b)
+
+	s, errDiag := netbox.NewModuleStatusValueFromValue(d.Get("status").(string))
+	if errDiag != nil {
+		return util.GenerateErrorMessage(nil, errDiag)
 	}
 	newResource.SetStatus(*s)
 
@@ -189,23 +205,43 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 	}
 
 	if deviceID := int32(d.Get("device_id").(int)); deviceID != 0 {
-		newResource.SetDevice(deviceID)
+		b, err := brief.GetBriefDeviceRequestFromID(client, ctx, deviceID)
+		if err != nil {
+			return err
+		}
+		newResource.SetDevice(*b)
 	}
 
 	if platformID := int32(d.Get("platform_id").(int)); platformID != 0 {
-		newResource.SetPlatform(platformID)
+		b, err := brief.GetBriefPlatformRequestFromID(client, ctx, platformID)
+		if err != nil {
+			return err
+		}
+		newResource.SetPlatform(*b)
 	}
 
 	if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
-		newResource.SetRole(roleID)
+		b, err := brief.GetBriefDeviceRoleRequestFromID(client, ctx, roleID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRole(*b)
 	}
 
 	if siteID := int32(d.Get("site_id").(int)); siteID != 0 {
-		newResource.SetSite(siteID)
+		b, err := brief.GetBriefSiteRequestFromID(client, ctx, siteID)
+		if err != nil {
+			return err
+		}
+		newResource.SetSite(*b)
 	}
 
 	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.SetTenant(tenantID)
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
 	if vcpus := d.Get("vcpus").(string); vcpus != "" {
@@ -213,12 +249,16 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context, d *schema.Resourc
 		newResource.SetVcpus(vcpusFloat)
 	}
 
-	resourceCreated, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesCreate(ctx).WritableVirtualMachineWithConfigContextRequest(*newResource).Execute()
-	if response.StatusCode != 201 && err != nil {
-		return util.GenerateErrorMessage(response, err)
+	_, response, errDiag := client.VirtualizationAPI.VirtualizationVirtualMachinesCreate(ctx).WritableVirtualMachineWithConfigContextRequest(*newResource).Execute()
+	if response.StatusCode != 201 && errDiag != nil {
+		return util.GenerateErrorMessage(response, errDiag)
 	}
 
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
+	}
 
 	return resourceNetboxVirtualizationVMRead(ctx, d, m)
 }
@@ -247,7 +287,11 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -263,6 +307,10 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 	}
 
 	if err = d.Set("disk", resource.GetDisk()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -319,8 +367,12 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context, d *schema.ResourceD
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("vcpus", resource.GetVcpus()); err != nil {
-		return util.GenerateErrorMessage(nil, err)
+	vcpus := resource.GetVcpus()
+	if vcpus != 0 {
+		vcpusString := strconv.FormatFloat(vcpus, 'f', -1, 64)
+		if err = d.Set("vcpus", vcpusString); err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
 	}
 
 	return nil
@@ -337,16 +389,26 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 	resource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
 
 	// Required parameters
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
+	resource.SetName(d.Get("name").(string))
+
+	if clusterID := int32(d.Get("cluster_id").(int)); clusterID != 0 {
+		b, err := brief.GetBriefClusterRequestFromID(client, ctx, clusterID)
+		if err != nil {
+			return err
+		}
+		resource.SetCluster(*b)
+	} else {
+		resource.SetClusterNil()
 	}
 
-	if d.HasChange("cluster_id") {
-		if clusterID := int32(d.Get("cluster_id").(int)); clusterID != 0 {
-			resource.SetCluster(clusterID)
-		} else {
-			resource.SetClusterNil()
+	if siteID := int32(d.Get("site_id").(int)); siteID != 0 {
+		b, err := brief.GetBriefSiteRequestFromID(client, ctx, siteID)
+		if err != nil {
+			return err
 		}
+		resource.SetSite(*b)
+	} else {
+		resource.SetSiteNil()
 	}
 
 	if d.HasChange("comments") {
@@ -388,7 +450,11 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 
 	if d.HasChange("platform_id") {
 		if platformID := int32(d.Get("platform_id").(int)); platformID != 0 {
-			resource.SetPlatform(platformID)
+			b, err := brief.GetBriefPlatformRequestFromID(client, ctx, platformID)
+			if err != nil {
+				return err
+			}
+			resource.SetPlatform(*b)
 		} else {
 			resource.SetPlatformNil()
 		}
@@ -396,17 +462,13 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 
 	if d.HasChange("role_id") {
 		if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
-			resource.SetRole(roleID)
+			b, err := brief.GetBriefDeviceRoleRequestFromID(client, ctx, roleID)
+			if err != nil {
+				return err
+			}
+			resource.SetRole(*b)
 		} else {
 			resource.SetRoleNil()
-		}
-	}
-
-	if d.HasChange("site_id") {
-		if siteID := int32(d.Get("site_id").(int)); siteID != 0 {
-			resource.SetSite(siteID)
-		} else {
-			resource.SetSiteNil()
 		}
 	}
 
@@ -425,7 +487,11 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 
 	if d.HasChange("tenant_id") {
 		if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
-			resource.SetTenant(tenantID)
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}
@@ -436,6 +502,8 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context, d *schema.Resourc
 		if vcpus != "" {
 			vcpusFloat, _ := strconv.ParseFloat(vcpus, 32)
 			resource.SetVcpus(vcpusFloat)
+		} else {
+			resource.SetVcpusNil()
 		}
 	}
 

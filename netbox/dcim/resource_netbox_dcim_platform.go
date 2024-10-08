@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +18,7 @@ import (
 
 func ResourceNetboxDcimPlatform() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a platform (dcim module) within Netbox.",
+		Description:   "Manage a platform within Netbox.",
 		CreateContext: resourceNetboxDcimPlatformCreate,
 		ReadContext:   resourceNetboxDcimPlatformRead,
 		UpdateContext: resourceNetboxDcimPlatformUpdate,
@@ -31,12 +32,12 @@ func ResourceNetboxDcimPlatform() *schema.Resource {
 			"config_template_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The config template used for this platform (dcim module).",
+				Description: "The config template used for this platform.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this platform (dcim module).",
+				Description: "The content type of this platform.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -48,12 +49,12 @@ func ResourceNetboxDcimPlatform() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 100),
-				Description:  "The description of this platform (dcim module).",
+				Description:  "The description of this platform.",
 			},
 			"device_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of devices this platform (dcim module).",
+				Description: "The number of devices this platform.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
@@ -63,30 +64,30 @@ func ResourceNetboxDcimPlatform() *schema.Resource {
 			"manufacturer_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The manufacturer of this platform (dcim module).",
+				Description: "The manufacturer of this platform.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this platform (dcim module).",
+				Description:  "The name of this platform.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this platform (dcim module).",
+				Description:  "The slug of this platform.",
 			},
 			"tag": &tag.TagSchema,
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this platform (dcim module).",
+				Description: "The link to this platform.",
 			},
 			"virtualmachine_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of virtual machines of this platform (dcim module).",
+				Description: "The number of virtual machines of this platform.",
 			},
 		},
 	}
@@ -105,7 +106,7 @@ func resourceNetboxDcimPlatformCreate(ctx context.Context, d *schema.ResourceDat
 	slug := d.Get("slug").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := netbox.NewWritablePlatformRequestWithDefaults()
+	newResource := netbox.NewPlatformRequestWithDefaults()
 	newResource.SetCustomFields(customFields)
 	newResource.SetDescription(description)
 	newResource.SetName(name)
@@ -113,24 +114,31 @@ func resourceNetboxDcimPlatformCreate(ctx context.Context, d *schema.ResourceDat
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
 	if manufacturerID != 0 {
-		newResource.SetManufacturer(manufacturerID)
+		b, err := brief.GetBriefManufacturerRequestFromID(client, ctx, manufacturerID)
+		if err != nil {
+			return err
+		}
+		newResource.SetManufacturer(*b)
 	}
 
 	if configTemplateID != 0 {
-		newResource.SetConfigTemplate(configTemplateID)
+		b, err := brief.GetBriefConfigTemplateRequestFromID(client, ctx, manufacturerID)
+		if err != nil {
+			return err
+		}
+		newResource.SetConfigTemplate(*b)
 	}
 
-	resourceCreated, response, err := client.DcimAPI.DcimPlatformsCreate(ctx).WritablePlatformRequest(*newResource).Execute()
+	_, response, err := client.DcimAPI.DcimPlatformsCreate(ctx).PlatformRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxDcimPlatformRead(ctx, d, m)
 }
@@ -203,7 +211,7 @@ func resourceNetboxDcimPlatformRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if err = d.Set("virtualmachine_count", resource.GetVirtualmachineCount()); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
@@ -217,7 +225,11 @@ func resourceNetboxDcimPlatformUpdate(ctx context.Context, d *schema.ResourceDat
 	if err != nil {
 		return util.GenerateErrorMessage(nil, errors.New("Unable to convert ID into int64"))
 	}
-	resource := netbox.NewWritablePlatformRequestWithDefaults()
+	resource := netbox.NewPlatformRequestWithDefaults()
+
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
@@ -235,18 +247,14 @@ func resourceNetboxDcimPlatformUpdate(ctx context.Context, d *schema.ResourceDat
 
 	if d.HasChange("manufacturer_id") {
 		if manufacturerID, exist := d.GetOk("manufacturer_id"); exist {
-			resource.SetManufacturer(int32(manufacturerID.(int)))
+			if m, err := brief.GetBriefManufacturerRequestFromID(client, ctx, int32(manufacturerID.(int))); err == nil {
+				resource.SetManufacturer(*m)
+			} else {
+				return err
+			}
 		} else {
 			resource.SetManufacturerNil()
 		}
-	}
-
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
-	if d.HasChange("slug") {
-		resource.SetSlug(d.Get("slug").(string))
 	}
 
 	if d.HasChange("tag") {
@@ -254,7 +262,7 @@ func resourceNetboxDcimPlatformUpdate(ctx context.Context, d *schema.ResourceDat
 		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
-	if _, response, err := client.DcimAPI.DcimPlatformsUpdate(ctx, int32(resourceID)).WritablePlatformRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.DcimAPI.DcimPlatformsUpdate(ctx, int32(resourceID)).PlatformRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 

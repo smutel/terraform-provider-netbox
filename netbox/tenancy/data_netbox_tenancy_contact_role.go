@@ -15,12 +15,14 @@ import (
 
 func DataNetboxTenancyContactRole() *schema.Resource {
 	return &schema.Resource{
+		Description: "Get info about contact role from Netbox.",
 		ReadContext: dataNetboxTenancyContactRoleRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this contact role.",
 			},
 			"slug": {
 				Type:     schema.TypeString,
@@ -28,6 +30,7 @@ func DataNetboxTenancyContactRole() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
+				Description: "The slug of this contact role.",
 			},
 		},
 	}

@@ -94,53 +94,41 @@ func TestAccNetboxIpamAsnMinimalFullMinimal(t *testing.T) {
 }
 
 func testAccCheckNetboxIpamAsnConfig(nameSuffix string, resourceFull, extraResources bool, asn int64) string {
-	// template := `
-	// resource "netbox_ipam_rir" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-
-	// {{ if eq .extraresources "true" }}
-	// resource "netbox_tenancy_tenant" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-
-	// resource "netbox_extras_tag" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-	// {{ end }}
-
-	// resource "netbox_ipam_asn" "test" {
-	// asn         = {{ .asn }}
-	// rir_id      = netbox_ipam_rir.test.id
-	// {{ if eq .resourcefull "true" }}
-	// description = "Test ASN"
-	// tenant_id   = netbox_tenancy_tenant.test.id
-
-	// tag {
-	// name = netbox_extras_tag.test.name
-	// slug = netbox_extras_tag.test.slug
-	// }
-	// {{ end }}
-	// }
-	// `
 	template := `
-  resource "netbox_ipam_asn" "test" {
-  asn         = {{ .asn }}
-  rir_id      = 1
-  {{ if eq .resourcefull "true" }}
-  description = "Test ASN"
-  tenant_id   = 1
+	resource "netbox_ipam_rir" "test" {
+		name = "ipamasn-{{ .namesuffix }}"
+		slug = "ipamasn-{{ .namesuffix }}"
+	}
 
-	  tag {
-	    name = "test"
-	    slug = "test"
-	  }
-  {{ end }}
-  }
-  `
+	{{ if eq .extraresources "true" }}
+	resource "netbox_tenancy_tenant" "test" {
+		name = "ipamasn-{{ .namesuffix }}"
+		slug = "ipamasn-{{ .namesuffix }}"
+	}
+
+	resource "netbox_extras_tag" "test" {
+		name = "ipamasn-{{ .namesuffix }}"
+		slug = "ipamasn-{{ .namesuffix }}"
+	}
+	{{ end }}
+
+	resource "netbox_ipam_asn" "test" {
+		asn         = {{ .asn }}
+		rir_id      = netbox_ipam_rir.test.id
+		{{ if eq .resourcefull "true" }}
+		description = "Test ASN"
+
+		{{ if eq .extraresources "true" }}
+		tenant_id   = netbox_tenancy_tenant.test.id
+
+		tag {
+			name = netbox_extras_tag.test.name
+			slug = netbox_extras_tag.test.slug
+		}
+		{{ end }}
+		{{ end }}
+	}
+	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,
 		"resourcefull":   strconv.FormatBool(resourceFull),

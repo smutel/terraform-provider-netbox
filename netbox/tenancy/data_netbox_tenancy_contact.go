@@ -14,19 +14,20 @@ import (
 
 func DataNetboxTenancyContact() *schema.Resource {
 	return &schema.Resource{
+		Description: "Get info about contact from Netbox.",
 		ReadContext: dataNetboxTenancyContactRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this contact (tenancy module).",
+				Description: "The content type of this contact.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this contact (tenancy module)",
+				Description:  "The name of this contact.",
 			},
 		},
 	}

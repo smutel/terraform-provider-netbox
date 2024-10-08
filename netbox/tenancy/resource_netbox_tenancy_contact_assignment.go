@@ -10,12 +10,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
 func ResourceNetboxTenancyContactAssignment() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Link a contact (tenancy module) to another resource within Netbox.",
+		Description:   "Link a contact to another resource within Netbox.",
 		CreateContext: resourceNetboxTenancyContactAssignmentCreate,
 		ReadContext:   resourceNetboxTenancyContactAssignmentRead,
 		UpdateContext: resourceNetboxTenancyContactAssignmentUpdate,
@@ -29,12 +30,12 @@ func ResourceNetboxTenancyContactAssignment() *schema.Resource {
 			"contact_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "ID of the contact to link to this contact assignment (tenancy module).",
+				Description: "ID of the contact to link to this contact assignment.",
 			},
 			"contact_role_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The role of the contact for this contact assignment (tenancy module).",
+				Description: "The role of the contact for this contact assignment.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
@@ -69,10 +70,24 @@ func resourceNetboxTenancyContactAssignmentCreate(ctx context.Context, d *schema
 	priority := d.Get("priority").(string)
 
 	newResource := netbox.NewWritableContactAssignmentRequestWithDefaults()
-	newResource.SetContact(contactID)
-	newResource.SetContentType(contentType)
 	newResource.SetObjectId(objectID)
-	newResource.SetRole(contactRoleID)
+	newResource.SetObjectType(contentType)
+
+	if contactID != 0 {
+		b, err := brief.GetBriefContactRequestFromID(client, ctx, contactID)
+		if err != nil {
+			return err
+		}
+		newResource.SetContact(*b)
+	}
+
+	if contactRoleID != 0 {
+		b, err := brief.GetBriefContactRoleRequestFromID(client, ctx, contactRoleID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRole(*b)
+	}
 
 	p, err := netbox.NewContactAssignmentPriorityValueFromValue(priority)
 	if err != nil {
@@ -110,7 +125,7 @@ func resourceNetboxTenancyContactAssignmentRead(ctx context.Context, d *schema.R
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", resource.GetObjectType()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -140,14 +155,23 @@ func resourceNetboxTenancyContactAssignmentUpdate(ctx context.Context, d *schema
 	resource := netbox.NewWritableContactAssignmentRequestWithDefaults()
 
 	// Required parameters
-	resource.SetContact(int32(d.Get("contact_id").(int)))
+	resource.SetObjectType(d.Get("content_type").(string))
+	b, errDiag := brief.GetBriefContactRequestFromID(client, ctx, int32(d.Get("contact_id").(int)))
+	if errDiag != nil {
+		return errDiag
+	}
+	resource.SetContact(*b)
 
 	if d.HasChange("contact_role_id") {
-		resource.SetRole(int32(d.Get("contact_role_id").(int)))
-	}
+		contactRoleID := int32(d.Get("contact_role_id").(int))
+		if contactRoleID != 0 {
+			b, errDiag := brief.GetBriefContactRoleRequestFromID(client, ctx, contactRoleID)
+			if errDiag != nil {
+				return errDiag
+			}
+			resource.SetRole(*b)
+		}
 
-	if d.HasChange("content_type") {
-		resource.SetContentType(d.Get("content_type").(string))
 	}
 
 	if d.HasChange("object_id") {

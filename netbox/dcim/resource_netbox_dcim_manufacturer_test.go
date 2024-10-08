@@ -91,44 +91,23 @@ func TestAccNetboxDcimManufacturerMinimalFullMinimal(t *testing.T) {
 }
 
 func testAccCheckNetboxDcimManufacturerConfig(nameSuffix string, resourceFull, extraResources bool) string {
-	// template := `
-	// {{ if eq .extraresources "true" }}
-	// resource "netbox_extras_tag" "test" {
-	// name = "test-{{ .namesuffix }}"
-	// slug = "test-{{ .namesuffix }}"
-	// }
-	// {{ end }}
-
-	// resource "netbox_dcim_manufacturer" "test" {
-	// name        = "test-{{ .namesuffix }}"
-	// slug        = "test-{{ .namesuffix }}"
-	// {{ if eq .resourcefull "true" }}
-	// description = "Test device role"
-
-	// tag {
-	// name = netbox_extras_tag.test.name
-	// slug = netbox_extras_tag.test.slug
-	// }
-	// {{ end }}
-	// }
-	// `
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "dcimmanufacturer-{{ .namesuffix }}"
+		slug = "dcimmanufacturer-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_dcim_manufacturer" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name        = "dcimmanufacturer-{{ .namesuffix }}"
+		slug        = "dcimmanufacturer-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test device role"
 
 		tag {
-			name = "test"
-			slug = "test"
+			name = netbox_extras_tag.test.name
+			slug = netbox_extras_tag.test.slug
 		}
 		{{ end }}
 	}

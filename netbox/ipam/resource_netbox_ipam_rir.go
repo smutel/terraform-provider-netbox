@@ -17,7 +17,7 @@ import (
 
 func ResourceNetboxIpamRIR() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a rir (ipam module) within Netbox.",
+		Description:   "Manage a RIR within Netbox.",
 		CreateContext: resourceNetboxIpamRIRCreate,
 		ReadContext:   resourceNetboxIpamRIRRead,
 		UpdateContext: resourceNetboxIpamRIRUpdate,
@@ -31,17 +31,17 @@ func ResourceNetboxIpamRIR() *schema.Resource {
 			"aggregate_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of aggregates with this rir (ipam module).",
+				Description: "The number of aggregates with this RIR.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this rir (ipam module).",
+				Description: "The content type of this RIR.",
 			},
 			"created": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this rir was created.",
+				Description: "Date when this RIR was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -49,36 +49,36 @@ func ResourceNetboxIpamRIR() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The description of this rir (ipam module).",
+				Description:  "The description of this RIR.",
 			},
 			"is_private": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "Date when this rir was created.",
+				Description: "IP range managed by this RIR is considered as private.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this rir was created.",
+				Description: "Last date when this RIR was updated.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this rir (ipam module).",
+				Description:  "The name of this RIR.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this rir (ipam module).",
+				Description:  "The slug, Unique identifier used in URLs, of this RIR.",
 			},
 			"tag": &tag.TagSchema,
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this rir (ipam module).",
+				Description: "The link to this RIR.",
 			},
 		},
 	}
@@ -103,17 +103,16 @@ func resourceNetboxIpamRIRCreate(ctx context.Context, d *schema.ResourceData,
 	newResource.SetSlug(slug)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	resourceCreated, response, err := client.IpamAPI.IpamRirsCreate(ctx).RIRRequest(*newResource).Execute()
+	_, response, err := client.IpamAPI.IpamRirsCreate(ctx).RIRRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxIpamRIRRead(ctx, d, m)
 }
@@ -134,7 +133,7 @@ func resourceNetboxIpamRIRRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -161,7 +160,7 @@ func resourceNetboxIpamRIRRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("is_private", resource.GetIsPrivate()); err != nil {
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -194,6 +193,10 @@ func resourceNetboxIpamRIRUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 	resource := netbox.NewRIRRequestWithDefaults()
 
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
@@ -210,14 +213,6 @@ func resourceNetboxIpamRIRUpdate(ctx context.Context, d *schema.ResourceData,
 
 	if d.HasChange("is_private") {
 		resource.SetIsPrivate(d.Get("is_private").(bool))
-	}
-
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
-	if d.HasChange("slug") {
-		resource.SetSlug(d.Get("slug").(string))
 	}
 
 	if d.HasChange("tag") {

@@ -3,6 +3,7 @@ package ipam
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
@@ -17,7 +19,7 @@ import (
 
 func ResourceNetboxIpamPrefix() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a prefix (ipam module) within Netbox.",
+		Description:   "Manage a prefix within Netbox.",
 		CreateContext: resourceNetboxIpamPrefixCreate,
 		ReadContext:   resourceNetboxIpamPrefixRead,
 		UpdateContext: resourceNetboxIpamPrefixUpdate,
@@ -31,7 +33,12 @@ func ResourceNetboxIpamPrefix() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this prefix (ipam module).",
+				Description: "The content type of this prefix.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this prefix was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
@@ -39,7 +46,7 @@ func ResourceNetboxIpamPrefix() *schema.Resource {
 				Optional:     true,
 				Default:      nil,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The description of this prefix (ipam module).",
+				Description:  "The description of this prefix.",
 			},
 			"is_pool": {
 				Type:        schema.TypeBool,
@@ -47,13 +54,18 @@ func ResourceNetboxIpamPrefix() *schema.Resource {
 				Default:     nil,
 				Description: "Define if this object is a pool (false by default).",
 			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this site was last updated.",
+			},
 			"prefix": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
 				ValidateFunc: validation.IsCIDRNetwork(0, 256),
 				ExactlyOneOf: []string{"prefix", "parent_prefix"},
-				Description:  "The prefix (IP address/mask) used for this prefix (ipam module). Required if parent_prefix is not set.",
+				Description:  "The prefix (IP address/mask) used for this prefix. Required if parent_prefix is not set.",
 			},
 			"parent_prefix": {
 				Type:        schema.TypeSet,
@@ -79,12 +91,12 @@ func ResourceNetboxIpamPrefix() *schema.Resource {
 			"role_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the role attached to this prefix (ipam module).",
+				Description: "ID of the role attached to this prefix.",
 			},
 			"site_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the site where this prefix (ipam module) is located.",
+				Description: "ID of the site where this prefix is located.",
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -98,17 +110,17 @@ func ResourceNetboxIpamPrefix() *schema.Resource {
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the tenant where this prefix (ipam module) is attached.",
+				Description: "ID of the tenant where this prefix is attached.",
 			},
 			"vlan_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the vlan where this prefix (ipam module) is attached.",
+				Description: "ID of the vlan where this prefix is attached.",
 			},
 			"vrf_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the vrf attached to this prefix (ipam module).",
+				Description: "ID of the vrf attached to this prefix.",
 			},
 		},
 	}
@@ -140,13 +152,8 @@ func resourceNetboxIpamPrefixCreate(ctx context.Context, d *schema.ResourceData,
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 	description := d.Get("description").(string)
 	isPool := d.Get("is_pool").(bool)
-	roleID := int32(d.Get("role_id").(int))
-	siteID := int32(d.Get("site_id").(int))
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int32(d.Get("tenant_id").(int))
-	vlanID := int32(d.Get("vlan_id").(int))
-	vrfID := int32(d.Get("vrf_id").(int))
 
 	newResource := netbox.NewWritablePrefixRequestWithDefaults()
 	newResource.SetCustomFields(customFields)
@@ -161,45 +168,61 @@ func resourceNetboxIpamPrefixCreate(ctx context.Context, d *schema.ResourceData,
 	}
 	newResource.SetStatus(*s)
 
-	if roleID != 0 {
-		newResource.SetRole(roleID)
+	if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
+		b, err := brief.GetBriefVlanRoleRequestFromID(client, ctx, roleID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRole(*b)
 	}
 
-	if siteID != 0 {
-		newResource.SetSite(siteID)
+	if siteID := int32(d.Get("site_id").(int)); siteID != 0 {
+		b, err := brief.GetBriefSiteRequestFromID(client, ctx, siteID)
+		if err != nil {
+			return err
+		}
+		newResource.SetSite(*b)
 	}
 
-	if tenantID != 0 {
-		newResource.SetTenant(tenantID)
+	if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+		b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
-	if vlanID != 0 {
-		newResource.SetVlan(vlanID)
+	if vlanID := int32(d.Get("vlan_id").(int)); vlanID != 0 {
+		b, err := brief.GetBriefVlanRequestFromID(client, ctx, vlanID)
+		if err != nil {
+			return err
+		}
+		newResource.SetVlan(*b)
 	}
 
-	if vrfID != 0 {
-		newResource.SetVrf(vrfID)
+	if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
+		b, err := brief.GetBriefVRFRequestFromID(client, ctx, vrfID)
+		if err != nil {
+			return err
+		}
+		newResource.SetVrf(*b)
 	}
 
-	var resource *netbox.Prefix
 	var response *http.Response
 	if !update {
-		resource, response, err = client.IpamAPI.IpamPrefixesCreate(ctx).WritablePrefixRequest(*newResource).Execute()
+		_, response, err = client.IpamAPI.IpamPrefixesCreate(ctx).WritablePrefixRequest(*newResource).Execute()
 	} else {
-		resource, response, err = client.IpamAPI.IpamPrefixesUpdate(ctx, prefixid).WritablePrefixRequest(*newResource).Execute()
+		_, response, err = client.IpamAPI.IpamPrefixesUpdate(ctx, prefixid).WritablePrefixRequest(*newResource).Execute()
 	}
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resource.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	prefixid = resource.GetId()
-
-	d.SetId(strconv.FormatInt(int64(prefixid), 10))
 
 	return resourceNetboxIpamPrefixRead(ctx, d, m)
 }
@@ -220,9 +243,14 @@ func resourceNetboxIpamPrefixRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
@@ -235,6 +263,10 @@ func resourceNetboxIpamPrefixRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if err = d.Set("is_pool", resource.GetIsPool()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -303,18 +335,24 @@ func resourceNetboxIpamPrefixUpdate(ctx context.Context, d *schema.ResourceData,
 	resource.SetIsPool(d.Get("is_pool").(bool))
 
 	if d.HasChange("role_id") {
-		roleID := int32(d.Get("role_id").(int))
-		if roleID != 0 {
-			resource.SetRole(roleID)
+		if roleID := int32(d.Get("role_id").(int)); roleID != 0 {
+			b, err := brief.GetBriefVlanRoleRequestFromID(client, ctx, roleID)
+			if err != nil {
+				return err
+			}
+			resource.SetRole(*b)
 		} else {
 			resource.SetRoleNil()
 		}
 	}
 
 	if d.HasChange("site_id") {
-		siteID := int32(d.Get("role_id").(int))
-		if siteID != 0 {
-			resource.SetSite(siteID)
+		if siteID := int32(d.Get("site_id").(int)); siteID != 0 {
+			b, err := brief.GetBriefSiteRequestFromID(client, ctx, siteID)
+			if err != nil {
+				return err
+			}
+			resource.SetSite(*b)
 		} else {
 			resource.SetSiteNil()
 		}
@@ -334,27 +372,36 @@ func resourceNetboxIpamPrefixUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int32(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			resource.SetTenant(tenantID)
+		if tenantID := int32(d.Get("tenant_id").(int)); tenantID != 0 {
+			b, err := brief.GetBriefTenantRequestFromID(client, ctx, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
 			resource.SetTenantNil()
 		}
 	}
 
 	if d.HasChange("vlan_id") {
-		vlanID := int32(d.Get("vlan_id").(int))
-		if vlanID != 0 {
-			resource.SetVlan(vlanID)
+		if vlanID := int32(d.Get("vlan_id").(int)); vlanID != 0 {
+			b, err := brief.GetBriefVlanRequestFromID(client, ctx, vlanID)
+			if err != nil {
+				return err
+			}
+			resource.SetVlan(*b)
 		} else {
 			resource.SetVlanNil()
 		}
 	}
 
 	if d.HasChange("vrf_id") {
-		vrfID := int32(d.Get("vrf_id").(int))
-		if vrfID != 0 {
-			resource.SetVrf(vrfID)
+		if vrfID := int32(d.Get("vrf_id").(int)); vrfID != 0 {
+			b, err := brief.GetBriefVRFRequestFromID(client, ctx, vrfID)
+			if err != nil {
+				return err
+			}
+			resource.SetVrf(*b)
 		} else {
 			resource.SetVrfNil()
 		}

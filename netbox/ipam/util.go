@@ -3,10 +3,10 @@ package ipam
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	netbox "github.com/netbox-community/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/brief"
 	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
 )
 
@@ -57,9 +57,7 @@ func getVMIDForInterface(ctx context.Context, client *netbox.APIClient, objectID
 
 	for _, i := range interfaces.Results {
 		if i.GetId() == objectID {
-			if i.GetVirtualMachine != nil {
-				return i.GetVirtualMachine().Id, nil
-			}
+			return i.GetVirtualMachine().Id, nil
 		}
 	}
 
@@ -67,27 +65,28 @@ func getVMIDForInterface(ctx context.Context, client *netbox.APIClient, objectID
 }
 
 func isprimary(ctx context.Context, client *netbox.APIClient, objectID int64, ipID int32, ip4 bool) (bool, diag.Diagnostics) {
-
+	fmt.Println("TATA")
 	if objectID == 0 {
+		fmt.Println("TITI")
 		return false, nil
 	}
 
-	var vm *netbox.PaginatedVirtualMachineWithConfigContextList
-	var response *http.Response
-	var err error
-	objectIDArray := []int32{int32(objectID)}
-	if ip4 {
-		vm, response, err = client.VirtualizationAPI.VirtualizationVirtualMachinesList(ctx).PrimaryIp4Id(objectIDArray).Execute()
-	} else {
-		vm, response, err = client.VirtualizationAPI.VirtualizationVirtualMachinesList(ctx).PrimaryIp6Id(objectIDArray).Execute()
-	}
+	resource, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesList(ctx).Id([]int32{int32(objectID)}).Execute()
 
 	if err != nil {
 		return false, util.GenerateErrorMessage(response, err)
 	}
 
-	if vm.GetCount() >= 1 {
-		return true, nil
+	if resource.GetCount() > 0 {
+		fmt.Println("TOTO")
+		r := resource.Results[0]
+		if ip4 && r.GetPrimaryIp4().Id == ipID {
+			return true, nil
+		}
+
+		if !ip4 && r.GetPrimaryIp6().Id == ipID {
+			return true, nil
+		}
 	}
 
 	return false, nil
@@ -117,14 +116,39 @@ func setPrimaryIP(ctx context.Context, client *netbox.APIClient, addressID int32
 
 func updatePrimaryStatus(ctx context.Context, client *netbox.APIClient, vmid int32, ipid int32, primary bool) diag.Diagnostics {
 
-	resource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
-	if primary {
-		resource.SetPrimaryIp4(ipid)
-	} else {
-		resource.SetPrimaryIp4Nil()
+	oldResource, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(nil, int32(vmid)).Execute()
+	if response.StatusCode != 201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, vmid).WritableVirtualMachineWithConfigContextRequest(*resource).Execute(); err != nil {
+	newResource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+	newResource.SetName(oldResource.GetName())
+	if oldResource.GetCluster().Id != 0 {
+		b, errDiag := brief.GetBriefClusterRequestFromID(client, ctx, oldResource.GetCluster().Id)
+		if errDiag != nil {
+			return errDiag
+		}
+		newResource.SetCluster(*b)
+	}
+	if oldResource.GetSite().Id != 0 {
+		b, errDiag := brief.GetBriefSiteRequestFromID(client, ctx, oldResource.GetSite().Id)
+		if errDiag != nil {
+			return errDiag
+		}
+		newResource.SetSite(*b)
+	}
+
+	if primary {
+		b, err := brief.GetBriefIPAdressRequestFromID(client, ctx, ipid)
+		if err != nil {
+			return err
+		}
+		newResource.SetPrimaryIp4(*b)
+	} else {
+		newResource.SetPrimaryIp4Nil()
+	}
+
+	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx, vmid).WritableVirtualMachineWithConfigContextRequest(*newResource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 

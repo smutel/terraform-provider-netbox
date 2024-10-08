@@ -17,7 +17,7 @@ import (
 
 func ResourceNetboxVirtualizationClusterType() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a cluster type (virtualization module) within Netbox.",
+		Description:   "Manage a cluster type within Netbox.",
 		CreateContext: resourceNetboxVirtualizationClusterTypeCreate,
 		ReadContext:   resourceNetboxVirtualizationClusterTypeRead,
 		UpdateContext: resourceNetboxVirtualizationClusterTypeUpdate,
@@ -31,12 +31,12 @@ func ResourceNetboxVirtualizationClusterType() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this cluster type (virtualization module).",
+				Description: "The content type of this cluster type.",
 			},
 			"cluster_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of clusters in this cluster type (virtualization module).",
+				Description: "The number of clusters in this cluster type.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -48,7 +48,7 @@ func ResourceNetboxVirtualizationClusterType() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(0, 100),
-				Description:  "The description of this cluster type (virtualization module).",
+				Description:  "The description of this cluster type.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
@@ -59,19 +59,19 @@ func ResourceNetboxVirtualizationClusterType() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this cluster type (virtualization module).",
+				Description:  "The name of this cluster type.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this cluster type (virtualization module).",
+				Description:  "The slug of this cluster type.",
 			},
 			"tag": &tag.TagSchema,
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this cluster type (virtualization module).",
+				Description: "The link to this cluster type.",
 			},
 		},
 	}
@@ -94,12 +94,16 @@ func resourceNetboxVirtualizationClusterTypeCreate(ctx context.Context, d *schem
 	newResource.SetSlug(slug)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	resourceCreated, response, err := client.VirtualizationAPI.VirtualizationClusterTypesCreate(ctx).ClusterTypeRequest(*newResource).Execute()
+	_, response, err := client.VirtualizationAPI.VirtualizationClusterTypesCreate(ctx).ClusterTypeRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
+	}
 
 	return resourceNetboxVirtualizationClusterTypeRead(ctx, d, m)
 }
@@ -109,7 +113,7 @@ func resourceNetboxVirtualizationClusterTypeRead(ctx context.Context, d *schema.
 	client := m.(*netbox.APIClient)
 
 	resourceID, _ := strconv.Atoi(d.Id())
-	resource, response, err := client.VirtualizationAPI.VirtualizationClusterGroupsRetrieve(ctx, int32(resourceID)).Execute()
+	resource, response, err := client.VirtualizationAPI.VirtualizationClusterTypesRetrieve(ctx, int32(resourceID)).Execute()
 
 	if response.StatusCode == 404 {
 		d.SetId("")
@@ -124,7 +128,7 @@ func resourceNetboxVirtualizationClusterTypeRead(ctx context.Context, d *schema.
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("content_type", resource.GetUrl()); err != nil {
+	if err = d.Set("content_type", util.ConvertURLContentType(resource.GetUrl())); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -143,7 +147,7 @@ func resourceNetboxVirtualizationClusterTypeRead(ctx context.Context, d *schema.
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("last_updated", resource.GetLastUpdated()); err != nil {
+	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -176,6 +180,10 @@ func resourceNetboxVirtualizationClusterTypeUpdate(ctx context.Context, d *schem
 	}
 	resource := netbox.NewClusterTypeRequestWithDefaults()
 
+	// Required parameters
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
@@ -184,14 +192,6 @@ func resourceNetboxVirtualizationClusterTypeUpdate(ctx context.Context, d *schem
 
 	if d.HasChange("description") {
 		resource.SetDescription(d.Get("description").(string))
-	}
-
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
-	if d.HasChange("slug") {
-		resource.SetSlug(d.Get("slug").(string))
 	}
 
 	if d.HasChange("tag") {

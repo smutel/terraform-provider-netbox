@@ -93,7 +93,7 @@ func TestAccNetboxExtrasCustomFieldJSONMinimalFullMinimal(t *testing.T) {
 func testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfjson_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
@@ -103,12 +103,13 @@ func testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix string, resourceFu
 		description   = "Test custom field"
 		group_name    = "testgroup"
 		ui_visibility = "hidden"
+		ui_editable   = "no"
 		label         = "Test Label for CF"
 		weight        = 50
 		#required      = true
 		filter_logic  = "disabled"
-		default       = jsonencode({
-			bool = false
+    default       = jsonencode({
+		  bool = false
 			number = 1.5
 			dict = {
 				text = "Some text"
@@ -117,24 +118,26 @@ func testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix string, resourceFu
 		{{ end }}
 	}
 
-	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+  {{ if eq .extraresources "true" }}
+  resource "netbox_dcim_site" "test_assign" {
+    name = "extrascfjson-a-{{ .namesuffix }}"
+    slug = "extrascfjson-a-{{ .namesuffix }}"
 
-		custom_field {
-			name = netbox_extras_custom_field.test.name
-			type = netbox_extras_custom_field.test.type
-			value = jsonencode(
-				{
-					mystring = "string"
-					mynumber = 6
-					mydict = {
-						mybool = false
-					}
-				}
-			)
-		}
-	}
+    custom_field {
+      name = netbox_extras_custom_field.test.name
+      type = netbox_extras_custom_field.test.type
+      value = jsonencode(
+        {
+          mystring = "string"
+          mynumber = 6
+          mydict = {
+            mybool = false
+          }
+        }
+      )
+    }
+  }
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,
