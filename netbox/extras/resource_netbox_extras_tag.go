@@ -3,6 +3,7 @@ package extras
 import (
 	"context"
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 
@@ -95,17 +96,16 @@ func resourceNetboxExtrasTagCreate(ctx context.Context, d *schema.ResourceData,
 	newResource.SetDescription(d.Get("description").(string))
 	newResource.SetColor(d.Get("color").(string))
 
-	resourceCreated, response, err := client.ExtrasAPI.ExtrasTagsCreate(ctx).TagRequest(*newResource).Execute()
+	_, response, err := client.ExtrasAPI.ExtrasTagsCreate(ctx).TagRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(strconv.FormatInt(int64(resourceCreated.GetId()), 10))
 
 	return resourceNetboxExtrasTagRead(ctx, d, m)
 }
@@ -149,7 +149,7 @@ func resourceNetboxExtrasTagRead(ctx context.Context, d *schema.ResourceData,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("tagged_items", resource.GetObjectTypes()); err != nil {
+	if err = d.Set("tagged_items", resource.GetTaggedItems()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -167,20 +167,15 @@ func resourceNetboxExtrasTagUpdate(ctx context.Context, d *schema.ResourceData,
 	resourceID, _ := strconv.Atoi(d.Id())
 	resource := netbox.NewTagRequestWithDefaults()
 
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
+
 	if d.HasChange("color") {
 		resource.SetColor(d.Get("color").(string))
 	}
 
 	if d.HasChange("description") {
 		resource.SetDescription(d.Get("description").(string))
-	}
-
-	if d.HasChange("name") {
-		resource.SetName(d.Get("name").(string))
-	}
-
-	if d.HasChange("slug") {
-		resource.SetName(d.Get("slug").(string))
 	}
 
 	if _, response, err := client.ExtrasAPI.ExtrasTagsUpdate(ctx, int32(resourceID)).TagRequest(*resource).Execute(); err != nil {

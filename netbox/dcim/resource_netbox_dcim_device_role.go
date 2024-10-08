@@ -3,6 +3,7 @@ package dcim
 import (
 	"context"
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 
@@ -113,7 +114,7 @@ func resourceNetboxDcimDeviceRoleCreate(ctx context.Context, d *schema.ResourceD
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
 	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
 
-	newResource := netbox.NewWritableDeviceRoleRequestWithDefaults()
+	newResource := netbox.NewDeviceRoleRequestWithDefaults()
 	newResource.SetName(name)
 	newResource.SetSlug(slug)
 	newResource.SetColor(color)
@@ -122,17 +123,16 @@ func resourceNetboxDcimDeviceRoleCreate(ctx context.Context, d *schema.ResourceD
 	newResource.SetCustomFields(customFields)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	resourceCreated, response, err := client.DcimAPI.DcimDeviceRolesCreate(ctx).WritableDeviceRoleRequest(*newResource).Execute()
+	_, response, err := client.DcimAPI.DcimDeviceRolesCreate(ctx).DeviceRoleRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
-	// NETBOX BUG - TO BE FIXED
-	if resourceCreated.GetId() == 0 {
-		return diag.FromErr(errors.New("Bug Netbox - TO BE FIXED"))
+	if resourceID, err := util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	} else {
+		d.SetId(fmt.Sprintf("%d", resourceID))
 	}
-
-	d.SetId(strconv.FormatInt(int64(resourceCreated.GetId()), 10))
 
 	return resourceNetboxDcimDeviceRoleRead(ctx, d, m)
 }
@@ -152,20 +152,20 @@ func resourceNetboxDcimDeviceRoleRead(ctx context.Context, d *schema.ResourceDat
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("color", resource.GetColor()); err != nil {
+	if err = d.Set("color", resource.AdditionalProperties["color"]); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+	if err = d.Set("created", resource.AdditionalProperties["created"]); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
+	// resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	// customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.GetCustomFields())
 
-	if err = d.Set("custom_field", customFields); err != nil {
-		return util.GenerateErrorMessage(nil, err)
-	}
+	// if err = d.Set("custom_field", customFields); err != nil {
+	// return util.GenerateErrorMessage(nil, err)
+	// }
 
 	if err = d.Set("description", resource.GetDescription()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
@@ -175,7 +175,7 @@ func resourceNetboxDcimDeviceRoleRead(ctx context.Context, d *schema.ResourceDat
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("last_updated", resource.GetLastUpdated().String()); err != nil {
+	if err = d.Set("last_updated", resource.AdditionalProperties["last_updated"]); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -187,9 +187,9 @@ func resourceNetboxDcimDeviceRoleRead(ctx context.Context, d *schema.ResourceDat
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
-		return util.GenerateErrorMessage(nil, err)
-	}
+	// if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(resource.AdditionalProperties["tags"])); err != nil {
+	// return util.GenerateErrorMessage(nil, err)
+	// }
 
 	if err = d.Set("url", resource.GetUrl()); err != nil {
 		return util.GenerateErrorMessage(nil, err)
@@ -199,7 +199,7 @@ func resourceNetboxDcimDeviceRoleRead(ctx context.Context, d *schema.ResourceDat
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	if err = d.Set("vm_role", resource.GetVmRole()); err != nil {
+	if err = d.Set("vm_role", resource.AdditionalProperties["vm_role"]); err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
 
@@ -210,11 +210,12 @@ func resourceNetboxDcimDeviceRoleUpdate(ctx context.Context, d *schema.ResourceD
 	m interface{}) diag.Diagnostics {
 	client := m.(*netbox.APIClient)
 
+	// Required fields
 	name := d.Get("name").(string)
 	slug := d.Get("slug").(string)
 
 	resourceID, _ := strconv.Atoi(d.Id())
-	resource := netbox.NewWritableDeviceRoleRequestWithDefaults()
+	resource := netbox.NewDeviceRoleRequestWithDefaults()
 	resource.SetName(name)
 	resource.SetSlug(slug)
 
@@ -241,7 +242,7 @@ func resourceNetboxDcimDeviceRoleUpdate(ctx context.Context, d *schema.ResourceD
 		resource.SetVmRole(d.Get("vm_role").(bool))
 	}
 
-	if _, response, err := client.DcimAPI.DcimDeviceRolesUpdate(ctx, int32(resourceID)).WritableDeviceRoleRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.DcimAPI.DcimDeviceRolesUpdate(ctx, int32(resourceID)).DeviceRoleRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 

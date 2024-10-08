@@ -15,6 +15,11 @@ import (
 	"github.com/smutel/go-netbox/v3/netbox/models"
 )
 
+type GenericResponse struct {
+	Id     int32                  `json:"id"`
+	Others map[string]interface{} `json:"-"`
+}
+
 func ConvertNestedASNsToASNs(asns []*models.NestedASN) []int64 {
 	var tfASNs []int64
 
@@ -184,4 +189,19 @@ func GenerateErrorMessage(response *http.Response, err error) diag.Diagnostics {
 	diags = append(diags, providerDiag)
 
 	return diags
+}
+
+func UnmarshalID(body io.ReadCloser) (int32, error) {
+	byteValue, err := io.ReadAll(body)
+	var gr GenericResponse
+
+	if err != nil {
+		return 0, err
+	}
+
+	if err := json.Unmarshal(byteValue, &gr); err != nil {
+		return 0, err
+	} else {
+		return gr.Id, nil
+	}
 }

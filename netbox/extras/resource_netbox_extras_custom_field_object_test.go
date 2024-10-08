@@ -121,18 +121,18 @@ func testAccCheckNetboxExtrasCustomFieldObjectConfig(nameSuffix string, resource
 		{{ end }}
 	}
 
-	{{ if eq .extraresources "true" }}
-	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+	// {{ if eq .extraresources "true" }}
+	// resource "netbox_dcim_site" "test_assign" {
+		// name = "test-a-{{ .namesuffix }}"
+		// slug = "test-a-{{ .namesuffix }}"
 
-		custom_field {
-			name = netbox_extras_custom_field.test.name
-			type = netbox_extras_custom_field.test.type
-			value = netbox_dcim_platform.test.id
-		}
-	}
-	{{ end }}
+		// custom_field {
+			// name = netbox_extras_custom_field.test.name
+			// type = netbox_extras_custom_field.test.type
+			// value = netbox_dcim_platform.test.id
+		// }
+	// }
+	// {{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

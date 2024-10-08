@@ -92,13 +92,25 @@ func TestAccNetboxDcimDeviceRoleMinimalFullMinimal(t *testing.T) {
 
 func testAccCheckNetboxDcimDeviceRoleConfig(nameSuffix string, resourceFull, extraResources bool) string {
 	template := `
-	resource "netbox_dcim_device_role" "test" {
+  // {{ if eq .extraresources "true" }}
+	// resource "netbox_extras_tag" "test" {
+		// name = "test-{{ .namesuffix }}"
+		// slug = "test-{{ .namesuffix }}"
+	// }
+	// {{ end }}
+
+  resource "netbox_dcim_device_role" "test" {
 		name        = "test-{{ .namesuffix }}"
 		slug        = "test-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test device role"
 		color = "00ff00"
 		vm_role = false
+
+    // tag {
+			// name = netbox_extras_tag.test.name
+			// slug = netbox_extras_tag.test.slug
+		// }
 		{{ end }}
 	}
 	`

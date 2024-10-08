@@ -124,7 +124,20 @@ func resourceNetboxVirtualizationClusterCreate(ctx context.Context, d *schema.Re
 	newResource.SetCustomFields(customFields)
 	newResource.SetName(name)
 	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
-	newResource.SetType(typeID)
+
+	clusterType, response, err := client.VirtualizationAPI.VirtualizationClusterTypesRetrieve(ctx, int32(typeID)).Execute()
+	if response.StatusCode == 404 {
+		d.SetId("")
+		return nil
+	}
+
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
+	newResource.SetType(clusterType)
+
+	newResource := netbox.NewClusterTypeRequestWithDefaults()
+	netbox.NewClusterTypeRequest()
 
 	s, err := netbox.NewClusterStatusValueFromValue(d.Get("status").(string))
 	if err != nil {
@@ -133,15 +146,37 @@ func resourceNetboxVirtualizationClusterCreate(ctx context.Context, d *schema.Re
 	newResource.SetStatus(*s)
 
 	if groupID != 0 {
-		newResource.SetGroup(groupID)
+		resource, response, err := client.VirtualizationAPI.VirtualizationClusterGroupsRetrieve(ctx, groupID).Execute()
+
+		if response.StatusCode == 404 {
+			return util.GenerateErrorMessage(nil, err)
+		}
+
+		resourceRequest := netbox.NewClusterGroupRequest(resource.GetName(), resource.GetSlug())
+		newResource.SetGroup(*resourceRequest)
 	}
 
 	if siteID != 0 {
-		newResource.SetSite(siteID)
+		resource, response, err := client.DcimAPI.DcimSitesRetrieve(ctx, siteID).Execute()
+
+		if response.StatusCode == 404 {
+			return util.GenerateErrorMessage(nil, err)
+		}
+
+		resourceRequest := netbox.NewSiteRequest(resource.GetName(), resource.GetSlug())
+
+		newResource.SetSite(*resourceRequest)
 	}
 
 	if tenantID != 0 {
-		newResource.SetTenant(tenantID)
+		resource, response, err := client.TenancyAPI.TenancyTenantsRetrieve(nil, tenantID).Execute()
+
+		if response.StatusCode == 404 {
+			return util.GenerateErrorMessage(nil, err)
+		}
+
+		resourceRequest := netbox.NewTenantRequest(resource.GetName(), resource.GetSlug())
+		newResource.SetTenant(*resourceRequest)
 	}
 
 	resourceCreated, response, err := client.VirtualizationAPI.VirtualizationClustersCreate(ctx).WritableClusterRequest(*newResource).Execute()

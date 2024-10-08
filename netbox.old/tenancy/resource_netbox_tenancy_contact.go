@@ -123,7 +123,9 @@ func resourceNetboxTenancyContactCreate(ctx context.Context, d *schema.ResourceD
 		newResource.SetGroup(groupID)
 	}
 
-	resourceCreated, response, err := client.TenancyAPI.TenancyContactsCreate(ctx).WritableContactRequest(*newResource).Execute()
+	resourceCreated, response, err := client.TenancyAPI.TenancyContactsCreate(ctx).ContactRequest
+
+	WritableContactRequest(*newResource).Execute()
 	if response.StatusCode != 201 && err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
@@ -257,7 +259,9 @@ func resourceNetboxTenancyContactUpdate(ctx context.Context, d *schema.ResourceD
 		resource.SetEmail(d.Get("title").(string))
 	}
 
-	if _, response, err := client.TenancyAPI.TenancyContactsUpdate(ctx, int32(resourceID)).WritableContactRequest(*resource).Execute(); err != nil {
+	if _, response, err := client.TenancyAPI.TenancyContactsUpdate(ctx, int32(resourceID)).ContactRequest
+
+  WritableContactRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
