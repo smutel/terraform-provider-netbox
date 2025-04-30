@@ -10,10 +10,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: ['1.22.x']
+        go: ['1.23.x']
     steps:
       - name: Check conventional commits in PR
-        uses: Namchee/conventional-pr@v0.13.0
+        uses: Namchee/conventional-pr@a6f50a1a97809e18975759853b67e45246005369  # v0.15.6
         with:
           access_token: ${{ secrets.github_token }}
           close: false
@@ -22,16 +22,17 @@ jobs:
           commit_pattern: '([fix|enh|feat|ci|chore|docs\-]+)(\([\w\-]+\))?!?: [A-Z][\w\s:\-]+'
 
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
           fetch-depth: 0
 
       - name: Lint
-        uses: reviewdog/action-golangci-lint@v2.3.3
+        uses: reviewdog/action-golangci-lint@f9bba13753278f6a73b27a56a3ffb1bfda90ed71  # v2.8.0
         with:
+          fail_level: any
+          fail_on_error: true
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
-          fail_on_error: true
 
       - name: Setup env
         run: |
@@ -42,7 +43,7 @@ jobs:
         shell: bash
 
       - name: Go installation
-        uses: actions/setup-go@v4.0.1
+        uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b  # v5.4.0
         with:
           go-version: ${{ matrix.go }}
 
