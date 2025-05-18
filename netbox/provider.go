@@ -1,3 +1,4 @@
+//nolint:revive
 package netbox
 
 import (
@@ -6,37 +7,28 @@ import (
 	"fmt"
 	"net/http"
 
-	runtimeclient "github.com/go-openapi/runtime/client"
-	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/dcim"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/extras"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/ipam"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/json"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/tenancy"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/virtualization"
+	netbox "github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/dcim"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/extras"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/ipam"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/json"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/tenancy"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/virtualization"
 )
 
 const authHeaderName = "Authorization"
 const authHeaderFormat = "Token %v"
 
-// Provider exports the actual provider.
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"url": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("NETBOX_URL", "127.0.0.1:8000"),
 				Description: "URL and port to reach netbox application (127.0.0.1:8000 by default).",
-			},
-			"basepath": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("NETBOX_BASEPATH", client.DefaultBasePath),
-				Description: "URL base path to the netbox API (/api by default).",
 			},
 			"token": {
 				Type:        schema.TypeString,
@@ -61,8 +53,12 @@ func Provider() *schema.Provider {
 			"netbox_json_circuits_circuits_list":                  json.DataNetboxJSONCircuitsCircuitsList(),
 			"netbox_json_circuits_circuit_terminations_list":      json.DataNetboxJSONCircuitsCircuitTerminationsList(),
 			"netbox_json_circuits_circuit_types_list":             json.DataNetboxJSONCircuitsCircuitTypesList(),
+			"netbox_json_circuits_provider_accounts_list":         json.DataNetboxJSONCircuitsProviderAccountsList(),
 			"netbox_json_circuits_provider_networks_list":         json.DataNetboxJSONCircuitsProviderNetworksList(),
 			"netbox_json_circuits_providers_list":                 json.DataNetboxJSONCircuitsProvidersList(),
+			"netbox_json_core_data_files_list":                    json.DataNetboxJSONCoreDataFilesList(),
+			"netbox_json_core_data_sources_list":                  json.DataNetboxJSONCoreDataSourcesList(),
+			"netbox_json_core_jobs_list":                          json.DataNetboxJSONCoreJobsList(),
 			"netbox_json_dcim_cables_list":                        json.DataNetboxJSONDcimCablesList(),
 			"netbox_json_dcim_cable_terminations_list":            json.DataNetboxJSONDcimCableTerminationsList(),
 			"netbox_json_dcim_console_ports_list":                 json.DataNetboxJSONDcimConsolePortsList(),
@@ -104,26 +100,29 @@ func Provider() *schema.Provider {
 			"netbox_json_dcim_sites_list":                         json.DataNetboxJSONDcimSitesList(),
 			"netbox_json_dcim_virtual_chassis_list":               json.DataNetboxJSONDcimVirtualChassisList(),
 			"netbox_json_dcim_virtual_device_contexts_list":       json.DataNetboxJSONDcimVirtualDeviceContextsList(),
+			"netbox_json_extras_bookmarks_list":                   json.DataNetboxJSONExtrasBookmarksList(),
 			"netbox_json_extras_config_contexts_list":             json.DataNetboxJSONExtrasConfigContextsList(),
-			"netbox_json_extras_content_types_list":               json.DataNetboxJSONExtrasContentTypesList(),
+			"netbox_json_extras_config_templates_list":            json.DataNetboxJSONExtrasConfigTemplatesList(),
+			"netbox_json_extras_custom_field_choice_sets_list":    json.DataNetboxJSONExtrasCustomFieldChoiceSetsList(),
 			"netbox_json_extras_custom_fields_list":               json.DataNetboxJSONExtrasCustomFieldsList(),
 			"netbox_json_extras_custom_links_list":                json.DataNetboxJSONExtrasCustomLinksList(),
+			"netbox_json_extras_event_rules_list":                 json.DataNetboxJSONExtrasEventRulesList(),
 			"netbox_json_extras_export_templates_list":            json.DataNetboxJSONExtrasExportTemplatesList(),
 			"netbox_json_extras_image_attachments_list":           json.DataNetboxJSONExtrasImageAttachmentsList(),
-			"netbox_json_extras_job_results_list":                 json.DataNetboxJSONExtrasJobResultsList(),
 			"netbox_json_extras_journal_entries_list":             json.DataNetboxJSONExtrasJournalEntriesList(),
 			"netbox_json_extras_object_changes_list":              json.DataNetboxJSONExtrasObjectChangesList(),
+			"netbox_json_extras_object_types_list":                json.DataNetboxJSONExtrasObjectTypesList(),
 			"netbox_json_extras_saved_filters_list":               json.DataNetboxJSONExtrasSavedFiltersList(),
+			"netbox_json_extras_scripts_list":                     json.DataNetboxJSONExtrasScriptsList(),
 			"netbox_json_extras_tags_list":                        json.DataNetboxJSONExtrasTagsList(),
 			"netbox_json_extras_webhooks_list":                    json.DataNetboxJSONExtrasWebhooksList(),
 			"netbox_json_ipam_aggregates_list":                    json.DataNetboxJSONIpamAggregatesList(),
+			"netbox_json_ipam_asn_ranges_list":                    json.DataNetboxJSONIpamAsnRangesList(),
 			"netbox_json_ipam_asns_list":                          json.DataNetboxJSONIpamAsnsList(),
 			"netbox_json_ipam_fhrp_group_assignments_list":        json.DataNetboxJSONIpamFhrpGroupAssignmentsList(),
 			"netbox_json_ipam_fhrp_groups_list":                   json.DataNetboxJSONIpamFhrpGroupsList(),
-			"netbox_json_ipam_ip_addresses_list":                  json.DataNetboxJSONIpamIPAddressesList(),
-			"netbox_json_ipam_ip_ranges_list":                     json.DataNetboxJSONIpamIPRangesList(),
-			"netbox_json_ipam_l2vpns_list":                        json.DataNetboxJSONIpamL2vpnsList(),
-			"netbox_json_ipam_l2vpn_terminations_list":            json.DataNetboxJSONIpamL2vpnTerminationsList(),
+			"netbox_json_ipam_ip_addresses_list":                  json.DataNetboxJSONIpamIpAddressesList(),
+			"netbox_json_ipam_ip_ranges_list":                     json.DataNetboxJSONIpamIpRangesList(),
 			"netbox_json_ipam_prefixes_list":                      json.DataNetboxJSONIpamPrefixesList(),
 			"netbox_json_ipam_rirs_list":                          json.DataNetboxJSONIpamRirsList(),
 			"netbox_json_ipam_roles_list":                         json.DataNetboxJSONIpamRolesList(),
@@ -147,7 +146,16 @@ func Provider() *schema.Provider {
 			"netbox_json_virtualization_clusters_list":            json.DataNetboxJSONVirtualizationClustersList(),
 			"netbox_json_virtualization_cluster_types_list":       json.DataNetboxJSONVirtualizationClusterTypesList(),
 			"netbox_json_virtualization_interfaces_list":          json.DataNetboxJSONVirtualizationInterfacesList(),
+			"netbox_json_virtualization_virtual_disks_list":       json.DataNetboxJSONVirtualizationVirtualDisksList(),
 			"netbox_json_virtualization_virtual_machines_list":    json.DataNetboxJSONVirtualizationVirtualMachinesList(),
+			"netbox_json_vpn_ike_policies_list":                   json.DataNetboxJSONVpnIkePoliciesList(),
+			"netbox_json_vpn_ike_proposals_list":                  json.DataNetboxJSONVpnIkeProposalsList(),
+			"netbox_json_vpn_ipsec_policies_list":                 json.DataNetboxJSONVpnIpsecPoliciesList(),
+			"netbox_json_vpn_ipsec_profiles_list":                 json.DataNetboxJSONVpnIpsecProfilesList(),
+			"netbox_json_vpn_ipsec_proposals_list":                json.DataNetboxJSONVpnIpsecProposalsList(),
+			"netbox_json_vpn_tunnel_groups_list":                  json.DataNetboxJSONVpnTunnelGroupsList(),
+			"netbox_json_vpn_tunnels_list":                        json.DataNetboxJSONVpnTunnelsList(),
+			"netbox_json_vpn_tunnel_terminations_list":            json.DataNetboxJSONVpnTunnelTerminationsList(),
 			"netbox_json_wireless_wireless_lan_groups_list":       json.DataNetboxJSONWirelessWirelessLanGroupsList(),
 			"netbox_json_wireless_wireless_lans_list":             json.DataNetboxJSONWirelessWirelessLansList(),
 			"netbox_json_wireless_wireless_links_list":            json.DataNetboxJSONWirelessWirelessLinksList(),
@@ -159,6 +167,9 @@ func Provider() *schema.Provider {
 			"netbox_dcim_rack_role":                               dcim.DataNetboxDcimRackRole(),
 			"netbox_dcim_region":                                  dcim.DataNetboxDcimRegion(),
 			"netbox_dcim_site":                                    dcim.DataNetboxDcimSite(),
+			"netbox_dcim_site_group":                              dcim.DataNetboxDcimSiteGroup(),
+			"netbox_extras_custom_field":                          extras.DataNetboxExtrasCustomField(),
+			"netbox_extras_tag":                                   extras.DataNetboxExtrasTag(),
 			"netbox_ipam_aggregate":                               ipam.DataNetboxIpamAggregate(),
 			"netbox_ipam_asn":                                     ipam.DataNetboxIpamAsn(),
 			"netbox_ipam_ip_addresses":                            ipam.DataNetboxIpamIPAddresses(),
@@ -177,61 +188,74 @@ func Provider() *schema.Provider {
 			"netbox_tenancy_tenant":                               tenancy.DataNetboxTenancyTenant(),
 			"netbox_tenancy_tenant_group":                         tenancy.DataNetboxTenancyTenantGroup(),
 			"netbox_virtualization_cluster":                       virtualization.DataNetboxVirtualizationCluster(),
+			"netbox_virtualization_cluster_group":                 virtualization.DataNetboxVirtualizationClusterGroup(),
+			"netbox_virtualization_cluster_type":                  virtualization.DataNetboxVirtualizationClusterType(),
+			"netbox_virtualization_interface":                     virtualization.DataNetboxVirtualizationInterface(),
+			"netbox_virtualization_vm":                            virtualization.DataNetboxVirtualizationVM(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"netbox_dcim_device_role":             dcim.ResourceNetboxDcimDeviceRole(),
-			"netbox_dcim_location":                dcim.ResourceNetboxDcimLocation(),
-			"netbox_dcim_manufacturer":            dcim.ResourceNetboxDcimManufacturer(),
-			"netbox_dcim_platform":                dcim.ResourceNetboxDcimPlatform(),
-			"netbox_dcim_rack":                    dcim.ResourceNetboxDcimRack(),
-			"netbox_dcim_rack_role":               dcim.ResourceNetboxDcimRackRole(),
-			"netbox_dcim_region":                  dcim.ResourceNetboxDcimRegion(),
-			"netbox_dcim_site":                    dcim.ResourceNetboxDcimSite(),
-			"netbox_extras_custom_field":          extras.ResourceNetboxExtrasCustomField(),
-			"netbox_extras_tag":                   extras.ResourceNetboxExtrasTag(),
-			"netbox_ipam_aggregate":               ipam.ResourceNetboxIpamAggregate(),
-			"netbox_ipam_asn":                     ipam.ResourceNetboxIpamASN(),
-			"netbox_ipam_ip_addresses":            ipam.ResourceNetboxIpamIPAddresses(),
-			"netbox_ipam_ip_range":                ipam.ResourceNetboxIpamIPRange(),
-			"netbox_ipam_prefix":                  ipam.ResourceNetboxIpamPrefix(),
-			"netbox_ipam_rir":                     ipam.ResourceNetboxIpamRIR(),
-			"netbox_ipam_route_targets":           ipam.ResourceNetboxIpamRouteTargets(),
-			"netbox_ipam_service":                 ipam.ResourceNetboxIpamService(),
-			"netbox_ipam_vlan":                    ipam.ResourceNetboxIpamVlan(),
-			"netbox_ipam_vlan_group":              ipam.ResourceNetboxIpamVlanGroup(),
-			"netbox_ipam_vrf":                     ipam.ResourceNetboxIpamVrf(),
-			"netbox_tenancy_contact":              tenancy.ResourceNetboxTenancyContact(),
-			"netbox_tenancy_contact_assignment":   tenancy.ResourceNetboxTenancyContactAssignment(),
-			"netbox_tenancy_contact_group":        tenancy.ResourceNetboxTenancyContactGroup(),
-			"netbox_tenancy_contact_role":         tenancy.ResourceNetboxTenancyContactRole(),
-			"netbox_tenancy_tenant":               tenancy.ResourceNetboxTenancyTenant(),
-			"netbox_tenancy_tenant_group":         tenancy.ResourceNetboxTenancyTenantGroup(),
-			"netbox_virtualization_cluster":       virtualization.ResourceNetboxVirtualizationCluster(),
-			"netbox_virtualization_cluster_group": virtualization.ResourceNetboxVirtualizationClusterGroup(),
-			"netbox_virtualization_cluster_type":  virtualization.ResourceNetboxVirtualizationClusterType(),
-			"netbox_virtualization_interface":     virtualization.ResourceNetboxVirtualizationInterface(),
-			"netbox_virtualization_vm":            virtualization.ResourceNetboxVirtualizationVM(),
-			"netbox_virtualization_vm_primary_ip": virtualization.ResourceNetboxVirtualizationVMPrimaryIP(),
+			"netbox_dcim_device_role":               dcim.ResourceNetboxDcimDeviceRole(),
+			"netbox_dcim_location":                  dcim.ResourceNetboxDcimLocation(),
+			"netbox_dcim_manufacturer":              dcim.ResourceNetboxDcimManufacturer(),
+			"netbox_dcim_platform":                  dcim.ResourceNetboxDcimPlatform(),
+			"netbox_dcim_rack":                      dcim.ResourceNetboxDcimRack(),
+			"netbox_dcim_rack_role":                 dcim.ResourceNetboxDcimRackRole(),
+			"netbox_dcim_region":                    dcim.ResourceNetboxDcimRegion(),
+			"netbox_dcim_site":                      dcim.ResourceNetboxDcimSite(),
+			"netbox_dcim_site_group":                dcim.ResourceNetboxDcimSiteGroup(),
+			"netbox_extras_custom_field":            extras.ResourceNetboxExtrasCustomField(),
+			"netbox_extras_custom_field_choice_set": extras.ResourceNetboxExtrasCustomFieldChoiceSet(),
+			"netbox_extras_tag":                     extras.ResourceNetboxExtrasTag(),
+			"netbox_ipam_aggregate":                 ipam.ResourceNetboxIpamAggregate(),
+			"netbox_ipam_asn":                       ipam.ResourceNetboxIpamASN(),
+			"netbox_ipam_ip_addresses":              ipam.ResourceNetboxIpamIPAddresses(),
+			"netbox_ipam_ip_range":                  ipam.ResourceNetboxIpamIPRange(),
+			"netbox_ipam_prefix":                    ipam.ResourceNetboxIpamPrefix(),
+			"netbox_ipam_rir":                       ipam.ResourceNetboxIpamRIR(),
+			"netbox_ipam_role":                      ipam.ResourceNetboxIpamRole(),
+			"netbox_ipam_route_targets":             ipam.ResourceNetboxIpamRouteTargets(),
+			"netbox_ipam_service":                   ipam.ResourceNetboxIpamService(),
+			"netbox_ipam_vlan":                      ipam.ResourceNetboxIpamVlan(),
+			"netbox_ipam_vlan_group":                ipam.ResourceNetboxIpamVlanGroup(),
+			"netbox_ipam_vrf":                       ipam.ResourceNetboxIpamVrf(),
+			"netbox_tenancy_contact":                tenancy.ResourceNetboxTenancyContact(),
+			"netbox_tenancy_contact_assignment":     tenancy.ResourceNetboxTenancyContactAssignment(),
+			"netbox_tenancy_contact_group":          tenancy.ResourceNetboxTenancyContactGroup(),
+			"netbox_tenancy_contact_role":           tenancy.ResourceNetboxTenancyContactRole(),
+			"netbox_tenancy_tenant":                 tenancy.ResourceNetboxTenancyTenant(),
+			"netbox_tenancy_tenant_group":           tenancy.ResourceNetboxTenancyTenantGroup(),
+			"netbox_virtualization_cluster":         virtualization.ResourceNetboxVirtualizationCluster(),
+			"netbox_virtualization_cluster_group":   virtualization.ResourceNetboxVirtualizationClusterGroup(),
+			"netbox_virtualization_cluster_type":    virtualization.ResourceNetboxVirtualizationClusterType(),
+			"netbox_virtualization_interface":       virtualization.ResourceNetboxVirtualizationInterface(),
+			"netbox_virtualization_vm":              virtualization.ResourceNetboxVirtualizationVM(),
+			"netbox_virtualization_vm_primary_ip":   virtualization.ResourceNetboxVirtualizationVMPrimaryIP(),
 		},
 		ConfigureContextFunc: configureProvider,
 	}
 }
 
-func configureProvider(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+func configureProvider(ctx context.Context, d *schema.ResourceData) (any, diag.Diagnostics) {
 	url := d.Get("url").(string)
-	basepath := d.Get("basepath").(string)
 	token := d.Get("token").(string)
 	scheme := d.Get("scheme").(string)
 	insecure := d.Get("insecure").(bool)
 
-	defaultScheme := []string{scheme}
+	fullurl := scheme + `://` + url
 
-	t := runtimeclient.New(url, basepath, defaultScheme)
-	if insecure {
-		t.Transport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure} // #nosec G402
+	cfg := netbox.NewConfiguration()
+	cfg.Servers[0].URL = fullurl
+	cfg.AddDefaultHeader(
+		authHeaderName,
+		fmt.Sprintf(authHeaderFormat, token),
+	)
+	cfg.HTTPClient = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: insecure, //nolint:gosec
+			},
+		},
 	}
-	t.DefaultAuthentication = runtimeclient.APIKeyAuth(authHeaderName, "header",
-		fmt.Sprintf(authHeaderFormat, token))
 
-	return client.New(t, strfmt.Default), nil
+	return netbox.NewAPIClient(cfg), nil
 }

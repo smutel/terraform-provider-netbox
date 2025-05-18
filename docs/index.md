@@ -18,6 +18,10 @@ The Netbox provider provides resources to interact with [Netbox](https://netbox.
 | 2.11           | 2.x.y            |
 | 3.0            | 3.x.y            |
 | 3.1            | 4.x.y            |
+| 3.2            | 5.x.y            |
+| 3.3            | 6.x.y            |
+| 3.4            | 7.x.y            |
+| 4.0            | 8.x.y            |
 
 ## Example Usage
 
@@ -26,7 +30,7 @@ terraform {
   required_providers {
     netbox = {
       source = "smutel/netbox"
-      version = "~> 7.0.0"
+      version = "~> 8.0.0"
     }
   }
 }
@@ -34,9 +38,6 @@ terraform {
 provider netbox {
   # Environment variable NETBOX_URL
   url = "127.0.0.1:8000"
-
-  # Environment variable NETBOX_BASEPATH
-  basepath = "/api"
 
   # Environment variable NETBOX_TOKEN
   token = "0123456789abcdef0123456789abcdef01234567"

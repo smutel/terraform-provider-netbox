@@ -1,0 +1,5 @@
+{
+  "name": "go-netbox",
+  "version": "4.0.1",
+  "description": "Go library to interact with NetBox IPAM and DCIM service"
+}

@@ -6,22 +6,25 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 const resourceNameNetboxDcimManufacturer = "netbox_dcim_manufacturer.test"
 
 func TestAccNetboxDcimManufacturerMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix,
+					false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxDcimManufacturer),
+					util.TestAccResourceExists(
+						resourceNameNetboxDcimManufacturer),
 				),
 			},
 			{
@@ -34,16 +37,19 @@ func TestAccNetboxDcimManufacturerMinimal(t *testing.T) {
 }
 
 func TestAccNetboxDcimManufacturerFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix,
+					true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxDcimManufacturer),
+					util.TestAccResourceExists(
+						resourceNameNetboxDcimManufacturer),
 				),
 			},
 			{
@@ -56,52 +62,63 @@ func TestAccNetboxDcimManufacturerFull(t *testing.T) {
 }
 
 func TestAccNetboxDcimManufacturerMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix,
+					false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxDcimManufacturer),
+					util.TestAccResourceExists(
+						resourceNameNetboxDcimManufacturer),
 				),
 			},
 			{
-				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix,
+					true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxDcimManufacturer),
+					util.TestAccResourceExists(
+						resourceNameNetboxDcimManufacturer),
 				),
 			},
 			{
-				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix,
+					false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxDcimManufacturer),
+					util.TestAccResourceExists(
+						resourceNameNetboxDcimManufacturer),
 				),
 			},
 			{
-				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxDcimManufacturerConfig(nameSuffix,
+					false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxDcimManufacturer),
+					util.TestAccResourceExists(
+						resourceNameNetboxDcimManufacturer),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxDcimManufacturerConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxDcimManufacturerConfig(nameSuffix string,
+	resourceFull, extraResources bool) string {
+
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "dcimmanufacturer-{{ .namesuffix }}"
+		slug = "dcimmanufacturer-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_dcim_manufacturer" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name				= "dcimmanufacturer-{{ .namesuffix }}"
+		slug				= "dcimmanufacturer-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test device role"
 

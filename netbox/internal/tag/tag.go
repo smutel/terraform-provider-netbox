@@ -2,7 +2,7 @@ package tag
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	netbox "github.com/smutel/go-netbox/v4"
 )
 
 var TagSchema = schema.Schema{
@@ -25,29 +25,33 @@ var TagSchema = schema.Schema{
 	Description: "Existing tag to associate to this resource.",
 }
 
-func ConvertTagsToNestedTags(tags []interface{}) []*models.NestedTag {
-	nestedTags := []*models.NestedTag{}
+func ConvertTagsToNestedTagRequest(
+	tags []any) []netbox.NestedTagRequest {
+
+	nestedTags := []netbox.NestedTagRequest{}
 
 	for _, tag := range tags {
-		t := tag.(map[string]interface{})
+		t := tag.(map[string]any)
 
 		tagName := t["name"].(string)
 		tagSlug := t["slug"].(string)
 
-		nestedTag := models.NestedTag{Name: &tagName, Slug: &tagSlug}
-		nestedTags = append(nestedTags, &nestedTag)
+		nestedTag := netbox.NestedTagRequest{Name: tagName, Slug: tagSlug}
+		nestedTags = append(nestedTags, nestedTag)
 	}
 
 	return nestedTags
 }
 
-func ConvertNestedTagsToTags(tags []*models.NestedTag) []map[string]string {
+func ConvertNestedTagRequestToTags(
+	tags []netbox.NestedTag) []map[string]string {
+
 	var tfTags []map[string]string
 
 	for _, t := range tags {
 		tag := map[string]string{}
-		tag["name"] = *t.Name
-		tag["slug"] = *t.Slug
+		tag["name"] = t.Name
+		tag["slug"] = t.Slug
 
 		tfTags = append(tfTags, tag)
 	}

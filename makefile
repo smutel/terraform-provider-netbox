@@ -7,7 +7,7 @@ VERSION := $(shell jq .version package.json | xargs)
 
 update-go-deps:
 	@echo "==> Updating Go dependencies"
-	go get -u -d $$(pwd)
+	go get -u $$(pwd)
 	go mod tidy
 	go mod vendor
 

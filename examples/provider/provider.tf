@@ -2,7 +2,7 @@ terraform {
   required_providers {
     netbox = {
       source = "smutel/netbox"
-      version = "~> 7.0.0"
+      version = "~> 8.0.0"
     }
   }
 }
@@ -10,9 +10,6 @@ terraform {
 provider netbox {
   # Environment variable NETBOX_URL
   url = "127.0.0.1:8000"
-
-  # Environment variable NETBOX_BASEPATH
-  basepath = "/api"
 
   # Environment variable NETBOX_TOKEN
   token = "0123456789abcdef0123456789abcdef01234567"

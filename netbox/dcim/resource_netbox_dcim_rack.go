@@ -2,24 +2,24 @@ package dcim
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 
+	"github.com/ccoveille/go-safecast"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/dcim"
-	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	netbox "github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/brief"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/tag"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 func ResourceNetboxDcimRack() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a rack (dcim module) within Netbox.",
+		Description:   "Manage a rack within Netbox.",
 		CreateContext: resourceNetboxDcimRackCreate,
 		ReadContext:   resourceNetboxDcimRackRead,
 		UpdateContext: resourceNetboxDcimRackUpdate,
@@ -33,470 +33,617 @@ func ResourceNetboxDcimRack() *schema.Resource {
 			"asset_tag": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(0, 50),
-				Description:  "A unique tag used to identify this rack (dcim module).",
+				ValidateFunc: validation.StringLenBetween(0, util.Const50),
+				Description:  "A unique tag used to identify this rack.",
 			},
 			"comments": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				StateFunc:   util.TrimString,
-				Description: "Comments for this rack (dcim module).",
+				Description: "Comments for this rack.",
+			},
+			"content_type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The content type of this rack.",
 			},
 			"created": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this rack (dcim module) was created.",
+				Description: "Date when this rack was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"desc_units": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "True if rack (dcim module) units are numbered top-to-bottom.",
+				Description: "True if rack units are numbered top-to-bottom.",
 			},
 			"device_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of devices associated to this rack (dcim module).",
+				Description: "The number of devices associated to this rack.",
 			},
 			"facility": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(0, 50),
-				Description:  "Local facility ID or description (dcim module).",
+				ValidateFunc: validation.StringLenBetween(0, util.Const50),
+				Description:  "Local facility ID or description.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this rack was last updated (dcim module).",
+				Description: "Date when this rack was last updated.",
 			},
 			"location_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The ID of the location for this rack (dcim module).",
+				Description: "The ID of the location for this rack.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this rack (dcim module).",
+				ValidateFunc: validation.StringLenBetween(1, util.Const100),
+				Description:  "The name of this rack.",
 			},
 			"outer_depth": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "Outer depth of this rack (dcim module).",
+				Description: "Outer depth of this rack.",
 			},
 			"outer_unit": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Description:  "Outer unit among mm or in of this rack (dcim module).",
-				ValidateFunc: validation.StringInSlice([]string{"mm", "in"}, false),
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Outer unit among mm or in of this rack.",
+				ValidateFunc: validation.StringInSlice([]string{"mm", "in"},
+					false),
 			},
 			"outer_width": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "Outer width of this rack (dcim module).",
+				Description: "Outer width of this rack.",
 			},
 			"power_feed_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The power feed count of this rack (dcim module).",
+				Description: "The power feed count of this rack.",
 			},
 			"role_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the role associated to this rack (dcim module).",
+				Description: "ID of the role associated to this rack.",
 			},
 			"serial": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(0, 50),
-				Description:  "The serial number of this rack (dcim module).",
+				ValidateFunc: validation.StringLenBetween(0, util.Const50),
+				Description:  "The serial number of this rack.",
 			},
 			"site_id": {
 				Type:        schema.TypeInt,
-				Optional:    true,
-				Description: "ID of the site where this rack (dcim module) is attached.",
+				Required:    true,
+				Description: "ID of the site where this rack is attached.",
 			},
 			"status": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Default:      "active",
-				ValidateFunc: validation.StringInSlice([]string{"reserved", "available", "planned", "active", "deprecated"}, false),
-				Description:  "The status among reserved, available, planned, active or deprecated (active by default) of this rack (dcim module).",
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "active",
+				ValidateFunc: validation.StringInSlice([]string{"reserved",
+					"available", "planned", "active", "deprecated"}, false),
+				Description: "The status among reserved, available, planned, " +
+					"active or deprecated (active by default) of this rack.",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The tenant of this rack (dcim module).",
+				Description: "The tenant of this rack.",
 			},
 			"type": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validation.StringInSlice([]string{"2-post-frame", "4-post-frame", "4-post-cabinet", "wall-frame", "wall-frame-vertical", "wall-cabinet", "wall-cabinet-vertical"}, false),
-				Description:  "The type among 2-post-frame, 4-post-frame, 4-post-cabinet, wall-frame, wall-frame-vertical, wall-cabinet or wall-cabinet-vertical (active by default) of this rack (dcim module).",
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{"2-post-frame",
+					"4-post-frame", "4-post-cabinet", "wall-frame",
+					"wall-frame-vertical", "wall-cabinet",
+					"wall-cabinet-vertical"}, false),
+				Description: "The type among 2-post-frame, 4-post-frame, " +
+					"4-post-cabinet, wall-frame, wall-frame-vertical, " +
+					"wall-cabinet or wall-cabinet-vertical (active by " +
+					"default) of this rack.",
 			},
 			"height": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "Height in rack units of this rack (dcim module).",
+				Description: "Height in rack units of this rack.",
 			},
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this rack (dcim module).",
+				Description: "The link to this rack.",
 			},
 			"width": {
 				Type:     schema.TypeInt,
 				Required: true,
-				ValidateFunc: func(val any, key string) (warns []string, errs []error) {
+				ValidateFunc: func(val any, key string) (warns []string,
+					errs []error) {
 					v := val.(int)
-					if v != 10 && v != 19 && v != 21 && v != 23 {
-						errs = append(errs, fmt.Errorf("%q must be 10/19/21 or 23, got: %d", key, v))
+					if v != util.Const10 && v != util.Const19 &&
+						v != util.Const21 && v != util.Const23 {
+						errs = append(errs,
+							fmt.Errorf("%q must be 10/19/21 or 23, got: %d",
+								key, v))
 					}
-					return
+					return warns, errs
 				},
-				Description: "The type among 10, 19, 21 or 23 (inches) of this rack (dcim module).",
+				Description: "The type among 10, 19, 21 or 23 (inches) " +
+					"of this rack.",
 			},
 		},
 	}
 }
 
-var rackRequiredFields = []string{
-	"created",
-	"height",
-	"last_updated",
-	"name",
-	"site",
-	"tags",
-	"width",
-	"desc_units",
-}
+func resourceNetboxDcimRackCreate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-func resourceNetboxDcimRackCreate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	assetTag := d.Get("asset_tag").(string)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil,
+		resourceCustomFields)
 	descendingUnits := d.Get("desc_units").(bool)
 	facilityID := d.Get("facility").(string)
-	locationID := int64(d.Get("location_id").(int))
+	locationID := d.Get("location_id").(int)
 	name := d.Get("name").(string)
-	outerDepth := int64(d.Get("outer_depth").(int))
+	outerDepth := d.Get("outer_depth").(int)
 	outerUnit := d.Get("outer_unit").(string)
-	outerWidth := int64(d.Get("outer_width").(int))
-	roleID := int64(d.Get("role_id").(int))
-	siteID := int64(d.Get("site_id").(int))
+	outerWidth := d.Get("outer_width").(int)
+	roleID := d.Get("role_id").(int)
+	siteID := d.Get("site_id").(int)
+	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int64(d.Get("tenant_id").(int))
-	height := int64(d.Get("height").(int))
-	width := int64(d.Get("width").(int))
+	rackType := d.Get("type").(string)
+	tenantID := d.Get("tenant_id").(int)
+	height := d.Get("height").(int)
+	width := d.Get("width").(int)
+	newResource := netbox.NewWritableRackRequestWithDefaults()
+	newResource.SetAssetTag(assetTag)
+	newResource.SetComments(d.Get("comments").(string))
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescUnits(descendingUnits)
+	newResource.SetFacilityId(facilityID)
+	newResource.SetName(name)
+	newResource.SetOuterUnit(
+		netbox.PatchedWritableRackRequestOuterUnit(outerUnit))
+	newResource.SetSerial(d.Get("serial").(string))
+	newResource.SetStatus(netbox.PatchedWritableRackRequestStatus(status))
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+	newResource.SetType(netbox.PatchedWritableRackRequestType(rackType))
 
-	newResource := &models.WritableRack{
-		AssetTag:     &assetTag,
-		Comments:     d.Get("comments").(string),
-		CustomFields: customFields,
-		DescUnits:    descendingUnits,
-		FacilityID:   &facilityID,
-		Name:         &name,
-		OuterUnit:    outerUnit,
-		Serial:       d.Get("serial").(string),
-		Site:         &siteID,
-		Status:       d.Get("status").(string),
-		Tags:         tag.ConvertTagsToNestedTags(tags),
-		Type:         d.Get("type").(string),
-		UHeight:      height,
-		Width:        width,
+	height32, err := safecast.ToInt32(height)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	newResource.SetUHeight(height32)
+
+	width32, err := safecast.ToInt32(width)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	newResource.SetWidth(netbox.PatchedWritableRackRequestWidth(width32))
+
+	if siteID != 0 {
+		b, err := brief.GetBriefSiteRequestFromID(ctx, client, siteID)
+		if err != nil {
+			return err
+		}
+		newResource.SetSite(*b)
 	}
 
 	if locationID != 0 {
-		newResource.Location = &locationID
+		b, err := brief.GetBriefLocationRequestFromID(ctx, client, locationID)
+		if err != nil {
+			return err
+		}
+		newResource.SetLocation(*b)
 	}
+
 	if outerDepth != 0 {
-		newResource.OuterDepth = &outerDepth
+		outerDepth32, err := safecast.ToInt32(outerDepth)
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		newResource.SetOuterDepth(outerDepth32)
 	}
+
 	if outerWidth != 0 {
-		newResource.OuterWidth = &outerWidth
+		outerWidth32, err := safecast.ToInt32(outerWidth)
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		newResource.SetOuterWidth(outerWidth32)
 	}
+
 	if roleID != 0 {
-		newResource.Role = &roleID
+		b, err := brief.GetBriefRackRoleRequestFromID(ctx, client, roleID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRole(*b)
 	}
+
 	if tenantID != 0 {
-		newResource.Tenant = &tenantID
+		b, err := brief.GetBriefTenantRequestFromID(ctx, client, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
-	resource := dcim.NewDcimRacksCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Dcim.DcimRacksCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	_, response, err := client.DcimAPI.DcimRacksCreate(
+		ctx).WritableRackRequest(*newResource).Execute()
+	if response.StatusCode != util.Const201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	var resourceID int32
+	if resourceID, err = util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	}
 
+	d.SetId(fmt.Sprintf("%d", resourceID))
 	return resourceNetboxDcimRackRead(ctx, d, m)
 }
 
 func resourceNetboxDcimRackRead(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	m any) diag.Diagnostics {
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimRacksListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimRacksList(params, nil)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	resourceID, _ := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	resource, response, err := client.DcimAPI.DcimRacksRetrieve(ctx,
+		int32(resourceID)).Execute()
 
-	if len(resources.Payload.Results) != 1 {
+	if response.StatusCode == util.Const404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
-	if err = d.Set("asset_tag", resource.AssetTag); err != nil {
-		return diag.FromErr(err)
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
-	if err = d.Set("comments", resource.Comments); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("asset_tag", resource.GetAssetTag()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("comments", resource.GetComments()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("content_type", util.ConvertURLContentType(
+		resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields,
+		resource.GetCustomFields())
 
 	if err = d.Set("custom_field", customFields); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("desc_units", resource.DescUnits); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("desc_units", resource.GetDescUnits()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+
 	if err = d.Set("device_count", resource.DeviceCount); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("facility", resource.FacilityID); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("facility", resource.GetFacilityId()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("last_updated",
+		resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("location_id", util.GetNestedLocationID(resource.Location)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("location_id", resource.GetLocation().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("outer_depth", resource.OuterDepth); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("outer_depth", resource.GetOuterDepth()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("outer_unit", util.GetRackOuterUnit(resource.OuterUnit)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("outer_unit", resource.GetOuterUnit().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("outer_width", resource.OuterWidth); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("outer_width", resource.GetOuterWidth()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("power_feed_count", resource.PowerfeedCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("power_feed_count",
+		resource.GetPowerfeedCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("role_id", util.GetNestedRackRoleID(resource.Role)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("role_id", resource.GetRole().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("serial", resource.Serial); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("serial", resource.GetSerial()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("site_id", util.GetNestedSiteID(resource.Site)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("site_id", resource.GetSite().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("status", util.GetRackStatusValue(resource.Status)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("status", resource.GetStatus().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tag",
+		tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tenant_id", util.GetNestedTenantID(resource.Tenant)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("type", util.GetRackTypeValue(resource.Type)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("type", resource.GetType().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("height", resource.UHeight); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("height", resource.GetUHeight()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("width", resource.Width.Value); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("width", resource.GetWidth().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
 }
 
-func resourceNetboxDcimRackUpdate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+//nolint:gocyclo
+func resourceNetboxDcimRackUpdate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int64"))
 	}
-	params := &models.WritableRack{}
+	resource := netbox.NewWritableRackRequestWithDefaults()
 
-	modifiedFields := map[string]interface{}{}
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	b, errDiag := brief.GetBriefSiteRequestFromID(ctx, client,
+		d.Get("site_id").(int))
+	if errDiag != nil {
+		return errDiag
+	}
+	resource.SetSite(*b)
+
 	if d.HasChange("asset_tag") {
 		assetTag := d.Get("asset_tag").(string)
-		params.AssetTag = &assetTag
-		modifiedFields["asset_tag"] = assetTag
+		resource.SetAssetTag(assetTag)
 	}
+
 	if d.HasChange("comments") {
 		comments := d.Get("comments").(string)
-		params.Comments = comments
-		modifiedFields["comments"] = comments
+		resource.SetComments(comments)
 	}
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
 		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(
-			stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+			stateCustomFields.(*schema.Set).List(),
+			resourceCustomFields.(*schema.Set).List())
+		resource.SetCustomFields(customFields)
 	}
+
 	if d.HasChange("desc_units") {
 		descendingUnits := d.Get("desc_units").(bool)
-		params.DescUnits = descendingUnits
-		modifiedFields["desc_units"] = descendingUnits
+		resource.SetDescUnits(descendingUnits)
 	}
+
 	if d.HasChange("facility") {
-		facility := d.Get("facility").(string)
-		params.FacilityID = &facility
-		modifiedFields["facility"] = facility
+		if facility, exist := d.GetOk("facility"); exist {
+			resource.SetFacilityId(facility.(string))
+		} else {
+			resource.SetFacilityIdNil()
+		}
 	}
+
 	if d.HasChange("location_id") {
-		locationID := int64(d.Get("location_id").(int))
-		params.Location = &locationID
-		modifiedFields["location"] = locationID
+		if locationID, exist := d.GetOk("location_id"); exist {
+			b, err := brief.GetBriefLocationRequestFromID(ctx, client,
+				locationID.(int))
+			if err != nil {
+				return err
+			}
+			resource.SetLocation(*b)
+		} else {
+			resource.SetLocationNil()
+		}
 	}
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
-	}
-	if d.HasChange("outer_depth") {
-		outerDepth := int64(d.Get("outer_depth").(int))
-		params.OuterDepth = &outerDepth
-		modifiedFields["outer_depth"] = outerDepth
-	}
+
 	if d.HasChange("outer_unit") {
 		outerUnit := d.Get("outer_unit").(string)
-		params.OuterUnit = outerUnit
-		modifiedFields["outer_unit"] = outerUnit
+		resource.SetOuterUnit(
+			netbox.PatchedWritableRackRequestOuterUnit(outerUnit))
 	}
+
+	if d.HasChange("outer_depth") {
+		if outerDepth, exist := d.GetOk("outer_depth"); exist {
+			outerDepth32, err := safecast.ToInt32(outerDepth.(int))
+			if err != nil {
+				return util.GenerateErrorMessage(nil, err)
+			}
+			resource.SetOuterDepth(outerDepth32)
+
+			outerUnit := d.Get("outer_unit").(string)
+			resource.SetOuterUnit(
+				netbox.PatchedWritableRackRequestOuterUnit(outerUnit))
+		} else {
+			resource.SetOuterDepthNil()
+		}
+	}
+
 	if d.HasChange("outer_width") {
-		outerWidth := int64(d.Get("outer_width").(int))
-		params.OuterWidth = &outerWidth
-		modifiedFields["outer_width"] = outerWidth
+		if outerWidth, exist := d.GetOk("outer_width"); exist {
+			outerWidth32, err := safecast.ToInt32(outerWidth.(int))
+			if err != nil {
+				return util.GenerateErrorMessage(nil, err)
+			}
+			resource.SetOuterWidth(outerWidth32)
+
+			outerUnit := d.Get("outer_unit").(string)
+			resource.SetOuterUnit(
+				netbox.PatchedWritableRackRequestOuterUnit(outerUnit))
+		} else {
+			resource.SetOuterWidthNil()
+		}
 	}
+
 	if d.HasChange("role_id") {
-		roleID := int64(d.Get("role_id").(int))
-		params.Role = &roleID
-		modifiedFields["role"] = roleID
+		if roleID, exist := d.GetOk("role_id"); exist {
+			b, err := brief.GetBriefRackRoleRequestFromID(ctx, client,
+				roleID.(int))
+			if err != nil {
+				return err
+			}
+			resource.SetRole(*b)
+		} else {
+			resource.SetRoleNil()
+		}
 	}
+
 	if d.HasChange("serial") {
 		serial := d.Get("serial").(string)
-		params.Serial = serial
-		modifiedFields["serial"] = serial
+		resource.SetSerial(serial)
 	}
-	if d.HasChange("site_id") {
-		siteID := int64(d.Get("site_id").(int))
-		params.Site = &siteID
-		modifiedFields["site"] = siteID
-	}
+
 	if d.HasChange("status") {
-		params.Status = d.Get("status").(string)
+		resource.SetStatus(netbox.PatchedWritableRackRequestStatus(
+			d.Get("status").(string)))
 	}
+
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
+
 	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
-		params.Tenant = &tenantID
-		modifiedFields["tenant"] = tenantID
+		if tenantID, exist := d.GetOk("tenant_id"); exist {
+			b, err := brief.GetBriefTenantRequestFromID(ctx, client,
+				tenantID.(int))
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
+		} else {
+			resource.SetTenantNil()
+		}
 	}
+
 	if d.HasChange("type") {
-		RackType := d.Get("type").(string)
-		params.Type = RackType
-		modifiedFields["type"] = RackType
+		rackType := d.Get("type").(string)
+		resource.SetType(netbox.PatchedWritableRackRequestType(rackType))
 	}
+
 	if d.HasChange("height") {
-		height := int64(d.Get("height").(int))
-		params.UHeight = height
-		modifiedFields["height"] = height
+		height := d.Get("height").(int)
+		height32, err := safecast.ToInt32(height)
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetUHeight(height32)
 	}
+
 	if d.HasChange("width") {
-		width := int64(d.Get("width").(int))
-		params.Width = width
-		modifiedFields["width"] = width
+		width32, err := safecast.ToInt32(d.Get("width").(int))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetWidth(netbox.PatchedWritableRackRequestWidth(width32))
 	}
 
-	resource := dcim.NewDcimRacksPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Dcim.DcimRacksPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, rackRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.DcimAPI.DcimRacksUpdate(ctx,
+		int32(resourceID)).WritableRackRequest(
+		*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxDcimRackRead(ctx, d, m)
 }
 
-func resourceNetboxDcimRackDelete(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxDcimRackDelete(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxDcimRackExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int64"))
 	}
 
-	resource := dcim.NewDcimRacksDeleteParams().WithID(id)
-	if _, err := client.Dcim.DcimRacksDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.DcimAPI.DcimRacksDestroy(ctx,
+		int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
 }
 
 func resourceNetboxDcimRackExists(d *schema.ResourceData,
-	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	m any) (b bool, e error) {
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimRacksListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimRacksList(params, nil)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.DcimAPI.DcimRacksRetrieve(nil,
+		int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == util.Const404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == util.Const200 {
+		return true, nil
 	}
 
-	return resourceExist, nil
+	return false, err
 }

@@ -2,23 +2,24 @@ package tenancy
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 
+	"github.com/ccoveille/go-safecast"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
-	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/tag"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 func ResourceNetboxTenancyContactGroup() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a contact group (tenancy module) within Netbox.",
+		Description:   "Manage a contact group within Netbox.",
 		CreateContext: resourceNetboxTenancyContactGroupCreate,
 		ReadContext:   resourceNetboxTenancyContactGroupRead,
 		UpdateContext: resourceNetboxTenancyContactGroupUpdate,
@@ -32,21 +33,31 @@ func ResourceNetboxTenancyContactGroup() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this contact group (tenancy module).",
+				Description: "The content type of this contact group.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this contact group was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "Description for this contact group (tenancy module).",
+				ValidateFunc: validation.StringLenBetween(1, util.Const100),
+				Description:  "Description for this contact group.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Last date when this contact group was updated.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name for this contact group (tenancy module).",
+				ValidateFunc: validation.StringLenBetween(1, util.Const100),
+				Description:  "The name for this contact group.",
 			},
 			"parent_id": {
 				Type:        schema.TypeInt,
@@ -60,209 +71,218 @@ func ResourceNetboxTenancyContactGroup() *schema.Resource {
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_]{1,50}$"),
 					"Must be like ^[-a-zA-Z0-9_]{1,50}$"),
-				Description: "The slug for this contact group (tenancy module).",
+				Description: "The slug for this contact group.",
 			},
 			"tag": &tag.TagSchema,
 		},
 	}
 }
 
-func resourceNetboxTenancyContactGroupCreate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxTenancyContactGroupCreate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+	client := m.(*netbox.APIClient)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil,
+		resourceCustomFields)
 	description := d.Get("description").(string)
 	name := d.Get("name").(string)
-	parentID := int64(d.Get("parent_id").(int))
+	parentID := d.Get("parent_id").(int)
 	slug := d.Get("slug").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := &models.WritableContactGroup{
-		CustomFields: &customFields,
-		Description:  description,
-		Name:         &name,
-		Slug:         &slug,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
-	}
+	newResource := netbox.NewWritableContactGroupRequestWithDefaults()
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(description)
+	newResource.SetName(name)
+	newResource.SetSlug(slug)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
 	if parentID != 0 {
-		newResource.Parent = &parentID
+		parentID32, err := safecast.ToInt32(parentID)
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		newResource.SetParent(parentID32)
 	}
 
-	resource := tenancy.NewTenancyContactGroupsCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Tenancy.TenancyContactGroupsCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	resourceCreated, response, err :=
+		client.TenancyAPI.TenancyContactGroupsCreate(
+			ctx).WritableContactGroupRequest(*newResource).Execute()
+	if response.StatusCode != util.Const201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxTenancyContactGroupRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyContactGroupRead(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxTenancyContactGroupRead(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	resourceID := d.Id()
-	params := tenancy.NewTenancyContactGroupsListParams().WithID(&resourceID)
-	resources, err := client.Tenancy.TenancyContactGroupsList(params, nil)
+	client := m.(*netbox.APIClient)
+
+	resourceID, _ := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	resource, response, err :=
+		client.TenancyAPI.TenancyContactGroupsRetrieve(ctx,
+			int32(resourceID)).Execute()
+
+	if response.StatusCode == util.Const404 {
+		d.SetId("")
+		return nil
+	}
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
-
-			if err = d.Set("custom_field", customFields); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var description interface{}
-			if resource.Description == "" {
-				description = nil
-			} else {
-				description = resource.Description
-			}
-
-			if err = d.Set("description", description); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("name", resource.Name); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Parent == nil {
-				if err = d.Set("parent_id", 0); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("parent_id", resource.Parent.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if err = d.Set("slug", resource.Slug); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			return nil
-		}
+	if err = d.Set("content_type", util.ConvertURLContentType(
+		resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	d.SetId("")
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields,
+		resource.GetCustomFields())
+
+	if err = d.Set("custom_field", customFields); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated",
+		resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("parent_id", resource.GetParent().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("slug", resource.GetSlug()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tag", tag.ConvertNestedTagRequestToTags(
+		resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	return nil
 }
 
-func resourceNetboxTenancyContactGroupUpdate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	params := &models.WritableContactGroup{}
+func resourceNetboxTenancyContactGroupUpdate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	if err != nil {
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int"))
+	}
+	resource := netbox.NewWritableContactGroupRequestWithDefaults()
 
 	// Required parameters
 	name := d.Get("name").(string)
-	params.Name = &name
+	resource.SetName(name)
 
 	slug := d.Get("slug").(string)
-	params.Slug = &slug
+	resource.SetSlug(slug)
 
-	parentID := int64(d.Get("parent_id").(int))
+	parentID := d.Get("parent_id").(int)
 	if parentID != 0 {
-		params.Parent = &parentID
+		parentID32, err := safecast.ToInt32(parentID)
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetParent(parentID32)
 	}
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
-		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		customFields :=
+			customfield.ConvertCustomFieldsFromTerraformToAPI(
+				stateCustomFields.(*schema.Set).List(),
+				resourceCustomFields.(*schema.Set).List())
+		resource.SetCustomFields(customFields)
 	}
 
 	if d.HasChange("description") {
-		if description, exist := d.GetOk("description"); exist {
-			params.Description = description.(string)
-		} else {
-			params.Description = " "
-		}
+		resource.SetDescription(d.Get("description").(string))
 	}
 
-	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = tag.ConvertTagsToNestedTags(tags)
-
-	resource := tenancy.NewTenancyContactGroupsPartialUpdateParams().WithData(params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
 
-	resource.SetID(resourceID)
-
-	_, err = client.Tenancy.TenancyContactGroupsPartialUpdate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.TenancyAPI.TenancyContactGroupsUpdate(ctx,
+		int32(resourceID)).WritableContactGroupRequest(
+		*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxTenancyContactGroupRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyContactGroupDelete(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxTenancyContactGroupDelete(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxTenancyContactGroupExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int"))
 	}
 
-	p := tenancy.NewTenancyContactGroupsDeleteParams().WithID(id)
-	if _, err := client.Tenancy.TenancyContactGroupsDelete(p, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.TenancyAPI.TenancyContactGroupsDestroy(ctx,
+		int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
 }
 
 func resourceNetboxTenancyContactGroupExists(d *schema.ResourceData,
-	m interface{}) (b bool,
+	m any) (b bool,
 	e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := tenancy.NewTenancyContactGroupsListParams().WithID(&resourceID)
-	resources, err := client.Tenancy.TenancyContactGroupsList(params, nil)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.TenancyAPI.TenancyContactGroupsRetrieve(nil,
+		int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == util.Const404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == util.Const200 {
+		return true, nil
 	}
 
-	return resourceExist, nil
+	return false, err
 }

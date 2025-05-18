@@ -6,22 +6,25 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 const resourceNameNetboxVirtualizationVM = "netbox_virtualization_vm.test"
 
 func TestAccNetboxVirtualizationVMMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationVMConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationVMConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationVM),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationVM),
 				),
 			},
 			{
@@ -34,16 +37,19 @@ func TestAccNetboxVirtualizationVMMinimal(t *testing.T) {
 }
 
 func TestAccNetboxVirtualizationVMFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationVMConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxVirtualizationVMConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationVM),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationVM),
 				),
 			},
 			{
@@ -56,80 +62,91 @@ func TestAccNetboxVirtualizationVMFull(t *testing.T) {
 }
 
 func TestAccNetboxVirtualizationVMMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationVMConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationVMConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationVM),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationVM),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationVMConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxVirtualizationVMConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationVM),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationVM),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationVMConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxVirtualizationVMConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationVM),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationVM),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationVMConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationVMConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationVM),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationVM),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxVirtualizationVMConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	resource "netbox_virtualization_cluster_type" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 
 	resource "netbox_virtualization_cluster" "test" {
-		name = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
 		type_id = netbox_virtualization_cluster_type.test.id
 	}
 
 	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_platform" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 
 	resource "netbox_dcim_device_role" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 
 	resource "netbox_tenancy_tenant" "test" {
- 		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		 name = "virtualvm-{{ .namesuffix }}"
+		slug = "virtualvm-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_virtualization_vm" "test" {
-		name            = "test-{{ .namesuffix }}"
-		cluster_id      = netbox_virtualization_cluster.test.id
+		name						= "virtualvm-{{ .namesuffix }}"
+		cluster_id			= netbox_virtualization_cluster.test.id
 
 		{{ if eq .resourcefull "true" }}
-		comments        = <<-EOT
+		comments				= <<-EOT
 		VM created by terraform
 		Multiline
 		EOT
@@ -137,15 +154,15 @@ func testAccCheckNetboxVirtualizationVMConfig(nameSuffix string, resourceFull, e
 		platform_id = netbox_dcim_platform.test.id
 		tenant_id = netbox_tenancy_tenant.test.id
 		status = "planned"
-		vcpus           = 2
-		disk            = 50
-		memory          = 16
+		vcpus					 = 2
+		disk						= 50
+		memory					= 16
 		local_context_data = jsonencode(
-		  {
+			{
 			hello = "world"
 			number = 1
 			bool = true
-		  }
+			}
 		)
 
 		tag {

@@ -2,23 +2,23 @@ package dcim
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/dcim"
-	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	netbox "github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/brief"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/tag"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 func ResourceNetboxDcimSite() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a site (dcim module) within Netbox.",
+		Description:   "Manage a site within Netbox.",
 		CreateContext: resourceNetboxDcimSiteCreate,
 		ReadContext:   resourceNetboxDcimSiteRead,
 		UpdateContext: resourceNetboxDcimSiteUpdate,
@@ -32,26 +32,27 @@ func ResourceNetboxDcimSite() *schema.Resource {
 			"asns": {
 				Type:        schema.TypeSet,
 				Optional:    true,
-				Description: "ASNs",
+				Description: "Array of ASNs for this site.",
 				Elem: &schema.Schema{
-					Type: schema.TypeInt,
+					Type:        schema.TypeInt,
+					Description: "One of ASNs for this site.",
 				},
 			},
 			"circuit_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of circuits associated to this site (dcim module).",
+				Description: "The number of circuits associated to this site.",
 			},
 			"comments": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				StateFunc:   util.TrimString,
-				Description: "Comments for this site (dcim module).",
+				Description: "Comments for this site.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this site (dcim module).",
+				Description: "The content type of this site.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -62,93 +63,96 @@ func ResourceNetboxDcimSite() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(0, 100),
-				Description:  "The description of this site (dcim module).",
+				ValidateFunc: validation.StringLenBetween(0, util.Const100),
+				Description:  "The description of this site.",
 			},
 			"device_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of devices associated to this site (dcim module).",
+				Description: "The number of devices associated to this site.",
 			},
 			"facility": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(0, 50),
-				Description:  "Local facility ID or description.",
+				ValidateFunc: validation.StringLenBetween(0, util.Const50),
+				Description:  "Local facility ID or description of this site.",
 			},
 			"group_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The site group for this site (dcim module).",
+				Description: "The site group for this site.",
 			},
 			"last_updated": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Date when this site was last updated.",
+				Description: "Date when this site was updated.",
 			},
 			"latitude": {
 				Type:        schema.TypeFloat,
 				Optional:    true,
-				Description: "GPS coordinate (latitude).",
+				Description: "GPS coordinate (latitude) of this site.",
 			},
 			"longitude": {
 				Type:        schema.TypeFloat,
 				Optional:    true,
-				Description: "GPS coordinate (longitude)",
+				Description: "GPS coordinate (longitude) of this site.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this site (dcim module).",
+				ValidateFunc: validation.StringLenBetween(1, util.Const100),
+				Description:  "The name of this site.",
 			},
 			"physical_address": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(0, 200),
+				ValidateFunc: validation.StringLenBetween(0, util.Const200),
 				StateFunc:    util.TrimString,
-				Description:  "The physical address of this site (dcim module).",
+				Description:  "The physical address of this site.",
 			},
 			"prefix_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of prefixes associated to this site (dcim module).",
+				Description: "The number of prefixes associated to this site.",
 			},
 			"rack_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of racks associated to this site (dcim module).",
+				Description: "The number of racks associated to this site.",
 			},
 			"region_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The description of this site (dcim module).",
+				Description: "The description of this site.",
 			},
 			"shipping_address": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(0, 200),
+				ValidateFunc: validation.StringLenBetween(0, util.Const200),
 				StateFunc:    util.TrimString,
-				Description:  "The shipping address of this site (dcim module).",
+				Description:  "The shipping address of this site.",
 			},
 			"slug": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The slug of this site (dcim module).",
+				ValidateFunc: validation.StringLenBetween(1, util.Const100),
+				Description:  "The slug of this site.",
 			},
 			"status": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Default:      "active",
-				ValidateFunc: validation.StringInSlice([]string{"planned", "staging", "active", "decommisioning", "retired"}, false),
-				Description:  "The status of this site. Allowed values: \"active\" (default), \"planned\", \"staging\", \"decommisioning\", \"retired\".",
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "active",
+				ValidateFunc: validation.StringInSlice([]string{"planned",
+					"staging", "active", "decommisioning", "retired"}, false),
+				Description: "The status of this site. Allowed values: " +
+					"\"active\" (default), \"planned\", \"staging\", " +
+					"\"decommisioning\", \"retired\".",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "The tenant of this site (dcim module).",
+				Description: "The tenant of this site.",
 			},
 			"time_zone": {
 				Type:        schema.TypeString,
@@ -158,344 +162,419 @@ func ResourceNetboxDcimSite() *schema.Resource {
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this site (dcim module).",
+				Description: "The link to this site.",
 			},
 			"virtualmachine_count": {
-				Type:        schema.TypeInt,
-				Computed:    true,
-				Description: "The number of virtual machines associated to this site (dcim module).",
+				Type:     schema.TypeInt,
+				Computed: true,
+				Description: "The number of virtual machines associated " +
+					"to this site.",
 			},
 			"vlan_count": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The number of vlans associated to this site (dcim module).",
+				Description: "The number of vlans associated to this site.",
 			},
 		},
 	}
 }
 
-var siteRequiredFields = []string{
-	"created",
-	"last_updated",
-	"asns",
-	"name",
-	"slug",
-	"tags",
-}
+func resourceNetboxDcimSiteCreate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-func resourceNetboxDcimSiteCreate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	asns := d.Get("asns").(*schema.Set).List()
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
-	groupID := int64(d.Get("group_id").(int))
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil,
+		resourceCustomFields)
+	groupID := d.Get("group_id").(int)
 	latitude := d.Get("latitude").(float64)
 	longitude := d.Get("longitude").(float64)
 	name := d.Get("name").(string)
-	regionID := int64(d.Get("region_id").(int))
+	regionID := d.Get("region_id").(int)
 	slug := d.Get("slug").(string)
+	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int64(d.Get("tenant_id").(int))
+	tenantID := d.Get("tenant_id").(int)
 
-	newResource := &models.WritableSite{
-		Asns:            util.ToListofInts(asns),
-		Comments:        d.Get("comments").(string),
-		CustomFields:    customFields,
-		Facility:        d.Get("facility").(string),
-		Description:     d.Get("description").(string),
-		Latitude:        &latitude,
-		Longitude:       &longitude,
-		Name:            &name,
-		PhysicalAddress: d.Get("physical_address").(string),
-		ShippingAddress: d.Get("shipping_address").(string),
-		Slug:            &slug,
-		Status:          d.Get("status").(string),
-		Tags:            tag.ConvertTagsToNestedTags(tags),
+	newResource := netbox.NewWritableSiteRequestWithDefaults()
+	newResource.SetAsns(util.ToListofInts(asns))
+	newResource.SetComments(d.Get("comments").(string))
+	newResource.SetCustomFields(customFields)
+	newResource.SetFacility(d.Get("facility").(string))
+	newResource.SetDescription(d.Get("description").(string))
+	newResource.SetLatitude(latitude)
+	newResource.SetLongitude(longitude)
+	newResource.SetName(name)
+	newResource.SetPhysicalAddress(d.Get("physical_address").(string))
+	newResource.SetShippingAddress(d.Get("shipping_address").(string))
+	newResource.SetSlug(slug)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
+	s, err := netbox.NewLocationStatusValueFromValue(status)
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+	newResource.SetStatus(*s)
 
 	if groupID != 0 {
-		newResource.Group = &groupID
+		b, err := brief.GetBriefSiteGroupRequestFromID(ctx, client, groupID)
+		if err != nil {
+			return err
+		}
+		newResource.SetGroup(*b)
 	}
+
 	if regionID != 0 {
-		newResource.Region = &regionID
+		b, err := brief.GetBriefRegionRequestFromID(ctx, client, regionID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRegion(*b)
 	}
+
 	if tenantID != 0 {
-		newResource.Tenant = &tenantID
+		b, err := brief.GetBriefTenantRequestFromID(ctx, client, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
+
 	if timezone := d.Get("time_zone").(string); timezone != "" {
-		newResource.TimeZone = &timezone
+		newResource.SetTimeZone(timezone)
 	}
 
-	resource := dcim.NewDcimSitesCreateParams().WithData(newResource)
+	_, response, err := client.DcimAPI.DcimSitesCreate(
+		ctx).WritableSiteRequest(*newResource).Execute()
 
-	resourceCreated, err := client.Dcim.DcimSitesCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	if response.StatusCode != util.Const201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	var resourceID int32
+	if resourceID, err = util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	}
 
+	d.SetId(fmt.Sprintf("%d", resourceID))
 	return resourceNetboxDcimSiteRead(ctx, d, m)
 }
 
-func resourceNetboxDcimSiteRead(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxDcimSiteRead(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	resourceID := d.Id()
-	params := dcim.NewDcimSitesListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimSitesList(params, nil)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	client := m.(*netbox.APIClient)
 
-	if len(resources.Payload.Results) != 1 {
+	resourceID, _ := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	resource, response, err := client.DcimAPI.DcimSitesRetrieve(ctx,
+		int32(resourceID)).Execute()
+
+	if response.StatusCode == util.Const404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
-	if err = d.Set("asns", util.ConvertNestedASNsToASNs(resource.Asns)); err != nil {
-		return diag.FromErr(err)
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
-	if err = d.Set("circuit_count", resource.CircuitCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("asns",
+		util.ConvertASNsToInts(resource.GetAsns())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("comments", resource.Comments); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("circuit_count", resource.GetCircuitCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("comments", resource.GetComments()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("content_type",
+		util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(
+		resourceCustomFields, resource.GetCustomFields())
 
 	if err = d.Set("custom_field", customFields); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("description", resource.Description); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("device_count", resource.DeviceCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("device_count", resource.GetDeviceCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("facility", resource.Facility); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("facility", resource.GetFacility()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("group_id", util.GetNestedSiteGroupID(resource.Group)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("group_id", resource.GetGroup().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("last_updated",
+		resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("latitude", resource.Latitude); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("latitude", resource.GetLatitude()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("longitude", resource.Longitude); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("longitude", resource.GetLongitude()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("physical_address", resource.PhysicalAddress); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("physical_address",
+		resource.GetPhysicalAddress()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("prefix_count", resource.PrefixCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("prefix_count", resource.GetPrefixCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("rack_count", resource.RackCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("rack_count", resource.GetRackCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("region_id", util.GetNestedRegionID(resource.Region)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("region_id", resource.GetRegion().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("shipping_address", resource.ShippingAddress); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("shipping_address",
+		resource.GetShippingAddress()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("slug", resource.Slug); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("slug", resource.GetSlug()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("status", resource.Status.Value); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("status", resource.GetStatus().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tag",
+		tag.ConvertNestedTagRequestToTags(resource.GetTags())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tenant_id", util.GetNestedTenantID(resource.Tenant)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("time_zone", resource.TimeZone); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("time_zone", resource.GetTimeZone()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("virtualmachine_count", resource.VirtualmachineCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("virtualmachine_count",
+		resource.GetVirtualmachineCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("vlan_count", resource.VlanCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("vlan_count", resource.GetVlanCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
 }
 
-func resourceNetboxDcimSiteUpdate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxDcimSiteUpdate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int64"))
 	}
-	params := &models.WritableSite{}
+	resource := netbox.NewWritableSiteRequestWithDefaults()
 
-	modifiedFields := map[string]interface{}{}
+	// Required fields
+	resource.SetName(d.Get("name").(string))
+	resource.SetSlug(d.Get("slug").(string))
+
 	if d.HasChange("asns") {
-		params.Asns = util.ToListofInts(d.Get("asns").(*schema.Set).List())
+		resource.SetAsns(util.ToListofInts(
+			d.Get("asns").(*schema.Set).List()))
 	}
+
 	if d.HasChange("comments") {
-		comments := d.Get("comments").(string)
-		params.Comments = comments
-		modifiedFields["comments"] = comments
+		resource.SetComments(d.Get("comments").(string))
 	}
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
-		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(
-			stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		customFields :=
+			customfield.ConvertCustomFieldsFromTerraformToAPI(
+				stateCustomFields.(*schema.Set).List(),
+				resourceCustomFields.(*schema.Set).List())
+		resource.SetCustomFields(customFields)
 	}
+
 	if d.HasChange("description") {
-		description := d.Get("description").(string)
-		params.Description = description
-		modifiedFields["description"] = description
+		resource.SetDescription(d.Get("description").(string))
 	}
+
 	if d.HasChange("facility") {
-		facility := d.Get("facility").(string)
-		params.Facility = facility
-		modifiedFields["facility"] = facility
+		resource.SetFacility(d.Get("facility").(string))
 	}
+
 	if d.HasChange("group_id") {
-		groupID := int64(d.Get("group_id").(int))
-		params.Group = &groupID
-		modifiedFields["group"] = groupID
-	}
-	if d.HasChange("latitude") {
-		latitude := d.Get("latitude").(float64)
-		params.Latitude = &latitude
-		modifiedFields["latitude"] = latitude
-	}
-	if d.HasChange("longitude") {
-		longitude := d.Get("longitude").(float64)
-		params.Longitude = &longitude
-		modifiedFields["longitude"] = longitude
-	}
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
-	}
-	if d.HasChange("physical_address") {
-		physicalAddress := d.Get("physical_address").(string)
-		params.PhysicalAddress = physicalAddress
-		modifiedFields["physical_address"] = physicalAddress
-	}
-	if d.HasChange("region_id") {
-		regionID := int64(d.Get("region_id").(int))
-		params.Region = &regionID
-		modifiedFields["region"] = regionID
-	}
-	if d.HasChange("status") {
-		params.Status = d.Get("status").(string)
-	}
-	if d.HasChange("slug") {
-		slug := d.Get("slug").(string)
-		params.Slug = &slug
-	}
-	if d.HasChange("shipping_address") {
-		shippingAddress := d.Get("shipping_address").(string)
-		params.ShippingAddress = shippingAddress
-		modifiedFields["shipping_address"] = shippingAddress
-	}
-	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
-		params.Tenant = &tenantID
-		modifiedFields["tenant"] = tenantID
-	}
-	if d.HasChange("tag") {
-		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
-	}
-	if d.HasChange("time_zone") {
-		timeZone := d.Get("time_zone").(string)
-		params.TimeZone = &timeZone
-		if timeZone != "" {
-			modifiedFields["time_zone"] = timeZone
+		if groupID, exist := d.GetOk("group_id"); exist {
+			b, err := brief.GetBriefSiteGroupRequestFromID(ctx, client,
+				groupID.(int))
+			if err != nil {
+				return err
+			}
+			resource.SetGroup(*b)
 		} else {
-			modifiedFields["time_zone"] = nil
+			resource.SetGroupNil()
 		}
 	}
 
-	resource := dcim.NewDcimSitesPartialUpdateParams().WithData(params)
+	if d.HasChange("latitude") {
+		resource.SetLatitude(d.Get("latitude").(float64))
+	}
 
-	resource.SetID(resourceID)
+	if d.HasChange("longitude") {
+		resource.SetLongitude(d.Get("longitude").(float64))
+	}
 
-	_, err = client.Dcim.DcimSitesPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, siteRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if d.HasChange("physical_address") {
+		resource.SetPhysicalAddress(d.Get("physical_address").(string))
+	}
+
+	if d.HasChange("region_id") {
+		if regionID, exist := d.GetOk("region_id"); exist {
+			b, err := brief.GetBriefRegionRequestFromID(ctx, client,
+				regionID.(int))
+			if err != nil {
+				return err
+			}
+			resource.SetRegion(*b)
+		} else {
+			resource.SetRegionNil()
+		}
+	}
+
+	if d.HasChange("status") {
+		s, err := netbox.NewLocationStatusValueFromValue(
+			d.Get("status").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetStatus(*s)
+	}
+
+	if d.HasChange("shipping_address") {
+		resource.SetShippingAddress(d.Get("shipping_address").(string))
+	}
+
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+	}
+
+	if d.HasChange("tenant_id") {
+		if tenantID, exist := d.GetOk("tenant_id"); exist {
+			b, err := brief.GetBriefTenantRequestFromID(ctx, client,
+				tenantID.(int))
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
+		} else {
+			resource.SetTenantNil()
+		}
+	}
+
+	if d.HasChange("time_zone") {
+		timezone := d.Get("time_zone").(string)
+		if timezone != "" {
+			resource.SetTimeZone(timezone)
+		} else {
+			resource.SetTimeZoneNil()
+		}
+	}
+
+	if _, response, err := client.DcimAPI.DcimSitesUpdate(ctx,
+		int32(resourceID)).WritableSiteRequest(
+		*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxDcimSiteRead(ctx, d, m)
 }
 
-func resourceNetboxDcimSiteDelete(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxDcimSiteDelete(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxDcimSiteExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int64"))
 	}
 
-	resource := dcim.NewDcimSitesDeleteParams().WithID(id)
-	if _, err := client.Dcim.DcimSitesDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.DcimAPI.DcimSitesDestroy(ctx,
+		int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
 }
 
 func resourceNetboxDcimSiteExists(d *schema.ResourceData,
-	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	m any) (b bool, e error) {
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := dcim.NewDcimSitesListParams().WithID(&resourceID)
-	resources, err := client.Dcim.DcimSitesList(params, nil)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.DcimAPI.DcimSitesRetrieve(nil,
+		int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == util.Const404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == util.Const200 {
+		return true, nil
 	}
 
-	return resourceExist, nil
+	return false, err
 }

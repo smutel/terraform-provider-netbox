@@ -2,20 +2,21 @@ package tenancy
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/tenancy"
-	"github.com/smutel/go-netbox/v3/netbox/models"
+	"github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/brief"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 func ResourceNetboxTenancyContactAssignment() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Link a contact (tenancy module) to another resource within Netbox.",
+		Description:   "Link a contact to another resource within Netbox.",
 		CreateContext: resourceNetboxTenancyContactAssignmentCreate,
 		ReadContext:   resourceNetboxTenancyContactAssignmentRead,
 		UpdateContext: resourceNetboxTenancyContactAssignmentUpdate,
@@ -27,197 +28,238 @@ func ResourceNetboxTenancyContactAssignment() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"contact_id": {
-				Type:        schema.TypeInt,
-				Required:    true,
-				Description: "ID of the contact to link to this contact assignment (tenancy module).",
+				Type:     schema.TypeInt,
+				Required: true,
+				Description: "ID of the contact to link to " +
+					"this contact assignment.",
 			},
 			"contact_role_id": {
-				Type:        schema.TypeInt,
-				Required:    true,
-				Description: "The role of the contact for this contact assignment (tenancy module).",
+				Type:     schema.TypeInt,
+				Required: true,
+				Description: "The role of the contact for " +
+					"this contact assignment.",
 			},
 			"content_type": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "Type of the object where the contact will be linked.",
+				Type:     schema.TypeString,
+				Required: true,
+				Description: "Type of the object where the contact " +
+					"will be linked.",
 			},
 			"object_id": {
-				Type:        schema.TypeInt,
-				Required:    true,
-				Description: "ID of the object where the contact will be linked.",
+				Type:     schema.TypeInt,
+				Required: true,
+				Description: "ID of the object where the contact " +
+					"will be linked.",
 			},
 			"priority": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "primary",
-				ValidateFunc: validation.StringInSlice([]string{"primary", "secondary", "tertiary",
-					"inactive"}, false),
-				Description: "Priority of this contact among primary, secondary and tertiary (primary by default).",
+				ValidateFunc: validation.StringInSlice([]string{"primary",
+					"secondary", "tertiary", "inactive"}, false),
+				Description: "Priority of this contact among primary, " +
+					"secondary and tertiary (primary by default).",
 			},
 		},
 	}
 }
 
-func resourceNetboxTenancyContactAssignmentCreate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	fmt.Println(client)
+func resourceNetboxTenancyContactAssignmentCreate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	contactID := int64(d.Get("contact_id").(int))
-	contactRoleID := int64(d.Get("contact_role_id").(int))
+	client := m.(*netbox.APIClient)
+
+	contactID := d.Get("contact_id").(int)
+	contactRoleID := d.Get("contact_role_id").(int)
 	contentType := d.Get("content_type").(string)
 	objectID := int64(d.Get("object_id").(int))
 	priority := d.Get("priority").(string)
 
-	newResource := &models.WritableContactAssignment{
-		Contact:     &contactID,
-		ContentType: &contentType,
-		ObjectID:    &objectID,
-		Priority:    priority,
-		Role:        &contactRoleID,
+	newResource := netbox.NewWritableContactAssignmentRequestWithDefaults()
+	newResource.SetObjectId(objectID)
+	newResource.SetObjectType(contentType)
+
+	if contactID != 0 {
+		b, err := brief.GetBriefContactRequestFromID(ctx, client, contactID)
+		if err != nil {
+			return err
+		}
+		newResource.SetContact(*b)
 	}
 
-	resource := tenancy.NewTenancyContactAssignmentsCreateParams().WithData(newResource)
+	if contactRoleID != 0 {
+		b, err := brief.GetBriefContactRoleRequestFromID(ctx, client,
+			contactRoleID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRole(*b)
+	}
 
-	resourceCreated, err := client.Tenancy.TenancyContactAssignmentsCreate(resource, nil)
+	p, err := netbox.NewContactAssignmentPriorityValueFromValue(priority)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
+	}
+	newResource.SetPriority(*p)
+
+	resourceCreated, response, err :=
+		client.TenancyAPI.TenancyContactAssignmentsCreate(
+			ctx).WritableContactAssignmentRequest(*newResource).Execute()
+	if response.StatusCode != util.Const201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	d.SetId(fmt.Sprintf("%d", resourceCreated.GetId()))
 
 	return resourceNetboxTenancyContactAssignmentRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyContactAssignmentRead(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxTenancyContactAssignmentRead(ctx context.Context,
+	d *schema.ResourceData,
+	m any) diag.Diagnostics {
 
-	resourceID := d.Id()
-	params := tenancy.NewTenancyContactAssignmentsListParams().WithID(&resourceID)
-	resources, err := client.Tenancy.TenancyContactAssignmentsList(params, nil)
+	client := m.(*netbox.APIClient)
+
+	resourceID, _ := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	resource, response, err :=
+		client.TenancyAPI.TenancyContactAssignmentsRetrieve(ctx,
+			int32(resourceID)).Execute()
+
+	if response.StatusCode == util.Const404 {
+		d.SetId("")
+		return nil
+	}
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("contact_id", resource.Contact.ID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("content_type", resource.ContentType); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("object_id", resource.ObjectID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Priority == nil {
-				if err = d.Set("priority", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("priority", resource.Priority.Value); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if err = d.Set("contact_role_id", resource.Role.ID); err != nil {
-				return diag.FromErr(err)
-			}
-
-			return nil
-		}
+	if err = d.Set("contact_id", resource.GetContact().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	d.SetId("")
+	if err = d.Set("content_type", resource.GetObjectType()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("object_id", resource.GetObjectId()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("priority", resource.GetPriority().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("contact_role_id", resource.GetRole().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	return nil
 }
 
-func resourceNetboxTenancyContactAssignmentUpdate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	params := &models.WritableContactAssignment{}
+func resourceNetboxTenancyContactAssignmentUpdate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	if err != nil {
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int"))
+	}
+	resource := netbox.NewWritableContactAssignmentRequestWithDefaults()
 
 	// Required parameters
-	contactID := int64(d.Get("contact_id").(int))
-	params.Contact = &contactID
+	resource.SetObjectType(d.Get("content_type").(string))
+	b, errDiag := brief.GetBriefContactRequestFromID(ctx, client,
+		d.Get("contact_id").(int))
+	if errDiag != nil {
+		return errDiag
+	}
+	resource.SetContact(*b)
 
-	contactRoleID := int64(d.Get("contact_role_id").(int))
-	params.Role = &contactRoleID
+	if d.HasChange("contact_role_id") {
+		contactRoleID := d.Get("contact_role_id").(int)
+		if contactRoleID != 0 {
+			b, errDiag := brief.GetBriefContactRoleRequestFromID(ctx, client,
+				contactRoleID)
+			if errDiag != nil {
+				return errDiag
+			}
+			resource.SetRole(*b)
+		}
 
-	contentType := d.Get("content_type").(string)
-	params.ContentType = &contentType
-
-	objectID := int64(d.Get("object_id").(int))
-	params.ObjectID = &objectID
-
-	priority := d.Get("priority").(string)
-	params.Priority = priority
-
-	resource := tenancy.NewTenancyContactAssignmentsPartialUpdateParams().WithData(params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
 	}
 
-	resource.SetID(resourceID)
+	if d.HasChange("object_id") {
+		resource.SetObjectId(int64(d.Get("object_id").(int)))
+	}
 
-	_, err = client.Tenancy.TenancyContactAssignmentsPartialUpdate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	if d.HasChange("priority") {
+		p, err := netbox.NewContactAssignmentPriorityValueFromValue(
+			d.Get("priority").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetPriority(*p)
+	}
+
+	if _, response, err :=
+		client.TenancyAPI.TenancyContactAssignmentsUpdate(ctx,
+			int32(resourceID)).WritableContactAssignmentRequest(
+			*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxTenancyContactAssignmentRead(ctx, d, m)
 }
 
-func resourceNetboxTenancyContactAssignmentDelete(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxTenancyContactAssignmentDelete(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxTenancyContactAssignmentExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int"))
 	}
 
-	p := tenancy.NewTenancyContactAssignmentsDeleteParams().WithID(id)
-	if _, err := client.Tenancy.TenancyContactAssignmentsDelete(p, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err :=
+		client.TenancyAPI.TenancyContactAssignmentsDestroy(ctx,
+			int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
 }
 
 func resourceNetboxTenancyContactAssignmentExists(d *schema.ResourceData,
-	m interface{}) (b bool,
+	m any) (b bool,
 	e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := tenancy.NewTenancyContactAssignmentsListParams().WithID(&resourceID)
-	resources, err := client.Tenancy.TenancyContactAssignmentsList(params, nil)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.TenancyAPI.TenancyContactAssignmentsRetrieve(nil,
+		int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == util.Const404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == util.Const200 {
+		return true, nil
 	}
 
-	return resourceExist, nil
+	return false, err
 }

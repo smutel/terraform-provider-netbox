@@ -6,21 +6,23 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 const resourceNameIpamRouteTargets = "netbox_ipam_route_targets.test"
 
 func TestAccNetboxIpamRouteTargetsMinimal(t *testing.T) {
 
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMRouteTargetsConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIPAMRouteTargetsConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRouteTargets),
 				),
@@ -35,14 +37,16 @@ func TestAccNetboxIpamRouteTargetsMinimal(t *testing.T) {
 }
 
 func TestAccNetboxIpamRouteTargetsFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMRouteTargetsConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxIPAMRouteTargetsConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRouteTargets),
 				),
@@ -57,32 +61,37 @@ func TestAccNetboxIpamRouteTargetsFull(t *testing.T) {
 }
 
 func TestAccNetboxIpamRouteTargetsMininmalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMRouteTargetsConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIPAMRouteTargetsConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRouteTargets),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMRouteTargetsConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxIPAMRouteTargetsConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRouteTargets),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMRouteTargetsConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxIPAMRouteTargetsConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRouteTargets),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMRouteTargetsConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIPAMRouteTargetsConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamRouteTargets),
 				),
@@ -91,23 +100,25 @@ func TestAccNetboxIpamRouteTargetsMininmalFullMinimal(t *testing.T) {
 	})
 }
 
-func testAccCheckNetboxIPAMRouteTargetsConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxIPAMRouteTargetsConfig(nameSuffix string,
+	resourceFull, extraResources bool) string {
+
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamrt-{{ .namesuffix }}"
+		slug = "ipamrt-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_ipam_route_targets" "test" {
-		name        = "test-{{ .namesuffix }}"
+		name				= "ipamrt-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
-		comments        = <<-EOT
+		comments				= <<-EOT
 		Route Targets created by terraform
 		Multiline
 		EOT
-    description = "Test RouteTargets"
+		description = "Test RouteTargets"
 
 		tag {
 			name = netbox_extras_tag.test.name

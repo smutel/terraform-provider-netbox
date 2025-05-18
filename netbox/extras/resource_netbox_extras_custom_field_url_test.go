@@ -6,22 +6,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
-const resourceNameNetboxExtrasCustomFieldURL = "netbox_extras_custom_field.test"
+const resourceNameNetboxExtrasCustomFieldURL = "" +
+	"netbox_extras_custom_field.test"
 
 func TestAccNetboxExtrasCustomFieldURLMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldURL),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldURL),
 				),
 			},
 			{
@@ -34,16 +38,19 @@ func TestAccNetboxExtrasCustomFieldURLMinimal(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldURLFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldURL),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldURL),
 				),
 			},
 			{
@@ -56,64 +63,77 @@ func TestAccNetboxExtrasCustomFieldURLFull(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldURLMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldURL),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldURL),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldURL),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldURL),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldURL),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldURL),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldURLConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldURL),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldURL),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxExtrasCustomFieldURLConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfurl_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
 
-		type          = "url"
+		type					= "url"
 		{{ if eq .resourcefull "true" }}
-		description   = "Test custom field"
-		label         = "Test Label for CF"
-		group_name    = "testgroup"
+		description	 = "Test custom field"
+		label				 = "Test Label for CF"
+		group_name		= "testgroup"
 		ui_visibility = "hidden"
-		weight        = 50
-		#required      = true
-		filter_logic  = "disabled"
-		default       = jsonencode("https://netbox.dev/")
+		ui_editable	 = "no"
+		weight				= 50
+		#required			= true
+		filter_logic	= "disabled"
+				default			 = jsonencode("https://netbox.dev/")
 		{{ end }}
 	}
 
+	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+		name = "extrascfurl-{{ .namesuffix }}"
+		slug = "extrascfurl-{{ .namesuffix }}"
 
 		custom_field {
 			name = netbox_extras_custom_field.test.name
@@ -121,6 +141,7 @@ func testAccCheckNetboxExtrasCustomFieldURLConfig(nameSuffix string, resourceFul
 			value = "http://my.example.url.invalid/path"
 		}
 	}
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

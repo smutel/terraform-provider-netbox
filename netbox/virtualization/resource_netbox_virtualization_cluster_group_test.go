@@ -6,22 +6,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
-const resourceNameNetboxVirtualizationClusterGroup = "netbox_virtualization_cluster_group.test"
+const resourceNameNetboxVirtualizationClusterGroup = "" +
+	"netbox_virtualization_cluster_group.test"
 
 func TestAccNetboxVirtualizationClusterGroupMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationClusterGroup),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationClusterGroup),
 				),
 			},
 			{
@@ -34,16 +38,19 @@ func TestAccNetboxVirtualizationClusterGroupMinimal(t *testing.T) {
 }
 
 func TestAccNetboxVirtualizationClusterGroupFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationClusterGroup),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationClusterGroup),
 				),
 			},
 			{
@@ -56,52 +63,63 @@ func TestAccNetboxVirtualizationClusterGroupFull(t *testing.T) {
 }
 
 func TestAccNetboxVirtualizationClusterGroupMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationClusterGroup),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationClusterGroup),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationClusterGroup),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationClusterGroup),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationClusterGroup),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationClusterGroup),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationClusterGroupConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationClusterGroup),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationClusterGroup),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxVirtualizationClusterGroupConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxVirtualizationClusterGroupConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualclustergroup-{{ .namesuffix }}"
+		slug = "virtualclustergroup-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_virtualization_cluster_group" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name				= "virtualclustergroup-{{ .namesuffix }}"
+		slug				= "virtualclustergroup-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test device role"
 

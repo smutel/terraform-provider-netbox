@@ -222,3 +222,36 @@ linters:
     - wrapcheck
     - wsl
     - zerologlint
+  settings:
+    revive:
+      enable-all-rules: true
+      rules:
+        - name: add-constant
+          arguments:
+            - max-lit-count: "10"
+              allow-strs: '""'
+              allow-ints: "0,1,2,3,4,5,6,7,8,9"
+              allow-floats: "0.0,0.,1.0,1.,2.0,2."
+        # More than 50 issues
+        - name: cognitive-complexity
+          disabled: true
+        # More than 50 issues
+        - name: cyclomatic
+          disabled: true
+        - name: empty-lines
+          disabled: true
+        # More than 50 issues
+        - name: exported
+          disabled: true
+        # More than 50 issues
+        - name: function-length
+          disabled: true
+        - name: line-length-limit
+          severity: warning
+          disabled: false
+          arguments: [80]
+        - name: package-comments
+          disabled: true
+        # More than 50 issues
+        - name: unchecked-type-assertion
+          disabled: true

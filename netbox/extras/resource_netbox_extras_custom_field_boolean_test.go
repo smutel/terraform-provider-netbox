@@ -6,22 +6,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
-const resourceNameNetboxExtrasCustomFieldBoolean = "netbox_extras_custom_field.test"
+const resourceNameNetboxExtrasCustomFieldBoolean = "" +
+	"netbox_extras_custom_field.test"
 
 func TestAccNetboxExtrasCustomFieldBooleanMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldBoolean),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldBoolean),
 				),
 			},
 			{
@@ -34,16 +38,19 @@ func TestAccNetboxExtrasCustomFieldBooleanMinimal(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldBooleanFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldBoolean),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldBoolean),
 				),
 			},
 			{
@@ -56,64 +63,77 @@ func TestAccNetboxExtrasCustomFieldBooleanFull(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldBooleanMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldBoolean),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldBoolean),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldBoolean),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldBoolean),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldBoolean),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldBoolean),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldBooleanConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldBoolean),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldBoolean),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxExtrasCustomFieldBooleanConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfboolean_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
 
-		type          = "boolean"
+		type					= "boolean"
 		{{ if eq .resourcefull "true" }}
-		description   = "Test custom field"
-		group_name    = "testgroup"
+		description	 = "Test custom field"
+		group_name		= "testgroup"
 		ui_visibility = "hidden"
-		label         = "Test Label for CF"
-		weight        = 50
-		#required      = true
-		filter_logic  = "disabled"
-		default       = true
+		ui_editable	 = "no"
+		label				 = "Test Label for CF"
+		weight				= 50
+		#required			= true
+		filter_logic	= "disabled"
+		default			 = true
 		{{ end }}
 	}
 
+	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+		name = "extrascfboolean-{{ .namesuffix }}"
+		slug = "extrascfboolean-{{ .namesuffix }}"
 
 		custom_field {
 			name = netbox_extras_custom_field.test.name
@@ -121,6 +141,7 @@ func testAccCheckNetboxExtrasCustomFieldBooleanConfig(nameSuffix string, resourc
 			value = false
 		}
 	}
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,
