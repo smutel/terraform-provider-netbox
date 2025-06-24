@@ -1,5 +1,5 @@
 {
   "name": "terraform-provider-netbox",
-  "version": "7.1.1",
+  "version": "8.0.0",
   "description": "Terraform provider for Netbox"
 }
