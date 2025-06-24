@@ -42,7 +42,7 @@ jobs:
         uses: goreleaser/goreleaser-action@9c156ee8a17a598857849441385a2041ef570552  # v6.3.0
         with:
           version: latest
-          args: release --rm-dist --release-notes "/tmp/RELEASE_CHANGELOG.md"
+          args: release --release-notes "/tmp/RELEASE_CHANGELOG.md"
         env:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
