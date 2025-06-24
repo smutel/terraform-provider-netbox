@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.0.0](https://github.com/smutel/terraform-provider-netbox/compare/v7.1.1...v8.0.0) (2025-06-24)
+
+
+### Features
+
+* Update to Netbox 4 ([a238b35](https://github.com/smutel/terraform-provider-netbox/commit/a238b35bab18de2782fa268de5e7b6580d41b6a0))
+
 ### [7.1.1](https://github.com/smutel/terraform-provider-netbox/compare/v7.1.0...v7.1.1) (2023-10-20)
 
 
