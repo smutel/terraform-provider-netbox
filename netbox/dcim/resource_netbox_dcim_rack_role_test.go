@@ -6,20 +6,22 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 const resourceNameNetboxDcimRackRole = "netbox_dcim_rack_role.test"
 
 func TestAccNetboxDcimRackRoleMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix,
+					false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameNetboxDcimRackRole),
 				),
@@ -34,14 +36,16 @@ func TestAccNetboxDcimRackRoleMinimal(t *testing.T) {
 }
 
 func TestAccNetboxDcimRackRoleFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix,
+					true, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameNetboxDcimRackRole),
 				),
@@ -56,32 +60,37 @@ func TestAccNetboxDcimRackRoleFull(t *testing.T) {
 }
 
 func TestAccNetboxDcimRackRoleMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix,
+					false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameNetboxDcimRackRole),
 				),
 			},
 			{
-				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix,
+					true, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameNetboxDcimRackRole),
 				),
 			},
 			{
-				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix,
+					false, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameNetboxDcimRackRole),
 				),
 			},
 			{
-				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxDcimRackRoleConfig(nameSuffix,
+					false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameNetboxDcimRackRole),
 				),
@@ -90,18 +99,20 @@ func TestAccNetboxDcimRackRoleMinimalFullMinimal(t *testing.T) {
 	})
 }
 
-func testAccCheckNetboxDcimRackRoleConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxDcimRackRoleConfig(nameSuffix string,
+	resourceFull, extraResources bool) string {
+
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "dcimrackrole-{{ .namesuffix }}"
+		slug = "dcimrackrole-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_dcim_rack_role" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name				= "dcimrackrole-{{ .namesuffix }}"
+		slug				= "dcimrackrole-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test rack role"
 		color = "00ff00"

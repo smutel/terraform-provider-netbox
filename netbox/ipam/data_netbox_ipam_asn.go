@@ -2,19 +2,20 @@ package ipam
 
 import (
 	"context"
-	"strconv"
+	"errors"
+	"fmt"
 
+	"github.com/ccoveille/go-safecast"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	netbox "github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 func DataNetboxIpamAsn() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about aggregate (ipam module) from Netbox.",
+		Description: "Get info about aggregate from Netbox.",
 		ReadContext: dataNetboxIpamAsnRead,
 
 		Schema: map[string]*schema.Schema{
@@ -22,50 +23,61 @@ func DataNetboxIpamAsn() *schema.Resource {
 				Type:         schema.TypeInt,
 				Required:     true,
 				ValidateFunc: validation.IntAtLeast(1),
-				Description:  "The asn number of this asn (ipam module).",
+				Description:  "The asn number of this asn.",
 			},
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this aggregate (ipam module).",
+				Description: "The content type of this aggregate.",
 			},
 			"rir_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The rir for this asn (ipam module).",
+				Description: "The rir for this asn.",
 			},
 		},
 	}
 }
 
 func dataNetboxIpamAsnRead(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	m any) diag.Diagnostics {
+	client := m.(*netbox.APIClient)
 
-	asn := d.Get("asn").(int)
-	asnStr := strconv.Itoa(asn)
-	rirID := d.Get("rir_id").(int)
-	rirIDStr := strconv.Itoa(rirID)
-
-	p := ipam.NewIpamAsnsListParams().WithAsn(&asnStr).WithRirID(&rirIDStr)
-
-	list, err := client.Ipam.IpamAsnsList(p, nil)
+	asn32, err := safecast.ToInt32(d.Get("asn").(int))
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
+	}
+	asn := []int32{asn32}
+
+	rirID32, err := safecast.ToInt32(d.Get("rir").(int))
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	rirID := []int32{rirID32}
+
+	resource, response, err :=
+		client.IpamAPI.IpamAsnsList(ctx).Asn(asn).RirId(rirID).Execute()
+
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if *list.Payload.Count < 1 {
-		return diag.Errorf("Your query returned no results. " +
-			"Please change your search criteria and try again.")
-	} else if *list.Payload.Count > 1 {
-		return diag.Errorf("Your query returned more than one result. " +
-			"Please try a more specific search criteria.")
+	if resource.GetCount() < 1 {
+		return util.GenerateErrorMessage(nil,
+			errors.New("Your query returned no results. "+
+				"Please change your search criteria and try again."))
+
+	} else if resource.GetCount() > 1 {
+		return util.GenerateErrorMessage(nil,
+			errors.New("Your query returned more than one result. "+
+				"Please try a more specific search criteria."))
 	}
 
-	r := list.Payload.Results[0]
-	d.SetId(strconv.FormatInt(r.ID, 10))
-	if err = d.Set("content_type", util.ConvertURIContentType(r.URL)); err != nil {
-		return diag.FromErr(err)
+	r := resource.Results[0]
+	d.SetId(fmt.Sprintf("%d", r.GetId()))
+	if err = d.Set("content_type",
+		util.ConvertURLContentType(r.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil

@@ -6,22 +6,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
-const resourceNameNetboxExtrasCustomFieldInteger = "netbox_extras_custom_field.test"
+const resourceNameNetboxExtrasCustomFieldInteger = "" +
+	"netbox_extras_custom_field.test"
 
 func TestAccNetboxExtrasCustomFieldIntegerMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldInteger),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldInteger),
 				),
 			},
 			{
@@ -34,16 +38,19 @@ func TestAccNetboxExtrasCustomFieldIntegerMinimal(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldIntegerFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldInteger),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldInteger),
 				),
 			},
 			{
@@ -55,67 +62,82 @@ func TestAccNetboxExtrasCustomFieldIntegerFull(t *testing.T) {
 	})
 }
 
-func TestAccNetboxExtrasCustomFieldIntegerMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+func TestAccNetboxExtrasCustomFieldIntegerMinimalFullMinimal(
+	t *testing.T) {
+
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldInteger),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldInteger),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldInteger),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldInteger),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldInteger),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldInteger),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldIntegerConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldInteger),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldInteger),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxExtrasCustomFieldIntegerConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfinteger_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
 
-		type               = "integer"
+		type							 = "integer"
 		{{ if eq .resourcefull "true" }}
-		description        = "Test custom field"
-		group_name         = "testgroup"
-		ui_visibility      = "hidden"
-		label              = "Test Label for CF"
-		weight             = 50
-		#required           = true
-		filter_logic       = "disabled"
-		default            = 50
+		description				= "Test custom field"
+		group_name				 = "testgroup"
+		ui_visibility			= "hidden"
+		ui_editable				= "no"
+		label							= "Test Label for CF"
+		weight						 = 50
+		#required					 = true
+		filter_logic			 = "disabled"
+		default						= 50
 		validation_minimum = 1
 		validation_maximum = 500
 		{{ end }}
 	}
 
+	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+		name = "extrascfinteger-{{ .namesuffix }}"
+		slug = "extrascfinteger-{{ .namesuffix }}"
 
 		custom_field {
 			name = netbox_extras_custom_field.test.name
@@ -123,6 +145,7 @@ func testAccCheckNetboxExtrasCustomFieldIntegerConfig(nameSuffix string, resourc
 			value = 25
 		}
 	}
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

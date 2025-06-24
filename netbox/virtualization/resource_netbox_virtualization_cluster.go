@@ -2,23 +2,23 @@ package virtualization
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/virtualization"
-	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/brief"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/tag"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 func ResourceNetboxVirtualizationCluster() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage a tag (extra module) within Netbox.",
+		Description:   "Manage a cluster within Netbox.",
 		CreateContext: resourceNetboxVirtualizationClusterCreate,
 		ReadContext:   resourceNetboxVirtualizationClusterRead,
 		UpdateContext: resourceNetboxVirtualizationClusterUpdate,
@@ -32,13 +32,13 @@ func ResourceNetboxVirtualizationCluster() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this cluster (virtualization module).",
+				Description: "The content type of this cluster.",
 			},
 			"comments": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				StateFunc:   util.TrimString,
-				Description: "Comments for this cluster (virtualization module).",
+				Description: "Comments for this cluster.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -64,8 +64,8 @@ func ResourceNetboxVirtualizationCluster() *schema.Resource {
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The name of this cluster (virtualization module).",
+				ValidateFunc: validation.StringLenBetween(1, util.Const100),
+				Description:  "The name of this cluster.",
 			},
 			"site_id": {
 				Type:        schema.TypeInt,
@@ -76,9 +76,10 @@ func ResourceNetboxVirtualizationCluster() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "active",
-				ValidateFunc: validation.StringInSlice([]string{"offline", "active",
-					"planned", "staging", "decommissioning"}, false),
-				Description: "The status among offline, active, planned, staging or decommissioning (active by default).",
+				ValidateFunc: validation.StringInSlice([]string{"offline",
+					"active", "planned", "staging", "decommissioning"}, false),
+				Description: "The status among offline, active, planned, " +
+					"staging or decommissioning (active by default).",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
@@ -96,7 +97,7 @@ func ResourceNetboxVirtualizationCluster() *schema.Resource {
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this cluster (virtualization module).",
+				Description: "The link to this cluster.",
 			},
 			"virtualmachine_count": {
 				Type:        schema.TypeInt,
@@ -107,235 +108,314 @@ func ResourceNetboxVirtualizationCluster() *schema.Resource {
 	}
 }
 
-var clusterRequiredFields = []string{
-	"created",
-	"last_updated",
-	"name",
-	"type",
-	"tags",
-}
+func resourceNetboxVirtualizationClusterCreate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-func resourceNetboxVirtualizationClusterCreate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+	client := m.(*netbox.APIClient)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
-	groupID := int64(d.Get("group_id").(int))
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil,
+		resourceCustomFields)
+	groupID := d.Get("group_id").(int)
 	name := d.Get("name").(string)
-	typeID := int64(d.Get("type_id").(int))
-	siteID := int64(d.Get("site_id").(int))
-	tenantID := int64(d.Get("tenant_id").(int))
+	typeID := d.Get("type_id").(int)
+	siteID := d.Get("site_id").(int)
+	tenantID := d.Get("tenant_id").(int)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := &models.WritableCluster{
-		Comments:     d.Get("comments").(string),
-		CustomFields: customFields,
-		Name:         &name,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
-		Type:         &typeID,
-		Status:       d.Get("status").(string),
+	newResource := netbox.NewWritableClusterRequestWithDefaults()
+	newResource.SetComments(d.Get("comments").(string))
+	newResource.SetCustomFields(customFields)
+	newResource.SetName(name)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+
+	b, err := brief.GetBriefClusterTypeRequestFromID(ctx, client, typeID)
+	if err != nil {
+		return err
 	}
+	newResource.SetType(*b)
 
 	if groupID != 0 {
-		newResource.Group = &groupID
+		b, err := brief.GetBriefClusterGroupRequestFromID(ctx, client, groupID)
+		if err != nil {
+			return err
+		}
+		newResource.SetGroup(*b)
 	}
+
+	s, errDiag := netbox.NewClusterStatusValueFromValue(
+		d.Get("status").(string))
+	if errDiag != nil {
+		return util.GenerateErrorMessage(nil, errDiag)
+	}
+	newResource.SetStatus(*s)
 
 	if siteID != 0 {
-		newResource.Site = &siteID
+		b, err := brief.GetBriefSiteRequestFromID(ctx, client, siteID)
+		if err != nil {
+			return err
+		}
+		newResource.SetSite(*b)
 	}
+
 	if tenantID != 0 {
-		newResource.Tenant = &tenantID
+		b, err := brief.GetBriefTenantRequestFromID(ctx, client, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
-	resource := virtualization.NewVirtualizationClustersCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Virtualization.VirtualizationClustersCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	_, response, errDiag :=
+		client.VirtualizationAPI.VirtualizationClustersCreate(
+			ctx).WritableClusterRequest(*newResource).Execute()
+	if response.StatusCode != util.Const201 && errDiag != nil {
+		return util.GenerateErrorMessage(response, errDiag)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	var resourceID int32
+	if resourceID, errDiag = util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, errDiag)
+	}
 
+	d.SetId(fmt.Sprintf("%d", resourceID))
 	return resourceNetboxVirtualizationClusterRead(ctx, d, m)
 }
 
-func resourceNetboxVirtualizationClusterRead(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxVirtualizationClusterRead(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	resourceID := d.Id()
-	params := virtualization.NewVirtualizationClustersListParams().WithID(&resourceID)
-	resources, err := client.Virtualization.VirtualizationClustersList(params, nil)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	client := m.(*netbox.APIClient)
 
-	if len(resources.Payload.Results) != 1 {
+	resourceID, _ := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	resource, response, err :=
+		client.VirtualizationAPI.VirtualizationClustersRetrieve(ctx,
+			int32(resourceID)).Execute()
+
+	if response.StatusCode == util.Const404 {
 		d.SetId("")
 		return nil
 	}
 
-	resource := resources.Payload.Results[0]
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
 
-	if err = d.Set("comments", resource.Comments); err != nil {
-		return diag.FromErr(err)
+	if err = d.Set("comments", resource.GetComments()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("content_type", util.ConvertURLContentType(
+		resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("created", resource.Created.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
+
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields,
+		resource.GetCustomFields())
 
 	if err = d.Set("custom_field", customFields); err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("device_count", resource.DeviceCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("device_count", resource.GetDeviceCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("group_id", util.GetNestedClusterGroupID(resource.Group)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("group_id", resource.GetGroup().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("last_updated",
+		resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("name", resource.Name); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("name", resource.GetName()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("site_id", util.GetNestedSiteID(resource.Site)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("site_id", resource.GetSite().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("status", util.GetClusterStatusValue(resource.Status)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("status", resource.GetStatus().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tag",
+		tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("tenant_id", util.GetNestedTenantID(resource.Tenant)); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("type_id", resource.Type.ID); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("type_id", resource.GetType().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("url", resource.URL); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
-	if err = d.Set("virtualmachine_count", resource.VirtualmachineCount); err != nil {
-		return diag.FromErr(err)
+
+	if err = d.Set("virtualmachine_count",
+		resource.GetVirtualmachineCount()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil
 }
 
-func resourceNetboxVirtualizationClusterUpdate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	modifiedFields := make(map[string]interface{})
+func resourceNetboxVirtualizationClusterUpdate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int"))
 	}
-	params := &models.WritableCluster{}
+	resource := netbox.NewWritableClusterRequestWithDefaults()
+
+	// Required parameters
+	resource.SetName(d.Get("name").(string))
+	typeID := d.Get("type_id").(int)
+	b, errDiag := brief.GetBriefClusterTypeRequestFromID(ctx, client, typeID)
+	if errDiag != nil {
+		return errDiag
+	}
+	resource.SetType(*b)
 
 	if d.HasChange("comments") {
-		params.Comments = d.Get("comments").(string)
-		modifiedFields["comments"] = params.Comments
+		resource.SetComments(d.Get("comments").(string))
 	}
+
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
-		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		customFields :=
+			customfield.ConvertCustomFieldsFromTerraformToAPI(
+				stateCustomFields.(*schema.Set).List(),
+				resourceCustomFields.(*schema.Set).List())
+		resource.SetCustomFields(customFields)
 	}
+
 	if d.HasChange("group_id") {
-		groupID := int64(d.Get("group_id").(int))
-		params.Group = &groupID
-		modifiedFields["group"] = groupID
+		groupID := d.Get("group_id").(int)
+		if groupID != 0 {
+			b, err := brief.GetBriefClusterGroupRequestFromID(
+				ctx, client, groupID)
+			if err != nil {
+				return err
+			}
+			resource.SetGroup(*b)
+		} else {
+			resource.SetGroupNil()
+		}
 	}
-	if d.HasChange("name") {
-		name := d.Get("name").(string)
-		params.Name = &name
-	}
+
 	if d.HasChange("status") {
-		params.Status = d.Get("status").(string)
+		s, err := netbox.NewClusterStatusValueFromValue(
+			d.Get("status").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetStatus(*s)
 	}
+
 	if d.HasChange("site_id") {
-		siteID := int64(d.Get("site_id").(int))
-		params.Site = &siteID
-		modifiedFields["site"] = siteID
+		siteID := d.Get("site_id").(int)
+		if siteID != 0 {
+			b, err := brief.GetBriefSiteRequestFromID(ctx, client, siteID)
+			if err != nil {
+				return err
+			}
+			resource.SetSite(*b)
+		} else {
+			resource.SetSiteNil()
+		}
 	}
+
 	if d.HasChange("tag") {
 		tags := d.Get("tag").(*schema.Set).List()
-		params.Tags = tag.ConvertTagsToNestedTags(tags)
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 	}
+
 	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
-		params.Tenant = &tenantID
-		modifiedFields["tenant"] = tenantID
+		tenantID := d.Get("tenant_id").(int)
+		if tenantID != 0 {
+			b, err := brief.GetBriefTenantRequestFromID(ctx, client, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
+		} else {
+			resource.SetTenantNil()
+		}
 	}
-	if d.HasChange("type_id") {
-		typeID := int64(d.Get("type_id").(int))
-		params.Type = &typeID
-	}
 
-	resource := virtualization.NewVirtualizationClustersPartialUpdateParams().WithData(params)
-
-	resource.SetID(resourceID)
-
-	_, err = client.Virtualization.VirtualizationClustersPartialUpdate(resource, nil, requestmodifier.NewNetboxRequestModifier(modifiedFields, clusterRequiredFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err :=
+		client.VirtualizationAPI.VirtualizationClustersUpdate(ctx,
+			int32(resourceID)).WritableClusterRequest(
+			*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxVirtualizationClusterRead(ctx, d, m)
 }
 
-func resourceNetboxVirtualizationClusterDelete(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxVirtualizationClusterDelete(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxVirtualizationClusterExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int"))
 	}
 
-	resource := virtualization.NewVirtualizationClustersDeleteParams().WithID(id)
-	if _, err := client.Virtualization.VirtualizationClustersDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err :=
+		client.VirtualizationAPI.VirtualizationClustersDestroy(ctx,
+			int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
 }
 
 func resourceNetboxVirtualizationClusterExists(d *schema.ResourceData,
-	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	m any) (b bool, e error) {
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := virtualization.NewVirtualizationClustersListParams().WithID(&resourceID)
-	resources, err := client.Virtualization.VirtualizationClustersList(params, nil)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err :=
+		client.VirtualizationAPI.VirtualizationClustersRetrieve(nil,
+			int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == util.Const404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == util.Const200 {
+		return true, nil
 	}
 
-	return resourceExist, nil
+	return false, err
 }

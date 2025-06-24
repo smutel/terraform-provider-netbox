@@ -2,22 +2,23 @@ package ipam
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
-	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	netbox "github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/brief"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/tag"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 func ResourceNetboxIpamIPRange() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage an ip range (ipam module) within Netbox.",
+		Description:   "Manage an ip range within Netbox.",
 		CreateContext: resourceNetboxIpamIPRangeCreate,
 		ReadContext:   resourceNetboxIpamIPRangeRead,
 		UpdateContext: resourceNetboxIpamIPRangeUpdate,
@@ -31,15 +32,25 @@ func ResourceNetboxIpamIPRange() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this prefix (ipam module).",
+				Description: "The content type of this ip range.",
+			},
+			"created": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this ip range was created.",
 			},
 			"custom_field": &customfield.CustomFieldSchema,
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
-				ValidateFunc: validation.StringLenBetween(1, 100),
-				Description:  "The description of this prefix (ipam module).",
+				ValidateFunc: validation.StringLenBetween(1, util.Const100),
+				Description:  "The description of this prefix.",
+			},
+			"last_updated": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Date when this site was last updated.",
 			},
 			"start_address": {
 				Type:         schema.TypeString,
@@ -61,7 +72,7 @@ func ResourceNetboxIpamIPRange() *schema.Resource {
 			"role_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the role attached to this prefix (ipam module).",
+				Description: "ID of the role attached to this prefix.",
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -69,284 +80,312 @@ func ResourceNetboxIpamIPRange() *schema.Resource {
 				Default:  "active",
 				ValidateFunc: validation.StringInSlice([]string{"active",
 					"reserved", "deprecated"}, false),
-				Description: "Status among active, reserved, deprecated (active by default).",
+				Description: "Status among active, reserved, deprecated " +
+					"(active by default).",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Description: "ID of the tenant where this prefix (ipam module) is attached.",
+				Type:     schema.TypeInt,
+				Optional: true,
+				Description: "ID of the tenant where this ip range " +
+					"is attached.",
 			},
 			"vrf_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "ID of the vrf attached to this prefix (ipam module).",
+				Description: "ID of the vrf attached to this ip range.",
 			},
 		},
 	}
 }
 
-func resourceNetboxIpamIPRangeCreate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxIpamIPRangeCreate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
 
 	startAddress := d.Get("start_address").(string)
 	endAddress := d.Get("end_address").(string)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil,
+		resourceCustomFields)
 	description := d.Get("description").(string)
-	roleID := int64(d.Get("role_id").(int))
 	status := d.Get("status").(string)
 	tags := d.Get("tag").(*schema.Set).List()
-	tenantID := int64(d.Get("tenant_id").(int))
-	vrfID := int64(d.Get("vrf_id").(int))
 
-	newResource := &models.WritableIPRange{
-		CustomFields: &customFields,
-		Description:  description,
-		EndAddress:   &endAddress,
-		StartAddress: &startAddress,
-		Status:       status,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
-	}
+	newResource := netbox.NewWritableIPRangeRequestWithDefaults()
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(description)
+	newResource.SetEndAddress(endAddress)
+	newResource.SetStartAddress(startAddress)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	if roleID != 0 {
-		newResource.Role = &roleID
-	}
-
-	if tenantID != 0 {
-		newResource.Tenant = &tenantID
-	}
-
-	if vrfID != 0 {
-		newResource.Vrf = &vrfID
-	}
-
-	resource := ipam.NewIpamIPRangesCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Ipam.IpamIPRangesCreate(resource, nil)
+	s, err := netbox.NewPatchedWritableIPRangeRequestStatusFromValue(status)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
+	}
+	newResource.SetStatus(*s)
+
+	if roleID := d.Get("role_id").(int); roleID != 0 {
+		b, err := brief.GetBriefVlanRoleRequestFromID(ctx, client, roleID)
+		if err != nil {
+			return err
+		}
+		newResource.SetRole(*b)
 	}
 
-	rangeid := &resourceCreated.Payload.ID
-	d.SetId(strconv.FormatInt(*rangeid, 10))
+	if tenantID := d.Get("tenant_id").(int); tenantID != 0 {
+		b, err := brief.GetBriefTenantRequestFromID(ctx, client, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
+	}
 
+	if vrfID := d.Get("vrf_id").(int); vrfID != 0 {
+		b, err := brief.GetBriefVRFRequestFromID(ctx, client, vrfID)
+		if err != nil {
+			return err
+		}
+		newResource.SetVrf(*b)
+	}
+
+	_, response, err :=
+		client.IpamAPI.IpamIpRangesCreate(ctx).WritableIPRangeRequest(
+			*newResource).Execute()
+
+	if response.StatusCode != util.Const201 && err != nil {
+		return util.GenerateErrorMessage(response, err)
+	}
+
+	var resourceID int32
+	if resourceID, err = util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, err)
+	}
+
+	d.SetId(fmt.Sprintf("%d", resourceID))
 	return resourceNetboxIpamIPRangeRead(ctx, d, m)
 }
 
-func resourceNetboxIpamIPRangeRead(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxIpamIPRangeRead(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	resourceID := d.Id()
-	params := ipam.NewIpamIPRangesListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamIPRangesList(params, nil)
+	client := m.(*netbox.APIClient)
+
+	resourceID, _ := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	resource, response, err := client.IpamAPI.IpamIpRangesRetrieve(ctx,
+		int32(resourceID)).Execute()
+
+	if response.StatusCode == util.Const404 {
+		d.SetId("")
+		return nil
+	}
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
-
-			if err = d.Set("custom_field", customFields); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var description interface{}
-			if resource.Description == "" {
-				description = nil
-			} else {
-				description = resource.Description
-			}
-
-			if err = d.Set("description", description); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("start_address", resource.StartAddress); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("end_address", resource.EndAddress); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("size", resource.Size); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Role == nil {
-				if err = d.Set("role_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("role_id", resource.Role.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if resource.Status == nil {
-				if err = d.Set("status", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("status", resource.Status.Value); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if resource.Tenant == nil {
-				if err = d.Set("tenant_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("tenant_id", resource.Tenant.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			if resource.Vrf == nil {
-				if err = d.Set("vrf_id", nil); err != nil {
-					return diag.FromErr(err)
-				}
-			} else {
-				if err = d.Set("vrf_id", resource.Vrf.ID); err != nil {
-					return diag.FromErr(err)
-				}
-			}
-
-			return nil
-		}
+	if err = d.Set("content_type", util.ConvertURLContentType(
+		resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	d.SetId("")
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields,
+		resource.GetCustomFields())
+
+	if err = d.Set("custom_field", customFields); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated",
+		resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("start_address", resource.GetStartAddress()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("end_address", resource.GetEndAddress()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("size", resource.GetSize()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("role_id", resource.GetRole().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("status", resource.GetStatus().Value); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tag",
+		tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("vrf_id", resource.GetVrf().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	return nil
 }
 
-func resourceNetboxIpamIPRangeUpdate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
-	params := &models.WritableIPRange{}
+func resourceNetboxIpamIPRangeUpdate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
+
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	if err != nil {
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int64"))
+	}
+	resource := netbox.NewWritableIPRangeRequestWithDefaults()
 
 	// Required parameters
 	startAddress := d.Get("start_address").(string)
 	endAddress := d.Get("end_address").(string)
-	params.StartAddress = &startAddress
-	params.EndAddress = &endAddress
+	resource.SetStartAddress(startAddress)
+	resource.SetEndAddress(endAddress)
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
-		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		customFields :=
+			customfield.ConvertCustomFieldsFromTerraformToAPI(
+				stateCustomFields.(*schema.Set).List(),
+				resourceCustomFields.(*schema.Set).List())
+		resource.SetCustomFields(customFields)
 	}
 
 	if d.HasChange("description") {
 		if description, exist := d.GetOk("description"); exist {
-			params.Description = description.(string)
+			resource.SetDescription(description.(string))
 		} else {
-			params.Description = " "
+			resource.SetDescription("")
 		}
 	}
 
 	if d.HasChange("role_id") {
-		roleID := int64(d.Get("role_id").(int))
-		if roleID != 0 {
-			params.Role = &roleID
+		if roleID := d.Get("role_id").(int); roleID != 0 {
+			b, err := brief.GetBriefVlanRoleRequestFromID(ctx, client, roleID)
+			if err != nil {
+				return err
+			}
+			resource.SetRole(*b)
+		} else {
+			resource.SetRoleNil()
 		}
 	}
 
 	if d.HasChange("status") {
-		params.Status = d.Get("status").(string)
+		s, err := netbox.NewPatchedWritableIPRangeRequestStatusFromValue(
+			d.Get("status").(string))
+		if err != nil {
+			return util.GenerateErrorMessage(nil, err)
+		}
+		resource.SetStatus(*s)
 	}
 
-	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = tag.ConvertTagsToNestedTags(tags)
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
-		if tenantID != 0 {
-			params.Tenant = &tenantID
+		if tenantID := d.Get("tenant_id").(int); tenantID != 0 {
+			b, err := brief.GetBriefTenantRequestFromID(ctx, client, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
+		} else {
+			resource.SetTenantNil()
 		}
 	}
 
 	if d.HasChange("vrf_id") {
-		vrfID := int64(d.Get("vrf_id").(int))
-		if vrfID != 0 {
-			params.Vrf = &vrfID
+		if vrfID := d.Get("vrf_id").(int); vrfID != 0 {
+			b, err := brief.GetBriefVRFRequestFromID(ctx, client, vrfID)
+			if err != nil {
+				return err
+			}
+			resource.SetVrf(*b)
+		} else {
+			resource.SetVrfNil()
 		}
 	}
 
-	resource := ipam.NewIpamIPRangesPartialUpdateParams().WithData(params)
-
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
-	}
-
-	resource.SetID(resourceID)
-
-	_, err = client.Ipam.IpamIPRangesPartialUpdate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.IpamAPI.IpamIpRangesUpdate(ctx,
+		int32(resourceID)).WritableIPRangeRequest(
+		*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxIpamIPRangeRead(ctx, d, m)
 }
 
-func resourceNetboxIpamIPRangeDelete(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxIpamIPRangeDelete(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxIpamIPRangeExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int64"))
 	}
 
-	resource := ipam.NewIpamIPRangesDeleteParams().WithID(id)
-	if _, err := client.Ipam.IpamIPRangesDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.IpamAPI.IpamIpRangesDestroy(ctx,
+		int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
 }
 
 func resourceNetboxIpamIPRangeExists(d *schema.ResourceData,
-	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	m any) (b bool, e error) {
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := ipam.NewIpamIPRangesListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamIPRangesList(params, nil)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.IpamAPI.IpamIpRangesRetrieve(nil,
+		int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == util.Const404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == util.Const200 {
+		return true, nil
 	}
 
-	return resourceExist, nil
+	return false, err
 }

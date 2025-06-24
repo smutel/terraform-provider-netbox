@@ -10,14 +10,14 @@ curl -sq --unix-socket /var/run/docker.sock http://localhost/containers/json -o 
 
 DOCKER_COUNT=$(cat ${TMP_JSON_FILE} | jq ".[] | length" | uniq)
 
-for ((i = 0 ; i < ${DOCKER_COUNT} ; i++)); do
-  IMAGE_NAME=$(cat /tmp/docker.json | jq .[$i].Image | xargs | cut -d":" -f1)
+for ((i = 0 ; i < DOCKER_COUNT ; i++)); do
+  IMAGE_NAME=$(jq .[$i].Image /tmp/docker.json | xargs | cut -d":" -f1)
 
   if [ "${IMAGE_NAME}" == "docker.io/netboxcommunity/netbox" ]; then
-    PORTS_COUNT=$(cat /tmp/docker.json | jq ".[$i].Ports | length")
+    PORTS_COUNT=$(jq ".[$i].Ports | length" /tmp/docker.json)
 
-    for ((j = 0 ; j < ${PORTS_COUNT} ; j++)); do
-      PORT=$(cat /tmp/docker.json | jq .[$i].Ports[$j].PublicPort | xargs)
+    for ((j = 0 ; j < PORTS_COUNT ; j++)); do
+      PORT=$(jq .[$i].Ports[$j].PublicPort /tmp/docker.json | xargs)
       if [ "$PORT" != "null" ]; then
         PUBLIC_PORT=$PORT
       fi

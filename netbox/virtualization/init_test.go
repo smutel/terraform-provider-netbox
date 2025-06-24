@@ -2,7 +2,7 @@ package virtualization_test
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox"
 )
 
 var testAccProviders map[string]*schema.Provider

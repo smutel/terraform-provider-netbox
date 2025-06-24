@@ -1,0 +1,8 @@
+git clone https://github.com/netbox-community/netbox-docker.git
+mv docker-compose.override.yml.example docker-compose.override.yml
+docker-compose up
+curl http://127.0.0.1:8000/api/swagger.json -o swagger.json
+curl -L https://github.com/go-swagger/go-swagger/releases/download/v0.27.0/swagger_linux_amd64 -o swagger
+chmod 755 swagger
+mkdir -p ~/go/src/github.com/smutel/go-netbox
+./swagger generate client -f swagger.json -A go-netbox --with-flatten=full -t ~/go/src/github.com/smutel/go-netbox

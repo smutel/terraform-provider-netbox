@@ -2,70 +2,84 @@ package ipam
 
 import (
 	"context"
-	"strconv"
+	"errors"
+	"fmt"
 
+	"github.com/ccoveille/go-safecast"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 func DataNetboxIpamVlan() *schema.Resource {
 	return &schema.Resource{
-		Description: "Get info about vlan (ipam module) from netbox.",
+		Description: "Get info about vlan from netbox.",
 		ReadContext: dataNetboxIpamVlanRead,
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this vlan (ipam module).",
+				Description: "The content type of this vlan.",
 			},
 			"vlan_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The ID of the vlan (ipam module).",
+				Description: "The ID of the vlan.",
 			},
 			"vlan_group_id": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Description: "ID of the vlan group where this vlan is attached to.",
+				Type:     schema.TypeInt,
+				Optional: true,
+				Description: "ID of the vlan group where this vlan " +
+					"is attached to.",
 			},
 		},
 	}
 }
 
-func dataNetboxIpamVlanRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func dataNetboxIpamVlanRead(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	id := int64(d.Get("vlan_id").(int))
-	idStr := strconv.FormatInt(id, 10)
-	groupID := int64(d.Get("vlan_group_id").(int))
-	groupIDStr := strconv.FormatInt(groupID, 10)
+	client := m.(*netbox.APIClient)
 
-	p := ipam.NewIpamVlansListParams().WithVid(&idStr)
-	if groupID != 0 {
-		p.SetGroupID(&groupIDStr)
-	}
-
-	list, err := client.Ipam.IpamVlansList(p, nil)
+	vlanID32, err := safecast.ToInt32(d.Get("vlan_id").(int))
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
+	}
+	vlanIDArray := []int32{vlanID32}
+
+	groupID32, err := safecast.ToInt32(d.Get("vlan_group_id").(int))
+	if err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+	groupIDArray := []*int32{&groupID32}
+
+	request := client.IpamAPI.IpamVlansList(ctx).Vid(vlanIDArray)
+	request = request.GroupId(groupIDArray)
+
+	resource, response, err := request.Execute()
+
+	if err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	if *list.Payload.Count < 1 {
-		return diag.Errorf("Your query returned no results. " +
-			"Please change your search criteria and try again.")
-	} else if *list.Payload.Count > 1 {
-		return diag.Errorf("Your query returned more than one result. " +
-			"Please try a more specific search criteria.")
+	if resource.GetCount() < 1 {
+		return util.GenerateErrorMessage(nil,
+			errors.New("Your query returned no results. "+
+				"Please change your search criteria and try again."))
+
+	} else if resource.GetCount() > 1 {
+		return util.GenerateErrorMessage(nil,
+			errors.New("Your query returned more than one result. "+
+				"Please try a more specific search criteria."))
 	}
 
-	r := list.Payload.Results[0]
-	d.SetId(strconv.FormatInt(r.ID, 10))
-	if err = d.Set("content_type", util.ConvertURIContentType(r.URL)); err != nil {
-		return diag.FromErr(err)
+	r := resource.Results[0]
+	d.SetId(fmt.Sprintf("%d", r.GetId()))
+	if err = d.Set("content_type",
+		util.ConvertURLContentType(r.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	return nil

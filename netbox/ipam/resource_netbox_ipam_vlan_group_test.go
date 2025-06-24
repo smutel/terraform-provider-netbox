@@ -6,20 +6,22 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 const resourceNameVlanGroup = "netbox_ipam_vlan_group.test"
 
 func TestAccNetboxIpamVlanGroupMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIpamVlanGroupConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIpamVlanGroupConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameVlanGroup),
 				),
@@ -34,14 +36,16 @@ func TestAccNetboxIpamVlanGroupMinimal(t *testing.T) {
 }
 
 func TestAccNetboxIpamVlanGroupFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIpamVlanGroupConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxIpamVlanGroupConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameVlanGroup),
 				),
@@ -56,33 +60,39 @@ func TestAccNetboxIpamVlanGroupFull(t *testing.T) {
 }
 
 func TestAccNetboxIpamVlanGroupMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIpamVlanGroupConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIpamVlanGroupConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameVlanGroup),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIpamVlanGroupConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxIpamVlanGroupConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameVlanGroup),
 				),
 			},
-			// This step is necessary. Otherwise deleting site deletes the vlan groups assigned to site.
+			// This step is necessary. Otherwise deleting site
+			// deletes the vlan groups assigned to site.
 			{
-				Config: testAccCheckNetboxIpamVlanGroupConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxIpamVlanGroupConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameVlanGroup),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIpamVlanGroupConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIpamVlanGroupConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameVlanGroup),
 				),
@@ -91,36 +101,38 @@ func TestAccNetboxIpamVlanGroupMinimalFullMinimal(t *testing.T) {
 	})
 }
 
-func testAccCheckNetboxIpamVlanGroupConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxIpamVlanGroupConfig(nameSuffix string,
+	resourceFull, extraResources bool) string {
+
 	const template = `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_site" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamvlangroup-{{ .namesuffix }}"
+		slug = "ipamvlangroup-{{ .namesuffix }}"
 	}
 
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamvlangroup-{{ .namesuffix }}"
+		slug = "ipamvlangroup-{{ .namesuffix }}"
 	}
 	{{ end }}
 
 	resource "netbox_ipam_vlan_group" "test" {
-		name        = "test-{{ .namesuffix }}"
-		slug        = "test-{{ .namesuffix }}"
+		name				= "ipamvlangroup-{{ .namesuffix }}"
+		slug				= "ipamvlangroup-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
 		description = "Test Vlan group"
-		max_vid     = 2369
-		min_vid     = 135
+		max_vid		 = 2369
+		min_vid		 = 135
 
 		scope {
-		  id = netbox_dcim_site.test.id
-		  type = "dcim.site"
+			id = netbox_dcim_site.test.id
+			type = "dcim.site"
 		}
 
 		tag {
-		  name = netbox_extras_tag.test.name
-		  slug = netbox_extras_tag.test.slug
+			name = netbox_extras_tag.test.name
+			slug = netbox_extras_tag.test.slug
 		}
 		{{ end }}
 	}

@@ -6,22 +6,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
-const resourceNameNetboxExtrasCustomFieldLongtext = "netbox_extras_custom_field.test"
+const resourceNameNetboxExtrasCustomFieldLongtext = "" +
+	"netbox_extras_custom_field.test"
 
 func TestAccNetboxExtrasCustomFieldLongtextMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldLongtext),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldLongtext),
 				),
 			},
 			{
@@ -34,16 +38,19 @@ func TestAccNetboxExtrasCustomFieldLongtextMinimal(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldLongtextFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldLongtext),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldLongtext),
 				),
 			},
 			{
@@ -56,65 +63,78 @@ func TestAccNetboxExtrasCustomFieldLongtextFull(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldLongtextMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldLongtext),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldLongtext),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldLongtext),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldLongtext),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldLongtext),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldLongtext),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldLongtextConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldLongtext),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldLongtext),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxExtrasCustomFieldLongtextConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxExtrasCustomFieldLongtextConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascflongtext_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
 
-		type             = "longtext"
+		type						 = "longtext"
 		{{ if eq .resourcefull "true" }}
-		description      = "Test custom field"
-		group_name       = "testgroup"
-		ui_visibility    = "hidden"
-		label            = "Test Label for CF"
-		weight           = 50
-		#required         = true
-		filter_logic     = "disabled"
-		default          = jsonencode("Default text")
+		description			= "Test custom field"
+		group_name			 = "testgroup"
+		ui_visibility		= "hidden"
+		ui_editable			= "no"
+		label						= "Test Label for CF"
+		weight					 = 50
+		#required				 = true
+		filter_logic		 = "disabled"
+		default					= jsonencode("Default text")
 		validation_regex = "^.*$"
 		{{ end }}
 	}
 
+	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+		name = "extrascflongtext-{{ .namesuffix }}"
+		slug = "extrascflongtext-{{ .namesuffix }}"
 
 		custom_field {
 			name = netbox_extras_custom_field.test.name
@@ -122,6 +142,7 @@ func testAccCheckNetboxExtrasCustomFieldLongtextConfig(nameSuffix string, resour
 			value = "My text"
 		}
 	}
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

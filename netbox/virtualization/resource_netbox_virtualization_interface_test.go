@@ -6,22 +6,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
-const resourceNameNetboxVirtualizationInterface = "netbox_virtualization_interface.test"
+const resourceNameNetboxVirtualizationInterface = "" +
+	"netbox_virtualization_interface.test"
 
 func TestAccNetboxVirtualizationInterfaceMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationInterfaceConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationInterface),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationInterface),
 				),
 			},
 			{
@@ -34,16 +38,19 @@ func TestAccNetboxVirtualizationInterfaceMinimal(t *testing.T) {
 }
 
 func TestAccNetboxVirtualizationInterfaceFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxVirtualizationInterfaceConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationInterface),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationInterface),
 				),
 			},
 			{
@@ -56,7 +63,8 @@ func TestAccNetboxVirtualizationInterfaceFull(t *testing.T) {
 }
 
 func TestAccNetboxVirtualizationInterfaceMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 	// var resourceID *string
 	// tmp := ""
 	resourceID := "0"
@@ -66,87 +74,105 @@ func TestAccNetboxVirtualizationInterfaceMinimalFullMinimal(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationInterfaceConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationInterface),
-					util.TestAccSaveID(resourceNameNetboxVirtualizationInterface, &resourceID),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationInterface),
+					util.TestAccSaveID(
+						resourceNameNetboxVirtualizationInterface, &resourceID),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxVirtualizationInterfaceConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationInterface),
-					util.TestAccCheckID(resourceNameNetboxVirtualizationInterface, "id", &resourceID),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationInterface),
+					util.TestAccCheckID(
+						resourceNameNetboxVirtualizationInterface, "id",
+						&resourceID),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxVirtualizationInterfaceConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationInterface),
-					util.TestAccCheckID(resourceNameNetboxVirtualizationInterface, "id", &resourceID),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationInterface),
+					util.TestAccCheckID(
+						resourceNameNetboxVirtualizationInterface, "id",
+						&resourceID),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationInterfaceConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationInterface),
-					util.TestAccCheckID(resourceNameNetboxVirtualizationInterface, "id", &resourceID),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationInterface),
+					util.TestAccCheckID(
+						resourceNameNetboxVirtualizationInterface, "id",
+						&resourceID),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxVirtualizationInterfaceConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	resource "netbox_virtualization_cluster_type" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualinterface-{{ .namesuffix }}"
+		slug = "virtualinterface-{{ .namesuffix }}"
 	}
 
 	resource "netbox_virtualization_cluster" "test" {
-		name = "test-{{ .namesuffix }}"
+		name = "virtualinterface-{{ .namesuffix }}"
 		type_id = netbox_virtualization_cluster_type.test.id
 	}
 
 	resource "netbox_virtualization_vm" "test" {
-		name            = "test-{{ .namesuffix }}"
-		cluster_id      = netbox_virtualization_cluster.test.id
+		name						= "virtualinterface-{{ .namesuffix }}"
+		cluster_id			= netbox_virtualization_cluster.test.id
 	}
 
 	{{ if eq .extraresources "true" }}
 	resource "netbox_virtualization_interface" "bridge" {
-		name            = "bridge-{{ .namesuffix }}"
+		name						= "bridge-{{ .namesuffix }}"
 		virtualmachine_id = netbox_virtualization_vm.test.id
 	}
 
 	resource "netbox_virtualization_interface" "parent" {
-		name            = "parent-{{ .namesuffix }}"
+		name						= "parent-{{ .namesuffix }}"
 		virtualmachine_id = netbox_virtualization_vm.test.id
 	}
 
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "virtualinterface-{{ .namesuffix }}"
+		slug = "virtualinterface-{{ .namesuffix }}"
 	}
 
 	resource "netbox_ipam_vlan" "tagged" {
-		name = "test-{{ .namesuffix }}"
+		name = "virtualinterface-{{ .namesuffix }}"
 		vlan_id = 1501
 	}
 
 	resource "netbox_ipam_vlan" "untagged" {
-		name = "test-{{ .namesuffix }}"
+		name = "virtualinterface-{{ .namesuffix }}"
 		vlan_id = 1101
 	}
 
-	#resource "netbox_ipam_vrf" "test" {
-	#	name = "test-{{ .namesuffix }}"
-	#}
+	resource "netbox_ipam_vrf" "test" {
+		name = "rd-{{ .namesuffix }}"
+		rd	 = "rd-{{ .namesuffix }}"
+	}
 	{{ end }}
 
 	resource "netbox_virtualization_interface" "test" {
-		name            = "test-{{ .namesuffix }}"
+		name						= "virtualinterface-{{ .namesuffix }}"
 		virtualmachine_id = netbox_virtualization_vm.test.id
 
 		{{ if eq .resourcefull "true" }}
@@ -161,7 +187,7 @@ func testAccCheckNetboxVirtualizationInterfaceConfig(nameSuffix string, resource
 		untagged_vlan = netbox_ipam_vlan.untagged.id
 		parent_id = netbox_virtualization_interface.parent.id
 		bridge_id = netbox_virtualization_interface.bridge.id
-		#vrf_id = netbox_ipam_vrf.test.id
+		vrf_id = netbox_ipam_vrf.test.id
 
 		tag {
 			name = netbox_extras_tag.test.name

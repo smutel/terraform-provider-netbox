@@ -6,21 +6,23 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 const resourceNameIpamVrf = "netbox_ipam_vrf.test"
 
 func TestAccNetboxIpamVrfMinimal(t *testing.T) {
 
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMVrfConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIPAMVrfConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamVrf),
 				),
@@ -35,7 +37,8 @@ func TestAccNetboxIpamVrfMinimal(t *testing.T) {
 }
 
 func TestAccNetboxIpamVrfFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -57,32 +60,37 @@ func TestAccNetboxIpamVrfFull(t *testing.T) {
 }
 
 func TestAccNetboxIpamVrfMininmalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMVrfConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIPAMVrfConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamVrf),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMVrfConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxIPAMVrfConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamVrf),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMVrfConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxIPAMVrfConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamVrf),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMVrfConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxIPAMVrfConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameIpamVrf),
 				),
@@ -91,36 +99,37 @@ func TestAccNetboxIpamVrfMininmalFullMinimal(t *testing.T) {
 	})
 }
 
-func testAccCheckNetboxIPAMVrfConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxIPAMVrfConfig(nameSuffix string, resourceFull,
+	extraResources bool) string {
 	template := `
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamvrf-{{ .namesuffix }}"
+		slug = "ipamvrf-{{ .namesuffix }}"
 	}
-  
-  resource "netbox_tenancy_tenant" "test" {
-    name = "test-{{ .namesuffix }}"
-    slug = "test-{{ .namesuffix }}"
-  }
 
-  resource "netbox_ipam_route_targets" "rt_export_test" {
-    name = "test1-{{ .namesuffix }}"
-  }
+	resource "netbox_tenancy_tenant" "test" {
+		name = "ipamvrf-{{ .namesuffix }}"
+		slug = "ipamvrf-{{ .namesuffix }}"
+	}
 
-  resource "netbox_ipam_route_targets" "rt_import_test" {
-    name = "test2-{{ .namesuffix }}"
-  }
+	resource "netbox_ipam_route_targets" "rt_export_test" {
+		name = "test1-{{ .namesuffix }}"
+	}
+
+	resource "netbox_ipam_route_targets" "rt_import_test" {
+		name = "test2-{{ .namesuffix }}"
+	}
 	{{ end }}
 
 	resource "netbox_ipam_vrf" "test" {
-		name        = "test-{{ .namesuffix }}"
+		name				= "ipamvrf-{{ .namesuffix }}"
 		{{ if eq .resourcefull "true" }}
-    # enforce_unique = false
-    export_targets = [ netbox_ipam_route_targets.rt_export_test.id ]
-    import_targets = [ netbox_ipam_route_targets.rt_import_test.id ]
-		rd = "test-{{ .namesuffix }}"
-    description = "Test Vrf"
+		# enforce_unique = false
+		export_targets = [ netbox_ipam_route_targets.rt_export_test.id ]
+		import_targets = [ netbox_ipam_route_targets.rt_import_test.id ]
+		rd = "ipamvrf-{{ .namesuffix }}"
+		description = "Test Vrf"
 		comments = <<-EOT
 		Test Vrf
 		EOT
@@ -129,7 +138,7 @@ func testAccCheckNetboxIPAMVrfConfig(nameSuffix string, resourceFull, extraResou
 			name = netbox_extras_tag.test.name
 			slug = netbox_extras_tag.test.slug
 		}
-    tenant_id = netbox_tenancy_tenant.test.id
+		tenant_id = netbox_tenancy_tenant.test.id
 		{{ end }}
 	}
 	`

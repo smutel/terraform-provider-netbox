@@ -2,26 +2,24 @@ package ipam
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
 
-	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	netboxclient "github.com/smutel/go-netbox/v3/netbox/client"
-	"github.com/smutel/go-netbox/v3/netbox/client/ipam"
-	"github.com/smutel/go-netbox/v3/netbox/models"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/customfield"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/requestmodifier"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/tag"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	netbox "github.com/smutel/go-netbox/v4"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/brief"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/customfield"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/tag"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 func ResourceNetboxIpamAggregate() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage an aggregate (ipam module) within Netbox.",
+		Description:   "Manage an aggregate within Netbox.",
 		CreateContext: resourceNetboxIpamAggregateCreate,
 		ReadContext:   resourceNetboxIpamAggregateRead,
 		UpdateContext: resourceNetboxIpamAggregateUpdate,
@@ -35,7 +33,7 @@ func ResourceNetboxIpamAggregate() *schema.Resource {
 			"content_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The content type of this aggregate (ipam module).",
+				Description: "The content type of this aggregate.",
 			},
 			"created": {
 				Type:        schema.TypeString,
@@ -46,23 +44,28 @@ func ResourceNetboxIpamAggregate() *schema.Resource {
 			"date_added": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+				//nolint:revive
+				ValidateFunc: func(val any, key string) (
+					warns []string, errs []error) {
 					v := val.(string)
 					_, err := time.Parse("2006-01-02", v)
 
 					if err != nil {
-						errs = append(errs, fmt.Errorf("date_added in not in the good format YYYY-MM-DD"))
+						errs = append(errs,
+							fmt.Errorf("date_added in not in the good format "+
+								"YYYY-MM-DD"))
 					}
-					return
+					return warns, errs
 				},
-				Description: "Date when this aggregate was added. Format *YYYY-MM-DD*.",
+				Description: "Date when this aggregate was added. " +
+					"Format *YYYY-MM-DD*.",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      nil,
-				ValidateFunc: validation.StringLenBetween(1, 200),
-				Description:  "The description of this aggregate (ipam module).",
+				ValidateFunc: validation.StringLenBetween(1, util.Const200),
+				Description:  "The description of this aggregate.",
 			},
 			"family": {
 				Type:        schema.TypeString,
@@ -77,13 +80,13 @@ func ResourceNetboxIpamAggregate() *schema.Resource {
 			"prefix": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.IsCIDRNetwork(0, 256),
-				Description:  "The network prefix of this aggregate (ipam module).",
+				ValidateFunc: validation.IsCIDRNetwork(0, util.Const256),
+				Description:  "The network prefix of this aggregate.",
 			},
 			"rir_id": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "The RIR id linked to this aggregate (ipam module).",
+				Description: "The RIR id linked to this aggregate.",
 			},
 			"tag": &tag.TagSchema,
 			"tenant_id": {
@@ -94,264 +97,257 @@ func ResourceNetboxIpamAggregate() *schema.Resource {
 			"url": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The link to this tag (extra module).",
+				Description: "The link to this tag.",
 			},
 		},
 	}
 }
 
-func resourceNetboxIpamAggregateCreate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxIpamAggregateCreate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
 
 	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(nil, resourceCustomFields)
+	customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(
+		nil, resourceCustomFields)
 	dateAdded := d.Get("date_added").(string)
 	description := d.Get("description").(string)
 	prefix := d.Get("prefix").(string)
-	rirID := int64(d.Get("rir_id").(int))
+	rirID := d.Get("rir_id").(int)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource := &models.WritableAggregate{
-		CustomFields: &customFields,
-		Description:  description,
-		Prefix:       &prefix,
-		Rir:          &rirID,
-		Tags:         tag.ConvertTagsToNestedTags(tags),
+	newResource := netbox.NewWritableAggregateRequestWithDefaults()
+	newResource.SetCustomFields(customFields)
+	newResource.SetDescription(description)
+	newResource.SetPrefix(prefix)
+	b, err := brief.GetBriefRIRRequestFromID(ctx, client, rirID)
+	if err != nil {
+		return err
 	}
+	newResource.SetRir(*b)
+	newResource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
 
-	if tenantID := int64(d.Get("tenant_id").(int)); tenantID != 0 {
-		newResource.Tenant = &tenantID
+	if tenantID := d.Get("tenant_id").(int); tenantID != 0 {
+		b, err := brief.GetBriefTenantRequestFromID(ctx, client, tenantID)
+		if err != nil {
+			return err
+		}
+		newResource.SetTenant(*b)
 	}
 
 	if dateAdded != "" {
-		dateAddedTime, err := time.Parse("2006-01-02", dateAdded)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
-		dateAddedFmt := strfmt.Date(dateAddedTime)
-		newResource.DateAdded = &dateAddedFmt
+		newResource.SetDateAdded(dateAdded)
 	}
 
-	resource := ipam.NewIpamAggregatesCreateParams().WithData(newResource)
-
-	resourceCreated, err := client.Ipam.IpamAggregatesCreate(resource, nil)
-	if err != nil {
-		return diag.FromErr(err)
+	_, response, errDiag :=
+		client.IpamAPI.IpamAggregatesCreate(
+			ctx).WritableAggregateRequest(
+			*newResource).Execute()
+	if response.StatusCode != util.Const201 && errDiag != nil {
+		return util.GenerateErrorMessage(response, errDiag)
 	}
 
-	d.SetId(strconv.FormatInt(resourceCreated.Payload.ID, 10))
+	var resourceID int32
+	if resourceID, errDiag = util.UnmarshalID(response.Body); resourceID == 0 {
+		return util.GenerateErrorMessage(response, errDiag)
+	}
 
+	d.SetId(fmt.Sprintf("%d", resourceID))
 	return resourceNetboxIpamAggregateRead(ctx, d, m)
 }
 
-func resourceNetboxIpamAggregateRead(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxIpamAggregateRead(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	resourceID := d.Id()
-	params := ipam.NewIpamAggregatesListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamAggregatesList(params, nil)
+	client := m.(*netbox.APIClient)
+
+	resourceID, _ := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+	resource, response, err :=
+		client.IpamAPI.IpamAggregatesRetrieve(
+			ctx, int32(resourceID)).Execute()
+
+	if response.StatusCode == util.Const404 {
+		d.SetId("")
+		return nil
+	}
+
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(response, err)
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			if err = d.Set("content_type", util.ConvertURIContentType(resource.URL)); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("created", resource.Created.String()); err != nil {
-				return diag.FromErr(err)
-			}
-
-			resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
-			customFields := customfield.UpdateCustomFieldsFromAPI(resourceCustomFields, resource.CustomFields)
-
-			if err = d.Set("custom_field", customFields); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var dateAdded string
-			if resource.DateAdded == nil {
-				dateAdded = ""
-			} else {
-				dateAdded = resource.DateAdded.String()
-			}
-
-			if err = d.Set("date_added", dateAdded); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("description", resource.Description); err != nil {
-				return diag.FromErr(err)
-			}
-
-			if err = d.Set("family", resource.Family.Label); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("last_updated", resource.LastUpdated.String()); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("prefix", resource.Prefix); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var rirID *int64
-			rirID = nil
-			if resource.Rir != nil {
-				rirID = &resource.Rir.ID
-			}
-			if err = d.Set("rir_id", rirID); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("tag", tag.ConvertNestedTagsToTags(resource.Tags)); err != nil {
-				return diag.FromErr(err)
-			}
-
-			var tenantID *int64
-			tenantID = nil
-			if resource.Tenant != nil {
-				tenantID = &resource.Tenant.ID
-			}
-			if err = d.Set("tenant_id", tenantID); err != nil {
-				return diag.FromErr(err)
-			}
-			if err = d.Set("url", resource.URL); err != nil {
-				return diag.FromErr(err)
-			}
-
-			return nil
-		}
+	if err = d.Set("content_type",
+		util.ConvertURLContentType(resource.GetUrl())); err != nil {
+		return util.GenerateErrorMessage(nil, err)
 	}
 
-	d.SetId("")
+	if err = d.Set("created", resource.GetCreated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	resourceCustomFields := d.Get("custom_field").(*schema.Set).List()
+	customFields := customfield.UpdateCustomFieldsFromAPI(
+		resourceCustomFields, resource.GetCustomFields())
+
+	if err = d.Set("custom_field", customFields); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("date_added", resource.GetDateAdded()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("description", resource.GetDescription()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("family", resource.GetFamily().Label); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("last_updated",
+		resource.GetLastUpdated().String()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("prefix", resource.GetPrefix()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("rir_id", resource.GetRir().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tag",
+		tag.ConvertNestedTagRequestToTags(resource.Tags)); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("tenant_id", resource.GetTenant().Id); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
+	if err = d.Set("url", resource.GetUrl()); err != nil {
+		return util.GenerateErrorMessage(nil, err)
+	}
+
 	return nil
 }
 
-func resourceNetboxIpamAggregateUpdate(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxIpamAggregateUpdate(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
 
-	dropFields := []string{
-		"created",
-		"last_updated",
-	}
-	emptyFields := make(map[string]interface{})
+	client := m.(*netbox.APIClient)
 
-	resourceID, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int"))
 	}
-	params := &models.WritableAggregate{}
+	resource := netbox.NewWritableAggregateRequestWithDefaults()
+	rirID := d.Get("rir_id").(int)
+	b, errDiag := brief.GetBriefRIRRequestFromID(ctx, client, rirID)
+	if errDiag != nil {
+		return errDiag
+	}
+	resource.SetRir(*b)
+	resource.SetPrefix(d.Get("prefix").(string))
 
 	if d.HasChange("custom_field") {
 		stateCustomFields, resourceCustomFields := d.GetChange("custom_field")
-		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(stateCustomFields.(*schema.Set).List(), resourceCustomFields.(*schema.Set).List())
-		params.CustomFields = &customFields
+		customFields := customfield.ConvertCustomFieldsFromTerraformToAPI(
+			stateCustomFields.(*schema.Set).List(),
+			resourceCustomFields.(*schema.Set).List())
+		resource.SetCustomFields(customFields)
 	}
+
 	if d.HasChange("date_added") {
-		dateAdded := d.Get("date_added").(string)
-
-		if dateAdded != "" {
-			dateAddedTime, err := time.Parse("2006-01-02", dateAdded)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-
-			dateAddedFmt := strfmt.Date(dateAddedTime)
-			params.DateAdded = &dateAddedFmt
+		if dateAdded, exist := d.GetOk("date_added"); exist {
+			resource.SetDateAdded(dateAdded.(string))
 		} else {
-			emptyFields["date_added"] = nil
+			resource.SetDateAddedNil()
 		}
 	}
+
 	if d.HasChange("description") {
 		if description, exist := d.GetOk("description"); exist {
-			params.Description = description.(string)
+			resource.SetDescription(description.(string))
 		} else {
-			emptyFields["description"] = ""
+			resource.SetDescription("")
 		}
 	}
-	if d.HasChange("prefix") {
-		prefix := d.Get("prefix").(string)
-		params.Prefix = &prefix
-	} else {
-		dropFields = append(dropFields, "prefix")
-	}
-	if d.HasChange("rir_id") {
-		rirID := int64(d.Get("rir_id").(int))
-		params.Rir = &rirID
-	} else {
-		dropFields = append(dropFields, "rir")
-	}
 
-	tags := d.Get("tag").(*schema.Set).List()
-	params.Tags = tag.ConvertTagsToNestedTags(tags)
+	if d.HasChange("tag") {
+		tags := d.Get("tag").(*schema.Set).List()
+		resource.SetTags(tag.ConvertTagsToNestedTagRequest(tags))
+	}
 
 	if d.HasChange("tenant_id") {
-		tenantID := int64(d.Get("tenant_id").(int))
+		tenantID := d.Get("tenant_id").(int)
 		if tenantID != 0 {
-			params.Tenant = &tenantID
+			b, err := brief.GetBriefTenantRequestFromID(ctx, client, tenantID)
+			if err != nil {
+				return err
+			}
+			resource.SetTenant(*b)
 		} else {
-			emptyFields["tenant"] = nil
+			resource.SetTenantNil()
 		}
 	}
 
-	resource := ipam.NewIpamAggregatesPartialUpdateParams().WithData(params)
-	resource.SetID(resourceID)
-
-	_, err = client.Ipam.IpamAggregatesPartialUpdate(resource, nil, requestmodifier.NewRequestModifierOperation(emptyFields, dropFields))
-	if err != nil {
-		return diag.FromErr(err)
+	if _, response, err := client.IpamAPI.IpamAggregatesUpdate(ctx,
+		int32(resourceID)).WritableAggregateRequest(
+		*resource).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return resourceNetboxIpamAggregateRead(ctx, d, m)
 }
 
-func resourceNetboxIpamAggregateDelete(ctx context.Context, d *schema.ResourceData,
-	m interface{}) diag.Diagnostics {
-	client := m.(*netboxclient.NetBoxAPI)
+func resourceNetboxIpamAggregateDelete(ctx context.Context,
+	d *schema.ResourceData, m any) diag.Diagnostics {
+
+	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxIpamAggregateExists(d, m)
 	if err != nil {
-		return diag.FromErr(err)
+		return util.GenerateErrorMessage(nil, err)
 	}
 
 	if !resourceExists {
 		return nil
 	}
 
-	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return diag.Errorf("Unable to convert ID into int64")
+		return util.GenerateErrorMessage(nil,
+			errors.New("Unable to convert ID into int"))
 	}
 
-	resource := ipam.NewIpamAggregatesDeleteParams().WithID(id)
-	if _, err := client.Ipam.IpamAggregatesDelete(resource, nil); err != nil {
-		return diag.FromErr(err)
+	if response, err := client.IpamAPI.IpamAggregatesDestroy(
+		ctx, int32(resourceID)).Execute(); err != nil {
+		return util.GenerateErrorMessage(response, err)
 	}
 
 	return nil
 }
 
 func resourceNetboxIpamAggregateExists(d *schema.ResourceData,
-	m interface{}) (b bool, e error) {
-	client := m.(*netboxclient.NetBoxAPI)
-	resourceExist := false
+	m any) (b bool, e error) {
+	client := m.(*netbox.APIClient)
 
-	resourceID := d.Id()
-	params := ipam.NewIpamAggregatesListParams().WithID(&resourceID)
-	resources, err := client.Ipam.IpamAggregatesList(params, nil)
+	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
 	if err != nil {
-		return resourceExist, err
+		return false, err
 	}
 
-	for _, resource := range resources.Payload.Results {
-		if strconv.FormatInt(resource.ID, 10) == d.Id() {
-			resourceExist = true
-		}
+	_, http, err := client.IpamAPI.IpamAggregatesRetrieve(nil,
+		int32(resourceID)).Execute()
+	if err != nil && http.StatusCode == util.Const404 {
+		return false, nil
+	} else if err == nil && http.StatusCode == util.Const200 {
+		return true, nil
 	}
 
-	return resourceExist, nil
+	return false, err
 }

@@ -6,22 +6,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
-const resourceNameNetboxVirtualizationCluster = "netbox_virtualization_cluster.test"
+const resourceNameNetboxVirtualizationCluster = "" +
+	"netbox_virtualization_cluster.test"
 
 func TestAccNetboxVirtualizationClusterMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationClusterConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationClusterConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationCluster),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationCluster),
 				),
 			},
 			{
@@ -34,16 +38,19 @@ func TestAccNetboxVirtualizationClusterMinimal(t *testing.T) {
 }
 
 func TestAccNetboxVirtualizationClusterFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationClusterConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxVirtualizationClusterConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationCluster),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationCluster),
 				),
 			},
 			{
@@ -56,41 +63,52 @@ func TestAccNetboxVirtualizationClusterFull(t *testing.T) {
 }
 
 func TestAccNetboxVirtualizationClusterMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxVirtualizationClusterConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationClusterConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationCluster),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationCluster),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationClusterConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxVirtualizationClusterConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationCluster),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationCluster),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationClusterConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxVirtualizationClusterConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationCluster),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationCluster),
 				),
 			},
 			{
-				Config: testAccCheckNetboxVirtualizationClusterConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxVirtualizationClusterConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxVirtualizationCluster),
+					util.TestAccResourceExists(
+						resourceNameNetboxVirtualizationCluster),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxVirtualizationClusterConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxVirtualizationClusterConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	resource "netbox_virtualization_cluster_type" "test" {
 		name = "test-{{ .namesuffix }}"
@@ -120,13 +138,13 @@ func testAccCheckNetboxVirtualizationClusterConfig(nameSuffix string, resourceFu
 	{{ end }}
 
 	resource "netbox_virtualization_cluster" "test" {
-		name      = "test-{{ .namesuffix }}"
-		type_id   = netbox_virtualization_cluster_type.test.id
+		name			= "test-{{ .namesuffix }}"
+		type_id	 = netbox_virtualization_cluster_type.test.id
 		{{ if eq .resourcefull "true" }}
-		group_id  = netbox_virtualization_cluster_group.test.id
-		site_id   = netbox_dcim_site.test.id
+		group_id	= netbox_virtualization_cluster_group.test.id
+		site_id	 = netbox_dcim_site.test.id
 		tenant_id = netbox_tenancy_tenant.test.id
-		status    = "decommissioning"
+		status		= "decommissioning"
 
 		comments = <<-EOT
 		Test cluster

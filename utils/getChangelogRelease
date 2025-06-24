@@ -8,6 +8,6 @@ if [[ ${VERSION} =~ v.* ]]; then
 fi
 
 START=$(grep -n "## \[${VERSION}\]" "${CHANGELOG_FILE}" | cut -d : -f 1)
-END_VERSION=$(grep "## \[" "${CHANGELOG_FILE}" | cut -d"[" -f2 | cut -d"]" -f1 | grep -v ${VERSION} | head -1)
-END=$(grep -n "## \[${END_VERSION}\]" ${CHANGELOG_FILE} | cut -d : -f 1)
-cat "${CHANGELOG_FILE}" | tail -n +"$((START + 3))" | head -n "$((END - 9))"
+END_VERSION=$(grep "## \[" "${CHANGELOG_FILE}" | cut -d"[" -f2 | cut -d"]" -f1 | grep -v "${VERSION}" | head -1)
+END=$(grep -n "## \[${END_VERSION}\]" "${CHANGELOG_FILE}" | cut -d : -f 1)
+tail -n +"$((START + 3))" "${CHANGELOG_FILE}" | head -n "$((END - 9))"

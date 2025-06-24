@@ -6,22 +6,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
-const resourceNameNetboxExtrasCustomFieldJSON = "netbox_extras_custom_field.test"
+const resourceNameNetboxExtrasCustomFieldJSON = "" +
+	"netbox_extras_custom_field.test"
 
 func TestAccNetboxExtrasCustomFieldJSONMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldJSON),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldJSON),
 				),
 			},
 			{
@@ -34,16 +38,19 @@ func TestAccNetboxExtrasCustomFieldJSONMinimal(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldJSONFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldJSON),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldJSON),
 				),
 			},
 			{
@@ -56,58 +63,70 @@ func TestAccNetboxExtrasCustomFieldJSONFull(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldJSONMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldJSON),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldJSON),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldJSON),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldJSON),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldJSON),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldJSON),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldJSONConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldJSON),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldJSON),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxExtrasCustomFieldJSONConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfjson_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
 
-		type          = "json"
+		type					= "json"
 		{{ if eq .resourcefull "true" }}
-		description   = "Test custom field"
-		group_name    = "testgroup"
+		description	 = "Test custom field"
+		group_name		= "testgroup"
 		ui_visibility = "hidden"
-		label         = "Test Label for CF"
-		weight        = 50
-		#required      = true
-		filter_logic  = "disabled"
-		default       = jsonencode({
+		ui_editable	 = "no"
+		label				 = "Test Label for CF"
+		weight				= 50
+		#required			= true
+		filter_logic	= "disabled"
+		default			 = jsonencode({
 			bool = false
 			number = 1.5
 			dict = {
@@ -117,9 +136,10 @@ func testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix string, resourceFu
 		{{ end }}
 	}
 
+	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+		name = "extrascfjson-a-{{ .namesuffix }}"
+		slug = "extrascfjson-a-{{ .namesuffix }}"
 
 		custom_field {
 			name = netbox_extras_custom_field.test.name
@@ -135,6 +155,7 @@ func testAccCheckNetboxExtrasCustomFieldJSONConfig(nameSuffix string, resourceFu
 			)
 		}
 	}
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

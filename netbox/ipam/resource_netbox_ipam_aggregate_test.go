@@ -6,13 +6,14 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
 const resourceNameNetboxIpamAggregate = "netbox_ipam_aggregate.test"
 
 func TestAccNetboxIpamAggregateMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 	prefix := "192.168.54.0/24"
 
 	resource.Test(t, resource.TestCase{
@@ -20,7 +21,8 @@ func TestAccNetboxIpamAggregateMinimal(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix, false, false, prefix),
+				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix,
+					false, false, prefix),
 				Check: resource.ComposeTestCheckFunc(
 					util.TestAccResourceExists(resourceNameNetboxIpamAggregate),
 				),
@@ -35,7 +37,8 @@ func TestAccNetboxIpamAggregateMinimal(t *testing.T) {
 }
 
 func TestAccNetboxIpamAggregateFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 	prefix := "192.168.55.0/24"
 
 	resource.Test(t, resource.TestCase{
@@ -43,9 +46,11 @@ func TestAccNetboxIpamAggregateFull(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix, true, true, prefix),
+				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix,
+					true, true, prefix),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxIpamAggregate),
+					util.TestAccResourceExists(
+						resourceNameNetboxIpamAggregate),
 				),
 			},
 			{
@@ -57,8 +62,9 @@ func TestAccNetboxIpamAggregateFull(t *testing.T) {
 	})
 }
 
-func TestAccNetboxIpamAggregateMininmalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+func TestAccNetboxIpamAggregateMinimalFullMinimal(t *testing.T) {
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 	prefix := "192.168.56.0/24"
 
 	resource.Test(t, resource.TestCase{
@@ -66,49 +72,67 @@ func TestAccNetboxIpamAggregateMininmalFullMinimal(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix, false, false, prefix),
+				Config: testAccCheckNetboxIPAMAggregateConfig(
+					nameSuffix, false, false, prefix),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxIpamAggregate),
+					util.TestAccResourceExists(
+						resourceNameNetboxIpamAggregate),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix, true, true, prefix),
+				Config: testAccCheckNetboxIPAMAggregateConfig(
+					nameSuffix, true, true, prefix),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxIpamAggregate),
+					util.TestAccResourceExists(
+						resourceNameNetboxIpamAggregate),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix, true, true, prefix),
+				Config: testAccCheckNetboxIPAMAggregateConfig(
+					nameSuffix, true, true, prefix),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxIpamAggregate),
+					util.TestAccResourceExists(
+						resourceNameNetboxIpamAggregate),
 				),
 			},
 			{
-				Config: testAccCheckNetboxIPAMAggregateConfig(nameSuffix, true, true, prefix),
+				Config: testAccCheckNetboxIPAMAggregateConfig(
+					nameSuffix, false, true, prefix),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxIpamAggregate),
+					util.TestAccResourceExists(
+						resourceNameNetboxIpamAggregate),
+				),
+			},
+			{
+				Config: testAccCheckNetboxIPAMAggregateConfig(
+					nameSuffix, false, false, prefix),
+				Check: resource.ComposeTestCheckFunc(
+					util.TestAccResourceExists(
+						resourceNameNetboxIpamAggregate),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string, resourceFull, extraResources bool, prefix string) string {
+func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string,
+	resourceFull, extraResources bool, prefix string) string {
+
 	template := `
 	resource "netbox_ipam_rir" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamaggregate-{{ .namesuffix }}"
+		slug = "ipamaggregate-{{ .namesuffix }}"
 	}
 
 	{{ if eq .extraresources "true" }}
 	resource "netbox_extras_tag" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamaggregate-{{ .namesuffix }}"
+		slug = "ipamaggregate-{{ .namesuffix }}"
 	}
 
 	resource "netbox_tenancy_tenant" "test" {
-		name = "test-{{ .namesuffix }}"
-		slug = "test-{{ .namesuffix }}"
+		name = "ipamaggregate-{{ .namesuffix }}"
+		slug = "ipamaggregate-{{ .namesuffix }}"
 	}
 	{{ end }}
 
@@ -127,6 +151,7 @@ func testAccCheckNetboxIPAMAggregateConfig(nameSuffix string, resourceFull, extr
 		{{ end }}
 	}
 	`
+
 	data := map[string]string{
 		"namesuffix":     nameSuffix,
 		"prefix":         prefix,

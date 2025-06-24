@@ -6,22 +6,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/smutel/terraform-provider-netbox/v7/netbox/internal/util"
+	"github.com/smutel/terraform-provider-netbox/v8/netbox/internal/util"
 )
 
-const resourceNameNetboxExtrasCustomFieldDate = "netbox_extras_custom_field.test"
+const resourceNameNetboxExtrasCustomFieldDate = "" +
+	"netbox_extras_custom_field.test"
 
 func TestAccNetboxExtrasCustomFieldDateMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldDate),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldDate),
 				),
 			},
 			{
@@ -34,16 +38,19 @@ func TestAccNetboxExtrasCustomFieldDateMinimal(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldDateFull(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldDate),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldDate),
 				),
 			},
 			{
@@ -56,64 +63,77 @@ func TestAccNetboxExtrasCustomFieldDateFull(t *testing.T) {
 }
 
 func TestAccNetboxExtrasCustomFieldDateMinimalFullMinimal(t *testing.T) {
-	nameSuffix := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
+    acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldDate),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldDate),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix, true, true),
+				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(
+					nameSuffix, true, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldDate),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldDate),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix, false, true),
+				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(
+					nameSuffix, false, true),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldDate),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldDate),
 				),
 			},
 			{
-				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix, false, false),
+				Config: testAccCheckNetboxExtrasCustomFieldDateConfig(
+					nameSuffix, false, false),
 				Check: resource.ComposeTestCheckFunc(
-					util.TestAccResourceExists(resourceNameNetboxExtrasCustomFieldDate),
+					util.TestAccResourceExists(
+						resourceNameNetboxExtrasCustomFieldDate),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix string, resourceFull, extraResources bool) string {
+func testAccCheckNetboxExtrasCustomFieldDateConfig(
+	nameSuffix string, resourceFull, extraResources bool) string {
+
 	template := `
 	resource "netbox_extras_custom_field" "test" {
-		name = "test_{{ .namesuffix }}"
+		name = "extrascfdate_{{ .namesuffix }}"
 		content_types = [
 			"dcim.site",
 		]
 
-		type          = "date"
+		type					= "date"
 		{{ if eq .resourcefull "true" }}
-		description   = "Test custom field"
-		group_name    = "testgroup"
+		description	 = "Test custom field"
+		group_name		= "testgroup"
 		ui_visibility = "hidden"
-		label         = "Test Label for CF"
-		weight        = 50
-		#required      = true
-		filter_logic  = "disabled"
-		default       = jsonencode("2022-01-01")
+		ui_editable	 = "no"
+		label				 = "Test Label for CF"
+		weight				= 50
+		#required			= true
+		filter_logic	= "disabled"
+		default			 = jsonencode("2022-01-01")
 		{{ end }}
 	}
 
+	{{ if eq .extraresources "true" }}
 	resource "netbox_dcim_site" "test_assign" {
-		name = "test-a-{{ .namesuffix }}"
-		slug = "test-a-{{ .namesuffix }}"
+		name = "extrascfdate-{{ .namesuffix }}"
+		slug = "extrascfdate-{{ .namesuffix }}"
 
 		custom_field {
 			name = netbox_extras_custom_field.test.name
@@ -121,6 +141,7 @@ func testAccCheckNetboxExtrasCustomFieldDateConfig(nameSuffix string, resourceFu
 			value = "2023-01-25"
 		}
 	}
+	{{ end }}
 	`
 	data := map[string]string{
 		"namesuffix":     nameSuffix,

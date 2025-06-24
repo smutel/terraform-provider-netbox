@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -31,11 +32,11 @@ func TestAccResourceExists(n string) resource.TestCheckFunc {
 		rs, ok := s.RootModule().Resources[n]
 
 		if !ok {
-			return fmt.Errorf("Not found: %s", n)
+			return errors.New("Not found: " + n)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No ID set")
+			return errors.New("No ID set")
 		}
 
 		return nil
@@ -57,7 +58,7 @@ func TestAccSaveID(n string, id *string) resource.TestCheckFunc {
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No ID set")
+			return errors.New("No ID set")
 		}
 
 		*id = rs.Primary.ID
