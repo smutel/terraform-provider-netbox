@@ -14,7 +14,7 @@ const resourceNameNetboxExtrasCustomFieldLongtext = "" +
 
 func TestAccNetboxExtrasCustomFieldLongtextMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -39,7 +39,7 @@ func TestAccNetboxExtrasCustomFieldLongtextMinimal(t *testing.T) {
 
 func TestAccNetboxExtrasCustomFieldLongtextFull(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -64,7 +64,7 @@ func TestAccNetboxExtrasCustomFieldLongtextFull(t *testing.T) {
 
 func TestAccNetboxExtrasCustomFieldLongtextMinimalFullMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },

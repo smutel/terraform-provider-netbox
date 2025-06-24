@@ -14,7 +14,7 @@ const resourceNameNetboxExtrasCustomFieldInteger = "" +
 
 func TestAccNetboxExtrasCustomFieldIntegerMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -39,7 +39,7 @@ func TestAccNetboxExtrasCustomFieldIntegerMinimal(t *testing.T) {
 
 func TestAccNetboxExtrasCustomFieldIntegerFull(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -66,7 +66,7 @@ func TestAccNetboxExtrasCustomFieldIntegerMinimalFullMinimal(
 	t *testing.T) {
 
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },

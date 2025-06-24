@@ -14,7 +14,7 @@ const resourceNameNetboxExtrasCustomFieldDate = "" +
 
 func TestAccNetboxExtrasCustomFieldDateMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -39,7 +39,7 @@ func TestAccNetboxExtrasCustomFieldDateMinimal(t *testing.T) {
 
 func TestAccNetboxExtrasCustomFieldDateFull(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -64,7 +64,7 @@ func TestAccNetboxExtrasCustomFieldDateFull(t *testing.T) {
 
 func TestAccNetboxExtrasCustomFieldDateMinimalFullMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },

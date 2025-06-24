@@ -13,7 +13,7 @@ const resourceNameNetboxIpamAggregate = "netbox_ipam_aggregate.test"
 
 func TestAccNetboxIpamAggregateMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 	prefix := "192.168.54.0/24"
 
 	resource.Test(t, resource.TestCase{
@@ -38,7 +38,7 @@ func TestAccNetboxIpamAggregateMinimal(t *testing.T) {
 
 func TestAccNetboxIpamAggregateFull(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 	prefix := "192.168.55.0/24"
 
 	resource.Test(t, resource.TestCase{
@@ -64,7 +64,7 @@ func TestAccNetboxIpamAggregateFull(t *testing.T) {
 
 func TestAccNetboxIpamAggregateMinimalFullMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 	prefix := "192.168.56.0/24"
 
 	resource.Test(t, resource.TestCase{

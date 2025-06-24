@@ -13,7 +13,7 @@ const resourceNameNetboxDcimRegion = "netbox_dcim_region.test"
 
 func TestAccNetboxDcimRegionMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -37,7 +37,7 @@ func TestAccNetboxDcimRegionMinimal(t *testing.T) {
 
 func TestAccNetboxDcimRegionFull(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 	asn := int64(acctest.RandIntRange(1, util.Const4294967295))
 
 	resource.Test(t, resource.TestCase{
@@ -62,7 +62,7 @@ func TestAccNetboxDcimRegionFull(t *testing.T) {
 
 func TestAccNetboxDcimRegionMinimalFullMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 	asn := int64(acctest.RandIntRange(1, util.Const4294967295))
 
 	resource.Test(t, resource.TestCase{

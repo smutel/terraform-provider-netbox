@@ -19,15 +19,15 @@ func DataNetboxVirtualizationVM() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:				schema.TypeString,
-				Computed:		true,
+				Type:        schema.TypeString,
+				Computed:    true,
 				Description: "The content type of this VM.",
 			},
 			"name": {
-				Type:				 schema.TypeString,
-				Required:		 true,
+				Type:         schema.TypeString,
+				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, util.Const64),
-				Description:	"The name of this VM.",
+				Description:  "The name of this VM.",
 			},
 		},
 	}

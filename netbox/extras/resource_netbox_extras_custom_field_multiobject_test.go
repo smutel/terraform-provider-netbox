@@ -14,7 +14,7 @@ const resourceNameNetboxExtrasCustomFieldMultiObject = "" +
 
 func TestAccNetboxExtrasCustomFieldMultiObjectMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -39,7 +39,7 @@ func TestAccNetboxExtrasCustomFieldMultiObjectMinimal(t *testing.T) {
 
 func TestAccNetboxExtrasCustomFieldMultiObjectFull(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -65,7 +65,7 @@ func TestAccNetboxExtrasCustomFieldMultiObjectFull(t *testing.T) {
 func TestAccNetboxExtrasCustomFieldMultiObjectMinimalFullMinimal(
 	t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },

@@ -13,7 +13,7 @@ const resourceNameNetboxDcimManufacturer = "netbox_dcim_manufacturer.test"
 
 func TestAccNetboxDcimManufacturerMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -38,7 +38,7 @@ func TestAccNetboxDcimManufacturerMinimal(t *testing.T) {
 
 func TestAccNetboxDcimManufacturerFull(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -63,7 +63,7 @@ func TestAccNetboxDcimManufacturerFull(t *testing.T) {
 
 func TestAccNetboxDcimManufacturerMinimalFullMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },

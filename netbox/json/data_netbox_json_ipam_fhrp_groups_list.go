@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
-  "strings"
+	"strings"
 
-  "golang.org/x/text/cases"
-  "golang.org/x/text/language"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -38,10 +38,10 @@ func DataNetboxJSONIpamFhrpGroupsList() *schema.Resource {
 							Description: "Name of the field to use for filtering.",
 						},
 						"value": {
-							Type:        schema.TypeString,
-							Required:    true,
+							Type:     schema.TypeString,
+							Required: true,
 							Description: "Value of the field to use for filtering. " +
-                "You can use comma separated values as AND operator.",
+								"You can use comma separated values as AND operator.",
 						},
 					},
 				},
@@ -64,8 +64,8 @@ func DataNetboxJSONIpamFhrpGroupsList() *schema.Resource {
 func dataNetboxJSONIpamFhrpGroupsListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*netbox.APIClient)
 
-  limit := int32(d.Get("limit").(int))
-  request := client.IpamAPI.IpamFhrpGroupsList(ctx)
+	limit := int32(d.Get("limit").(int))
+	request := client.IpamAPI.IpamFhrpGroupsList(ctx)
 
 	if filter, ok := d.GetOk("filter"); ok {
 		var filterParams = filter.(*schema.Set)
@@ -73,19 +73,19 @@ func dataNetboxJSONIpamFhrpGroupsListRead(ctx context.Context, d *schema.Resourc
 			k := f.(map[string]any)["name"]
 			v := f.(map[string]any)["value"]
 			kString := k.(string)
-      kString = cases.Title(language.Und).String(kString)
+			kString = cases.Title(language.Und).String(kString)
 			vString := strings.Split(v.(string), ",")
-      inputs := make([]reflect.Value, 1)
-      inputs[0] = reflect.ValueOf(vString)
-      method := reflect.ValueOf(request).MethodByName(kString)
-      if ! reflect.ValueOf(method).IsZero() {
-        result := method.Call(inputs)
-        request = result[0].Interface().(netbox.ApiIpamFhrpGroupsListRequest)
-      } else {
-		    return util.GenerateErrorMessage(nil, errors.New(
-          "Filter " + kString + " not found. " +
-			    "Please change the name of the filter."))
-      }
+			inputs := make([]reflect.Value, 1)
+			inputs[0] = reflect.ValueOf(vString)
+			method := reflect.ValueOf(request).MethodByName(kString)
+			if !reflect.ValueOf(method).IsZero() {
+				result := method.Call(inputs)
+				request = result[0].Interface().(netbox.ApiIpamFhrpGroupsListRequest)
+			} else {
+				return util.GenerateErrorMessage(nil, errors.New(
+					"Filter "+kString+" not found. "+
+						"Please change the name of the filter."))
+			}
 		}
 	}
 
@@ -101,9 +101,9 @@ func dataNetboxJSONIpamFhrpGroupsListRead(ctx context.Context, d *schema.Resourc
 	}
 
 	resources := resource.Results
-  if limit < int32(len(resources)) && limit != 0 {
-    resources = resources[:limit]
-  }
+	if limit < int32(len(resources)) && limit != 0 {
+		resources = resources[:limit]
+	}
 
 	j, _ := json.Marshal(resources)
 

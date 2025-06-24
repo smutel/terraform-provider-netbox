@@ -14,7 +14,7 @@ const resourceNameIpamRole = "netbox_ipam_role.test"
 func TestAccNetboxIpamRoleMinimal(t *testing.T) {
 
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -38,7 +38,7 @@ func TestAccNetboxIpamRoleMinimal(t *testing.T) {
 
 func TestAccNetboxIpamRoleFull(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -62,7 +62,7 @@ func TestAccNetboxIpamRoleFull(t *testing.T) {
 
 func TestAccNetboxIpamRoleMininmalFullMinimal(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },

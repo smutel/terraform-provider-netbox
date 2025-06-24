@@ -14,7 +14,7 @@ const resourceNameNetboxExtrasCustomFieldChoiceSet = "" +
 
 func TestAccNetboxExtrasCustomFieldChoiceSetMinimalBase(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -39,7 +39,7 @@ func TestAccNetboxExtrasCustomFieldChoiceSetMinimalBase(t *testing.T) {
 
 func TestAccNetboxExtrasCustomFieldChoiceSetFullBase(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -66,7 +66,7 @@ func TestAccNetboxExtrasCustomFieldChoiceSetMinimalFullMinimalBase(
 	t *testing.T) {
 
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -110,7 +110,7 @@ func TestAccNetboxExtrasCustomFieldChoiceSetMinimalFullMinimalBase(
 
 func TestAccNetboxExtrasCustomFieldChoiceSetMinimalExtra(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -135,7 +135,7 @@ func TestAccNetboxExtrasCustomFieldChoiceSetMinimalExtra(t *testing.T) {
 
 func TestAccNetboxExtrasCustomFieldChoiceSetFullExtra(t *testing.T) {
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },
@@ -162,7 +162,7 @@ func TestAccNetboxExtrasCustomFieldChoiceSetMinimalFullMinimalExtra(
 	t *testing.T) {
 
 	nameSuffix := acctest.RandStringFromCharSet(util.Const10,
-    acctest.CharSetAlphaNum)
+		acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { util.TestAccPreCheck(t) },

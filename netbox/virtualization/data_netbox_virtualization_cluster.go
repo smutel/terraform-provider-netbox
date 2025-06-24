@@ -19,19 +19,19 @@ func DataNetboxVirtualizationCluster() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"content_type": {
-				Type:				schema.TypeString,
-				Computed:		true,
+				Type:        schema.TypeString,
+				Computed:    true,
 				Description: "The content type of this cluster.",
 			},
 			"name": {
-				Type:				 schema.TypeString,
-				Required:		 true,
+				Type:         schema.TypeString,
+				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, util.Const100),
-				Description:	"The name of this cluster.",
+				Description:  "The name of this cluster.",
 			},
 			"site_id": {
-				Type:				schema.TypeInt,
-				Computed:		true,
+				Type:        schema.TypeInt,
+				Computed:    true,
 				Description: "The ID of site where this cluster is located.",
 			},
 		},
