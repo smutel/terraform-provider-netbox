@@ -9,23 +9,22 @@ on:
 jobs:
   LintAndBuild:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        go: ['1.23.x']
     steps:
-      - name: Checkout
+      - id: checkout
+        name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
           fetch-depth: 0
 
-      - name: Lint
+      - id: lint
+        name: Lint
         uses: reviewdog/action-golangci-lint@f9bba13753278f6a73b27a56a3ffb1bfda90ed71  # v2.8.0
         with:
           github_token: ${{ secrets.github_token }}
           golangci_lint_flags: "--config=.golangci.yml"
 
-      - name: Setup env
+      - id: setup_env
+        name: Setup env
         run: |
           echo "GOPATH=$(dirname $GITHUB_WORKSPACE)" >> $GITHUB_ENV
           echo "$(dirname $GITHUB_WORKSPACE)/bin" >> $GITHUB_PATH
@@ -33,24 +32,37 @@ jobs:
           ln -sf "$GITHUB_WORKSPACE/" "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
         shell: bash
 
-      - name: Go installation
-        uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b  # v5.4.0
+      - id: setup_cache_mise
+        name: "Setup cache for mise"
+        uses: runs-on/cache@0400d5f644dc74513175e3cd8d07132dd4860809  # v4.2.4
         with:
-          go-version: ${{ matrix.go }}
+          path: ~/.local/share/mise
+          key: mise-${{ hashFiles('mise.toml') }}
 
-      - name: Go fmt
+      - id: deps_install
+        name: "Install dependencies"
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          cache: false
+
+      - id: go_fmt
+        name: Go fmt
         run: |
           cd "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
           find . -name "*.go" -exec gofmt -s -w {} \;
         shell: bash
 
-      - name: Go generate
+      - id: go_generate
+        name: Go generate
         run: |
-          cd "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
+          cd "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox/tools"
           go generate
         shell: bash
 
-      - name: Commit changes
+      - id: commit_changes
+        name: Commit changes
         uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5  # v9.1.4
         with:
           add: 'netbox docs'
@@ -58,8 +70,9 @@ jobs:
           default_author: github_actor
           message: 'ci: Go fmt & go generate'
 
-      - name: Build
-        run: |
-          cd "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
-          make build
-        shell: bash
+      # - id: build
+        # name: Build
+        # run: |
+          # cd "$(dirname $GITHUB_WORKSPACE)/src/github.com/smutel/terraform-provider-netbox"
+          # make build
+        # shell: bash
