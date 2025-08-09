@@ -1,3 +1,6 @@
+// Copyright (c)
+// SPDX-License-Identifier: MIT
+
 package dcim_test
 
 import (

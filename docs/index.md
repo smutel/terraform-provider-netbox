@@ -29,13 +29,13 @@ The Netbox provider provides resources to interact with [Netbox](https://netbox.
 terraform {
   required_providers {
     netbox = {
-      source = "smutel/netbox"
+      source  = "smutel/netbox"
       version = "~> 8.0.0"
     }
   }
 }
 
-provider netbox {
+provider "netbox" {
   # Environment variable NETBOX_URL
   url = "127.0.0.1:8000"
 
@@ -55,7 +55,6 @@ provider netbox {
 
 ### Optional
 
-- `basepath` (String) URL base path to the netbox API (/api by default).
 - `insecure` (Boolean) Skip TLS certificate validation (false by default).
 - `scheme` (String) Scheme used to reach netbox application (https by default).
 - `token` (String) Token used for API operations (empty by default).
