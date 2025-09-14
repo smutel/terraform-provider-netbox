@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.2](https://github.com/smutel/terraform-provider-netbox/compare/v8.0.1...v8.0.2) (2025-09-14)
+
+
+### Bug Fixes
+
+* Don't exit with error message when json result is empty ([d377e7b](https://github.com/smutel/terraform-provider-netbox/commit/d377e7b5cdf308bff214aa03c0ad5130ef47c688))
+
 ### [8.0.1](https://github.com/smutel/terraform-provider-netbox/compare/v8.0.0...v8.0.1) (2025-08-09)
 
 
