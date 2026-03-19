@@ -34,7 +34,7 @@ github.com/asaskevich/govalidator
 # github.com/ccoveille/go-safecast v1.6.1
 ## explicit; go 1.21
 github.com/ccoveille/go-safecast
-# github.com/cloudflare/circl v1.6.1
+# github.com/cloudflare/circl v1.6.3
 ## explicit; go 1.22.0
 github.com/cloudflare/circl/dh/x25519
 github.com/cloudflare/circl/dh/x448
