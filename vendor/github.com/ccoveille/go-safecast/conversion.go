@@ -2,7 +2,6 @@ package safecast
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"reflect"
 	"strconv"
@@ -51,17 +50,17 @@ func Convert[NumOut Number, NumIn Input](orig NumIn) (converted NumOut, err erro
 	case reflect.Float64:
 		return convertFromNumber[NumOut](float64(v.Float()))
 	case reflect.Bool:
-		o := 0
 		if v.Bool() {
-			o = 1
+			return NumOut(1), nil
 		}
-		return NumOut(o), nil
+		return NumOut(0), nil
 	case reflect.String:
-		return convertFromString[NumOut](v.String())
-	}
-
-	return 0, errorHelper{
-		err: fmt.Errorf("%w from %T", ErrUnsupportedConversion, orig),
+		converted, err = convertFromString[NumOut](v.String())
+		// this falls through to default statement is a deliberate hack for increasing the code coverage.
+		// without this, the default case would be impossible to reach in tests.
+		fallthrough
+	default:
+		return converted, err
 	}
 }
 
@@ -74,84 +73,83 @@ func MustConvert[NumOut Number, NumIn Input](orig NumIn) NumOut {
 	return converted
 }
 
-func convertFromNumber[NumOut Number, NumIn Number](orig NumIn) (converted NumOut, err error) {
-	converted = NumOut(orig)
+// TestingT is an interface wrapper used by [RequireConvert] that we need for testing purposes.
+//
+// Only the methods used by [RequireConvert] are expected to be implemented.
+//
+// [*testing.T], [*testing.B], or [*testing.F] types satisfy this interface.
+type TestingT interface {
+	Helper()
+	Fatal(args ...any)
+}
 
-	// floats could be compared directly
-	switch any(converted).(type) {
-	case float64:
+// RequireConvert is a test helper that calls [Convert] that converts the value to the desired type,
+// and fails the test if the conversion fails.
+func RequireConvert[NumOut Number, NumIn Input](t TestingT, orig NumIn) (converted NumOut) {
+	t.Helper()
+
+	converted, err := Convert[NumOut](orig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return converted
+}
+
+func convertFromNumber[NumOut Number, NumIn Number](orig NumIn) (NumOut, error) {
+	converted := NumOut(orig)
+	if isFloat64[NumIn]() {
+		floatOrig := float64(orig)
+		if math.IsInf(floatOrig, 1) || math.IsInf(floatOrig, -1) {
+			return 0, getRangeError[NumOut](orig)
+		}
+		if math.IsNaN(floatOrig) {
+			return 0, errorHelper[NumOut]{
+				value: orig,
+				err:   ErrUnsupportedConversion,
+			}
+		}
+	}
+
+	if isFloat64[NumOut]() {
 		// float64 cannot overflow, so we don't have to worry about it
 		return converted, nil
-	case float32:
-		origFloat64, isFloat64 := any(orig).(float64)
-		if !isFloat64 {
-			// only float64 can overflow float32
-			// everything else can be safely converted
-			return converted, nil
-		}
+	}
 
+	if isFloat32[NumOut]() {
 		// check boundary
-		if math.Abs(origFloat64) < math.MaxFloat32 {
+		if math.Abs(float64(orig)) < math.MaxFloat32 {
 			// the value is within float32 range, there is no overflow
 			return converted, nil
 		}
 
 		// TODO: check for numbers close to math.MaxFloat32
 
-		boundary := getUpperBoundary(converted)
-		errBoundary := ErrExceedMaximumValue
-		if negative(orig) {
-			boundary = getLowerBoundary(converted)
-			errBoundary = ErrExceedMinimumValue
-		}
-
-		return 0, errorHelper{
-			value:    orig,
-			err:      errBoundary,
-			boundary: boundary,
-		}
-	}
-
-	errBoundary := ErrExceedMaximumValue
-	boundary := getUpperBoundary(converted)
-	if negative(orig) {
-		errBoundary = ErrExceedMinimumValue
-		boundary = getLowerBoundary(converted)
+		return 0, getRangeError[NumOut](orig)
 	}
 
 	if !sameSign(orig, converted) {
-		return 0, errorHelper{
-			value:    orig,
-			err:      errBoundary,
-			boundary: boundary,
-		}
+		return 0, getRangeError[NumOut](orig)
+	}
+
+	// and compare
+	base := orig
+	if isFloat[NumIn]() {
+		base = NumIn(math.Trunc(float64(orig)))
 	}
 
 	// convert back to the original type
 	cast := NumIn(converted)
-	// and compare
-	base := orig
-	switch f := any(orig).(type) {
-	case float64:
-		base = NumIn(math.Trunc(f))
-	case float32:
-		base = NumIn(math.Trunc(float64(f)))
+	if cast != base {
+		return 0, getRangeError[NumOut](orig)
 	}
 
-	// exact match
-	if cast == base {
-		return converted, nil
-	}
-
-	return 0, errorHelper{
-		value:    orig,
-		err:      errBoundary,
-		boundary: boundary,
-	}
+	return converted, nil
 }
 
-func convertFromString[NumOut Number](s string) (converted NumOut, err error) {
-	s = strings.TrimSpace(s)
+func convertFromString[NumOut Number](input string) (converted NumOut, err error) {
+	numberBase := 0
+
+	s := strings.TrimSpace(input)
 
 	if b, err := strconv.ParseBool(s); err == nil {
 		if b {
@@ -163,54 +161,66 @@ func convertFromString[NumOut Number](s string) (converted NumOut, err error) {
 	if strings.Contains(s, ".") {
 		o, err := strconv.ParseFloat(s, 64)
 		if err != nil {
-			return 0, errorHelper{
-				value: s,
-				err:   fmt.Errorf("%w %v to %T", ErrStringConversion, s, converted),
+			return 0, errorHelper[NumOut]{
+				value: input,
+				err:   ErrStringConversion,
 			}
 		}
 		return convertFromNumber[NumOut](o)
 	}
 
 	if strings.HasPrefix(s, "-") {
-		o, err := strconv.ParseInt(s, 0, 64)
+		o, err := strconv.ParseInt(s, numberBase, 64)
 		if err != nil {
 			if errors.Is(err, strconv.ErrRange) {
-				return 0, errorHelper{
-					value:    s,
-					err:      ErrExceedMinimumValue,
-					boundary: math.MinInt,
+				return 0, errorHelper[NumOut]{
+					value: input,
+					err:   ErrExceedMinimumValue,
 				}
 			}
-			return 0, errorHelper{
-				value: s,
-				err:   fmt.Errorf("%w %v to %T", ErrStringConversion, s, converted),
+			return 0, errorHelper[NumOut]{
+				value: input,
+				err:   ErrStringConversion,
 			}
 		}
 
 		return convertFromNumber[NumOut](o)
 	}
 
-	o, err := strconv.ParseUint(s, 0, 64)
+	o, err := strconv.ParseUint(s, numberBase, 64)
 	if err != nil {
 		if errors.Is(err, strconv.ErrRange) {
-			return 0, errorHelper{
-				value:    s,
-				err:      ErrExceedMaximumValue,
-				boundary: uint(math.MaxUint),
+			return 0, errorHelper[NumOut]{
+				value: input,
+				err:   ErrExceedMaximumValue,
 			}
 		}
 
-		return 0, errorHelper{
-			value: s,
-			err:   fmt.Errorf("%w %v to %T", ErrStringConversion, s, converted),
+		return 0, errorHelper[NumOut]{
+			value: input,
+			err:   ErrStringConversion,
 		}
 	}
 	return convertFromNumber[NumOut](o)
 }
 
-// ToInt attempts to convert any [Type] value to an int.
+func getRangeError[NumOut Number, NumIn Number](value NumIn) error {
+	err := ErrExceedMaximumValue
+	if value < 0 {
+		err = ErrExceedMinimumValue
+	}
+
+	return errorHelper[NumOut]{
+		value: value,
+		err:   err,
+	}
+}
+
+// ToInt attempts to convert any [Number] value to an int.
 // If the conversion results in a value outside the range of an int,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[int](i)
 func ToInt[T Number](i T) (int, error) {
 	return convertFromNumber[int](i)
 }
@@ -218,6 +228,8 @@ func ToInt[T Number](i T) (int, error) {
 // ToUint attempts to convert any [Number] value to an uint.
 // If the conversion results in a value outside the range of an uint,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[uint](i)
 func ToUint[T Number](i T) (uint, error) {
 	return convertFromNumber[uint](i)
 }
@@ -225,6 +237,8 @@ func ToUint[T Number](i T) (uint, error) {
 // ToInt8 attempts to convert any [Number] value to an int8.
 // If the conversion results in a value outside the range of an int8,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[int8](i)
 func ToInt8[T Number](i T) (int8, error) {
 	return convertFromNumber[int8](i)
 }
@@ -232,6 +246,8 @@ func ToInt8[T Number](i T) (int8, error) {
 // ToUint8 attempts to convert any [Number] value to an uint8.
 // If the conversion results in a value outside the range of an uint8,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[uint8](i)
 func ToUint8[T Number](i T) (uint8, error) {
 	return convertFromNumber[uint8](i)
 }
@@ -239,6 +255,8 @@ func ToUint8[T Number](i T) (uint8, error) {
 // ToInt16 attempts to convert any [Number] value to an int16.
 // If the conversion results in a value outside the range of an int16,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[int16](i)
 func ToInt16[T Number](i T) (int16, error) {
 	return convertFromNumber[int16](i)
 }
@@ -246,6 +264,8 @@ func ToInt16[T Number](i T) (int16, error) {
 // ToUint16 attempts to convert any [Number] value to an uint16.
 // If the conversion results in a value outside the range of an uint16,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[uint16](i)
 func ToUint16[T Number](i T) (uint16, error) {
 	return convertFromNumber[uint16](i)
 }
@@ -253,6 +273,8 @@ func ToUint16[T Number](i T) (uint16, error) {
 // ToInt32 attempts to convert any [Number] value to an int32.
 // If the conversion results in a value outside the range of an int32,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[int32](i)
 func ToInt32[T Number](i T) (int32, error) {
 	return convertFromNumber[int32](i)
 }
@@ -260,6 +282,8 @@ func ToInt32[T Number](i T) (int32, error) {
 // ToUint32 attempts to convert any [Number] value to an uint32.
 // If the conversion results in a value outside the range of an uint32,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[uint32](i)
 func ToUint32[T Number](i T) (uint32, error) {
 	return convertFromNumber[uint32](i)
 }
@@ -267,6 +291,8 @@ func ToUint32[T Number](i T) (uint32, error) {
 // ToInt64 attempts to convert any [Number] value to an int64.
 // If the conversion results in a value outside the range of an int64,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[int64](i)
 func ToInt64[T Number](i T) (int64, error) {
 	return convertFromNumber[int64](i)
 }
@@ -274,6 +300,8 @@ func ToInt64[T Number](i T) (int64, error) {
 // ToUint64 attempts to convert any [Number] value to an uint64.
 // If the conversion results in a value outside the range of an uint64,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[uint64](i)
 func ToUint64[T Number](i T) (uint64, error) {
 	return convertFromNumber[uint64](i)
 }
@@ -281,6 +309,8 @@ func ToUint64[T Number](i T) (uint64, error) {
 // ToFloat32 attempts to convert any [Number] value to a float32.
 // If the conversion results in a value outside the range of a float32,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[float32](i)
 func ToFloat32[T Number](i T) (float32, error) {
 	return convertFromNumber[float32](i)
 }
@@ -288,6 +318,8 @@ func ToFloat32[T Number](i T) (float32, error) {
 // ToFloat64 attempts to convert any [Number] value to a float64.
 // If the conversion results in a value outside the range of a float64,
 // an [ErrConversionIssue] error is returned.
+//
+// Deprecated: use [Convert] instead with Convert[float64](i)
 func ToFloat64[T Number](i T) (float64, error) {
 	return convertFromNumber[float64](i)
 }
