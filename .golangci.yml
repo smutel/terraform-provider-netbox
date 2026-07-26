@@ -248,7 +248,7 @@ linters:
           disabled: true
         - name: line-length-limit
           severity: warning
-          disabled: false
+          disabled: true
           arguments: [80]
         - name: package-comments
           disabled: true

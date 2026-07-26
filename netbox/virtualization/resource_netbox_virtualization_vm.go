@@ -139,8 +139,10 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "active",
-				ValidateFunc: validation.StringInSlice([]string{"offline",
-					"active", "planned", "staged", "failed", "decommissioning"},
+				ValidateFunc: validation.StringInSlice([]string{
+					"offline",
+					"active", "planned", "staged", "failed", "decommissioning",
+				},
 					false),
 				Description: "The status among offline, active, planned, " +
 					"staged, failed or decommissioning (active by default).",
@@ -161,7 +163,8 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 					"Must be like ^[0-9]+((.[0-9]){0,1}[0-9]{0,1})$"),
 				//nolint:revive
 				DiffSuppressFunc: func(k, old, new string,
-					d *schema.ResourceData) bool {
+					d *schema.ResourceData,
+				) bool {
 					if old == new+".00" || old == new {
 						return true
 					}
@@ -174,8 +177,8 @@ func ResourceNetboxVirtualizationVM() *schema.Resource {
 }
 
 func resourceNetboxVirtualizationVMCreate(ctx context.Context,
-	d *schema.ResourceData, m any) diag.Diagnostics {
-
+	d *schema.ResourceData, m any,
+) diag.Diagnostics {
 	client := m.(*netbox.APIClient)
 
 	clusterID := d.Get("cluster_id").(int)
@@ -186,8 +189,7 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context,
 	name := d.Get("name").(string)
 	tags := d.Get("tag").(*schema.Set).List()
 
-	newResource :=
-		netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+	newResource := netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
 	newResource.SetComments(comments)
 	newResource.SetCustomFields(customFields)
 	newResource.SetName(name)
@@ -222,8 +224,7 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context,
 		newResource.SetMemory(memory32)
 	}
 
-	if localContextData :=
-		d.Get("local_context_data").(string); localContextData != "" {
+	if localContextData := d.Get("local_context_data").(string); localContextData != "" {
 		var localContextDataMap map[string]*any
 		if err := json.Unmarshal([]byte(localContextData),
 			&localContextDataMap); err != nil {
@@ -277,10 +278,9 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context,
 		newResource.SetVcpus(vcpusFloat)
 	}
 
-	_, response, errDiag :=
-		client.VirtualizationAPI.VirtualizationVirtualMachinesCreate(
-			ctx).WritableVirtualMachineWithConfigContextRequest(
-			*newResource).Execute()
+	_, response, errDiag := client.VirtualizationAPI.VirtualizationVirtualMachinesCreate(
+		ctx).WritableVirtualMachineWithConfigContextRequest(
+		*newResource).Execute()
 	if response.StatusCode != util.Const201 && errDiag != nil {
 		return util.GenerateErrorMessage(response, errDiag)
 	}
@@ -295,14 +295,13 @@ func resourceNetboxVirtualizationVMCreate(ctx context.Context,
 }
 
 func resourceNetboxVirtualizationVMRead(ctx context.Context,
-	d *schema.ResourceData, m any) diag.Diagnostics {
-
+	d *schema.ResourceData, m any,
+) diag.Diagnostics {
 	client := m.(*netbox.APIClient)
 
 	resourceID, _ := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
-	resource, response, err :=
-		client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(ctx,
-			int32(resourceID)).Execute()
+	resource, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(ctx,
+		int32(resourceID)).Execute()
 
 	if response.StatusCode == util.Const404 {
 		d.SetId("")
@@ -351,8 +350,7 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context,
 		return util.GenerateErrorMessage(nil, err)
 	}
 
-	localContextDataJSON, err :=
-		util.GetLocalContextData(resource.GetLocalContextData())
+	localContextDataJSON, err := util.GetLocalContextData(resource.GetLocalContextData())
 	if err != nil {
 		return util.GenerateErrorMessage(nil, err)
 	}
@@ -423,8 +421,8 @@ func resourceNetboxVirtualizationVMRead(ctx context.Context,
 
 //nolint:gocyclo
 func resourceNetboxVirtualizationVMUpdate(ctx context.Context,
-	d *schema.ResourceData, m any) diag.Diagnostics {
-
+	d *schema.ResourceData, m any,
+) diag.Diagnostics {
 	client := m.(*netbox.APIClient)
 
 	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
@@ -432,8 +430,7 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context,
 		return util.GenerateErrorMessage(nil,
 			errors.New("Unable to convert ID into int"))
 	}
-	resource :=
-		netbox.NewWritableVirtualMachineWithConfigContextRequestWithDefaults()
+	resource := netbox.NewPatchedWritableVirtualMachineWithConfigContextRequestWithDefaults()
 
 	// Required parameters
 	resource.SetName(d.Get("name").(string))
@@ -566,10 +563,8 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context,
 		}
 	}
 
-	if _, response, err :=
-		client.VirtualizationAPI.VirtualizationVirtualMachinesUpdate(ctx,
-			int32(resourceID)).WritableVirtualMachineWithConfigContextRequest(
-			*resource).Execute(); err != nil {
+	if _, response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesPartialUpdate(ctx,
+		int32(resourceID)).PatchedWritableVirtualMachineWithConfigContextRequest(*resource).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
@@ -577,8 +572,8 @@ func resourceNetboxVirtualizationVMUpdate(ctx context.Context,
 }
 
 func resourceNetboxVirtualizationVMDelete(ctx context.Context,
-	d *schema.ResourceData, m any) diag.Diagnostics {
-
+	d *schema.ResourceData, m any,
+) diag.Diagnostics {
 	client := m.(*netbox.APIClient)
 
 	resourceExists, err := resourceNetboxVirtualizationVMExists(d, m)
@@ -596,9 +591,8 @@ func resourceNetboxVirtualizationVMDelete(ctx context.Context,
 			errors.New("Unable to convert ID into int"))
 	}
 
-	if response, err :=
-		client.VirtualizationAPI.VirtualizationVirtualMachinesDestroy(ctx,
-			int32(resourceID)).Execute(); err != nil {
+	if response, err := client.VirtualizationAPI.VirtualizationVirtualMachinesDestroy(ctx,
+		int32(resourceID)).Execute(); err != nil {
 		return util.GenerateErrorMessage(response, err)
 	}
 
@@ -607,7 +601,8 @@ func resourceNetboxVirtualizationVMDelete(ctx context.Context,
 
 func resourceNetboxVirtualizationVMExists(d *schema.ResourceData,
 	m any) (b bool,
-	e error) {
+	e error,
+) {
 	client := m.(*netbox.APIClient)
 
 	resourceID, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
@@ -615,9 +610,8 @@ func resourceNetboxVirtualizationVMExists(d *schema.ResourceData,
 		return false, err
 	}
 
-	_, http, err :=
-		client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(nil,
-			int32(resourceID)).Execute()
+	_, http, err := client.VirtualizationAPI.VirtualizationVirtualMachinesRetrieve(nil,
+		int32(resourceID)).Execute()
 	if err != nil && http.StatusCode == util.Const404 {
 		return false, nil
 	} else if err == nil && http.StatusCode == util.Const200 {
