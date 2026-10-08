@@ -335,6 +335,14 @@ func resourceNetboxVirtualizationVMPrimaryIPExists(d *schema.ResourceData,
 	client := m.(*netbox.APIClient)
 
 	resourceID := d.Get("virtualmachine_id").(int)
+	// When importing, ID is set, not virtualmachine_id
+	if resourceID == 0 {
+		id, err := strconv.ParseInt(d.Id(), util.Const10, util.Const32)
+		if err != nil {
+			return false, err
+		}
+		resourceID = int(id)
+	}
 	resourceID32, err := safecast.ToInt32(resourceID)
 	if err != nil {
 		return false, err
